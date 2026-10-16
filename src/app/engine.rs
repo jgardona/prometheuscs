@@ -1,0 +1,143 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+//! How a [`Session`] talks to the simulation worker.
+//!
+//! With a worker attached, the session's own simulation is only the editable document: the
+//! worker steps its own copy and the session copies voltages and currents from the newest
+//! snapshot into the elements so they can be drawn. Without a worker (tests, headless use)
+//! the session steps its simulation itself.
+
+use super::session::Session;
+use super::worker::{Command, Worker};
+use crate::error::StepError;
+use crate::format::xml;
+use crate::solver::snapshot::{FrameSnapshot, SnapshotError, Status};
+use std::time::Duration;
+
+impl Session {
+    /// Moves the solver to `worker` and sends it the circuit.
+    pub fn attach_worker(&mut self, worker: Worker) {
+        self.worker = Some(worker);
+        self.sync_worker(false);
+    }
+
+    /// The worker, when one is attached.
+    pub fn worker_handle(&self) -> Option<&Worker> {
+        self.worker.as_ref()
+    }
+
+    /// True when the solver runs on its own thread.
+    pub fn has_worker(&self) -> bool {
+        self.worker.is_some()
+    }
+
+    /// Simulated time: the newest snapshot's with a worker, the simulation's otherwise.
+    pub fn time(&self) -> f64 {
+        if self.worker.is_some() { self.snapshot_time } else { self.sim.time() }
+    }
+
+    /// Sends the whole circuit, with its running state, to the worker.
+    pub(crate) fn sync_worker(&mut self, keep_time: bool) {
+        if self.worker.is_none() {
+            return;
+        }
+        let xml = self.document_xml();
+        if let Some(w) = &self.worker {
+            w.send(Command::Load { xml, keep_time });
+            w.send(Command::SetSpeed(self.options.iter_count));
+            w.send(Command::SetRunning(self.running));
+        }
+    }
+
+    /// Copies the running state of the elements (capacitor voltages and so on) from the worker
+    /// into the document, so saving, undo and reloading see the live values.
+    pub(crate) fn pull_state(&mut self) {
+        let Some(dump) = self.worker.as_ref().and_then(Worker::dump) else { return };
+        let Ok(root) = xml::parse(&dump) else { return };
+        let n = self.sim.elements.len();
+        if root.children.len() < n {
+            return;
+        }
+        for (e, node) in self.sim.elements.iter_mut().zip(&root.children) {
+            if node.tag == e.xml_dump_type() {
+                e.undump_xml(node);
+            }
+        }
+    }
+
+    /// Takes the worker's newest snapshot, if any, and refreshes the drawing settings.
+    pub(crate) fn pump(&mut self, elapsed: Duration) -> Result<(), StepError> {
+        let snapshot = self.worker.as_ref().and_then(Worker::latest);
+        if let Some(snap) = snapshot {
+            self.apply_snapshot(&snap);
+        }
+        self.highlight_stop_element();
+        self.refresh_draw_ctx(elapsed.min(super::session::MAX_FRAME_GAP));
+        Ok(())
+    }
+
+    fn apply_snapshot(&mut self, snap: &FrameSnapshot) {
+        self.snapshot_time = snap.time;
+        // a snapshot of a circuit that has since been edited does not fit the elements
+        if snap.element_currents.len() == self.sim.elements.len() {
+            for ((e, volts), current) in
+                self.sim.elements.iter_mut().zip(&snap.element_volts).zip(&snap.element_currents)
+            {
+                let b = e.base_mut();
+                if b.volts.len() == volts.len() {
+                    b.volts.copy_from_slice(volts);
+                }
+                b.current = *current;
+            }
+        }
+        if let Some(err) = &snap.error {
+            if self.stop_reason.as_deref() != Some(err.message.as_str()) {
+                self.record_stop(&err.message, err.element);
+            }
+        }
+    }
+
+    /// A snapshot of this session's simulation, with the session's own error if it stopped.
+    pub(crate) fn snapshot(&self, sequence: u64) -> FrameSnapshot {
+        let mut snap = self.sim.snapshot(sequence, self.running);
+        if let Some(reason) = &self.stop_reason {
+            snap.status = Status::Errored { reason: reason.clone(), element: self.stop_element };
+            snap.error =
+                Some(SnapshotError { message: reason.clone(), element: self.stop_element });
+        }
+        snap
+    }
+
+    /// Sets field `n` of element `elm` to `value` and analyses the circuit again.
+    pub(crate) fn edit_value(&mut self, elm: usize, n: usize, value: f64) {
+        let Some(mut ei) = self.sim.elements.get(elm).and_then(|e| e.get_edit_info(n)) else {
+            return;
+        };
+        ei.value = value;
+        self.sim.apply_edit(elm, n, &mut ei);
+        self.sim.elements[elm].set_points();
+        self.reanalyze();
+    }
+
+    /// Tells the worker about a parameter that was just changed in the document: a small
+    /// message instead of rebuilding the circuit. Without a worker the circuit is analysed.
+    pub(crate) fn param_changed(&mut self, elm: usize, n: usize, value: f64) {
+        match &self.worker {
+            Some(w) => w.send(Command::Edit { elm, n, value }),
+            None => self.reanalyze(),
+        }
+    }
+
+    /// Advances `n` steps right now (headless runs), recording a failure.
+    pub(crate) fn run_steps_now(&mut self, n: usize) {
+        self.sim.set_delay_wire_processing(true);
+        let result = self.sim.run_steps(n);
+        self.sim.calc_wire_currents();
+        if let Err(e) = result {
+            let element = match &e {
+                StepError::Stopped { element, .. } => *element,
+                _ => None,
+            };
+            self.record_stop(&e.to_string(), element);
+        }
+    }
+}

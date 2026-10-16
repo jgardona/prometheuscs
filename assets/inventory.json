@@ -1,0 +1,1073 @@
+[
+  {
+    "class": "ACRailElm",
+    "extends": "RailElm",
+    "is_abstract": false,
+    "dump_type": null,
+    "instantiable": true
+  },
+  {
+    "class": "ACVoltageElm",
+    "extends": "VoltageElm",
+    "is_abstract": false,
+    "dump_type": null,
+    "instantiable": true
+  },
+  {
+    "class": "ADCElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "167",
+    "instantiable": true
+  },
+  {
+    "class": "AMElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "200",
+    "instantiable": true
+  },
+  {
+    "class": "AmmeterElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "370",
+    "instantiable": true
+  },
+  {
+    "class": "AnalogMuxElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "432",
+    "instantiable": true
+  },
+  {
+    "class": "AnalogSwitch2Elm",
+    "extends": "AnalogSwitchElm",
+    "is_abstract": false,
+    "dump_type": "160",
+    "instantiable": true
+  },
+  {
+    "class": "AnalogSwitchElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "159",
+    "instantiable": true
+  },
+  {
+    "class": "AndGateElm",
+    "extends": "GateElm",
+    "is_abstract": false,
+    "dump_type": "150",
+    "instantiable": true
+  },
+  {
+    "class": "AntennaElm",
+    "extends": "RailElm",
+    "is_abstract": false,
+    "dump_type": "A",
+    "instantiable": true
+  },
+  {
+    "class": "AudioInputElm",
+    "extends": "RailElm",
+    "is_abstract": false,
+    "dump_type": "411",
+    "instantiable": true
+  },
+  {
+    "class": "AudioOutputElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "211",
+    "instantiable": true
+  },
+  {
+    "class": "BatteryElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": null,
+    "instantiable": true
+  },
+  {
+    "class": "BoxElm",
+    "extends": "GraphicElm",
+    "is_abstract": false,
+    "dump_type": "b",
+    "instantiable": true
+  },
+  {
+    "class": "BusLogicInputElm",
+    "extends": "SwitchElm",
+    "is_abstract": false,
+    "dump_type": "0",
+    "instantiable": true
+  },
+  {
+    "class": "BusSplitterElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "433",
+    "instantiable": true
+  },
+  {
+    "class": "BusTransceiverElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": null,
+    "instantiable": true
+  },
+  {
+    "class": "CC2Elm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "179",
+    "instantiable": true
+  },
+  {
+    "class": "CCCSElm",
+    "extends": "VCCSElm",
+    "is_abstract": false,
+    "dump_type": "215",
+    "instantiable": true
+  },
+  {
+    "class": "CCVSElm",
+    "extends": "VCCSElm",
+    "is_abstract": false,
+    "dump_type": "214",
+    "instantiable": true
+  },
+  {
+    "class": "CapacitorElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "c",
+    "instantiable": true
+  },
+  {
+    "class": "ChipElm",
+    "extends": "CircuitElm",
+    "is_abstract": true,
+    "dump_type": null,
+    "instantiable": false
+  },
+  {
+    "class": "CircuitElm",
+    "extends": null,
+    "is_abstract": true,
+    "dump_type": "0",
+    "instantiable": false
+  },
+  {
+    "class": "ClockElm",
+    "extends": "RailElm",
+    "is_abstract": false,
+    "dump_type": null,
+    "instantiable": true
+  },
+  {
+    "class": "ComparatorElm",
+    "extends": "CompositeElm",
+    "is_abstract": false,
+    "dump_type": "401",
+    "instantiable": true
+  },
+  {
+    "class": "CompositeElm",
+    "extends": "CircuitElm",
+    "is_abstract": true,
+    "dump_type": null,
+    "instantiable": false
+  },
+  {
+    "class": "Counter2Elm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "421",
+    "instantiable": true
+  },
+  {
+    "class": "CounterElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "164",
+    "instantiable": true
+  },
+  {
+    "class": "CrossSwitchElm",
+    "extends": "SwitchElm",
+    "is_abstract": false,
+    "dump_type": "430",
+    "instantiable": true
+  },
+  {
+    "class": "CrystalElm",
+    "extends": "CompositeElm",
+    "is_abstract": false,
+    "dump_type": "412",
+    "instantiable": true
+  },
+  {
+    "class": "CurrentElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "i",
+    "instantiable": true
+  },
+  {
+    "class": "CustomCompositeChipElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": null,
+    "instantiable": true
+  },
+  {
+    "class": "CustomCompositeElm",
+    "extends": "CompositeElm",
+    "is_abstract": false,
+    "dump_type": "410",
+    "instantiable": true
+  },
+  {
+    "class": "CustomLogicElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "208",
+    "instantiable": true
+  },
+  {
+    "class": "CustomTransformerElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "406",
+    "instantiable": true
+  },
+  {
+    "class": "DACElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "166",
+    "instantiable": true
+  },
+  {
+    "class": "DCMotorElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "415",
+    "instantiable": true
+  },
+  {
+    "class": "DCVoltageElm",
+    "extends": "VoltageElm",
+    "is_abstract": false,
+    "dump_type": null,
+    "instantiable": true
+  },
+  {
+    "class": "DFlipFlopElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "155",
+    "instantiable": true
+  },
+  {
+    "class": "DPDTSwitchElm",
+    "extends": "SwitchElm",
+    "is_abstract": false,
+    "dump_type": "429",
+    "instantiable": true
+  },
+  {
+    "class": "DarlingtonElm",
+    "extends": "CompositeElm",
+    "is_abstract": false,
+    "dump_type": "400",
+    "instantiable": true
+  },
+  {
+    "class": "DataInputElm",
+    "extends": "RailElm",
+    "is_abstract": false,
+    "dump_type": "424",
+    "instantiable": true
+  },
+  {
+    "class": "DataRecorderElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "210",
+    "instantiable": true
+  },
+  {
+    "class": "DeMultiplexerElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "185",
+    "instantiable": true
+  },
+  {
+    "class": "DecimalDisplayElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "419",
+    "instantiable": true
+  },
+  {
+    "class": "DelayBufferElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "422",
+    "instantiable": true
+  },
+  {
+    "class": "DiacElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "203",
+    "instantiable": true
+  },
+  {
+    "class": "DiodeElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "d",
+    "instantiable": true
+  },
+  {
+    "class": "ExtVoltageElm",
+    "extends": "RailElm",
+    "is_abstract": false,
+    "dump_type": "418",
+    "instantiable": true
+  },
+  {
+    "class": "FMElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "201",
+    "instantiable": true
+  },
+  {
+    "class": "FullAdderElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "196",
+    "instantiable": true
+  },
+  {
+    "class": "FuseElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "404",
+    "instantiable": true
+  },
+  {
+    "class": "GateElm",
+    "extends": "CircuitElm",
+    "is_abstract": true,
+    "dump_type": null,
+    "instantiable": false
+  },
+  {
+    "class": "GraphicElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": null,
+    "instantiable": true
+  },
+  {
+    "class": "GroundElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "g",
+    "instantiable": true
+  },
+  {
+    "class": "GyratorElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": null,
+    "instantiable": true
+  },
+  {
+    "class": "HalfAdderElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "195",
+    "instantiable": true
+  },
+  {
+    "class": "InductorElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "l",
+    "instantiable": true
+  },
+  {
+    "class": "InstructionDisplayElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": null,
+    "instantiable": true
+  },
+  {
+    "class": "InverterElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "I",
+    "instantiable": true
+  },
+  {
+    "class": "InvertingSchmittElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "183",
+    "instantiable": true
+  },
+  {
+    "class": "JKFlipFlopElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "156",
+    "instantiable": true
+  },
+  {
+    "class": "JfetElm",
+    "extends": "MosfetElm",
+    "is_abstract": false,
+    "dump_type": "j",
+    "instantiable": true
+  },
+  {
+    "class": "LDRElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "374",
+    "instantiable": true
+  },
+  {
+    "class": "LEDArrayElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "405",
+    "instantiable": true
+  },
+  {
+    "class": "LEDElm",
+    "extends": "DiodeElm",
+    "is_abstract": false,
+    "dump_type": "162",
+    "instantiable": true
+  },
+  {
+    "class": "LabeledNodeElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "207",
+    "instantiable": true
+  },
+  {
+    "class": "LampElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "181",
+    "instantiable": true
+  },
+  {
+    "class": "LatchElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "168",
+    "instantiable": true
+  },
+  {
+    "class": "LineElm",
+    "extends": "GraphicElm",
+    "is_abstract": false,
+    "dump_type": "423",
+    "instantiable": true
+  },
+  {
+    "class": "LogicInputElm",
+    "extends": "SwitchElm",
+    "is_abstract": false,
+    "dump_type": "L",
+    "instantiable": true
+  },
+  {
+    "class": "LogicOutputElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "M",
+    "instantiable": true
+  },
+  {
+    "class": "MBBSwitchElm",
+    "extends": "SwitchElm",
+    "is_abstract": false,
+    "dump_type": "416",
+    "instantiable": true
+  },
+  {
+    "class": "MemristorElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "m",
+    "instantiable": true
+  },
+  {
+    "class": "MonostableElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "194",
+    "instantiable": true
+  },
+  {
+    "class": "MosfetElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "f",
+    "instantiable": true
+  },
+  {
+    "class": "MotorProtectionSwitchElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "428",
+    "instantiable": true
+  },
+  {
+    "class": "MultiplexerElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "184",
+    "instantiable": true
+  },
+  {
+    "class": "NDarlingtonElm",
+    "extends": "DarlingtonElm",
+    "is_abstract": false,
+    "dump_type": null,
+    "instantiable": true
+  },
+  {
+    "class": "NJfetElm",
+    "extends": "JfetElm",
+    "is_abstract": false,
+    "dump_type": null,
+    "instantiable": true
+  },
+  {
+    "class": "NMosfetElm",
+    "extends": "MosfetElm",
+    "is_abstract": false,
+    "dump_type": null,
+    "instantiable": true
+  },
+  {
+    "class": "NTransistorElm",
+    "extends": "TransistorElm",
+    "is_abstract": false,
+    "dump_type": null,
+    "instantiable": true
+  },
+  {
+    "class": "NandGateElm",
+    "extends": "AndGateElm",
+    "is_abstract": false,
+    "dump_type": "151",
+    "instantiable": true
+  },
+  {
+    "class": "NoiseElm",
+    "extends": "RailElm",
+    "is_abstract": false,
+    "dump_type": null,
+    "instantiable": true
+  },
+  {
+    "class": "NorGateElm",
+    "extends": "OrGateElm",
+    "is_abstract": false,
+    "dump_type": "153",
+    "instantiable": true
+  },
+  {
+    "class": "NortonAmpElm",
+    "extends": "CompositeElm",
+    "is_abstract": false,
+    "dump_type": null,
+    "instantiable": true
+  },
+  {
+    "class": "OTAElm",
+    "extends": "CompositeElm",
+    "is_abstract": false,
+    "dump_type": "402",
+    "instantiable": true
+  },
+  {
+    "class": "OhmMeterElm",
+    "extends": "CurrentElm",
+    "is_abstract": false,
+    "dump_type": "216",
+    "instantiable": true
+  },
+  {
+    "class": "OpAmpElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "a",
+    "instantiable": true
+  },
+  {
+    "class": "OpAmpRealElm",
+    "extends": "CompositeElm",
+    "is_abstract": false,
+    "dump_type": "409",
+    "instantiable": true
+  },
+  {
+    "class": "OpAmpSwapElm",
+    "extends": "OpAmpElm",
+    "is_abstract": false,
+    "dump_type": null,
+    "instantiable": true
+  },
+  {
+    "class": "OptocouplerElm",
+    "extends": "CompositeElm",
+    "is_abstract": false,
+    "dump_type": "407",
+    "instantiable": true
+  },
+  {
+    "class": "OrGateElm",
+    "extends": "GateElm",
+    "is_abstract": false,
+    "dump_type": "152",
+    "instantiable": true
+  },
+  {
+    "class": "OutputElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "O",
+    "instantiable": true
+  },
+  {
+    "class": "PDarlingtonElm",
+    "extends": "DarlingtonElm",
+    "is_abstract": false,
+    "dump_type": null,
+    "instantiable": true
+  },
+  {
+    "class": "PMosfetElm",
+    "extends": "MosfetElm",
+    "is_abstract": false,
+    "dump_type": null,
+    "instantiable": true
+  },
+  {
+    "class": "PTransistorElm",
+    "extends": "TransistorElm",
+    "is_abstract": false,
+    "dump_type": null,
+    "instantiable": true
+  },
+  {
+    "class": "PhaseCompElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "161",
+    "instantiable": true
+  },
+  {
+    "class": "PisoShiftElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "186",
+    "instantiable": true
+  },
+  {
+    "class": "PolarCapacitorElm",
+    "extends": "CapacitorElm",
+    "is_abstract": false,
+    "dump_type": "209",
+    "instantiable": true
+  },
+  {
+    "class": "PotElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "174",
+    "instantiable": true
+  },
+  {
+    "class": "ProbeElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "p",
+    "instantiable": true
+  },
+  {
+    "class": "PushSwitchElm",
+    "extends": "SwitchElm",
+    "is_abstract": false,
+    "dump_type": null,
+    "instantiable": true
+  },
+  {
+    "class": "ROMElm",
+    "extends": "SRAMElm",
+    "is_abstract": false,
+    "dump_type": "436",
+    "instantiable": true
+  },
+  {
+    "class": "RailElm",
+    "extends": "VoltageElm",
+    "is_abstract": false,
+    "dump_type": "R",
+    "instantiable": true
+  },
+  {
+    "class": "RelayCoilElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "425",
+    "instantiable": true
+  },
+  {
+    "class": "RelayContactElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "426",
+    "instantiable": true
+  },
+  {
+    "class": "RelayElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "178",
+    "instantiable": true
+  },
+  {
+    "class": "ResistorElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "r",
+    "instantiable": true
+  },
+  {
+    "class": "RingCounterElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "163",
+    "instantiable": true
+  },
+  {
+    "class": "RoutedWireElm",
+    "extends": "WireElm",
+    "is_abstract": false,
+    "dump_type": "0",
+    "instantiable": true
+  },
+  {
+    "class": "SCRElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "177",
+    "instantiable": true
+  },
+  {
+    "class": "SRAMElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "413",
+    "instantiable": true
+  },
+  {
+    "class": "SchmittElm",
+    "extends": "InvertingSchmittElm",
+    "is_abstract": false,
+    "dump_type": "182",
+    "instantiable": true
+  },
+  {
+    "class": "ScopeElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "403",
+    "instantiable": true
+  },
+  {
+    "class": "SeqGenElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "188",
+    "instantiable": true
+  },
+  {
+    "class": "SevenSegDecoderElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "197",
+    "instantiable": true
+  },
+  {
+    "class": "SevenSegElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "157",
+    "instantiable": true
+  },
+  {
+    "class": "SipoShiftElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "189",
+    "instantiable": true
+  },
+  {
+    "class": "SparkGapElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "187",
+    "instantiable": true
+  },
+  {
+    "class": "SquareRailElm",
+    "extends": "RailElm",
+    "is_abstract": false,
+    "dump_type": null,
+    "instantiable": true
+  },
+  {
+    "class": "StopTriggerElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "408",
+    "instantiable": true
+  },
+  {
+    "class": "SweepElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "170",
+    "instantiable": true
+  },
+  {
+    "class": "Switch2Elm",
+    "extends": "SwitchElm",
+    "is_abstract": false,
+    "dump_type": "S",
+    "instantiable": true
+  },
+  {
+    "class": "SwitchElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "s",
+    "instantiable": true
+  },
+  {
+    "class": "TFlipFlopElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "193",
+    "instantiable": true
+  },
+  {
+    "class": "TappedTransformerElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "169",
+    "instantiable": true
+  },
+  {
+    "class": "TestPointElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "368",
+    "instantiable": true
+  },
+  {
+    "class": "TextElm",
+    "extends": "GraphicElm",
+    "is_abstract": false,
+    "dump_type": "x",
+    "instantiable": true
+  },
+  {
+    "class": "ThermistorNTCElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "350",
+    "instantiable": true
+  },
+  {
+    "class": "ThreePhaseMotorElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "427",
+    "instantiable": true
+  },
+  {
+    "class": "TimeDelayRelayElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "414",
+    "instantiable": true
+  },
+  {
+    "class": "TimerElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "165",
+    "instantiable": true
+  },
+  {
+    "class": "TransLineElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "171",
+    "instantiable": true
+  },
+  {
+    "class": "TransformerElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "T",
+    "instantiable": true
+  },
+  {
+    "class": "TransistorElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "t",
+    "instantiable": true
+  },
+  {
+    "class": "TriStateElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "180",
+    "instantiable": true
+  },
+  {
+    "class": "TriacElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "206",
+    "instantiable": true
+  },
+  {
+    "class": "TriodeElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "173",
+    "instantiable": true
+  },
+  {
+    "class": "TunnelDiodeElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "175",
+    "instantiable": true
+  },
+  {
+    "class": "UnijunctionElm",
+    "extends": "CompositeElm",
+    "is_abstract": false,
+    "dump_type": "417",
+    "instantiable": true
+  },
+  {
+    "class": "VCCSElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "213",
+    "instantiable": true
+  },
+  {
+    "class": "VCOElm",
+    "extends": "ChipElm",
+    "is_abstract": false,
+    "dump_type": "158",
+    "instantiable": true
+  },
+  {
+    "class": "VCVSElm",
+    "extends": "VCCSElm",
+    "is_abstract": false,
+    "dump_type": "212",
+    "instantiable": true
+  },
+  {
+    "class": "VarRailElm",
+    "extends": "RailElm",
+    "is_abstract": false,
+    "dump_type": "172",
+    "instantiable": true
+  },
+  {
+    "class": "VaractorElm",
+    "extends": "DiodeElm",
+    "is_abstract": false,
+    "dump_type": "176",
+    "instantiable": true
+  },
+  {
+    "class": "VoltageElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "v",
+    "instantiable": true
+  },
+  {
+    "class": "WattmeterElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "420",
+    "instantiable": true
+  },
+  {
+    "class": "WattmeterTrueElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": null,
+    "instantiable": true
+  },
+  {
+    "class": "WireElm",
+    "extends": "CircuitElm",
+    "is_abstract": false,
+    "dump_type": "w",
+    "instantiable": true
+  },
+  {
+    "class": "XnorGateElm",
+    "extends": "XorGateElm",
+    "is_abstract": false,
+    "dump_type": "431",
+    "instantiable": true
+  },
+  {
+    "class": "XorGateElm",
+    "extends": "OrGateElm",
+    "is_abstract": false,
+    "dump_type": "154",
+    "instantiable": true
+  },
+  {
+    "class": "ZenerElm",
+    "extends": "DiodeElm",
+    "is_abstract": false,
+    "dump_type": "z",
+    "instantiable": true
+  }
+]

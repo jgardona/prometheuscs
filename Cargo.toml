@@ -1,0 +1,95 @@
+[package]
+name = "prometheuscs"
+version = "0.1.0"
+edition = "2024"
+description = "Circuit simulator: a Rust port of CircuitJS1 with a GTK4/libadwaita interface"
+license = "GPL-2.0-or-later"
+default-run = "prometheuscs"
+
+[lib]
+name = "prometheuscs"
+path = "src/lib.rs"
+
+[[bin]]
+name = "prometheuscs"
+path = "src/main.rs"
+
+[[bin]]
+name = "import_assets"
+path = "src/bin/import_assets.rs"
+
+[[bin]]
+name = "inventory"
+path = "src/bin/inventory.rs"
+
+[[bin]]
+name = "gl_spike"
+path = "src/bin/gl_spike.rs"
+required-features = ["gui"]
+
+[[bin]]
+name = "golden"
+path = "src/bin/golden.rs"
+
+[features]
+# One feature per element family (FR-026): disable a family to remove its components from the
+# build. All families are enabled by default.
+default = ["passive", "reactive", "sources", "switches", "outputs", "logic", "diodes", "analog", "transistors", "mosfets", "digital"]
+passive = []
+reactive = []
+sources = []
+switches = []
+outputs = []
+logic = []
+diodes = []
+analog = []
+transistors = []
+mosfets = []
+digital = []
+# Desktop interface (GTK4 / libadwaita) and the Cairo drawing backend.
+gui = ["dep:gtk4", "dep:relm4", "dep:cairo-rs", "dep:tracing-subscriber", "dep:femtovg", "dep:libloading", "dep:glow"]
+
+[dependencies]
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+thiserror = "2.0.21"
+tracing = "0.1.44"
+femtovg = { version = "0.27", default-features = false, features = ["textlayout"], optional = true }
+libloading = { version = "0.8", optional = true }
+glow = { version = "0.18", default-features = false, optional = true }
+tracing-subscriber = { version = "0.3", features = ["env-filter"], optional = true }
+gtk4 = { version = "0.11.5", optional = true }
+cairo-rs = { version = "0.22.9", features = ["png", "svg"], optional = true }
+relm4 = { version = "0.11.0", features = ["libadwaita", "gnome_47"], optional = true }
+
+[dev-dependencies]
+criterion = "0.8.2"
+insta = "1.49.0"
+proptest = "1.12.0"
+
+[lints.rust]
+missing_docs = "warn"
+unsafe_op_in_unsafe_fn = "warn"
+
+[lints.clippy]
+# Faithful numeric ports index several arrays with one counter and mirror long canvas call
+# signatures and nested conditions from the original (kept for side-by-side comparison), so
+# these style lints are disabled project-wide.
+needless_range_loop = "allow"
+collapsible_if = "allow"
+collapsible_else_if = "allow"
+collapsible_match = "allow"
+too_many_arguments = "allow"
+unwrap_used = "warn"
+expect_used = "warn"
+panic = "warn"
+
+[[test]]
+name = "render_cairo"
+path = "tests/render_cairo.rs"
+required-features = ["gui"]
+
+[[test]]
+name = "render_bench"
+path = "tests/render_bench.rs"
+required-features = ["gui"]
