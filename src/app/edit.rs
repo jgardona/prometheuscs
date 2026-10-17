@@ -433,8 +433,14 @@ impl Session {
                         continue;
                     }
                     let d = e.mouse_distance(gx, gy);
-                    // a negative distance means the element is not under the mouse
-                    if !(0..=HOVER_DISTANCE_SQ).contains(&d) {
+                    // inside its bounding box an element is hit wherever the pointer is, as in
+                    // the original: the generic distance is to a line (or to the centre) and
+                    // only ranks overlapping elements. The few elements with a rule of their
+                    // own (wires, boxes) answer -1 when the pointer is not on them. Just
+                    // outside the box the pointer must still be close. A negative distance
+                    // means the element is not under the mouse.
+                    let limit = if b.contains(gx, gy) { i32::MAX } else { HOVER_DISTANCE_SQ };
+                    if !(0..=limit).contains(&d) {
                         continue;
                     }
                     d + 1
