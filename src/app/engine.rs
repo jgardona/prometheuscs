@@ -60,6 +60,10 @@ impl Session {
         for (e, node) in self.sim.elements.iter_mut().zip(&root.children) {
             if node.tag == e.xml_dump_type() {
                 e.undump_xml(node);
+                // reading a node may rebuild what an element keeps about its shape (a chip
+                // makes its pins again, with no coordinates); as when a file is read, the
+                // points are computed after it
+                e.set_points();
             }
         }
     }
