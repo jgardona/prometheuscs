@@ -544,11 +544,16 @@ impl Element for Optocoupler {
                 posts[1].x + 32 * dx,
                 posts[1].y,
             );
+            // `Base::set_position` only does the generic geometry; the part's own `set_points`
+            // computes its terminals and the polygons it draws (the original's `setPosition`
+            // is virtual and does both)
+            self.net.children[0].set_points();
             let t = &mut self.net.children[2];
             // the transistor's own "swap E/C" flag
             let flags = t.base().flags;
             t.base_mut().flags = if flip_y { flags | 1 } else { flags & !1 };
             t.base_mut().set_position(posts[2].x - 40 * dx, midp, posts[2].x - 24 * dx, midp);
+            t.set_points();
             if let (Some(a), Some(b)) =
                 (self.net.children[0].get_post(0), self.net.children[0].get_post(1))
             {
