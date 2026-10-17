@@ -4,6 +4,7 @@
 //! simulation runs. Triggers, XY plots and the FFT are not implemented.
 
 pub mod fft;
+pub mod trace;
 
 use crate::elements::element::{Element, ScopeSource};
 use crate::format::tokenizer::Tokenizer;
@@ -82,6 +83,10 @@ pub const FLAG_FFT: i32 = 1024;
 pub const FLAG_LOG_SPECTRUM: i32 = 65536;
 /// Flag: the phase angle between voltage and current is shown.
 pub const FLAG_PHASE_ANGLE: i32 = 1 << 23;
+/// Flag of an old-style entry: the element of the vertical axis follows.
+const FLAG_YELM: i32 = 32;
+/// Flag of an old-style entry: a second value of the element follows.
+const FLAG_IVALUE: i32 = 2048;
 const PLOT_FLAG_AC: i32 = 1;
 
 /// The first scope flag: show the current plot of a default scope.
@@ -387,6 +392,8 @@ pub struct Scope {
     pub man_divisions: i32,
     /// The trigger.
     pub trigger: Trigger,
+    /// The picture of an X/Y plot, painted at every step while the scope is in that mode.
+    pub trace: Option<trace::Trace>,
 }
 
 /// The first value of the 1-2-5 series above `d`.
@@ -428,6 +435,18 @@ impl Scope {
             fft: flags & FLAG_FFT != 0,
             man_divisions: DEFAULT_DIVISIONS,
             trigger: Trigger::default(),
+            trace: None,
+        }
+    }
+
+    /// What is left of an old-style entry after the plots: the label of the scope.
+    fn finish_old_entry(&mut self, st: &mut Tokenizer<'_>) {
+        let mut text = Vec::new();
+        while let Some(t) = st.next_token() {
+            text.push(t.to_string());
+        }
+        if !text.is_empty() {
+            self.text = Some(text.join(" "));
         }
     }
 
@@ -573,12 +592,35 @@ impl Scope {
         } else {
             // old-style entries: the value, plus the current when both are shown
             sc.position = st.next_i32().unwrap_or(0);
+            // the element of the vertical axis of an X/Y plot, and a second value of the
+            // same element; the original reads them in this order
+            let y_elm = if flags & FLAG_YELM != 0 { st.next_i32().ok() } else { None }
+                .and_then(|e| usize::try_from(e).ok())
+                .filter(|e| *e < elements.len() && flags & FLAG_PLOT2D != 0);
+            let second = if flags & FLAG_IVALUE != 0 { st.next_i32().unwrap_or(0) } else { 0 };
             let u = element_units(elements, elm, value)?;
+            if second > 0 {
+                sc.plots.push(ScopePlot::new(elm, value, u));
+                sc.plots.push(ScopePlot::new(elm, second, element_units(elements, elm, second)?));
+                sc.finish_old_entry(&mut *st);
+                return Some(sc);
+            }
+            if let Some(y) = y_elm {
+                sc.plots.push(ScopePlot::new(elm, VAL_VOLTAGE, u));
+                sc.plots.push(ScopePlot::new(
+                    y,
+                    VAL_VOLTAGE,
+                    element_units(elements, y, VAL_VOLTAGE)?,
+                ));
+                sc.finish_old_entry(&mut *st);
+                return Some(sc);
+            }
             sc.plots.push(ScopePlot::new(elm, value, u));
             if value == VAL_VOLTAGE && flags & FLAG_SHOW_I != 0 {
                 let cu = element_units(elements, elm, VAL_CURRENT)?;
                 sc.plots.push(ScopePlot::new(elm, VAL_CURRENT, cu));
             }
+            sc.finish_old_entry(&mut *st);
         }
         Some(sc)
     }
@@ -788,6 +830,7 @@ impl Scope {
                     level: trigger.level,
                     ..Trigger::default()
                 },
+                trace: None,
             })
             .collect()
     }
@@ -849,7 +892,32 @@ impl Scope {
         for p in &mut self.plots {
             p.clear(t);
         }
+        if let Some(tr) = &mut self.trace {
+            tr.clear();
+        }
         self.trigger.reset();
+    }
+
+    /// Paints this step into the picture of an X/Y plot.
+    fn paint_trace(&mut self, values: &[f64]) {
+        let n = values.len();
+        let (px, py) = (XyAxes::valid(self.axes.x, 0, n), XyAxes::valid(self.axes.y, 1, n));
+        let man = |i: usize| {
+            let p = &self.plots[i];
+            let scale =
+                if p.man_set { p.man_scale } else { self.man_scale_from_max(p.units, false) };
+            (scale, f64::from(p.man_pos) / f64::from(V_POSITION_STEPS))
+        };
+        let manual = self.is_manual().then(|| {
+            let (x, y) = (man(px), man(py));
+            trace::ManualAxes {
+                scale: (x.0, y.0),
+                pos: (x.1, y.1),
+                divisions: f64::from(self.man_divisions.max(1)),
+            }
+        });
+        let setup = trace::TraceSetup { axes: self.axes, manual, plots: n };
+        self.trace.get_or_insert_with(trace::Trace::default).step(values, setup);
     }
 
     /// Records the values of the elements at time `t`.
@@ -857,6 +925,7 @@ impl Scope {
         let period = max_time_step * f64::from(self.speed);
         // the time constant is about the width of the scope, as in the original
         let alpha = 1.0 - 1.0 / (1.15 * f64::from(self.speed) * POINTS as f64);
+        let mut values = Vec::new();
         for p in &mut self.plots {
             let Some(e) = elements.get(p.elm) else { continue };
             let mut v = e.scope_value(p.value);
@@ -868,6 +937,7 @@ impl Scope {
             if p.ac_coupled && p.can_ac_couple() {
                 v = out;
             }
+            values.push(v);
             if p.filled == 0 {
                 // the first sample after the history was emptied starts from this value, not
                 // from the zero the buffer holds
@@ -897,6 +967,11 @@ impl Scope {
                     p.last_update = t;
                 }
             }
+        }
+        if self.xy && self.plots.len() >= 2 {
+            self.paint_trace(&values);
+        } else {
+            self.trace = None;
         }
         if let Some(first) = self.plots.first() {
             self.trigger.check(first, t);
@@ -950,6 +1025,7 @@ impl Scope {
             text: self.text.clone(),
             scale: self.scale,
             speed: self.speed,
+            trace: self.trace.clone(),
             time_per_sample: max_time_step * f64::from(self.speed),
             time,
             plots,
@@ -1024,6 +1100,8 @@ pub struct PlotView {
 /// A scope as the interface draws it.
 #[derive(Clone, Debug, PartialEq)]
 pub struct ScopeView {
+    /// The picture of an X/Y plot, as painted so far.
+    pub trace: Option<trace::Trace>,
     /// Order among the scopes.
     pub position: i32,
     /// Text shown on the scope.

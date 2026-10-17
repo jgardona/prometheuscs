@@ -23,12 +23,14 @@ pub struct ScaleState {
 #[derive(Clone, Debug, Default)]
 pub struct ScopeScales {
     scales: Vec<ScaleState>,
-    /// A measurement is being dragged out: (band, simulated time where the drag began).
+    /// A measurement is being dragged out: (scope, simulated time where the drag began).
     pub drag_from: Option<(usize, f64)>,
     /// The plot under the pointer: (scope, plot). Kept while a plot is being dragged.
     pub hover: Option<(usize, usize)>,
     /// A plot is being dragged, so the pointer no longer chooses the plot.
     pub dragging: bool,
+    /// The lines of the information area at the right of the scopes.
+    pub info: Vec<String>,
 }
 
 impl ScopeScales {
@@ -396,6 +398,10 @@ fn measures(view: &ScopeView, win: &Window, step_x: f64, step_y: f64) -> Measure
             ));
         }
     }
+    // the label of the scope comes among the measurements, as in the original
+    if let Some(t) = view.text.as_ref().filter(|t| !t.is_empty()) {
+        m.top.push(t.clone());
+    }
     if flags & crate::scope::FLAG_FREQ != 0 {
         let f = frequency(&samples, view.time_per_sample);
         if f != 0.0 {
@@ -407,8 +413,7 @@ fn measures(view: &ScopeView, win: &Window, step_x: f64, step_y: f64) -> Measure
     m
 }
 
-/// Groups the scopes by the place they are drawn in, in drawing order. Scopes that share a
-/// place are drawn over one another ("stacked").
+/// Groups the scopes by their place: the scopes of one place are one column.
 pub fn bands(views: &[ScopeView]) -> Vec<Vec<usize>> {
     let mut places: Vec<i32> = views.iter().map(|v| v.position).collect();
     places.sort_unstable();
@@ -417,6 +422,133 @@ pub fn bands(views: &[ScopeView]) -> Vec<Vec<usize>> {
         .into_iter()
         .map(|p| (0..views.len()).filter(|&i| views[i].position == p).collect())
         .collect()
+}
+
+/// Where a scope is: left, top, width and height.
+pub type ScopeRect = (f64, f64, f64, f64);
+
+/// The space between two columns of scopes.
+const COLUMN_GAP: f64 = 10.0;
+
+/// Width of the information area at the right of the scopes (wider when there are few columns,
+/// as in the original).
+pub fn info_width(views: &[ScopeView], w: f64) -> f64 {
+    let width = if bands(views).len() <= 2 { 240.0 } else { 160.0 };
+    // a narrow area is all scopes
+    if w < 4.0 * width { 0.0 } else { width }
+}
+
+/// The rectangle of each scope in an area of `w` by `h`, as the original lays them out: one
+/// column for each place, side by side; the scopes of a place share its column, one above the
+/// other.
+pub fn layout(views: &[ScopeView], w: f64, h: f64) -> Vec<ScopeRect> {
+    let columns = bands(views);
+    let mut rects = vec![(0.0, 0.0, 0.0, 0.0); views.len()];
+    let cw = (w - info_width(views, w)) / columns.len().max(1) as f64;
+    for (c, column) in columns.iter().enumerate() {
+        let rh = h / column.len().max(1) as f64;
+        for (r, &i) in column.iter().enumerate() {
+            rects[i] =
+                (cw * c as f64, rh * r as f64, (cw - COLUMN_GAP).max(2.0 * COLUMN_GAP), rh - 2.0);
+        }
+    }
+    rects
+}
+
+/// The scale line of a scope in manual mode: the time per division, then, for each plot, a
+/// dot in its colour and its units per division, wrapped to the width of the scope. Returns
+/// the baseline of its last line.
+fn draw_manual_scale(
+    g: &mut dyn Painter,
+    view: &ScopeView,
+    (x, y, w, h): (f64, f64, f64, f64),
+    step: f64,
+    (first_line, text, light): (f64, Color, bool),
+) -> f64 {
+    let mut ty = first_line;
+    if ty + 5.0 >= y + h {
+        return ty;
+    }
+    g.set_font_size(10);
+    g.set_text_align(TextAlign::Left);
+    g.set_color(text);
+    let head = format!("H={}/div", unit_text(step, "s"));
+    g.draw_string(&head, x + 3.0, ty);
+    let mut at = g.measure_text(&head);
+    const BULLET: f64 = 17.0;
+    for (i, p) in view.plots.iter().enumerate() {
+        let per = format!("={}/div", units_text(p.units, p.man_scale));
+        let width = g.measure_text(&per);
+        if at + BULLET + width > w {
+            at = 0.0;
+            ty += 15.0;
+            if ty + 5.0 >= y + h {
+                return ty - 15.0;
+            }
+        }
+        let before = view.plots[..i].iter().filter(|q| q.units == p.units).count();
+        g.set_color(plot_color(p.units, i, before, light));
+        g.fill_oval((x + at) as i32 + 10, (ty - 9.0) as i32, 8, 8);
+        at += BULLET;
+        g.set_color(text);
+        g.draw_string(&per, x + 3.0 + at, ty);
+        at += width;
+    }
+    ty + 15.0
+}
+
+/// Whether a scope of this size shows the settings wheel in its bottom left corner.
+fn shows_wheel(w: f64, h: f64) -> bool {
+    w > 100.0 && h > 100.0
+}
+
+/// Whether (`px`, `py`), relative to the scope's top left corner, is on its settings wheel.
+pub fn on_wheel(rect: ScopeRect, px: f64, py: f64) -> bool {
+    shows_wheel(rect.2, rect.3)
+        && (0.0..=36.0).contains(&px)
+        && (rect.3 - 36.0..=rect.3).contains(&py)
+}
+
+/// The settings wheel: eight spokes round a small circle; it lights up under the pointer.
+pub fn draw_wheel(g: &mut dyn Painter, (x, y, w, h): (f64, f64, f64, f64), lit: bool) {
+    if !shows_wheel(w, h) {
+        return;
+    }
+    g.save();
+    g.set_color(if lit { Color::CYAN } else { Color::new(64, 64, 64) });
+    g.set_line_width(3.0);
+    let (cx, cy) = (x + 18.0, y + h - 18.0);
+    g.begin_path();
+    g.arc(cx, cy, 5.0, 0.0, std::f64::consts::TAU);
+    g.stroke();
+    let spoke = |g: &mut dyn Painter, dx: f64, dy: f64, from: f64, to: f64| {
+        g.draw_line(
+            (cx + dx * from) as i32,
+            (cy + dy * from) as i32,
+            (cx + dx * to) as i32,
+            (cy + dy * to) as i32,
+        );
+    };
+    for (dx, dy) in [(1.0, 0.0), (-1.0, 0.0), (0.0, 1.0), (0.0, -1.0)] {
+        spoke(g, dx, dy, 5.0, 8.0);
+    }
+    for (dx, dy) in [(1.0, 1.0), (-1.0, 1.0), (1.0, -1.0), (-1.0, -1.0)] {
+        spoke(g, dx, dy, 4.0, 6.0);
+    }
+    g.restore();
+}
+
+/// The scope under a point of the area (the gap after a scope counts as part of it).
+pub fn scope_at(views: &[ScopeView], w: f64, h: f64, x: f64, y: f64) -> Option<usize> {
+    let cw = (w - info_width(views, w)) / bands(views).len().max(1) as f64;
+    layout(views, w, h)
+        .iter()
+        .position(|&(rx, ry, _, rh)| x >= rx && x < rx + cw && y >= ry && y < ry + rh + 2.0)
+}
+
+/// How many scopes the tallest column has: the area is as many rows high.
+pub fn rows(views: &[ScopeView]) -> usize {
+    bands(views).iter().map(Vec::len).max().unwrap_or(0)
 }
 
 /// Draws all scopes in the area (`w` by `h`) at the origin of the painter. `cursor` is the
@@ -434,21 +566,22 @@ pub fn draw_scopes(
     if views.is_empty() || w < 8.0 || h < 8.0 {
         return;
     }
-    let groups = bands(views);
-    let each = h / groups.len() as f64;
+    // the area is a little lighter than the scopes, which shows the gaps between them
+    g.set_color(if light_background { Color::new(235, 235, 235) } else { Color::new(16, 16, 16) });
+    g.fill_rect(0.0, 0.0, w, h);
+    let rects = layout(views, w, h);
+    let under = cursor.and_then(|(cx, cy)| scope_at(views, w, h, cx, cy));
     // the plot under the pointer: the one whose curve is closest at the pointer's column
     if !scales.dragging {
         scales.hover = None;
-        if let Some((cx, cy)) = cursor {
-            let b = ((cy / each) as usize).min(groups.len() - 1);
-            let top = each * b as f64;
-            let mut best = f64::INFINITY;
-            for &i in &groups[b] {
-                let (view, win) = (&views[i], window(&views[i], w));
-                let j = ((cx / w * win.n as f64) as usize).min(win.n - 1);
-                let k = win.start + j as isize;
-                let Some(st) = scales.scales.get(i) else { continue };
+        if let (Some((cx, cy)), Some(i)) = (cursor, under) {
+            let (rx, ry, rw, rh) = rects[i];
+            let (view, win) = (&views[i], window(&views[i], rw));
+            let j = (((cx - rx) / rw * win.n as f64).max(0.0) as usize).min(win.n - 1);
+            let k = win.start + j as isize;
+            if let Some(st) = scales.scales.get(i) {
                 let ax = Axes { values: &st.values, frame: frame_of(view, st, &win) };
+                let mut best = f64::INFINITY;
                 for (pi, p) in view.plots.iter().enumerate() {
                     let recorded = k >= 0
                         && (k as usize) < win.len
@@ -456,7 +589,7 @@ pub fn draw_scopes(
                     if !recorded {
                         continue;
                     }
-                    let d = (cy - plot_y(view, &ax, p, p.max[k as usize], (top, each - 2.0))).abs();
+                    let d = (cy - plot_y(view, &ax, p, p.max[k as usize], (ry, rh))).abs();
                     if d < best {
                         best = d;
                         scales.hover = Some((i, pi));
@@ -466,30 +599,45 @@ pub fn draw_scopes(
         }
     }
     let hover = scales.hover;
-    for (b, group) in groups.iter().enumerate() {
-        let top = each * b as f64;
-        let here = cursor.and_then(|(cx, cy)| (cy >= top && cy < top + each).then_some(cx));
-        for (slot, &i) in group.iter().enumerate() {
-            let measure = scales.drag_from.filter(|d| d.0 == b).map(|d| d.1);
-            let Some(scale) = scales.scales.get_mut(i) else { continue };
-            let selected = hover.filter(|h| h.0 == i).map(|h| h.1);
-            draw_scope(
-                g,
-                &views[i],
-                scale,
-                &ScopeSpot {
-                    x: 0.0,
-                    y: top,
-                    w,
-                    h: each - 2.0,
-                    slot,
-                    cursor: here,
-                    cursor_y: cursor.map(|c| c.1 - top),
-                    selected,
-                    measure_from: measure,
-                },
-                light_background,
-            );
+    for (i, &(rx, ry, rw, rh)) in rects.iter().enumerate() {
+        let measure = scales.drag_from.filter(|d| d.0 == i).map(|d| d.1);
+        let Some(scale) = scales.scales.get_mut(i) else { continue };
+        let selected = hover.filter(|h| h.0 == i).map(|h| h.1);
+        let wheel_lit = cursor
+            .filter(|_| under == Some(i))
+            .is_some_and(|(cx, cy)| on_wheel(rects[i], cx - rx, cy - ry));
+        draw_scope(
+            g,
+            &views[i],
+            scale,
+            &ScopeSpot {
+                x: rx,
+                y: ry,
+                w: rw,
+                h: rh,
+                slot: 0,
+                cursor: cursor.filter(|_| under == Some(i)).map(|c| c.0),
+                cursor_y: cursor.filter(|_| under == Some(i)).map(|c| c.1 - ry),
+                selected,
+                measure_from: measure,
+            },
+            light_background,
+        );
+        draw_wheel(g, rects[i], wheel_lit);
+    }
+    // the information area: what the pointer is over, in a column to the right
+    let iw = info_width(views, w);
+    if iw > 0.0 {
+        g.set_color(if light_background { Color::new(0, 0, 0) } else { Color::new(255, 255, 255) });
+        g.set_font_size(12);
+        g.set_text_align(TextAlign::Left);
+        let mut ty = 20.0;
+        for line in &scales.info {
+            if ty > h - 4.0 {
+                break;
+            }
+            g.draw_string(line, w - iw + 12.0, ty);
+            ty += 15.0;
         }
     }
 }
@@ -540,6 +688,20 @@ pub fn draw_scope(
     spot: &ScopeSpot,
     light: bool,
 ) {
+    // nothing is drawn outside the rectangle of the scope
+    g.save();
+    g.clip_rect(spot.x, spot.y, spot.w, spot.h);
+    draw_scope_inside(g, view, state, spot, light);
+    g.restore();
+}
+
+fn draw_scope_inside(
+    g: &mut dyn Painter,
+    view: &ScopeView,
+    state: &mut ScaleState,
+    spot: &ScopeSpot,
+    light: bool,
+) {
     let ScopeSpot { x, y, w, h, slot, cursor, cursor_y, selected, measure_from } = *spot;
     let (bg, grid, text) = if light {
         (Color::new(255, 255, 255), Color::new(200, 200, 200), Color::new(0, 0, 0))
@@ -551,7 +713,7 @@ pub fn draw_scope(
         g.fill_rect(x, y, w, h);
     }
     // a small scope placed in the circuit has room for the curves only
-    let compact = w < 120.0 || h < 90.0;
+    let compact = w < 160.0 || h < 90.0;
     let mid = y + h / 2.0;
     let half = (h / 2.0 - 4.0).max(1.0);
     let win = window(view, w);
@@ -601,6 +763,8 @@ pub fn draw_scope(
     // simulated time of sample `k` (which may lie outside the buffer)
     let time_of = |k: isize| view.time - (len as isize - 1 - k) as f64 * view.time_per_sample;
     let t_left = time_of(start);
+    // how far the text in the left corner reaches: the readouts keep clear of it
+    let mut left_w = 0.0_f64;
     // the grid is drawn once for the scopes that share a place
     if slot == 0 {
         // vertical grid: time
@@ -629,20 +793,6 @@ pub fn draw_scope(
                 let gy = mid - f64::from(q) / top * half;
                 g.draw_line(x as i32, gy as i32, (x + w) as i32, gy as i32);
             }
-            if !compact {
-                g.set_font_size(10);
-                let mut ly = y + 12.0;
-                for (i, p) in view.plots.iter().enumerate() {
-                    let before = view.plots[..i].iter().filter(|q| q.units == p.units).count();
-                    g.set_color(plot_color(p.units, i, before, light));
-                    g.draw_string(
-                        &format!("{}/div", units_text(p.units, p.man_scale)),
-                        x + 3.0,
-                        ly,
-                    );
-                    ly += 12.0;
-                }
-            }
         } else if let (true, Some(first)) = (same_units, view.plots.first()) {
             let gm = scale[first.units as usize];
             let (centre, span) = frame.unwrap_or((0.0, gm));
@@ -658,8 +808,13 @@ pub fn draw_scope(
             if !compact {
                 g.set_color(text);
                 g.set_font_size(10);
-                g.draw_string(&units_text(first.units, centre + span), x + 3.0, y + 12.0);
-                g.draw_string(&units_text(first.units, centre - span), x + 3.0, y + h - 3.0);
+                for (s, ly) in [
+                    (units_text(first.units, centre + span), y + 12.0),
+                    (units_text(first.units, centre - span), y + h - 3.0),
+                ] {
+                    left_w = left_w.max(g.measure_text(&s));
+                    g.draw_string(&s, x + 3.0, ly);
+                }
             }
         } else {
             g.set_color(grid);
@@ -678,11 +833,9 @@ pub fn draw_scope(
                 }
                 let before = view.plots[..i].iter().filter(|q| q.units == p.units).count();
                 g.set_color(plot_color(p.units, i, before, light));
-                g.draw_string(
-                    &format!("\u{b1}{}", units_text(p.units, scale[p.units as usize])),
-                    x + 3.0,
-                    ly,
-                );
+                let label = format!("\u{b1}{}", units_text(p.units, scale[p.units as usize]));
+                left_w = left_w.max(g.measure_text(&label));
+                g.draw_string(&label, x + 3.0, ly);
                 ly += 12.0;
             }
         }
@@ -735,9 +888,10 @@ pub fn draw_scope(
     // measurements, under the corner labels
     if slot == 0 {
         let labels = if view.manual {
-            view.plots.len()
-        } else if view.plots.windows(2).all(|p| p[0].units == p[1].units) {
             0
+        } else if view.plots.windows(2).all(|p| p[0].units == p[1].units) {
+            // the full scale is written in the top corner, one line
+            1
         } else {
             let mut u: Vec<i32> = view.plots.iter().map(|p| p.units).collect();
             u.sort_unstable();
@@ -751,15 +905,26 @@ pub fn draw_scope(
         g.set_font_size(10);
         g.set_text_align(TextAlign::Left);
         let mut ty = y + 14.0 + 12.0 * labels as f64;
+        if view.manual && view.flags & crate::scope::FLAG_SCALE != 0 {
+            ty = draw_manual_scale(g, view, (x, y, w, h), step, (ty, text, light));
+            g.set_color(text);
+            g.set_font_size(10);
+            g.set_text_align(TextAlign::Left);
+        }
         for line in &m.top {
             if ty + 5.0 >= y + h {
                 break;
             }
+            left_w = left_w.max(g.measure_text(line));
             g.draw_string(line, x + 3.0, ty);
             ty += 15.0;
         }
         if let Some(b) = &m.bottom {
-            g.draw_string(b, x + 3.0, y + h - 5.0);
+            // the lowest value of the full scale is written in the bottom corner, when the
+            // plots share it
+            let shared = !view.manual && view.plots.windows(2).all(|p| p[0].units == p[1].units);
+            left_w = left_w.max(g.measure_text(b));
+            g.draw_string(b, x + 3.0, y + h - if shared { 17.0 } else { 5.0 });
         }
     }
 
@@ -767,18 +932,31 @@ pub fn draw_scope(
     g.set_font_size(11);
     let mut ty = y + 14.0 + 26.0 * slot as f64;
     g.set_text_align(TextAlign::Left);
-    for (i, p) in view.plots.iter().enumerate() {
+    let lines: Vec<String> = view
+        .plots
+        .iter()
+        .map(|p| {
+            let last = p.max.last().copied().unwrap_or(0.0);
+            format!("{} {} = {}", p.title, value_name(p.value, p.units), units_text(p.units, last))
+        })
+        .collect();
+    let widest = lines.iter().map(|l| g.measure_text(l)).fold(0.0, f64::max);
+    // centred on the scope, unless that runs into the text in the corner: then to the right of
+    // it, and left out when there is no room there either
+    let (from, to) = if (w - widest) / 2.0 >= left_w + 4.0 {
+        (x, x + w)
+    } else {
+        (x + left_w + 6.0, x + w - 4.0)
+    };
+    let fits = widest <= to - from;
+    for (i, (p, line)) in view.plots.iter().zip(&lines).enumerate() {
+        if !fits {
+            break;
+        }
         let before = view.plots[..i].iter().filter(|q| q.units == p.units).count();
         g.set_color(plot_color(p.units, i, before, light));
-        let last = p.max.last().copied().unwrap_or(0.0);
-        let line =
-            format!("{} {} = {}", p.title, value_name(p.value, p.units), units_text(p.units, last));
-        g.draw_string(&line, x + w / 2.0 - g.measure_text(&line) / 2.0, ty);
+        g.draw_string(line, (from + to) / 2.0 - g.measure_text(line) / 2.0, ty);
         ty += 13.0;
-    }
-    if let Some(t) = &view.text {
-        g.set_color(text);
-        g.draw_string(t, x + 6.0, y + h - 18.0);
     }
     if slot == 0 {
         g.set_color(text);
@@ -923,6 +1101,54 @@ fn phase_text(view: &ScopeView, win: &Window) -> Option<String> {
     Some(format!("{}{angle:.1}\u{b0}", crate::locale::ls("Phase angle: ")))
 }
 
+/// The picture of an X/Y plot: its cells as small squares, and a dot where the trace is now.
+/// In automatic mode the picture fills the scope; with a manual scale it is a square, as the
+/// divisions are.
+fn draw_trace(
+    g: &mut dyn Painter,
+    tr: &crate::scope::trace::Trace,
+    manual: bool,
+    (x, y, w, h): (f64, f64, f64, f64),
+) {
+    use crate::scope::trace::{TRACE_H, TRACE_W};
+    let (ox, oy, sw, sh) = if manual {
+        let m = w.min(h);
+        (x + (w - m) / 2.0, y + (h - m) / 2.0, m, m)
+    } else {
+        (x, y, w, h)
+    };
+    let (cw, ch) = (sw / TRACE_W as f64, sh / TRACE_H as f64);
+    for row in 0..TRACE_H {
+        let mut col = 0;
+        while col < TRACE_W {
+            let at = (row * TRACE_W + col) * 3;
+            let c = [tr.pixels[at], tr.pixels[at + 1], tr.pixels[at + 2]];
+            if c == [0, 0, 0] {
+                col += 1;
+                continue;
+            }
+            // a run of cells of one colour is one rectangle
+            let mut end = col + 1;
+            while end < TRACE_W && tr.pixels[(row * TRACE_W + end) * 3..][..3] == c {
+                end += 1;
+            }
+            g.set_color(Color::new(c[0], c[1], c[2]));
+            // a little over the cell, so that neighbours leave no seams
+            g.fill_rect(
+                ox + col as f64 * cw,
+                oy + row as f64 * ch,
+                (end - col) as f64 * cw + 0.5,
+                ch + 0.5,
+            );
+            col = end;
+        }
+    }
+    if let Some((u, v)) = tr.head() {
+        g.set_color(Color::WHITE);
+        g.fill_oval((ox + u * sw) as i32 - 2, (oy + v * sh) as i32 - 2, 5, 5);
+    }
+}
+
 /// The first plot against the second, as a curve through the samples; plots named for it
 /// modulate the brightness and the colour of the trace. `pointer` is the pointer position in
 /// the scope, when it is over it.
@@ -930,7 +1156,7 @@ fn draw_xy(
     g: &mut dyn Painter,
     view: &ScopeView,
     (x, y, w, h): (f64, f64, f64, f64),
-    (grid, text, light): (Color, Color, bool),
+    (_, text, light): (Color, Color, bool),
     pointer: Option<(f64, f64)>,
 ) {
     use crate::scope::XyAxes;
@@ -961,7 +1187,10 @@ fn draw_xy(
         }
         s
     };
-    let (sx, sy) = (fit(plot_x, 5.0), fit(plot_y, 0.1));
+    let (sx, sy) = match &view.trace {
+        Some(t) => (t.scale_x, t.scale_y),
+        None => (fit(plot_x, 5.0), fit(plot_y, 0.1)),
+    };
     let grid_px = (w.min(h) / 2.0) / (f64::from(view.man_divisions) / 2.0 + 0.05);
     let steps_v = f64::from(V_POSITION_STEPS);
     let divs = f64::from(view.man_divisions);
@@ -996,77 +1225,82 @@ fn draw_xy(
         }
     }
     // the axes: a plot of voltage against current has its vertical axis in yellow
-    g.set_color(grid);
+    // green axes, the vertical one yellow when it is voltage against current
+    g.set_color(Color::new(0, 255, 0));
     g.draw_line(x as i32, cy as i32, (x + w) as i32, cy as i32);
     if !view.plot_xy {
         g.set_color(Color::new(255, 255, 0));
     }
     g.draw_line(cx as i32, y as i32, cx as i32, (y + h) as i32);
 
-    // modulators: brightness and colour follow other plots
-    let modulate = |index: i32| XyAxes::modulator(index, count);
-    let channel = |i: Option<usize>| {
-        i.map(|i| {
-            let p = &view.plots[i];
-            let peak = (from..len).fold(0.0_f64, |m, k| m.max(mean(p, k)));
-            let mut s = 5.0;
-            while peak > s && s < 1e30 {
-                s *= 2.0;
-            }
-            (p, s)
-        })
-    };
-    let brightness = channel(modulate(view.axes.brightness));
-    let (red, green, blue) = (
-        channel(modulate(view.axes.red)),
-        channel(modulate(view.axes.green)),
-        channel(modulate(view.axes.blue)),
-    );
-    let colored = red.is_some() || green.is_some() || blue.is_some();
-    let base = if colored {
-        None
+    if let Some(tr) = &view.trace {
+        draw_trace(g, tr, view.manual, (x, y, w, h));
     } else {
-        Some(if light { Color::new(0, 0, 0) } else { Color::new(255, 255, 255) })
-    };
-    let part = |c: Option<(&PlotView, f64)>, k: usize| {
-        c.map_or(0, |(p, s)| ((mean(p, k) / s) * 255.0).clamp(0.0, 255.0) as u8)
-    };
-    let plain = brightness.is_none() && !colored && trail <= 0.0;
-    let mut last = place(
-        mean(plot_x, from.min(len.saturating_sub(1))),
-        mean(plot_y, from.min(len.saturating_sub(1))),
-    );
-    if len > 0 && plain {
-        g.set_color(base.unwrap_or(Color::WHITE));
-        g.begin_path();
-        g.move_to(last.0, last.1);
-        for k in from + 1..len {
-            last = place(mean(plot_x, k), mean(plot_y, k));
-            g.line_to(last.0, last.1);
-        }
-        g.stroke();
-    } else if len > 0 {
-        for k in from + 1..len {
-            let next = place(mean(plot_x, k), mean(plot_y, k));
-            let mut alpha = brightness.map_or(1.0, |(p, s)| (mean(p, k).abs() / s).min(1.0));
-            if trail > 0.0 {
-                alpha *= (-((len - 1 - k) as f64) * steps / trail).exp();
-            }
-            g.set_color(
-                base.unwrap_or_else(|| Color::new(part(red, k), part(green, k), part(blue, k))),
-            );
-            g.set_alpha(alpha.clamp(0.0, 1.0));
+        // modulators: brightness and colour follow other plots
+        let modulate = |index: i32| XyAxes::modulator(index, count);
+        let channel = |i: Option<usize>| {
+            i.map(|i| {
+                let p = &view.plots[i];
+                let peak = (from..len).fold(0.0_f64, |m, k| m.max(mean(p, k)));
+                let mut s = 5.0;
+                while peak > s && s < 1e30 {
+                    s *= 2.0;
+                }
+                (p, s)
+            })
+        };
+        let brightness = channel(modulate(view.axes.brightness));
+        let (red, green, blue) = (
+            channel(modulate(view.axes.red)),
+            channel(modulate(view.axes.green)),
+            channel(modulate(view.axes.blue)),
+        );
+        let colored = red.is_some() || green.is_some() || blue.is_some();
+        let base = if colored {
+            None
+        } else {
+            Some(if light { Color::new(0, 0, 0) } else { Color::new(255, 255, 255) })
+        };
+        let part = |c: Option<(&PlotView, f64)>, k: usize| {
+            c.map_or(0, |(p, s)| ((mean(p, k) / s) * 255.0).clamp(0.0, 255.0) as u8)
+        };
+        let plain = brightness.is_none() && !colored && trail <= 0.0;
+        let mut last = place(
+            mean(plot_x, from.min(len.saturating_sub(1))),
+            mean(plot_y, from.min(len.saturating_sub(1))),
+        );
+        if len > 0 && plain {
+            g.set_color(base.unwrap_or(Color::WHITE));
             g.begin_path();
             g.move_to(last.0, last.1);
-            g.line_to(next.0, next.1);
+            for k in from + 1..len {
+                last = place(mean(plot_x, k), mean(plot_y, k));
+                g.line_to(last.0, last.1);
+            }
             g.stroke();
-            last = next;
+        } else if len > 0 {
+            for k in from + 1..len {
+                let next = place(mean(plot_x, k), mean(plot_y, k));
+                let mut alpha = brightness.map_or(1.0, |(p, s)| (mean(p, k).abs() / s).min(1.0));
+                if trail > 0.0 {
+                    alpha *= (-((len - 1 - k) as f64) * steps / trail).exp();
+                }
+                g.set_color(
+                    base.unwrap_or_else(|| Color::new(part(red, k), part(green, k), part(blue, k))),
+                );
+                g.set_alpha(alpha.clamp(0.0, 1.0));
+                g.begin_path();
+                g.move_to(last.0, last.1);
+                g.line_to(next.0, next.1);
+                g.stroke();
+                last = next;
+            }
+            g.set_alpha(1.0);
         }
-        g.set_alpha(1.0);
-    }
-    if len > 0 {
-        g.set_color(Color::WHITE);
-        g.fill_oval(last.0 as i32 - 2, last.1 as i32 - 2, 5, 5);
+        if len > 0 {
+            g.set_color(Color::WHITE);
+            g.fill_oval(last.0 as i32 - 2, last.1 as i32 - 2, 5, 5);
+        }
     }
     if h > 60.0 {
         g.set_color(text);
@@ -1256,6 +1490,7 @@ mod tests {
         let n = values.len().min(POINTS);
         max[POINTS - n..].copy_from_slice(&values[..n]);
         ScopeView {
+            trace: None,
             position: 0,
             text: None,
             scale: [0.5; UNITS_COUNT as usize],
@@ -1330,15 +1565,31 @@ mod tests {
     }
 
     #[test]
-    fn manual_mode_names_the_scale_of_each_plot() {
+    fn manual_mode_names_the_scale_of_each_plot_when_asked() {
         let mut v = view(&[3.0; 40]);
         v.manual = true;
         v.plots[0].man_scale = 2.0;
-        let mut g = SvgPainter::new(400.0, 200.0);
-        let mut scales = ScopeScales::default();
-        draw_scopes(&mut g, &[v], &mut scales, 400.0, 200.0, false, None);
-        let svg = g.finish();
-        assert!(svg.contains("2 V/div"), "{svg}");
+        let draw = |v: &ScopeView| {
+            let mut g = SvgPainter::new(400.0, 200.0);
+            draw_scopes(
+                &mut g,
+                std::slice::from_ref(v),
+                &mut ScopeScales::default(),
+                400.0,
+                200.0,
+                false,
+                None,
+            );
+            g.finish()
+        };
+        // the scale line is a choice of the scope ("Show Scale"), as in the original
+        assert!(!draw(&v).contains("V/div"));
+        v.flags |= crate::scope::FLAG_SCALE;
+        let svg = draw(&v);
+        assert!(svg.contains("H=") && svg.contains("=2 V/div"), "{svg}");
+        // the label of the scope is among the measurements, not a line of its own
+        v.text = Some("my label".into());
+        assert!(draw(&v).contains("my label"));
     }
 
     #[test]
@@ -1595,5 +1846,46 @@ mod tests {
         let mut spec = v;
         spec.fft = true;
         assert_eq!(time_at(&spec, 600.0, 10.0), None);
+    }
+
+    /// The text of one corner of a scope must not be drawn over the text under it.
+    #[test]
+    fn the_scale_and_the_measurements_do_not_share_a_line() {
+        use crate::scope::{FLAG_MIN, FLAG_NO_MAX};
+        let mut v = signal(&[1.0, -2.0, 3.0, -1.0], FLAG_MIN);
+        v.flags &= !FLAG_NO_MAX; // the peak value is shown
+        let mut g = SvgPainter::new(400.0, 200.0);
+        draw_scopes(&mut g, &[v], &mut ScopeScales::default(), 400.0, 200.0, false, None);
+        let svg = g.finish();
+        // the y of every text that starts at the left edge
+        let mut ys: Vec<f64> = svg
+            .split("<text ")
+            .skip(1)
+            .filter(|t| t.contains("x=\"3\""))
+            .filter_map(|t| t.split("y=\"").nth(1)?.split('"').next()?.parse().ok())
+            .collect();
+        assert!(ys.len() >= 4, "{svg}");
+        ys.sort_by(f64::total_cmp);
+        for pair in ys.windows(2) {
+            assert!(pair[1] - pair[0] >= 10.0, "texts at {} and {} overlap", pair[0], pair[1]);
+        }
+    }
+
+    #[test]
+    fn scopes_of_different_places_are_columns_and_those_of_one_place_are_rows() {
+        let (mut a, mut b, mut c) = (view(&[1.0]), view(&[1.0]), view(&[1.0]));
+        (a.position, b.position, c.position) = (0, 1, 1);
+        let views = [a, b, c];
+        let r = layout(&views, 600.0, 260.0);
+        // two columns of 300, the second holding two scopes of 130
+        assert_eq!((r[0].0, r[0].1, r[0].3), (0.0, 0.0, 258.0));
+        assert_eq!((r[1].0, r[1].1), (300.0, 0.0));
+        assert_eq!((r[2].0, r[2].1), (300.0, 130.0));
+        assert!(r[0].2 < 300.0, "a gap between the columns");
+        assert_eq!(rows(&views), 2);
+        assert_eq!(scope_at(&views, 600.0, 260.0, 10.0, 200.0), Some(0));
+        assert_eq!(scope_at(&views, 600.0, 260.0, 400.0, 10.0), Some(1));
+        assert_eq!(scope_at(&views, 600.0, 260.0, 400.0, 200.0), Some(2));
+        assert_eq!(scope_at(&views, 600.0, 260.0, 700.0, 10.0), None);
     }
 }

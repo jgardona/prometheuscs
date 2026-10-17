@@ -276,7 +276,8 @@ impl Cmd {
 
     /// True when the feature behind the command is not available in this build yet.
     pub fn unavailable(&self) -> bool {
-        matches!(self, Cmd::ConvertWires)
+        // converting wires needs the wires of the passive family
+        cfg!(not(feature = "passive")) && matches!(self, Cmd::ConvertWires)
     }
 
     /// Whether the command can be used right now (contract C3).
@@ -296,7 +297,7 @@ impl Cmd {
             Cmd::ViewInScope => !s.scope_targets().is_empty(),
             Cmd::DockScope => editing && s.selected_scope_element().is_some(),
             Cmd::AddSliders => editing && s.selected_slider_element().is_some(),
-            Cmd::CreateSubcircuit => editing && has_elements,
+            Cmd::CreateSubcircuit | Cmd::ConvertWires => editing && has_elements,
             Cmd::RemoveScopes | Cmd::StackAll | Cmd::UnstackAll | Cmd::SeparateAll => {
                 s.scope_count() > 0
             }
@@ -362,6 +363,10 @@ pub fn dispatch(s: &mut Session, cmd: &Cmd) -> Outcome {
             if let Some(i) = s.selected_scope_element() {
                 s.dock_scope(i);
             }
+        }
+        #[cfg(feature = "passive")]
+        Cmd::ConvertWires => {
+            s.convert_wires();
         }
         Cmd::RemoveScopes => s.remove_scopes(),
         Cmd::Delete => {

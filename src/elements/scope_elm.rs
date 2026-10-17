@@ -107,6 +107,27 @@ impl Element for ScopeElm {
     fn num_handles(&self) -> usize {
         2
     }
+    // the two opposite corners: dragging one resizes the scope
+    fn handle_point(&self, n: usize) -> Option<crate::elements::geometry::Point> {
+        let b = &self.base;
+        match n {
+            0 => Some(crate::elements::geometry::Point::new(b.x, b.y)),
+            1 => Some(crate::elements::geometry::Point::new(b.x2, b.y2)),
+            _ => None,
+        }
+    }
+    // any point of the rectangle picks the scope, not just its centre: it can be moved by
+    // dragging it anywhere
+    fn mouse_distance(&self, gx: i32, gy: i32) -> i32 {
+        let b = &self.base;
+        let (x0, x1) = (b.x.min(b.x2), b.x.max(b.x2));
+        let (y0, y1) = (b.y.min(b.y2), b.y.max(b.y2));
+        if (x0..=x1).contains(&gx) && (y0..=y1).contains(&gy) {
+            0
+        } else {
+            super::geometry::distance_sq(gx, gy, (b.x2 + b.x) / 2, (b.y2 + b.y) / 2)
+        }
+    }
     fn reset(&mut self) {
         self.view = None;
         self.scale = None;
@@ -129,10 +150,17 @@ impl Element for ScopeElm {
                 measure_from: None,
             };
             crate::render::scopes::draw_scope(g, view, scale, &spot, c.printable);
+            crate::render::scopes::draw_wheel(g, (f64::from(x), f64::from(y), w, h), false);
         }
         g.set_color(if self.base.needs_highlight() { c.select_color } else { c.white });
         g.set_line_width(1.0);
         g.stroke_rect(f64::from(x), f64::from(y), w, h);
+        // a selected scope shows the corners to drag
+        if self.base.selected {
+            for (hx, hy) in [(self.base.x, self.base.y), (self.base.x2, self.base.y2)] {
+                g.fill_rect(f64::from(hx) - 3.0, f64::from(hy) - 3.0, 7.0, 7.0);
+            }
+        }
         let (p1, p2) = (self.base.point1, self.base.point2);
         self.base.set_bbox_pts(p1, p2, 0.0);
         draw_posts(g, &self.base, self, c);

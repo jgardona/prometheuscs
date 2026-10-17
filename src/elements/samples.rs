@@ -88,7 +88,8 @@ pub fn parse_data_text(text: &str) -> Result<Vec<f64>, String> {
     Ok(data)
 }
 
-/// Decodes the first channel of a PCM or float WAV file into samples between -1 and 1.
+/// Decodes the first channel of a PCM (8 to 32 bits) or float (32 or 64 bits) WAV file, plain or
+/// in the extensible form, into samples between -1 and 1.
 pub fn decode_wav(bytes: &[u8]) -> Result<(Vec<f64>, u32), String> {
     let bad = || "not a WAV file this program can read (only PCM and float WAV files)".to_string();
     if bytes.len() < 12 || &bytes[0..4] != b"RIFF" || &bytes[8..12] != b"WAVE" {
@@ -105,7 +106,13 @@ pub fn decode_wav(bytes: &[u8]) -> Result<(Vec<f64>, u32), String> {
         let end = (body + size).min(bytes.len());
         match &bytes[pos..pos + 4] {
             b"fmt " if end - body >= 16 => {
-                format = Some((le16(body), le16(body + 2), le32(body + 4), le16(body + 14)));
+                let mut tag = le16(body);
+                // WAVE_FORMAT_EXTENSIBLE: the real format is the first two bytes of the
+                // sub-format that follows the fixed fields
+                if tag == 0xFFFE && end - body >= 26 {
+                    tag = le16(body + 24);
+                }
+                format = Some((tag, le16(body + 2), le32(body + 4), le16(body + 14)));
             }
             b"data" => data = Some(&bytes[body..end]),
             _ => {}
@@ -129,6 +136,7 @@ pub fn decode_wav(bytes: &[u8]) -> Result<(Vec<f64>, u32), String> {
             (1, 24) => f64::from(i32::from_le_bytes([0, s[0], s[1], s[2]]) >> 8) / 8_388_608.0,
             (1, 32) => f64::from(i32::from_le_bytes([s[0], s[1], s[2], s[3]])) / 2_147_483_648.0,
             (3, 32) => f64::from(f32::from_le_bytes([s[0], s[1], s[2], s[3]])),
+            (3, 64) => f64::from_le_bytes([s[0], s[1], s[2], s[3], s[4], s[5], s[6], s[7]]),
             _ => return Err(bad()),
         };
         out.push(v);
@@ -155,6 +163,50 @@ mod tests {
     }
 
     #[cfg(feature = "outputs")]
+    /// A WAV file with the given format tag and sample bytes, in the extensible form when
+    /// `extensible` (the real tag then sits in the sub-format).
+    fn wav_with(tag: u16, bits: u16, extensible: bool, data: &[u8]) -> Vec<u8> {
+        let mut fmt = Vec::new();
+        fmt.extend_from_slice(&(if extensible { 0xFFFEu16 } else { tag }).to_le_bytes());
+        fmt.extend_from_slice(&1u16.to_le_bytes());
+        fmt.extend_from_slice(&8000u32.to_le_bytes());
+        fmt.extend_from_slice(&(8000 * u32::from(bits / 8)).to_le_bytes());
+        fmt.extend_from_slice(&(bits / 8).to_le_bytes());
+        fmt.extend_from_slice(&bits.to_le_bytes());
+        if extensible {
+            fmt.extend_from_slice(&22u16.to_le_bytes());
+            fmt.extend_from_slice(&bits.to_le_bytes());
+            fmt.extend_from_slice(&4u32.to_le_bytes());
+            fmt.extend_from_slice(&tag.to_le_bytes());
+            fmt.extend_from_slice(&[0, 0, 0, 0, 16, 0, 128, 0, 0, 170, 0, 56, 155, 113]);
+        }
+        let mut v = b"RIFF".to_vec();
+        v.extend_from_slice(&((4 + 8 + fmt.len() + 8 + data.len()) as u32).to_le_bytes());
+        v.extend_from_slice(b"WAVEfmt ");
+        v.extend_from_slice(&(fmt.len() as u32).to_le_bytes());
+        v.extend_from_slice(&fmt);
+        v.extend_from_slice(b"data");
+        v.extend_from_slice(&(data.len() as u32).to_le_bytes());
+        v.extend_from_slice(data);
+        v
+    }
+
+    #[test]
+    fn extensible_and_double_precision_wav_files_read() {
+        let pcm: Vec<u8> = [16384i16, -16384].iter().flat_map(|v| v.to_le_bytes()).collect();
+        for extensible in [false, true] {
+            let (s, rate) = decode_wav(&wav_with(1, 16, extensible, &pcm)).unwrap();
+            assert_eq!((s, rate), (vec![0.5, -0.5], 8000), "extensible: {extensible}");
+        }
+        let f32s: Vec<u8> = [0.25f32, -1.0].iter().flat_map(|v| v.to_le_bytes()).collect();
+        assert_eq!(decode_wav(&wav_with(3, 32, true, &f32s)).unwrap().0, vec![0.25, -1.0]);
+        let f64s: Vec<u8> = [0.125f64, 0.5].iter().flat_map(|v| v.to_le_bytes()).collect();
+        assert_eq!(decode_wav(&wav_with(3, 64, false, &f64s)).unwrap().0, vec![0.125, 0.5]);
+        assert_eq!(decode_wav(&wav_with(3, 64, true, &f64s)).unwrap().0, vec![0.125, 0.5]);
+        // a compressed format is still refused, with the message that says what is supported
+        assert!(decode_wav(&wav_with(2, 16, false, &pcm)).unwrap_err().contains("PCM"));
+    }
+
     #[test]
     fn a_wav_made_by_the_audio_output_reads_back() {
         let wav = super::super::audio::wav_bytes(&[0.0, 0.5, -0.5, 1.0], 8000);

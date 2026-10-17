@@ -609,8 +609,9 @@ impl Session {
                 let sole = self.selected_indices() == vec![i];
                 let grab = if sole {
                     let e = &self.sim.elements[i];
-                    (0..e.post_count().min(2)).find(|&n| {
-                        e.get_post(n).is_some_and(|p| distance_sq(gx, gy, p.x, p.y) <= POST_GRAB_SQ)
+                    (0..e.num_handles().min(2)).find(|&n| {
+                        e.handle_point(n)
+                            .is_some_and(|p| distance_sq(gx, gy, p.x, p.y) <= POST_GRAB_SQ)
                     })
                 } else {
                     None
@@ -883,6 +884,89 @@ impl Session {
         self.store_scopes();
         self.dirty = true;
         self.reanalyze();
+    }
+
+    /// The pointer is over scope `idx` (or over none): the elements it plots are highlighted,
+    /// and in an X/Y plot each is marked with the axis it is on.
+    pub fn set_scope_hover(&mut self, idx: Option<usize>) {
+        if self.scope_hover == idx {
+            return;
+        }
+        self.scope_hover = idx;
+        self.apply_scope_roles();
+    }
+
+    /// The elements a scope plots, each with the part it plays: "X", "Y", "Br", "R", "G" or
+    /// "B" in an X/Y plot, empty otherwise.
+    fn plot_roles(sc: &crate::scope::Scope) -> Vec<(usize, String)> {
+        let n = sc.plots.len();
+        let mut roles: Vec<(usize, &str)> = Vec::new();
+        if sc.xy && sc.plot_xy {
+            let a = sc.axes;
+            roles.push((crate::scope::XyAxes::valid(a.x, 0, n), "X"));
+            roles.push((crate::scope::XyAxes::valid(a.y, 1, n), "Y"));
+            for (index, name) in [(a.brightness, "Br"), (a.red, "R"), (a.green, "G"), (a.blue, "B")]
+            {
+                if let Some(p) = crate::scope::XyAxes::modulator(index, n) {
+                    roles.push((p, name));
+                }
+            }
+        } else {
+            roles.extend((0..n).map(|p| (p, "")));
+        }
+        roles.into_iter().map(|(p, r)| (sc.plots[p].elm, r.to_string())).collect()
+    }
+
+    /// Marks the elements of the scope the pointer is over: a scope under the diagrams, or a
+    /// scope placed in the circuit that is under the pointer or selected.
+    pub(crate) fn apply_scope_roles(&mut self) {
+        let mut plotted: Vec<(usize, String)> = Vec::new();
+        if let Some(sc) = self.scope_hover.and_then(|i| self.sim.scopes.get(i)) {
+            plotted = Self::plot_roles(sc);
+        } else {
+            let on = |i: usize| self.sim.elements[i].base().selected || self.hover == Some(i);
+            for (i, sc) in &self.sim.embedded {
+                if on(*i) {
+                    plotted.extend(Self::plot_roles(sc));
+                }
+            }
+        }
+        for e in &mut self.sim.elements {
+            e.base_mut().scope_role = None;
+        }
+        for (elm, role) in plotted {
+            if let Some(e) = self.sim.elements.get_mut(elm) {
+                let b = e.base_mut();
+                b.scope_role = Some(match b.scope_role.take() {
+                    Some(old) if !old.is_empty() => format!("{old}/{role}"),
+                    _ => role,
+                });
+            }
+        }
+    }
+
+    /// The lines of the information area: the time and the time step, then what the element
+    /// under the pointer says about itself (a plotted element when over a scope).
+    pub fn scope_info_lines(&self) -> Vec<String> {
+        use crate::elements::units::{time_text, unit_text};
+        let mut lines = vec![
+            format!("t = {}", time_text(self.time())),
+            format!(
+                "{} = {}",
+                crate::locale::ls("time step"),
+                unit_text(self.sim.time_step(), "s")
+            ),
+        ];
+        let elm = self
+            .scope_hover
+            .and_then(|i| self.sim.scopes.get(i))
+            .and_then(|sc| sc.plots.first())
+            .map(|p| p.elm)
+            .or(self.hover);
+        if let Some(e) = elm.and_then(|i| self.sim.elements.get(i)) {
+            e.get_info(&mut lines);
+        }
+        lines
     }
 
     /// Whether scope `idx` is in `mode`.
@@ -1283,14 +1367,146 @@ impl Session {
 
     /// Puts every scope in the same place so they are drawn over one another.
     pub fn stack_scopes(&mut self) {
-        self.rearrange_scopes(|scopes| scopes.iter_mut().for_each(|s| s.position = 0));
+        use crate::scope::{FLAG_MIN, FLAG_NO_MAX};
+        // as in the original, stacked scopes show no peak values
+        self.rearrange_scopes(|scopes| {
+            for s in scopes.iter_mut() {
+                s.position = 0;
+                s.flags |= FLAG_NO_MAX;
+                s.flags &= !FLAG_MIN;
+            }
+        });
     }
 
     /// Gives every scope a place of its own.
     pub fn unstack_scopes(&mut self) {
         self.rearrange_scopes(|scopes| {
-            scopes.iter_mut().enumerate().for_each(|(i, s)| s.position = i as i32);
+            for (i, s) in scopes.iter_mut().enumerate() {
+                s.position = i as i32;
+                s.flags &= !crate::scope::FLAG_NO_MAX;
+            }
         });
+    }
+
+    /// Whether scope `idx` can be stacked on the one before it (it is not in its column yet).
+    pub fn can_stack_scope(&self, idx: usize) -> bool {
+        let s = &self.sim.scopes;
+        let i = idx.max(1);
+        s.len() >= 2 && i < s.len() && s[i].position != s[i - 1].position
+    }
+
+    /// Whether scope `idx` can leave the column it shares.
+    pub fn can_unstack_scope(&self, idx: usize) -> bool {
+        let s = &self.sim.scopes;
+        let i = idx.max(1);
+        if s.len() < 2 || i >= s.len() {
+            return false;
+        }
+        // from the top scope of a column too
+        s[i].position == s[i - 1].position
+            || s.get(i + 1).is_some_and(|n| n.position == s[i].position)
+    }
+
+    /// Whether scope `idx` can be combined into the one before it.
+    pub fn can_combine_scope(&self, idx: usize) -> bool {
+        self.sim.scopes.len() >= 2 && idx.max(1) < self.sim.scopes.len()
+    }
+
+    /// Puts scope `idx` in the column of the one before it, as the original's Stack.
+    pub fn stack_scope(&mut self, idx: usize) {
+        if !self.can_stack_scope(idx) {
+            return;
+        }
+        self.rearrange_scopes(|scopes| {
+            let i = idx.max(1);
+            scopes[i].position = scopes[i - 1].position;
+            for s in &mut scopes[i + 1..] {
+                s.position -= 1;
+            }
+        });
+    }
+
+    /// Takes scope `idx` (and the ones after it) out of its column, as the original's Unstack.
+    pub fn unstack_scope(&mut self, idx: usize) {
+        if !self.can_unstack_scope(idx) {
+            return;
+        }
+        self.rearrange_scopes(|scopes| {
+            let mut i = idx.max(1);
+            if scopes[i].position != scopes[i - 1].position {
+                i += 1;
+            }
+            let from = i.min(scopes.len());
+            for s in &mut scopes[from..] {
+                s.position += 1;
+            }
+        });
+    }
+
+    /// Moves the plots of scope `idx` into the scope before it, as the original's Combine.
+    pub fn combine_scope(&mut self, idx: usize) {
+        if !self.can_combine_scope(idx) {
+            return;
+        }
+        self.rearrange_scopes(|scopes| {
+            let i = idx.max(1);
+            let moved = scopes.remove(i);
+            scopes[i - 1].combine(moved);
+        });
+    }
+
+    /// The scope placed in the circuit whose settings wheel is at surface position
+    /// (`px`, `py`): the element index.
+    pub fn embedded_wheel_at(&self, px: f64, py: f64) -> Option<usize> {
+        let (gx, gy) = self.view.to_circuit(px, py);
+        self.sim.embedded.iter().map(|(i, _)| *i).find(|&i| {
+            let b = self.sim.elements[i].base();
+            let (x0, y0) = (b.x.min(b.x2), b.y.min(b.y2));
+            let (w, h) = (f64::from((b.x2 - b.x).abs()), f64::from((b.y2 - b.y).abs()));
+            crate::render::scopes::on_wheel(
+                (f64::from(x0), f64::from(y0), w, h),
+                f64::from(gx - x0),
+                f64::from(gy - y0),
+            )
+        })
+    }
+
+    /// Whether the scope placed as element `elm` keeps its full scale at the largest value.
+    pub fn embedded_max_scale(&self, elm: usize) -> bool {
+        self.embedded_scope(elm).is_some_and(|s| s.flags & crate::scope::FLAG_MAX_SCALE != 0)
+    }
+
+    /// Turns "Max Scale" of the scope placed as element `elm` on or off.
+    pub fn set_embedded_max_scale(&mut self, elm: usize, on: bool) {
+        self.edit_embedded_scope(elm, |sc, _| {
+            if on {
+                sc.flags |= crate::scope::FLAG_MAX_SCALE;
+            } else {
+                sc.flags &= !crate::scope::FLAG_MAX_SCALE;
+            }
+        });
+    }
+
+    /// Whether scope `idx` keeps its full scale at the largest value it has seen.
+    pub fn scope_max_scale(&self, idx: usize) -> bool {
+        self.sim.scopes.get(idx).is_some_and(|s| s.flags & crate::scope::FLAG_MAX_SCALE != 0)
+    }
+
+    /// Turns the "Max Scale" of scope `idx` on or off.
+    pub fn set_scope_max_scale(&mut self, idx: usize, on: bool) {
+        if idx >= self.sim.scopes.len() {
+            return;
+        }
+        self.push_undo();
+        let s = &mut self.sim.scopes[idx];
+        if on {
+            s.flags |= crate::scope::FLAG_MAX_SCALE;
+        } else {
+            s.flags &= !crate::scope::FLAG_MAX_SCALE;
+        }
+        self.store_scopes();
+        self.dirty = true;
+        self.reanalyze();
     }
 
     /// Moves the plots of all scopes into the first one.

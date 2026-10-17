@@ -800,3 +800,269 @@ fn every_example_scope_survives_saving_and_loading() {
     }
     assert!(checked > 20, "only {checked} examples have scopes");
 }
+
+/// Runs `file` and returns the picture its first X/Y scope has painted.
+fn xy_picture(file: &str, seconds: f64) -> prometheuscs::scope::trace::Trace {
+    let text = std::fs::read_to_string(format!("assets/circuits/{file}")).unwrap();
+    let mut s = Session::load(&text, &Registry::standard()).unwrap();
+    s.sim.run_until(seconds).unwrap();
+    s.sim.scopes.iter().find_map(|sc| sc.trace.clone()).expect("an X/Y scope with a picture")
+}
+
+fn lit_cells(t: &prometheuscs::scope::trace::Trace) -> usize {
+    t.pixels.chunks(3).filter(|p| p.iter().any(|v| *v != 0)).count()
+}
+
+#[test]
+fn the_2d_scope_examples_paint_their_pictures_step_by_step() {
+    // the smiley and the checkerboards are rasters scanned at 60 Hz and 12 kHz: they need
+    // every time step, not the samples the time plots keep
+    let smile = xy_picture("plot2d-smile.txt", 0.04);
+    let color = xy_picture("plot2d-color.txt", 0.04);
+    let checker = xy_picture("plot2d-checker.txt", 0.04);
+    for (name, t) in [("smile", &smile), ("color", &color), ("checker", &checker)] {
+        let n = lit_cells(t);
+        assert!(n > 1000 && n < 512 * 192, "{name}: {n} cells lit");
+    }
+    // the colour example has colours, the others are white
+    let coloured = |t: &prometheuscs::scope::trace::Trace| {
+        t.pixels.chunks(3).any(|p| p[0] != p[1] || p[1] != p[2])
+    };
+    assert!(coloured(&color));
+    assert!(!coloured(&checker));
+}
+
+#[test]
+fn lissajous_figures_are_drawn_from_every_step() {
+    let t = xy_picture("lissa.txt", 0.05);
+    assert!(lit_cells(&t) > 100, "{}", lit_cells(&t));
+}
+
+#[test]
+fn the_picture_reaches_the_view_and_is_emptied_by_reset() {
+    let text = std::fs::read_to_string("assets/circuits/plot2d-smile.txt").unwrap();
+    let mut s = Session::load(&text, &Registry::standard()).unwrap();
+    s.sim.run_until(0.03).unwrap();
+    let views = prometheuscs::solver::sim::Simulation::snapshot(&s.sim, 1, true).scopes;
+    assert!(views.iter().any(|v| v.trace.as_ref().is_some_and(|t| lit_cells(t) > 0)));
+    for sc in &mut s.sim.scopes {
+        sc.reset(0.0);
+    }
+    assert!(s.sim.scopes.iter().filter_map(|sc| sc.trace.as_ref()).all(|t| lit_cells(t) == 0));
+}
+
+#[test]
+fn the_pointer_over_a_scope_highlights_what_it_plots_and_names_the_axes() {
+    use prometheuscs::elements::element::DrawCtx;
+    use prometheuscs::render::svg::SvgPainter;
+    let text = std::fs::read_to_string("assets/circuits/lissa.txt").unwrap();
+    let mut s = Session::load(&text, &Registry::standard()).unwrap();
+    let roles = |s: &Session| -> Vec<(usize, String)> {
+        s.sim
+            .elements
+            .iter()
+            .enumerate()
+            .filter_map(|(i, e)| Some((i, e.base().scope_role.clone()?)))
+            .collect()
+    };
+    assert!(roles(&s).is_empty());
+    s.set_scope_hover(Some(0));
+    // the first scope of lissa.txt plots element 6 (X) against element 7 (Y)
+    let r = roles(&s);
+    assert_eq!(r.len(), 2, "{r:?}");
+    assert!(r.contains(&(6, "X".to_string())) && r.contains(&(7, "Y".to_string())), "{r:?}");
+    assert!(s.sim.elements[6].base().needs_highlight());
+    // the terminals and the axis are drawn on the element
+    let mut g = SvgPainter::new(900.0, 700.0);
+    s.sim.elements[6].draw(&mut g, &DrawCtx::default());
+    let svg = g.finish();
+    assert!(svg.contains(">X<") && svg.contains(">+<"), "{svg}");
+    // another scope, another pair; leaving clears them all
+    s.set_scope_hover(Some(1));
+    assert!(roles(&s).iter().any(|(i, r)| *i == 20 && r == "X"), "{:?}", roles(&s));
+    s.set_scope_hover(None);
+    assert!(roles(&s).is_empty());
+    assert!(!s.sim.elements[6].base().needs_highlight());
+}
+
+#[test]
+fn an_undocked_scope_can_be_dragged_by_any_point_of_it() {
+    use prometheuscs::app::edit::Mods;
+    let mut s = Session::load(&lrc(), &Registry::standard()).unwrap();
+    s.fit_pending = false;
+    s.view = prometheuscs::render::scene::View { scale: 1.0, x: 0.0, y: 0.0 };
+    assert!(s.undock_scope(0));
+    let elm = s.sim.embedded[0].0;
+    // draw it once so that its box is known
+    let mut g = prometheuscs::render::svg::SvgPainter::new(2000.0, 2000.0);
+    s.sim.elements[elm].draw(&mut g, &s.draw_ctx.clone());
+    let b = s.sim.elements[elm].base().clone();
+    let (x0, y0) = (b.x.min(b.x2), b.y.min(b.y2));
+    // a point near a corner, far from the centre
+    let (px, py) = (f64::from(x0 + 6), f64::from(y0 + 6));
+    s.mouse_down(px, py, Mods::default(), 1);
+    s.mouse_drag(px + 64.0, py + 48.0);
+    s.mouse_up();
+    let after = s.sim.elements[elm].base();
+    assert_eq!((after.x.min(after.x2), after.y.min(after.y2)), (x0 + 64, y0 + 48));
+}
+
+#[test]
+fn one_scope_can_be_stacked_unstacked_and_combined_as_in_the_original() {
+    let mut s = Session::load(&lrc(), &Registry::standard()).unwrap();
+    let position = |s: &Session| s.sim.scopes.iter().map(|c| c.position).collect::<Vec<_>>();
+    assert_eq!(position(&s), [0, 1, 2]);
+    assert!(s.can_stack_scope(1) && !s.can_unstack_scope(1));
+    s.stack_scope(1); // scope 1 joins the column of scope 0; the next one moves up
+    assert_eq!(position(&s), [0, 0, 1]);
+    assert!(!s.can_stack_scope(1) && s.can_unstack_scope(1));
+    s.unstack_scope(1);
+    assert_eq!(position(&s), [0, 1, 2]);
+    let plots = s.sim.scopes[0].plots.len() + s.sim.scopes[1].plots.len();
+    s.combine_scope(1);
+    assert_eq!(s.sim.scopes.len(), 2);
+    assert_eq!(s.sim.scopes[0].plots.len(), plots);
+    // stacking everything puts it in one column and hides the peak values, as the original
+    s.stack_scopes();
+    assert!(s.sim.scopes.iter().all(|c| c.position == 0));
+    assert!(s.sim.scopes.iter().all(|c| c.flags & prometheuscs::scope::FLAG_NO_MAX != 0));
+    // Max Scale is a flag of the scope
+    assert!(!s.scope_max_scale(0));
+    s.set_scope_max_scale(0, true);
+    assert!(s.scope_max_scale(0));
+}
+
+#[test]
+fn the_information_area_tells_the_time_and_what_the_pointer_is_over() {
+    use prometheuscs::render::scopes::{info_width, on_wheel};
+    let mut s = Session::load(&lrc(), &Registry::standard()).unwrap();
+    s.sim.run_until(0.002).unwrap();
+    let info = s.scope_info_lines();
+    assert!(info[0].starts_with("t = ") && info[1].starts_with("time step = "), "{info:?}");
+    let plain = info.len();
+    s.set_scope_hover(Some(0));
+    assert!(s.scope_info_lines().len() > plain, "the plotted element adds its own lines");
+    // the area exists only when the scopes have room for it
+    let views = s.scope_views();
+    assert_eq!(info_width(&views, 400.0), 0.0);
+    assert!(info_width(&views, 1600.0) > 0.0);
+    // the settings wheel: the corner of a scope that is big enough
+    assert!(on_wheel((0.0, 0.0, 300.0, 130.0), 10.0, 120.0));
+    assert!(!on_wheel((0.0, 0.0, 300.0, 130.0), 100.0, 20.0));
+    assert!(!on_wheel((0.0, 0.0, 90.0, 130.0), 10.0, 120.0));
+}
+
+#[test]
+fn a_scope_placed_in_the_circuit_has_a_settings_wheel_and_max_scale() {
+    let mut s = Session::load(&lrc(), &Registry::standard()).unwrap();
+    s.fit_pending = false;
+    s.view = prometheuscs::render::scene::View { scale: 1.0, x: 0.0, y: 0.0 };
+    assert!(s.undock_scope(0));
+    let elm = s.sim.embedded[0].0;
+    let b = s.sim.elements[elm].base().clone();
+    let (x0, y0) = (b.x.min(b.x2), b.y.min(b.y2));
+    let h = (b.y2 - b.y).abs();
+    // its box is 128 by 64, too small for a wheel; enlarge it
+    s.sim.elements[elm].base_mut().x2 = x0 + 160;
+    s.sim.elements[elm].base_mut().y2 = y0 + 160;
+    s.sim.elements[elm].base_mut().x = x0;
+    s.sim.elements[elm].base_mut().y = y0;
+    let _ = h;
+    // the corner at the bottom left is the wheel, the middle is not
+    assert_eq!(s.embedded_wheel_at(f64::from(x0 + 10), f64::from(y0 + 150)), Some(elm));
+    assert_eq!(s.embedded_wheel_at(f64::from(x0 + 80), f64::from(y0 + 80)), None);
+    assert!(!s.embedded_max_scale(elm));
+    s.set_embedded_max_scale(elm, true);
+    assert!(s.embedded_max_scale(elm));
+    s.set_embedded_max_scale(elm, false);
+    assert!(!s.embedded_max_scale(elm));
+}
+
+#[test]
+fn selecting_a_scope_in_the_circuit_highlights_what_it_plots() {
+    let mut s = Session::load(&lrc(), &Registry::standard()).unwrap();
+    assert!(s.undock_scope(0));
+    let elm = s.sim.embedded[0].0;
+    let plotted: Vec<usize> = s.embedded_scope(elm).unwrap().plots.iter().map(|p| p.elm).collect();
+    let marked = |s: &Session| {
+        (0..s.sim.elements.len())
+            .filter(|&i| s.sim.elements[i].base().scope_role.is_some())
+            .collect::<Vec<_>>()
+    };
+    s.update(Duration::from_millis(16)).unwrap();
+    assert!(marked(&s).is_empty());
+    s.deselect_all();
+    s.sim.elements[elm].base_mut().selected = true;
+    s.update(Duration::from_millis(16)).unwrap();
+    let m = marked(&s);
+    assert!(!m.is_empty() && m.iter().all(|i| plotted.contains(i)), "{m:?} of {plotted:?}");
+    s.deselect_all();
+    s.update(Duration::from_millis(16)).unwrap();
+    assert!(marked(&s).is_empty());
+}
+
+#[test]
+fn a_scope_in_the_circuit_shows_readouts_once_it_is_big_enough() {
+    let mut s = Session::load(&lrc(), &Registry::standard()).unwrap();
+    for _ in 0..40 {
+        s.update(Duration::from_millis(16)).unwrap();
+    }
+    assert!(s.undock_scope(0));
+    for _ in 0..40 {
+        s.update(Duration::from_millis(16)).unwrap();
+    }
+    let elm = s.sim.embedded[0].0;
+    s.sim.push_embedded_views();
+    let draw = |s: &mut Session| {
+        let mut g = prometheuscs::render::svg::SvgPainter::new(900.0, 700.0);
+        let ctx = s.draw_ctx.clone();
+        s.sim.elements[elm].draw(&mut g, &ctx);
+        g.finish()
+    };
+    // 128 by 64 is the size a scope has when it is made: only the curves fit, as in the original
+    let b = s.sim.elements[elm].base();
+    assert_eq!(((b.x2 - b.x).abs(), (b.y2 - b.y).abs()), (128, 64));
+    assert!(!draw(&mut s).contains(" V ="));
+    // made bigger, it shows the readouts of the plotted values like a docked scope
+    let b = s.sim.elements[elm].base_mut();
+    b.x2 = b.x + 420;
+    b.y2 = b.y + 200;
+    assert!(draw(&mut s).contains(" V ="));
+    // in between, the readouts would run into the scale and the measurements: they wait for room
+    let b = s.sim.elements[elm].base_mut();
+    b.x2 = b.x + 200;
+    b.y2 = b.y + 160;
+    assert!(!draw(&mut s).contains(" V ="));
+}
+
+#[test]
+fn a_scope_in_the_circuit_is_resized_by_dragging_its_corner() {
+    use prometheuscs::app::edit::Mods;
+    let mut s = Session::load(&lrc(), &Registry::standard()).unwrap();
+    s.fit_pending = false;
+    s.view = prometheuscs::render::scene::View { scale: 1.0, x: 0.0, y: 0.0 };
+    assert!(s.undock_scope(0));
+    let elm = s.sim.embedded[0].0;
+    let mut g = prometheuscs::render::svg::SvgPainter::new(2000.0, 2000.0);
+    s.sim.elements[elm].draw(&mut g, &s.draw_ctx.clone());
+    let size = |s: &Session| {
+        let b = s.sim.elements[elm].base();
+        ((b.x2 - b.x).abs(), (b.y2 - b.y).abs(), b.x.min(b.x2), b.y.min(b.y2))
+    };
+    let (w, h, x0, y0) = size(&s);
+    assert_eq!((w, h), (128, 64));
+    // the far corner is a handle; dragging it makes the scope bigger and leaves the near one
+    let (cx, cy) = {
+        let b = s.sim.elements[elm].base();
+        (f64::from(b.x2), f64::from(b.y2))
+    };
+    s.mouse_down(cx, cy, Mods::default(), 1);
+    s.mouse_drag(cx + 64.0, cy + 48.0);
+    s.mouse_up();
+    let (w2, h2, x1, y1) = size(&s);
+    assert_eq!((w2, h2), (192, 112), "the size follows the corner");
+    assert_eq!((x1, y1), (x0, y0), "the other corner stays");
+    // it was a resize, not a move, and it can be undone
+    assert!(s.undo());
+    assert_eq!(size(&s).0, 128);
+}

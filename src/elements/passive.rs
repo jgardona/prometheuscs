@@ -89,6 +89,22 @@ impl WireElm {
         w
     }
 
+    /// A routed wire through `points` (at least two, first to last).
+    pub fn from_route(points: Vec<Point>) -> Self {
+        let (first, last) = (points[0], points[points.len() - 1]);
+        let mut w = WireElm::new_routed(first.x, first.y);
+        w.base.x2 = last.x;
+        w.base.y2 = last.y;
+        w.route = Some(points);
+        w.set_points();
+        w
+    }
+
+    /// Whether this is an ordinary one-bit wire, which can be turned into a routed one.
+    pub fn is_plain(&self) -> bool {
+        self.route.is_none() && self.bus_width == 1
+    }
+
     fn route_points(&self) -> Vec<Point> {
         match &self.route {
             Some(r) if r.len() >= 2 => r.clone(),

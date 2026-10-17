@@ -10,6 +10,12 @@ use femtovg::renderer::OpenGl;
 use femtovg::{Canvas, Color};
 use std::ffi::c_void;
 
+/// Whether a renderer name is a software rasteriser (the program still works on it, slowly).
+pub fn is_software_renderer(name: &str) -> bool {
+    let n = name.to_ascii_lowercase();
+    ["llvmpipe", "softpipe", "swrast", "software", "lavapipe", "cpu"].iter().any(|s| n.contains(s))
+}
+
 /// A femtovg canvas bound to the current OpenGL context.
 pub struct GlCanvas {
     /// The canvas to draw on.
@@ -59,6 +65,24 @@ impl GlCanvas {
         renderer.set_screen_target(screen);
         let canvas = Canvas::new(renderer).map_err(|e| format!("femtovg: {e}"))?;
         Ok(GlCanvas { canvas, probe, framebuffer: screen, _library: library })
+    }
+
+    /// The name the driver gives its renderer (`llvmpipe` for Mesa's software renderer).
+    pub fn renderer_name(&self) -> String {
+        use glow::HasContext;
+        // SAFETY: the GL context is current; `get_parameter_string` takes no pointers.
+        unsafe { self.probe.get_parameter_string(glow::RENDERER) }
+    }
+
+    /// The size in pixels of the area GTK set up for this frame (the viewport). It is the
+    /// buffer the frame is drawn into, whatever scale the display uses: with fractional
+    /// scaling GTK rounds the scale up for the buffer, so this is what to size the canvas by.
+    pub fn viewport_size(&self) -> Option<(u32, u32)> {
+        use glow::HasContext;
+        let mut v = [0_i32; 4];
+        // SAFETY: the GL context is current and `v` has room for the four integers.
+        unsafe { self.probe.get_parameter_i32_slice(glow::VIEWPORT, &mut v) };
+        Some((u32::try_from(v[2]).ok()?.max(1), u32::try_from(v[3]).ok()?.max(1)))
     }
 
     /// Starts a frame of `width` x `height` pixels at the given scale factor and clears it.
@@ -281,6 +305,9 @@ impl Painter for GlPainter<'_> {
             self.canvas.restore();
         }
     }
+    fn clip_rect(&mut self, x: f64, y: f64, w: f64, h: f64) {
+        self.canvas.intersect_scissor(x as f32, y as f32, w as f32, h as f32);
+    }
     fn transform(&mut self, a: f64, b: f64, c: f64, d: f64, e: f64, f: f64) {
         self.canvas.set_transform(&femtovg::Transform2D::new(
             a as f32, b as f32, c as f32, d as f32, e as f32, f as f32,
@@ -357,5 +384,26 @@ impl Painter for GlPainter<'_> {
     }
     fn set_stroke_color(&mut self, color: Rgb) {
         self.set_color(color);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::is_software_renderer;
+
+    #[test]
+    fn software_renderers_are_told_from_hardware_ones() {
+        for soft in
+            ["llvmpipe (LLVM 19.1.0, 256 bits)", "softpipe", "Software Rasterizer", "llvmpipe"]
+        {
+            assert!(is_software_renderer(soft), "{soft}");
+        }
+        for hard in [
+            "AMD Radeon RX 7900 XTX (radeonsi, navi31, LLVM 19)",
+            "NVIDIA GeForce RTX 4070",
+            "Mesa Intel(R) Xe Graphics",
+        ] {
+            assert!(!is_software_renderer(hard), "{hard}");
+        }
     }
 }

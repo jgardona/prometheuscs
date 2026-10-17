@@ -104,6 +104,10 @@ impl Painter for CairoPainter<'_> {
             self.cr.restore().ok();
         }
     }
+    fn clip_rect(&mut self, x: f64, y: f64, w: f64, h: f64) {
+        self.cr.rectangle(x, y, w, h);
+        self.cr.clip();
+    }
     fn transform(&mut self, a: f64, b: f64, c: f64, d: f64, e: f64, f: f64) {
         self.cr.transform(Matrix::new(a, b, c, d, e, f));
     }

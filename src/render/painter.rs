@@ -125,6 +125,9 @@ pub trait Painter {
     fn save(&mut self);
     /// Restores the last saved state.
     fn restore(&mut self);
+    /// Limits what is drawn from now on (until the matching `restore`) to the rectangle. The
+    /// default draws unclipped, which is right for backends that cannot clip.
+    fn clip_rect(&mut self, _x: f64, _y: f64, _w: f64, _h: f64) {}
     /// Multiplies the current transform by the given matrix `[a b c d e f]`.
     fn transform(&mut self, a: f64, b: f64, c: f64, d: f64, e: f64, f: f64);
     /// Translates the origin.

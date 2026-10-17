@@ -13,16 +13,20 @@ Run these checks from the repository root. They map to the success criteria in [
 ```bash
 cargo fmt --check
 cargo clippy --all-targets -- -D warnings
+cargo clippy --all-targets --features gui -- -D warnings
 cargo test
+RUSTDOCFLAGS="-D warnings" cargo doc --no-deps
 ```
 
-Expected: all pass with no warnings.
+Expected: all pass with no warnings. `cargo test` includes the documentation examples of the engine (`src/lib.rs`, `src/solver/mod.rs`).
 
 ## 2. Import assets
 
 ```bash
-cargo run --bin import_assets     # copies examples, setuplist, locales, icons into assets/
-cargo run --bin inventory       # writes the component inventory from the original sources
+# only to regenerate: both read the original's sources at /home/jgardona/Workspace/Rust/circuitjs1
+# and rewrite files in assets/ (already committed, so skip them for a normal check)
+cargo run --bin import_assets
+cargo run --bin inventory
 ```
 
 Expected: 373 circuit files and the example catalog present; the inventory lists 153 element classes with no unmapped entries.
@@ -30,11 +34,11 @@ Expected: 373 circuit files and the example catalog present; the inventory lists
 ## 3. Engine parity (FR-008, SC-001)
 
 ```bash
-cargo test --test compat_golden auto_     # the 7 recorded auto-tests
-cargo test --test compat_load --test compat_golden                           # all bundled examples vs golden data
+cargo test --release --test us1_rlc --test auto_fixtures      # the recorded auto-tests
+cargo test --release --test compat_load --test compat_golden  # all 373 examples: load, round trip, golden data
 ```
 
-Expected: every example loads (G1), round-trips (G2), and matches golden results within tolerance.
+Expected: every example loads (G1), round-trips (G2), and matches golden results within tolerance. Differences the original is known to show are listed in `tests/compat/known_differences.json` and the nondeterministic circuits in `tests/compat/nondeterministic.json`. Recordings are regenerated with `cargo run --release --bin golden` (see `tests/compat/README.md`).
 
 ## 4. Component completeness (SC-010)
 
@@ -50,14 +54,16 @@ Expected: zero inventory entries without an implementation.
 cargo test --test modularity
 cargo build --no-default-features --features ""            # no element families
 cargo build --no-default-features --features passive,sources   # a subset
+# every family but one (what the `families` CI job does for each of the twelve):
+cargo test --no-default-features --features passive,reactive,sources,switches,logic,diodes,analog,transistors,mosfets,digital,subcircuits
 ```
 
-Expected: the dummy-component test passes without edits in `src/`; reduced builds compile; a circuit using a missing family reports an error naming it. See [contracts/component-module.md](contracts/component-module.md).
+Expected: the dummy-component test passes without edits in `src/`; reduced builds compile; a circuit using a missing family reports an error naming it. The `gui` feature needs every family. See [contracts/component-module.md](contracts/component-module.md) and [docs/adding-a-component.md](../../docs/adding-a-component.md).
 
 ## 5. Run the application (User Story 1)
 
 ```bash
-cargo run --release
+cargo run --release --features gui
 ```
 
 Manual check:
@@ -70,11 +76,11 @@ Manual check:
 ## 6. Performance (SC-003 to SC-006)
 
 ```bash
-cargo bench
-cargo run --release -- --bench-render assets/circuits/<large-example>.txt
+cargo bench --bench solver
+cargo run --release --features gui -- --bench-render tests/bench/ladder.txt
 ```
 
-Expected: solver at or above the original's throughput (2x on 1000+ element circuits); render benchmark reports at least 60 fps for 500 elements; startup time under 2 s.
+Expected: solver at or above the original's throughput (2x on 1000+ element circuits); the render benchmark reports room for well over 60 fps for 500 elements (`ladder.txt`) and prints the time to the first frame (under 2 s) and click-to-frame latency (under 50 ms). Details and recorded numbers: `tests/bench/README.md`.
 
 ## 7. Error handling (SC-009)
 

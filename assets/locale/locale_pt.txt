@@ -1765,3 +1765,4 @@
 "Export File (path)"="Arquivo de exportação (caminho)"
 "Back"="Voltar"
 "Subcircuit:"="Subcircuito:"
+"No graphics hardware acceleration was found: drawing is done by the CPU and large circuits may be slow."="Nenhuma aceleração gráfica por hardware foi encontrada: o desenho é feito pela CPU e circuitos grandes podem ficar lentos."

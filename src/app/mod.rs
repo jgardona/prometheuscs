@@ -24,6 +24,8 @@ pub mod subcircuits;
 pub mod toolbar;
 #[cfg(feature = "gui")]
 pub mod window;
+#[cfg(feature = "passive")]
+pub mod wires;
 pub mod worker;
 
 /// Starts the application and runs its main loop.

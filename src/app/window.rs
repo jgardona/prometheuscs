@@ -39,6 +39,8 @@ fn assets_dir() -> PathBuf {
 }
 
 /// Shown after another language was chosen.
+/// Shown when the GPU canvas is running on a software renderer.
+const SOFTWARE_GL_NOTICE: &str = "No graphics hardware acceleration was found: drawing is done by the CPU and large circuits may be slow.";
 const LANGUAGE_NOTICE: &str = "The language will change the next time the program starts.";
 
 /// Loads the Portuguese translations and the few strings the original does not translate.
@@ -487,6 +489,23 @@ fn show_scope_menu(
         body.append(&check);
     }
     body.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+    {
+        let check = gtk::CheckButton::with_label(&locale::ls("Max Scale"));
+        check.set_active(match target {
+            ScopeTarget::Docked(i) => ses.borrow().scope_max_scale(i),
+            ScopeTarget::Embedded(e) => ses.borrow().embedded_max_scale(e),
+        });
+        let ses2 = ses.clone();
+        check.connect_toggled(move |c| {
+            guarded("max scale", (), || match target {
+                ScopeTarget::Docked(i) => ses2.borrow_mut().set_scope_max_scale(i, c.is_active()),
+                ScopeTarget::Embedded(e) => {
+                    ses2.borrow_mut().set_embedded_max_scale(e, c.is_active());
+                }
+            });
+        });
+        body.append(&check);
+    }
     for (mode, key) in [
         (ScopeMode::VoltageCurrent, "Show V vs I"),
         (ScopeMode::Xy, "Plot X/Y"),
@@ -520,6 +539,26 @@ fn show_scope_menu(
         });
         b
     };
+    // placing the scope in a column with its neighbours, or combining it with the one before
+    if let ScopeTarget::Docked(i) = target {
+        type Can = fn(&Session, usize) -> bool;
+        type Do = fn(&mut Session, usize);
+        let items: [(&str, Can, Do); 3] = [
+            ("Stack", Session::can_stack_scope, Session::stack_scope),
+            ("Unstack", Session::can_unstack_scope, Session::unstack_scope),
+            ("Combine", Session::can_combine_scope, Session::combine_scope),
+        ];
+        for (label, can, act) in items {
+            if !can(&ses.borrow(), i) {
+                continue;
+            }
+            let ses = ses.clone();
+            body.append(&entry(
+                label,
+                Box::new(move || guarded("scope layout", (), || act(&mut ses.borrow_mut(), i))),
+            ));
+        }
+    }
     // a scope with several plots can drop one of them
     let plots: Vec<String> = match target {
         ScopeTarget::Docked(i) => ses
@@ -1000,6 +1039,7 @@ impl SimpleComponent for App {
         let gl: GlSlot = Rc::new(RefCell::new(None));
         {
             let (gl_slot, stack) = (gl.clone(), area.clone());
+            let notice = sender.input_sender().clone();
             gl_area.connect_realize(move |a| {
                 a.make_current();
                 a.attach_buffers();
@@ -1010,6 +1050,11 @@ impl SimpleComponent for App {
                 tracing::debug!(ms = super::bench::since_start(), "GL canvas created");
                 match created {
                     Ok(mut c) => {
+                        let renderer = c.renderer_name();
+                        tracing::info!(renderer, "GPU canvas ready");
+                        if crate::render::gl::is_software_renderer(&renderer) {
+                            let _ = notice.send(Msg::Notice(locale::ls(SOFTWARE_GL_NOTICE)));
+                        }
                         let font = c.load_font();
                         if font.is_none() {
                             tracing::warn!("no system font found; text will not be drawn");
@@ -1035,10 +1080,16 @@ impl SimpleComponent for App {
                 guarded("GPU drawing", (), || {
                     if let Some((c, font)) = gl_slot.borrow_mut().as_mut() {
                         let began = std::time::Instant::now();
-                        let scale = a.scale_factor();
                         let (w, h) = (a.width(), a.height());
-                        let px = |v: i32| u32::try_from(v * scale).unwrap_or(1).max(1);
-                        c.begin(px(w), px(h), scale as f32, femtovg::Color::rgb(0, 0, 0));
+                        // the buffer GTK made, which with fractional scaling is the rounded-up
+                        // scale times the size; the canvas scale is what that makes of the width
+                        let scale = a.scale_factor();
+                        let (bw, bh) = c.viewport_size().unwrap_or_else(|| {
+                            let px = |v: i32| u32::try_from(v * scale).unwrap_or(1).max(1);
+                            (px(w), px(h))
+                        });
+                        let factor = bw as f32 / w.max(1) as f32;
+                        c.begin(bw, bh, factor, femtovg::Color::rgb(0, 0, 0));
                         let mut g = GlPainter::new(&mut c.canvas, *font);
                         paint_frame(&mut ses.borrow_mut(), &mut g, f64::from(w), f64::from(h));
                         c.end();
@@ -1048,8 +1099,15 @@ impl SimpleComponent for App {
                         // a diagnostic for GPU problems: once, read back how much was drawn
                         frames.set(frames.get() + 1);
                         if frames.get() == 60 && tracing::enabled!(tracing::Level::DEBUG) {
-                            let lit = c.non_black_pixels(px(w), px(h));
-                            tracing::debug!(lit, total = px(w) * px(h), "GPU canvas drew pixels");
+                            let lit = c.non_black_pixels(bw, bh);
+                            tracing::debug!(
+                                lit,
+                                total = bw * bh,
+                                scale = factor,
+                                w,
+                                h,
+                                "GPU canvas drew pixels"
+                            );
                         }
                     }
                 });
@@ -1065,8 +1123,16 @@ impl SimpleComponent for App {
         {
             let (ses, tx, sp, st) =
                 (session.clone(), sender.input_sender().clone(), space.clone(), start.clone());
+            let (win_w, tx_w) = (root.clone(), tx.clone());
             drag.connect_drag_begin(move |g, x, y| {
                 st.set((x, y));
+                // the settings wheel of a scope placed in the circuit opens its properties
+                let wheel = ses.borrow().embedded_wheel_at(x, y);
+                if let Some(e) = wheel {
+                    open_scope_properties(&win_w, &ses, ScopeTarget::Embedded(e), None, None);
+                    let _ = tx_w.send(Msg::Refresh);
+                    return;
+                }
                 let state = g.current_event_state();
                 let mods = Mods {
                     shift: state.contains(gdk::ModifierType::SHIFT_MASK) || sp.get(),
@@ -1349,6 +1415,7 @@ impl SimpleComponent for App {
                 let views = s.scope_views();
                 let light = s.settings.white_background;
                 let mut scales = std::mem::take(&mut s.scope_scales);
+                scales.info = s.scope_info_lines();
                 crate::render::scopes::draw_scopes(
                     &mut g,
                     &views,
@@ -1364,13 +1431,27 @@ impl SimpleComponent for App {
         let motion = gtk::EventControllerMotion::new();
         {
             let (pointer, area_m) = (scope_pointer.clone(), scope_area.clone());
+            let ses_m = session.clone();
             motion.connect_motion(move |_, x, y| {
                 pointer.set(Some((x, y)));
+                guarded("scope hover", (), || {
+                    let mut s = ses_m.borrow_mut();
+                    let under = crate::render::scopes::scope_at(
+                        &s.scope_views(),
+                        f64::from(area_m.width()),
+                        f64::from(area_m.height()),
+                        x,
+                        y,
+                    );
+                    s.set_scope_hover(under);
+                });
                 area_m.queue_draw();
             });
             let (pointer, area_m) = (scope_pointer.clone(), scope_area.clone());
+            let ses_m = session.clone();
             motion.connect_leave(move |_| {
                 pointer.set(None);
+                ses_m.borrow_mut().set_scope_hover(None);
                 area_m.queue_draw();
             });
         }
@@ -1381,20 +1462,14 @@ impl SimpleComponent for App {
             let (ses, area_s) = (session.clone(), scope_area.clone());
             let (win_s, tx_s) = (root.clone(), sender.input_sender().clone());
             scope_menu.connect_pressed(move |_, _, x, y| {
-                let (count, idx) = {
-                    let s = ses.borrow();
-                    let groups = crate::render::scopes::bands(&s.scope_views());
-                    let n = groups.len().max(1);
-                    let band = f64::from(area_s.height()) / n as f64;
-                    let pick = ((y / band) as usize).min(n - 1);
-                    (
-                        s.scope_count(),
-                        groups.get(pick).and_then(|g| g.first()).copied().unwrap_or(0),
-                    )
-                };
-                if count == 0 {
-                    return;
-                }
+                let picked = crate::render::scopes::scope_at(
+                    &ses.borrow().scope_views(),
+                    f64::from(area_s.width()),
+                    f64::from(area_s.height()),
+                    x,
+                    y,
+                );
+                let Some(idx) = picked else { return };
                 show_scope_menu(
                     &win_s,
                     &ses,
@@ -1419,16 +1494,12 @@ impl SimpleComponent for App {
                 }
                 let faster = delta.get() < 0.0;
                 delta.set(0.0);
-                let Some((_, y)) = pointer.get() else { return glib::Propagation::Stop };
+                let Some((x, y)) = pointer.get() else { return glib::Propagation::Stop };
                 guarded("scope speed", (), || {
                     let mut s = ses.borrow_mut();
-                    let groups = crate::render::scopes::bands(&s.scope_views());
-                    if groups.is_empty() {
-                        return;
-                    }
-                    let band = f64::from(area_w.height()) / groups.len() as f64;
-                    let pick = ((y / band) as usize).min(groups.len() - 1);
-                    if let Some(&idx) = groups[pick].first() {
+                    let (w, h) = (f64::from(area_w.width()), f64::from(area_w.height()));
+                    if let Some(idx) = crate::render::scopes::scope_at(&s.scope_views(), w, h, x, y)
+                    {
                         let now = s.scope_speed(idx);
                         s.set_scope_speed(idx, if faster { now / 2 } else { now * 2 });
                     }
@@ -1444,33 +1515,44 @@ impl SimpleComponent for App {
             // (scope, plot, position when the drag began, half height of the diagram)
             let state = Rc::new(Cell::new(None::<(usize, usize, i32, f64)>));
             let (ses, area_d, st) = (session.clone(), scope_area.clone(), state.clone());
+            let win_wheel = root.clone();
             plot_drag.connect_drag_begin(move |_, x, y| {
+                // the settings wheel in the corner of a scope opens its properties
+                let wheel = {
+                    let s = ses.borrow();
+                    let views = s.scope_views();
+                    let (aw, ah) = (f64::from(area_d.width()), f64::from(area_d.height()));
+                    crate::render::scopes::scope_at(&views, aw, ah, x, y).filter(|&i| {
+                        let r = crate::render::scopes::layout(&views, aw, ah)[i];
+                        crate::render::scopes::on_wheel(r, x - r.0, y - r.1)
+                    })
+                };
+                if let Some(i) = wheel {
+                    open_scope_properties(&win_wheel, &ses, ScopeTarget::Docked(i), None, None);
+                    return;
+                }
                 guarded("plot drag", (), || {
                     let mut s = ses.borrow_mut();
                     let views = s.scope_views();
-                    let groups = crate::render::scopes::bands(&views);
+                    let (aw, ah) = (f64::from(area_d.width()), f64::from(area_d.height()));
+                    let rects = crate::render::scopes::layout(&views, aw, ah);
                     // dragging along a plot in manual scale moves it; anywhere else it
                     // measures the stretch of the signal that is dragged over
                     if let Some((i, p)) = s.scope_scales.hover
                         && let Some((true, pos)) = s.plot_position(i, p)
                     {
-                        let bands = groups.len().max(1);
-                        let half = ((f64::from(area_d.height()) / bands as f64 - 2.0 - 1.0) / 2.0)
-                            .max(1.0);
+                        let half = ((rects.get(i).map_or(ah, |r| r.3) - 1.0) / 2.0).max(1.0);
                         s.push_undo();
                         s.scope_scales.dragging = true;
                         st.set(Some((i, p, pos, half)));
                         return;
                     }
-                    if groups.is_empty() {
+                    let Some(i) = crate::render::scopes::scope_at(&views, aw, ah, x, y) else {
                         return;
-                    }
-                    let band = ((y / (f64::from(area_d.height()) / groups.len() as f64)) as usize)
-                        .min(groups.len() - 1);
-                    let from = groups[band].first().and_then(|&i| {
-                        crate::render::scopes::time_at(&views[i], f64::from(area_d.width()), x)
-                    });
-                    s.scope_scales.drag_from = from.map(|t| (band, t));
+                    };
+                    let (rx, _, rw, _) = rects[i];
+                    let from = crate::render::scopes::time_at(&views[i], rw, x - rx);
+                    s.scope_scales.drag_from = from.map(|t| (i, t));
                 });
             });
             let (ses, area_d, st) = (session.clone(), scope_area.clone(), state.clone());
@@ -1615,8 +1697,8 @@ impl SimpleComponent for App {
                     b.on_update(now, began.elapsed());
                 }
                 tick_title.set_subtitle(&format!("t = {}", time_text(s.time())));
-                // one band of 130 pixels per scope, at most three bands' worth of height
-                let n = crate::render::scopes::bands(&s.scope_views()).len();
+                // 130 pixels for each scope of the tallest column, at most three of them
+                let n = crate::render::scopes::rows(&s.scope_views());
                 let height = (n as i32 * 130).min(390);
                 if scope_tick.content_height() != height {
                     scope_tick.set_content_height(height);

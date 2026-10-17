@@ -86,3 +86,11 @@ All items from the Technical Context are resolved here. No `NEEDS CLARIFICATION`
 
 - **Decision**: Build bottom-up: (1) format and solver with the passive elements, proven on the 7 auto-tests; (2) renderer spike and canvas; (3) editing and menus; (4) remaining element families in batches driven by the inventory; (5) scopes; (6) export, subcircuits, options; (7) performance tuning against benchmarks.
 - **Rationale**: Each step produces an independently testable increment aligned with the story priorities.
+
+## Audio playback (T120)
+
+- **Decision**: the audio output plays through the sound server's own command line players (`pw-play`, then `paplay`, then `aplay`), run on a temporary WAV file (`src/app/playback.rs`). No audio crate was added. The audio input reads WAV files itself (`src/elements/samples.rs`: PCM 8 to 32 bits, float 32 and 64 bits, plain and extensible headers, first channel).
+- **Why**: the original plays a finished recording on a button press (it builds a WAV and hands it to an `<audio>` element); it has no live stream. A native crate (cpal, rodio) would add a build dependency on the ALSA development files (`libasound2-dev`) to every build, the CI job and every user who compiles it, for a feature that plays a few seconds of sound on request. Neither the development machine nor the CI image has them installed, and the `gui` build already depends on GTK, which the players sit beside on every desktop that has one.
+- **Cost**: playback needs one of the three players installed (all three are on a normal Linux desktop); without one the button reports it in the banner. A live, low-latency stream would need a native crate, and nothing in the original needs one.
+- **Alternatives**: cpal (rejected above, revisit if live audio is ever wanted); rodio (same ALSA dependency); GStreamer through GTK (heavier, and not a dependency yet).
+

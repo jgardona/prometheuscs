@@ -398,6 +398,10 @@ pub struct Base {
     pub selected: bool,
     /// Highlighted by hover, scope role or net highlight (set by the application).
     pub highlight: bool,
+    /// The element is plotted by the scope the pointer is over: what it is there ("X", "Y",
+    /// or empty when the scope has no axes). It is drawn highlighted and its terminals are
+    /// marked.
+    pub scope_role: Option<String>,
     /// The user is dragging the element out right now.
     pub creating: bool,
     /// Which end handle was last grabbed, or -1.
@@ -523,7 +527,7 @@ impl Base {
 
     /// True when the element must be drawn highlighted.
     pub fn needs_highlight(&self) -> bool {
-        self.selected || self.highlight
+        self.selected || self.highlight || self.scope_role.is_some()
     }
 
     /// Squared distance from grid point (`gx`, `gy`) to the line through the two posts.
@@ -1112,6 +1116,10 @@ pub trait Element: Any {
     fn num_handles(&self) -> usize {
         self.post_count()
     }
+    /// Where handle `n` is, for the user to grab and drag: a post by default.
+    fn handle_point(&self, n: usize) -> Option<super::geometry::Point> {
+        self.get_post(n)
+    }
     /// Default length when placed from the toolbar.
     fn drag_length(&self) -> i32 {
         64
@@ -1382,11 +1390,39 @@ pub fn draw_posts(g: &mut dyn Painter, base: &Base, elm: &dyn Element, c: &DrawC
     if c.dragging_row_or_column {
         return;
     }
+    draw_scope_terminal_labels(g, base, elm, c);
     for i in 0..elm.post_count() {
         if let Some(p) = elm.get_post(i) {
             draw_post(g, c, p);
         }
     }
+}
+
+/// While the pointer is over a scope that plots this element: marks its two terminals with
+/// "+" and a minus sign beside them, and the role it has in an X/Y plot in the middle.
+fn draw_scope_terminal_labels(g: &mut dyn Painter, base: &Base, elm: &dyn Element, c: &DrawCtx) {
+    let Some(role) = &base.scope_role else { return };
+    if elm.post_count() != 2 || base.dn == 0.0 {
+        return;
+    }
+    let (Some(a), Some(b)) = (elm.get_post(0), elm.get_post(1)) else { return };
+    g.save();
+    g.set_color(c.select_color);
+    g.set_font_size(12);
+    g.set_text_align(crate::render::painter::TextAlign::Center);
+    g.set_text_baseline(crate::render::painter::TextBaseline::Middle);
+    let swap = elm.class_name() == "VoltageElm";
+    let (plus, minus) = if swap { ("\u{2212}", "+") } else { ("+", "\u{2212}") };
+    let at = |f: f64, side: f64| super::geometry::interp_point_g(a, b, f, side);
+    let (pp, mp) = (at(10.0 / base.dn, 8.0), at(1.0 - 10.0 / base.dn, 8.0));
+    g.draw_string(plus, f64::from(pp.x), f64::from(pp.y));
+    g.draw_string(minus, f64::from(mp.x), f64::from(mp.y));
+    if !role.is_empty() {
+        g.set_font_size(16);
+        let mid = at(0.5, 0.0);
+        g.draw_string(role, f64::from(mid.x), f64::from(mid.y));
+    }
+    g.restore();
 }
 
 /// Draws a component value next to the element. `hs` is the offset from the element axis.

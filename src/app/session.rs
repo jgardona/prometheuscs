@@ -91,6 +91,8 @@ pub struct Session {
     /// The way down to the subcircuit instance whose parts are being shown: the element, then
     /// the part of it, and so on. Empty when the circuit itself is shown.
     pub(crate) inspect: Vec<usize>,
+    /// The scope the pointer is over, whose elements are highlighted.
+    pub(crate) scope_hover: Option<usize>,
     /// The view of each circuit left to look inside an instance.
     pub(crate) inspect_views: Vec<View>,
     pub(crate) held: Option<usize>,
@@ -178,6 +180,7 @@ impl Session {
             #[cfg(feature = "subcircuits")]
             contexts: Vec::new(),
             inspect: Vec::new(),
+            scope_hover: None,
             inspect_views: Vec::new(),
             held: None,
             hover: None,
@@ -203,6 +206,7 @@ impl Session {
     pub(crate) fn install(&mut self, parsed: ParseResult) -> Result<(), SessionError> {
         self.inspect.clear();
         self.inspect_views.clear();
+        self.scope_hover = None;
         let c = parsed.circuit;
         self.options = c.options;
         crate::elements::geometry::set_grid_size(self.grid_size());
@@ -299,6 +303,7 @@ impl Session {
     }
 
     pub(crate) fn refresh_draw_ctx(&mut self, elapsed: Duration) {
+        self.apply_scope_roles();
         let sim_time = self.time();
         let o = &self.options;
         let c = &mut self.draw_ctx;
@@ -334,6 +339,7 @@ impl Session {
         }
         let elapsed = elapsed.min(MAX_FRAME_GAP);
         if self.running {
+            crate::scope::trace::set_fade_steps(self.step_rate() * 0.05);
             self.step_debt += self.step_rate() * elapsed.as_secs_f64();
             let steps = self.step_debt.floor();
             self.step_debt -= steps;
