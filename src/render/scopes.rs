@@ -279,7 +279,8 @@ fn cycles(
             accumulate(&mut acc, (mn, mx));
         }
     }
-    (end > start).then_some((end - start, at_end))
+    // (`then`, not `then_some`: the difference must not be computed when it would go below zero)
+    (end > start).then(|| (end - start, at_end))
 }
 
 /// The frequency of the plot from the spacing of its peaks, or 0 when it is not steady.
@@ -1887,5 +1888,20 @@ mod tests {
         assert_eq!(scope_at(&views, 600.0, 260.0, 400.0, 10.0), Some(1));
         assert_eq!(scope_at(&views, 600.0, 260.0, 400.0, 200.0), Some(2));
         assert_eq!(scope_at(&views, 600.0, 260.0, 700.0, 10.0), None);
+    }
+
+    #[test]
+    fn a_signal_with_a_single_rising_edge_has_no_cycle_and_no_overflow() {
+        // one crossing: the start is found, the end never is (a debug build used to panic
+        // computing `end - start` before testing it)
+        let samples = [(-1.0, -1.0), (-1.0, -1.0), (1.0, 1.0), (1.0, 1.0)];
+        assert_eq!(cycles(&samples, 0.0, |a, (lo, hi)| *a += lo + hi), None);
+        // and through the whole drawing, with the measurements that use it
+        let v = signal(
+            &[-1.0, -1.0, 1.0, 1.0],
+            crate::scope::FLAG_RMS | crate::scope::FLAG_AVERAGE | crate::scope::FLAG_DUTY,
+        );
+        let mut g = SvgPainter::new(400.0, 200.0);
+        draw_scopes(&mut g, &[v], &mut ScopeScales::default(), 400.0, 200.0, false, None);
     }
 }
