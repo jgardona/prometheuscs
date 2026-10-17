@@ -91,7 +91,9 @@ pub fn draw_scene(
     g.save();
     g.translate(view.x, view.y);
     g.scale(view.scale, view.scale);
-    g.set_line_cap(super::painter::LineCap::Butt);
+    // round ends, as the original sets them before it draws the elements: strokes that meet
+    // (wire corners, pins) then look continuous
+    g.set_line_cap(super::painter::LineCap::Round);
     for e in elements.iter_mut() {
         g.save();
         g.set_line_width(1.0);
