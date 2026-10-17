@@ -1231,6 +1231,17 @@ impl Simulation {
         }
     }
 
+    /// Marks the scopes placed in the circuit that plot one of the elements `glowing`: they are
+    /// drawn with a tinted background. Only the flag changes, not what the scopes show.
+    pub fn set_scope_glow(&mut self, glowing: &[usize]) {
+        for (i, sc) in &self.embedded {
+            let on = sc.plots.iter().any(|p| glowing.contains(&p.elm));
+            if let Some(e) = self.elements.get_mut(*i) {
+                e.set_scope_glow(on);
+            }
+        }
+    }
+
     /// Voltage of node `n` as of the last step.
     pub fn node_voltage(&self, n: NodeId) -> f64 {
         self.st.node_voltage(n)

@@ -1090,6 +1090,26 @@ impl Session {
         }
     }
 
+    /// The elements that make their scopes glow: the selected ones and the one under the pointer.
+    fn glow_set(&self) -> Vec<usize> {
+        let mut set = self.selected_indices();
+        set.extend(self.hover);
+        set
+    }
+
+    /// For each docked scope, whether it plots a selected or hovered element and is drawn with
+    /// the tinted background.
+    pub fn scope_glow(&self) -> Vec<bool> {
+        let set = self.glow_set();
+        self.sim.scopes.iter().map(|sc| sc.plots.iter().any(|p| set.contains(&p.elm))).collect()
+    }
+
+    /// Marks the scopes placed in the circuit that plot a selected or hovered element.
+    pub(crate) fn mark_placed_scopes(&mut self) {
+        let set = self.glow_set();
+        self.sim.set_scope_glow(&set);
+    }
+
     /// Index of the selected element when it is a scope placed in the circuit.
     pub fn selected_scope_element(&self) -> Option<usize> {
         let sel = self.selected_indices();

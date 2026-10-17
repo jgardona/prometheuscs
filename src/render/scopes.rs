@@ -31,6 +31,9 @@ pub struct ScopeScales {
     pub dragging: bool,
     /// The lines of the information area at the right of the scopes.
     pub info: Vec<String>,
+    /// One flag per scope: the scope plots a selected or hovered element and is drawn with the
+    /// tinted background (see [`glow_color`]). A missing entry means no glow.
+    pub glow: Vec<bool>,
 }
 
 impl ScopeScales {
@@ -40,6 +43,17 @@ impl ScopeScales {
                 views.iter().map(|v| ScaleState { values: v.scale, negative: false }).collect();
         }
     }
+}
+
+/// Background of a scope that plots a selected element on the dark theme: a soft blue, as the
+/// original's soft green but bluish.
+const GLOW_DARK: Color = Color::new(14, 28, 60);
+/// The same on the light theme.
+const GLOW_LIGHT: Color = Color::new(222, 232, 255);
+
+/// The background of a scope that plots a selected or hovered element.
+pub fn glow_color(light: bool) -> Color {
+    if light { GLOW_LIGHT } else { GLOW_DARK }
 }
 
 const PLOT_COLORS: [(u8, u8, u8); 8] = [
@@ -621,6 +635,7 @@ pub fn draw_scopes(
                 cursor_y: cursor.filter(|_| under == Some(i)).map(|c| c.1 - ry),
                 selected,
                 measure_from: measure,
+                glow: scales.glow.get(i).copied().unwrap_or(false),
             },
             light_background,
         );
@@ -678,6 +693,8 @@ pub struct ScopeSpot {
     pub selected: Option<usize>,
     /// Simulated time where a drag to measure a stretch of the signal began.
     pub measure_from: Option<f64>,
+    /// The scope plots a selected element: its background is tinted.
+    pub glow: bool,
 }
 
 /// Draws one scope in the rectangle (`x`, `y`, `w`, `h`); `scale` is its full-scale values,
@@ -703,14 +720,14 @@ fn draw_scope_inside(
     spot: &ScopeSpot,
     light: bool,
 ) {
-    let ScopeSpot { x, y, w, h, slot, cursor, cursor_y, selected, measure_from } = *spot;
+    let ScopeSpot { x, y, w, h, slot, cursor, cursor_y, selected, measure_from, glow } = *spot;
     let (bg, grid, text) = if light {
         (Color::new(255, 255, 255), Color::new(200, 200, 200), Color::new(0, 0, 0))
     } else {
         (Color::new(0, 0, 0), Color::new(64, 64, 64), Color::new(192, 192, 192))
     };
     if slot == 0 {
-        g.set_color(bg);
+        g.set_color(if glow { glow_color(light) } else { bg });
         g.fill_rect(x, y, w, h);
     }
     // a small scope placed in the circuit has room for the curves only

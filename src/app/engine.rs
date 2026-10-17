@@ -92,6 +92,8 @@ impl Session {
         if self.worker.is_none() {
             self.sim.push_embedded_views();
         }
+        // every frame, with or without a worker: the flag is not part of what the worker sends
+        self.mark_placed_scopes();
         self.highlight_stop_element();
         self.refresh_draw_ctx(elapsed.min(super::session::MAX_FRAME_GAP));
         Ok(())

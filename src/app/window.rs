@@ -1423,6 +1423,7 @@ impl SimpleComponent for App {
                 let light = s.settings.white_background;
                 let mut scales = std::mem::take(&mut s.scope_scales);
                 scales.info = s.info_lines();
+                scales.glow = s.scope_glow();
                 crate::render::scopes::draw_scopes(
                     &mut g,
                     &views,

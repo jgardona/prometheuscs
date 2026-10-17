@@ -21,12 +21,15 @@ pub struct ScopeElm {
     source: Option<ScopeSource>,
     view: Option<ScopeView>,
     scale: Option<ScaleState>,
+    /// The scope plots a selected element: its background is tinted.
+    glow: bool,
 }
 
 impl ScopeElm {
     /// A scope being placed.
     pub fn new(x: i32, y: i32) -> Self {
-        let mut s = ScopeElm { base: Base::new(x, y), source: None, view: None, scale: None };
+        let mut s =
+            ScopeElm { base: Base::new(x, y), source: None, view: None, scale: None, glow: false };
         s.base.x2 = x + 128;
         s.base.y2 = y + 64;
         s.set_points();
@@ -40,6 +43,7 @@ impl ScopeElm {
             source: st.next_token().map(|t| ScopeSource::Line(t.to_string())),
             view: None,
             scale: None,
+            glow: false,
         };
         s.set_points();
         s
@@ -90,6 +94,9 @@ impl Element for ScopeElm {
         self.source = Some(source);
         // the new settings start from a fresh scale
         self.scale = None;
+    }
+    fn set_scope_glow(&mut self, glow: bool) {
+        self.glow = glow;
     }
     fn set_scope_view(&mut self, view: ScopeView) {
         if self.scale.is_none() {
@@ -148,6 +155,7 @@ impl Element for ScopeElm {
                 cursor_y: None,
                 selected: None,
                 measure_from: None,
+                glow: self.glow,
             };
             crate::render::scopes::draw_scope(g, view, scale, &spot, c.printable);
             crate::render::scopes::draw_wheel(g, (f64::from(x), f64::from(y), w, h), false);

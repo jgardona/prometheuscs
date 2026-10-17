@@ -778,6 +778,9 @@ pub trait Element: Any {
     fn scope_source(&self) -> Option<ScopeSource> {
         None
     }
+    /// Tells the scope placed in the circuit whether it plots a selected element, which tints its
+    /// background.
+    fn set_scope_glow(&mut self, _glow: bool) {}
     /// Receives what the scope placed in the circuit shows (see [`Element::scope_source`]).
     fn set_scope_view(&mut self, _view: crate::scope::ScopeView) {}
     /// What the scope placed in the circuit showed last.

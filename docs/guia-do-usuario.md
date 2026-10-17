@@ -245,6 +245,13 @@ soltos dentro do circuito.
 - **Diagramas de Tempo > Remover Todos os Diagramas** apaga todos.
 - No menu do osciloscópio: **Remover Osciloscópio**.
 
+### Brilho do osciloscópio do componente selecionado
+
+Quando você seleciona um componente (ou apenas passa o ponteiro sobre ele) que um osciloscópio
+está plotando, o fundo desse osciloscópio ganha um brilho azulado suave, para achar o gráfico do
+componente sem ler os rótulos. Vale para os osciloscópios da faixa e para os soltos no circuito,
+em qualquer tamanho. O brilho some ao desselecionar.
+
 ### Menu do osciloscópio
 
 Clique com o botão direito num osciloscópio:

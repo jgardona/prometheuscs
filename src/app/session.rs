@@ -367,6 +367,7 @@ impl Session {
                 self.record_stop(&message, element);
             }
         }
+        self.mark_placed_scopes();
         self.highlight_stop_element();
         self.refresh_draw_ctx(elapsed);
         Ok(())
