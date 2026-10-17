@@ -1,0 +1,3 @@
+{
+  "joule-thief": "Self-oscillating circuit that amplifies rounding noise: at 1.25 us the two programs differ by 5e-15 V, at 1.5 us by 6e-7 V, at 2 us by 7e-4 V and at 3 us by 1.5 V (the oscillation starts at a slightly different moment), and they settle to the same waveform later. Not a modelling difference; it cannot match without identical floating-point rounding."
+}

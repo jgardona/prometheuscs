@@ -14,6 +14,8 @@ impl Session {
 
     /// Replaces the circuit with an empty one that uses the saved display settings.
     pub fn new_circuit(&mut self) {
+        #[cfg(feature = "subcircuits")]
+        self.contexts.clear();
         let circuit =
             Circuit { options: Self::default_options(&self.settings), ..Circuit::default() };
         // an empty circuit always analyses
@@ -48,6 +50,9 @@ impl Session {
 
     /// Loads a circuit file; its name becomes the title.
     pub fn open_file(&mut self, path: &Path) -> Result<(), String> {
+        #[cfg(feature = "subcircuits")]
+        self.contexts.clear();
+        self.load_errors.clear();
         let text = std::fs::read_to_string(path).map_err(|e| format!("{}: {e}", path.display()))?;
         let title = path
             .file_stem()
@@ -90,6 +95,7 @@ impl Session {
 
     /// Loads the recovery copy, if there is one.
     pub fn recover_autosave(&mut self) -> Result<(), String> {
+        self.load_errors.clear();
         let path = autosave_path();
         let text = std::fs::read_to_string(&path)
             .map_err(|_| "Nenhum salvamento automático".to_string())?;
@@ -123,6 +129,9 @@ mod tests {
         Session::load(RC, &Registry::standard()).unwrap()
     }
 
+    #[cfg(feature = "passive")]
+    #[cfg(feature = "reactive")]
+    #[cfg(feature = "sources")]
     #[test]
     fn save_then_open_gives_the_same_circuit() {
         let dir = std::env::temp_dir().join(format!("prometheuscs-file-{}", std::process::id()));

@@ -269,6 +269,15 @@ impl Element for SweepElm {
         }
     }
 
+    fn visual_state(&self) -> Vec<f64> {
+        vec![self.frequency]
+    }
+    fn set_visual_state(&mut self, state: &[f64]) {
+        if let [f] = state {
+            self.frequency = *f;
+        }
+    }
+
     fn get_voltage_diff(&self) -> f64 {
         self.base.volts[0]
     }

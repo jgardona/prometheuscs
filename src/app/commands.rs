@@ -86,6 +86,14 @@ pub enum Cmd {
     Place(String),
     /// Choose a non-placing tool.
     SetTool(Tool),
+    /// Open a scope for the selected element.
+    ViewInScope,
+    /// Add sliders for the fields of the selected element.
+    AddSliders,
+    /// Turn the selected scope element back into a docked scope.
+    DockScope,
+    /// Remove every scope.
+    RemoveScopes,
     /// Stack all scopes.
     StackAll,
     /// Unstack all scopes.
@@ -106,6 +114,8 @@ pub enum Cmd {
     SubcircuitManager,
     /// Load a bundled example by file name.
     Example(String),
+    /// Choose the interface language (a code of `locale::LANGUAGES`).
+    Language(String),
 }
 
 const TOGGLES: &[(Toggle, &str)] = &[
@@ -174,6 +184,10 @@ impl Cmd {
             Cmd::RotateCcw => "rotate-ccw",
             Cmd::RotateCw => "rotate-cw",
             Cmd::Place(_) => "place",
+            Cmd::ViewInScope => "view-in-scope",
+            Cmd::DockScope => "dock-scope",
+            Cmd::AddSliders => "add-sliders",
+            Cmd::RemoveScopes => "remove-scopes",
             Cmd::StackAll => "stack-all",
             Cmd::UnstackAll => "unstack-all",
             Cmd::CombineAll => "combine-all",
@@ -183,6 +197,7 @@ impl Cmd {
             Cmd::ConvertWires => "convert-wires",
             Cmd::SubcircuitManager => "subcircuit-manager",
             Cmd::Example(_) => "example",
+            Cmd::Language(_) => "language",
             Cmd::Toggle(t) => TOGGLES.iter().find(|(x, _)| x == t).map_or("toggle", |(_, n)| n),
             Cmd::SetTool(t) => TOOLS.iter().find(|(x, _)| x == t).map_or("tool", |(_, n)| n),
         };
@@ -192,7 +207,7 @@ impl Cmd {
     /// The string parameter of commands that carry one (`Place`, `Example`).
     pub fn target(&self) -> Option<&str> {
         match self {
-            Cmd::Place(id) | Cmd::Example(id) => Some(id),
+            Cmd::Place(id) | Cmd::Example(id) | Cmd::Language(id) => Some(id),
             _ => None,
         }
     }
@@ -208,6 +223,7 @@ impl Cmd {
         Some(match name {
             "place" => Cmd::Place(target?.to_string()),
             "example" => Cmd::Example(target?.to_string()),
+            "language" => Cmd::Language(target?.to_string()),
             "new-window" => Cmd::NewWindow,
             "new-circuit" => Cmd::NewCircuit,
             "open" => Cmd::Open,
@@ -242,6 +258,10 @@ impl Cmd {
             "mirror-y" => Cmd::MirrorY,
             "rotate-ccw" => Cmd::RotateCcw,
             "rotate-cw" => Cmd::RotateCw,
+            "view-in-scope" => Cmd::ViewInScope,
+            "dock-scope" => Cmd::DockScope,
+            "add-sliders" => Cmd::AddSliders,
+            "remove-scopes" => Cmd::RemoveScopes,
             "stack-all" => Cmd::StackAll,
             "unstack-all" => Cmd::UnstackAll,
             "combine-all" => Cmd::CombineAll,
@@ -256,16 +276,7 @@ impl Cmd {
 
     /// True when the feature behind the command is not available in this build yet.
     pub fn unavailable(&self) -> bool {
-        matches!(
-            self,
-            Cmd::CreateSubcircuit
-                | Cmd::ConvertWires
-                | Cmd::SubcircuitManager
-                | Cmd::StackAll
-                | Cmd::UnstackAll
-                | Cmd::CombineAll
-                | Cmd::SeparateAll
-        )
+        matches!(self, Cmd::ConvertWires)
     }
 
     /// Whether the command can be used right now (contract C3).
@@ -282,6 +293,14 @@ impl Cmd {
             Cmd::Copy => s.has_selection(),
             Cmd::Duplicate => editing && s.has_selection(),
             Cmd::Paste => editing && s.clipboard.is_some(),
+            Cmd::ViewInScope => !s.scope_targets().is_empty(),
+            Cmd::DockScope => editing && s.selected_scope_element().is_some(),
+            Cmd::AddSliders => editing && s.selected_slider_element().is_some(),
+            Cmd::CreateSubcircuit => editing && has_elements,
+            Cmd::RemoveScopes | Cmd::StackAll | Cmd::UnstackAll | Cmd::SeparateAll => {
+                s.scope_count() > 0
+            }
+            Cmd::CombineAll => s.scope_count() > 1,
             Cmd::SelectAll
             | Cmd::Find
             | Cmd::Center
@@ -316,6 +335,10 @@ pub fn dispatch(s: &mut Session, cmd: &Cmd) -> Outcome {
     }
     match cmd {
         Cmd::NewCircuit => s.new_circuit(),
+        Cmd::StackAll => s.stack_scopes(),
+        Cmd::UnstackAll => s.unstack_scopes(),
+        Cmd::CombineAll => s.combine_scopes(),
+        Cmd::SeparateAll => s.separate_scopes(),
         Cmd::FindDc => {
             // the failure is kept in `stop_message` and shown by the banner
             let _ = s.find_dc();
@@ -332,6 +355,15 @@ pub fn dispatch(s: &mut Session, cmd: &Cmd) -> Outcome {
             s.duplicate();
         }
         Cmd::SelectAll => s.select_all(),
+        Cmd::ViewInScope => {
+            s.view_in_scope();
+        }
+        Cmd::DockScope => {
+            if let Some(i) = s.selected_scope_element() {
+                s.dock_scope(i);
+            }
+        }
+        Cmd::RemoveScopes => s.remove_scopes(),
         Cmd::Delete => {
             s.delete_selected();
         }
@@ -491,6 +523,10 @@ pub fn edit_menu() -> Vec<Node> {
 /// The Time Diagrams (scopes) menu.
 pub fn scopes_menu() -> Vec<Node> {
     vec![
+        Node::Section(vec![
+            item(Cmd::ViewInScope, "View in Scope", None, None),
+            item(Cmd::RemoveScopes, "Remove All Scopes", None, None),
+        ]),
         item(Cmd::StackAll, "Stack All", Some("lines"), None),
         item(Cmd::UnstackAll, "Unstack All", Some("columns"), None),
         item(Cmd::CombineAll, "Combine All", Some("object-group"), None),
@@ -517,6 +553,22 @@ pub fn options_menu() -> Vec<Node> {
             Node::Check(Toggle::DisableEditing, "Disable Editing"),
             Node::Check(Toggle::MouseWheelEdit, "Edit Values With Mouse Wheel"),
         ]),
+        Node::Section(vec![Node::Sub(
+            "Language".into(),
+            crate::locale::LANGUAGES
+                .iter()
+                .map(|(code, name)| {
+                    let mark =
+                        if *code == crate::locale::current_language() { "\u{2713} " } else { "" };
+                    Node::Item(
+                        Cmd::Language((*code).to_string()),
+                        format!("{mark}{name}"),
+                        None,
+                        None,
+                    )
+                })
+                .collect(),
+        )]),
         Node::Section(vec![
             item(Cmd::Shortcuts, "Shortcuts...", None, None),
             item(Cmd::OtherOptions, "Other Options...", None, None),
@@ -719,6 +771,7 @@ mod tests {
         assert!(s.sim.elements.is_empty());
     }
 
+    #[cfg(feature = "passive")]
     #[test]
     fn accelerators_cover_the_contract_shortcuts() {
         let r = Registry::standard();

@@ -5,6 +5,7 @@
 
 use super::element::*;
 use super::geometry::*;
+use super::model_edit::ModelEditor;
 use super::models::{THERMAL_VOLTAGE, TransistorModel};
 use super::registry::{ElementDescriptor, Registry};
 use super::units::*;
@@ -134,6 +135,12 @@ impl TransistorElm {
     }
 
     /// A transistor being placed at (`xx`, `yy`); `pnp` selects PNP over NPN.
+    /// Makes the transistor NPN (`1`) or PNP (`-1`), for composite elements.
+    pub fn set_pnp(&mut self, pnp: i32) {
+        self.pnp = pnp;
+    }
+
+    /// A transistor being placed.
     pub fn new(pnp: bool, xx: i32, yy: i32) -> Self {
         let mut t = Self::blank(Base::new(xx, yy), if pnp { -1 } else { 1 });
         t.setup();
@@ -144,25 +151,21 @@ impl TransistorElm {
     pub fn from_dump(xa: i32, ya: i32, xb: i32, yb: i32, f: i32, st: &mut Tokenizer<'_>) -> Self {
         let mut t = Self::blank(Base::from_dump(xa, ya, xb, yb, f), st.next_i32().unwrap_or(1));
         t.alloc_nodes();
-        let fields = (|| {
-            Ok::<_, crate::format::tokenizer::TokenError>((
-                st.next_f64()?,
-                st.next_f64()?,
-                st.next_f64()?,
-                st.next_token().ok_or(crate::format::tokenizer::TokenError::Missing)?,
-            ))
-        })();
-        match fields {
-            Ok((vbe, vbc, beta, model)) => {
-                t.lastvbe = vbe;
-                t.lastvbc = vbc;
-                t.base.volts[0] = 0.0;
-                t.base.volts[1] = -vbe;
-                t.base.volts[2] = -vbc;
+        // like the original, keep what was read before the first missing field (old files
+        // have no model name)
+        t.model_name = "default".into();
+        if let (Ok(vbe), Ok(vbc)) = (st.next_f64(), st.next_f64()) {
+            t.lastvbe = vbe;
+            t.lastvbc = vbc;
+            t.base.volts[0] = 0.0;
+            t.base.volts[1] = -vbe;
+            t.base.volts[2] = -vbc;
+            if let Ok(beta) = st.next_f64() {
                 t.beta = beta;
-                t.model_name = unescape(model);
+                if let Some(model) = st.next_token() {
+                    t.model_name = unescape(model);
+                }
             }
-            Err(_) => t.model_name = "default".into(),
         }
         GLOBAL_FLAGS.with(|g| g.set(f & FLAGS_GLOBAL));
         t.setup();
@@ -215,6 +218,38 @@ impl TransistorElm {
 
 impl Element for TransistorElm {
     impl_element_base!();
+
+    // the drawing needs the terminal currents, which only the solver's copy computes
+    fn visual_state(&self) -> Vec<f64> {
+        vec![self.ib, self.ic, self.ie]
+    }
+    fn set_visual_state(&mut self, state: &[f64]) {
+        if let [ib, ic, ie] = state[..] {
+            (self.ib, self.ic, self.ie) = (ib, ic, ie);
+        }
+    }
+
+    fn model_buttons(&self) -> Vec<String> {
+        let mut v = vec!["Create New Model".to_string()];
+        if !self.model.read_only {
+            v.push("Edit Model".into());
+        }
+        v
+    }
+    fn start_model_edit(&self, button: usize) -> Option<ModelEditor> {
+        match button {
+            0 => Some(ModelEditor::new_transistor(&self.model)),
+            1 if !self.model.read_only => Some(ModelEditor::Transistor(self.model.clone())),
+            _ => None,
+        }
+    }
+    fn use_model(&mut self, name: &str) {
+        self.model_name = name.to_string();
+        self.setup();
+    }
+    fn update_models(&mut self) {
+        self.setup();
+    }
 
     fn class_name(&self) -> &'static str {
         if self.pnp == -1 { "PTransistorElm" } else { "NTransistorElm" }
@@ -641,6 +676,12 @@ impl Element for TransistorElm {
     fn can_view_in_scope(&self) -> bool {
         true
     }
+    fn default_scope_value(&self) -> i32 {
+        VAL_VCE
+    }
+    fn scope_values(&self) -> Vec<i32> {
+        vec![VAL_IB, VAL_IC, VAL_IE, VAL_VBE, VAL_VBC, VAL_VCE, VAL_POWER]
+    }
 
     fn elm_type(&self) -> Option<String> {
         Some("transistor".into())
@@ -754,6 +795,8 @@ mod tests {
         sim
     }
 
+    #[cfg(feature = "passive")]
+    #[cfg(feature = "sources")]
     /// Common-emitter stage: 10 V supply, 100 k base bias, 1 k collector resistor, emitter at
     /// ground. With beta 100 and Vbe near 0.65 V the base current is about 93 uA, the
     /// collector current about 9.3 mA, and the collector sits near 0.7 V (saturating).

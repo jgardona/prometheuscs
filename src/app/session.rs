@@ -39,6 +39,10 @@ pub struct Session {
     pub draw_ctx: DrawCtx,
     /// Messages about parts of the file that could not be used.
     pub load_warnings: Vec<String>,
+    /// The pauses by elements the worker had reported when the newest snapshot was applied.
+    pub(crate) pause_seen: u64,
+    /// The same problems with their details, for the dialog that lists them.
+    pub load_errors: Vec<crate::error::LoadError>,
     /// Why the simulation stopped, if it did, naming the offending element when known.
     pub stop_message: Option<String>,
     /// Index of the element that caused the stop, highlighted on the canvas.
@@ -47,6 +51,10 @@ pub struct Session {
     pub(crate) stop_reason: Option<String>,
     /// The simulation thread, when the interface runs the solver off the UI thread.
     pub(crate) worker: Option<Worker>,
+    /// What the scopes showed in the newest snapshot (with a worker).
+    pub(crate) scope_views: Vec<crate::scope::ScopeView>,
+    /// Full-scale values of the scopes, following the data.
+    pub scope_scales: crate::render::scopes::ScopeScales,
     pub(crate) snapshot_time: f64,
     /// Mapping of the last drawn frame, used to turn mouse positions into circuit coordinates.
     pub view: View,
@@ -77,6 +85,14 @@ pub struct Session {
     pub(crate) undo: Vec<String>,
     pub(crate) redo: Vec<String>,
     pub(crate) extras: Extras,
+    /// Circuits left aside while a subcircuit model is edited, outermost first.
+    #[cfg(feature = "subcircuits")]
+    pub(crate) contexts: Vec<super::contexts::EditContext>,
+    /// The way down to the subcircuit instance whose parts are being shown: the element, then
+    /// the part of it, and so on. Empty when the circuit itself is shown.
+    pub(crate) inspect: Vec<usize>,
+    /// The view of each circuit left to look inside an instance.
+    pub(crate) inspect_views: Vec<View>,
     pub(crate) held: Option<usize>,
     pub(crate) hover: Option<usize>,
     step_debt: f64,
@@ -134,10 +150,14 @@ impl Session {
             running: false,
             draw_ctx: DrawCtx::default(),
             load_warnings: Vec::new(),
+            pause_seen: 0,
+            load_errors: Vec::new(),
             stop_message: None,
             stop_element: None,
             stop_reason: None,
             worker: None,
+            scope_views: Vec::new(),
+            scope_scales: crate::render::scopes::ScopeScales::default(),
             snapshot_time: 0.0,
             view: View::default(),
             canvas_size: (0.0, 0.0),
@@ -155,6 +175,10 @@ impl Session {
             undo: Vec::new(),
             redo: Vec::new(),
             extras: Extras::default(),
+            #[cfg(feature = "subcircuits")]
+            contexts: Vec::new(),
+            inspect: Vec::new(),
+            inspect_views: Vec::new(),
             held: None,
             hover: None,
             step_debt: 0.0,
@@ -177,6 +201,8 @@ impl Session {
 
     /// Replaces the circuit with a parsed one, resetting time and the editing history.
     pub(crate) fn install(&mut self, parsed: ParseResult) -> Result<(), SessionError> {
+        self.inspect.clear();
+        self.inspect_views.clear();
         let c = parsed.circuit;
         self.options = c.options;
         crate::elements::geometry::set_grid_size(self.grid_size());
@@ -189,7 +215,17 @@ impl Session {
             model_lines: c.model_lines,
         };
         self.load_warnings = parsed.errors.iter().map(ToString::to_string).collect();
+        self.load_errors = parsed.errors.clone();
+        self.pause_seen = 0;
         self.sim = Simulation::new(c.elements, self.options.sim_settings());
+        self.sim.scopes = crate::scope::scopes_from_circuit(
+            &self.extras.scope_lines,
+            &self.extras.scope_xml,
+            &self.sim.elements,
+        );
+        self.store_scopes();
+        self.scope_views.clear();
+        self.scope_scales = crate::render::scopes::ScopeScales::default();
         self.undo.clear();
         self.redo.clear();
         self.drag = Drag::None;
@@ -303,8 +339,13 @@ impl Session {
             self.step_debt -= steps;
             if steps >= 1.0 {
                 self.sim.set_delay_wire_processing(true);
+                let before = self.sim.pause_count;
                 let result = self.sim.run_steps(steps as usize);
                 self.sim.calc_wire_currents();
+                if self.sim.pause_count != before {
+                    // a stop trigger: time stops, with no error
+                    self.set_running(false);
+                }
                 if let Err(e) = result {
                     let element = match &e {
                         StepError::Stopped { element, .. } => *element,
@@ -338,7 +379,7 @@ impl Session {
         self.refresh_draw_ctx(Duration::ZERO);
     }
 
-    /// Sets the simulation speed from the slider position (0 to 100).
+    /// Sets the simulation speed from the slider position (0 to 260, as in the original).
     pub fn set_speed_bar(&mut self, bar: f64) {
         self.options.iter_count = 0.1 * ((bar - 61.0) / 24.0).exp();
         if let Some(w) = &self.worker {
@@ -439,6 +480,20 @@ mod tests {
     }
 
     #[test]
+    fn speed_bar_covers_the_original_range() {
+        let mut s = session();
+        // the file's speed lies beyond position 100, so the slider needs the original 0 to 260
+        let bar = f64::from(s.options.speed_bar());
+        assert!(bar > 100.0, "{bar}");
+        s.set_speed_bar(bar);
+        assert!((s.options.iter_count - 10.0).abs() < 0.3, "{}", s.options.iter_count);
+        s.set_speed_bar(260.0);
+        assert!(s.step_rate() > 5e4);
+        s.set_speed_bar(0.0);
+        assert!(s.step_rate() < 2.0);
+    }
+
+    #[test]
     fn step_rate_follows_the_speed_bar() {
         let s = session();
         // header iteration count 10
@@ -468,6 +523,9 @@ mod tests {
         assert_eq!(a.sim.time(), b.sim.time());
     }
 
+    #[cfg(feature = "passive")]
+    #[cfg(feature = "reactive")]
+    #[cfg(feature = "sources")]
     #[test]
     fn slider_changes_the_element_value() {
         let mut s = session();
@@ -483,6 +541,7 @@ mod tests {
         Session::load(&text, &Registry::standard()).unwrap()
     }
 
+    #[cfg(feature = "switches")]
     fn open_switch(s: &Session) -> i32 {
         s.sim.elements[1]
             .as_any()
@@ -491,7 +550,9 @@ mod tests {
             .position
     }
 
+    #[cfg(feature = "passive")]
     #[test]
+    #[cfg(feature = "switches")]
     fn clicking_the_switch_closes_it_and_keeps_the_circuit_state() {
         let mut s = lrc();
         s.update(Duration::from_millis(30)).unwrap();
@@ -510,6 +571,8 @@ mod tests {
         assert_eq!(open_switch(&s), 1);
     }
 
+    #[cfg(feature = "passive")]
+    #[cfg(feature = "switches")]
     #[test]
     fn hovering_highlights_the_element_under_the_mouse() {
         let mut s = lrc();

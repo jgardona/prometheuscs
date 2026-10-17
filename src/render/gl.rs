@@ -3,6 +3,7 @@
 //!
 //! This is the only module of the program that uses `unsafe`: loading OpenGL entry points from
 //! libepoxy (the library GTK itself uses) and handing them to femtovg.
+// Needed here and nowhere else: the OpenGL functions are looked up in a C library (see above).
 #![allow(unsafe_code)]
 
 use femtovg::renderer::OpenGl;

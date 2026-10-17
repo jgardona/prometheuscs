@@ -1,0 +1,25 @@
+---
+source: tests/render_svg.rs
+expression: "render(RC, &quiet())"
+---
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="120" viewBox="0 0 200 120">
+<defs>
+<linearGradient id="g0" gradientUnits="userSpaceOnUse" x1="56" y1="20" x2="88" y2="20"><stop offset="0" stop-color="#807f7f"/><stop offset="1" stop-color="#807f7f"/></linearGradient>
+</defs>
+<path d="M0 0 L200 0 L200 120 L0 120 Z" fill="#000000" stroke="none"/>
+<path d="M40 84 L40 56" fill="none" stroke="#807f7f" stroke-width="3"/>
+<path d="M40 48 L40 20" fill="none" stroke="#807f7f" stroke-width="3"/>
+<path d="M30 56 L50 56" fill="none" stroke="#807f7f" stroke-width="3"/>
+<path d="M24 48 L56 48" fill="none" stroke="#807f7f" stroke-width="3"/>
+<path d="M40 20 L56 20" fill="none" stroke="#807f7f" stroke-width="3"/>
+<path d="M88 20 L104 20" fill="none" stroke="#807f7f" stroke-width="3"/>
+<path d="M56 20 L58 26 L62 14 L66 26 L70 14 L74 26 L78 14 L82 26 L86 14 L88 20" fill="none" stroke="url(#g0)" stroke-width="3"/>
+<text x="65" y="10" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">1k</text>
+<path d="M104 20 L104 48" fill="none" stroke="#807f7f" stroke-width="3"/>
+<path d="M116 48 L92 48" fill="none" stroke="#807f7f" stroke-width="3"/>
+<path d="M104 84 L104 56" fill="none" stroke="#807f7f" stroke-width="3"/>
+<path d="M116 56 L92 56" fill="none" stroke="#807f7f" stroke-width="3"/>
+<text x="118" y="58" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">1μF</text>
+<path d="M104 84 L40 84" fill="none" stroke="#807f7f" stroke-width="3"/>
+<text x="72" y="78" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+</svg>

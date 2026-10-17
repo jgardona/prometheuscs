@@ -9,4 +9,5 @@ pub mod export;
 pub mod gl;
 pub mod painter;
 pub mod scene;
+pub mod scopes;
 pub mod svg;

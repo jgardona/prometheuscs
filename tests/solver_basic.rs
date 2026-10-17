@@ -16,6 +16,8 @@ fn simulate(text: &str) -> Simulation {
     sim
 }
 
+#[cfg(feature = "passive")]
+#[cfg(feature = "sources")]
 #[test]
 fn resistor_divider_settles_to_the_ratio() {
     // 10 V source, 1k + 3k divider; the middle node is at 7.5 V
@@ -28,6 +30,9 @@ fn resistor_divider_settles_to_the_ratio() {
     assert!((sim.elements[2].get_current() - 10.0 / 4000.0).abs() < 1e-9);
 }
 
+#[cfg(feature = "passive")]
+#[cfg(feature = "reactive")]
+#[cfg(feature = "sources")]
 #[test]
 fn rc_charging_follows_the_exponential() {
     // 5 V, 1k, 1 uF: tau = 1 ms
@@ -40,6 +45,9 @@ fn rc_charging_follows_the_exponential() {
     assert!((vc - expected).abs() < 5e-3, "vc = {vc}, expected {expected}");
 }
 
+#[cfg(feature = "passive")]
+#[cfg(feature = "reactive")]
+#[cfg(feature = "sources")]
 #[test]
 fn lr_current_rises_with_time_constant_l_over_r() {
     // 10 V, 100 ohm, 0.1 H: tau = 1 ms, final current 0.1 A
@@ -58,6 +66,10 @@ fn analysis_reports_circuits_with_no_elements_as_ready() {
     assert!(sim.analyze().is_ok());
 }
 
+#[cfg(feature = "passive")]
+#[cfg(feature = "reactive")]
+#[cfg(feature = "sources")]
+#[cfg(feature = "switches")]
 #[test]
 fn lrc_example_loads_and_rings_down() {
     // Bundled default example: with the switch open the L, C and 10 ohm series resistor ring

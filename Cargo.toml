@@ -31,10 +31,14 @@ required-features = ["gui"]
 name = "golden"
 path = "src/bin/golden.rs"
 
+[[bin]]
+name = "bench_circuits"
+path = "src/bin/bench_circuits.rs"
+
 [features]
 # One feature per element family (FR-026): disable a family to remove its components from the
 # build. All families are enabled by default.
-default = ["passive", "reactive", "sources", "switches", "outputs", "logic", "diodes", "analog", "transistors", "mosfets", "digital"]
+default = ["passive", "reactive", "sources", "switches", "outputs", "logic", "diodes", "analog", "transistors", "mosfets", "digital", "subcircuits"]
 passive = []
 reactive = []
 sources = []
@@ -46,6 +50,7 @@ analog = []
 transistors = []
 mosfets = []
 digital = []
+subcircuits = []
 # Desktop interface (GTK4 / libadwaita) and the Cairo drawing backend.
 gui = ["dep:gtk4", "dep:relm4", "dep:cairo-rs", "dep:tracing-subscriber", "dep:femtovg", "dep:libloading", "dep:glow"]
 
@@ -83,6 +88,11 @@ too_many_arguments = "allow"
 unwrap_used = "warn"
 expect_used = "warn"
 panic = "warn"
+
+[[bench]]
+name = "solver"
+path = "benches/solver.rs"
+harness = false
 
 [[test]]
 name = "render_cairo"

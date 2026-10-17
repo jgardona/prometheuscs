@@ -22,6 +22,18 @@ const PASSIVE: &str = "Passive Components";
 /// Registers the elements of this module.
 pub fn register(r: &mut Registry) {
     r.add(
+        ElementDescriptor::new(
+            "TappedTransformerElm",
+            FAMILY,
+            "Add Tapped Transformer",
+            PASSIVE,
+            |x, y| Box::new(TappedTransformer::new(x, y)),
+        )
+        .dump(169, |a, b, c, d, f, st| {
+            Ok(Box::new(TappedTransformer::from_dump(a, b, c, d, f, st)))
+        }),
+    );
+    r.add(
         ElementDescriptor::new("TransformerElm", FAMILY, "Add Transformer", PASSIVE, |x, y| {
             Box::new(TransformerElm::new(x, y))
         })
@@ -114,9 +126,12 @@ impl TransformerElm {
         t.ratio = st.next_f64()?;
         t.current[0] = st.next_f64()?;
         t.current[1] = st.next_f64()?;
-        if let (Ok(c), Ok(s)) = (st.next_f64(), st.next_f64()) {
+        // like the original, keep what was read before the first missing field
+        if let Ok(c) = st.next_f64() {
             t.coupling = c;
-            t.saturation_current = s;
+            if let Ok(s) = st.next_f64() {
+                t.saturation_current = s;
+            }
         }
         t.polarity = if f & FLAG_REVERSE != 0 { -1 } else { 1 };
         Ok(t)
@@ -147,6 +162,15 @@ impl TransformerElm {
 
 impl Element for TransformerElm {
     impl_element_base!("TransformerElm");
+
+    fn visual_state(&self) -> Vec<f64> {
+        self.current.to_vec()
+    }
+    fn set_visual_state(&mut self, state: &[f64]) {
+        if let [a, b] = state[..] {
+            self.current = [a, b];
+        }
+    }
 
     fn dump_type(&self) -> i32 {
         i32::from(b'T')
@@ -513,9 +537,30 @@ pub struct TransLineElm {
     curcount2: f64,
     posts: [Point; 4],
     inner: [Point; 4],
+    /// The voltage of each segment of the line as the worker last published it; the interface's
+    /// copy of the element has no buffers of its own to work them out from.
+    shown: Vec<f64>,
 }
 
 impl TransLineElm {
+    /// The voltage of each segment along the line, from the buffers of the two ends. Empty
+    /// until the buffers exist.
+    fn segment_voltages(&self) -> Vec<f64> {
+        let len = self.len_steps;
+        let segments = (self.base.dn / 2.0) as usize;
+        if len == 0 || self.voltage_l.len() != len || self.voltage_r.len() != len || segments == 0 {
+            return Vec::new();
+        }
+        let ix0 = self.ptr + len;
+        (0..segments)
+            .map(|i| {
+                let ix1 = (ix0 - 1 - len * i / segments) % len;
+                let ix2 = (ix0 - 1 - len * (segments - 1 - i) / segments) % len;
+                (self.voltage_l[ix1] + self.voltage_r[ix2]) / 2.0
+            })
+            .collect()
+    }
+
     fn blank(base: Base) -> Self {
         let mut base = base;
         base.no_diagonal = true;
@@ -535,6 +580,7 @@ impl TransLineElm {
             current2: 0.0,
             curcount1: 0.0,
             curcount2: 0.0,
+            shown: Vec::new(),
             posts: [Point::default(); 4],
             inner: [Point::default(); 4],
         }
@@ -588,6 +634,19 @@ impl TransLineElm {
 
 impl Element for TransLineElm {
     impl_element_base!("TransLineElm");
+
+    fn visual_state(&self) -> Vec<f64> {
+        let mut state = vec![self.current1, self.current2];
+        state.extend(self.segment_voltages());
+        state
+    }
+    fn set_visual_state(&mut self, state: &[f64]) {
+        if let [a, b, rest @ ..] = state {
+            (self.current1, self.current2) = (*a, *b);
+            self.shown.clear();
+            self.shown.extend_from_slice(rest);
+        }
+    }
 
     fn dump_type(&self) -> i32 {
         171
@@ -679,10 +738,6 @@ impl Element for TransLineElm {
 
     fn draw(&mut self, g: &mut dyn Painter, c: &DrawCtx) {
         self.base.set_bbox_pts(self.posts[0], self.posts[3], 0.0);
-        let segments = (self.base.dn / 2.0) as usize;
-        let len = self.len_steps;
-        let ix0 = self.ptr + len;
-        let segf = 1.0 / segments.max(1) as f64;
         g.set_color(crate::render::painter::Color::DARK_GRAY);
         let (i2, i1) = (self.inner[2], self.inner[1]);
         g.fill_rect(
@@ -695,18 +750,20 @@ impl Element for TransLineElm {
             set_voltage_color(g, &self.base, c, self.base.volts[i]);
             draw_thick_line(g, self.posts[i], self.inner[i]);
         }
-        if len > 0 && self.voltage_l.len() == len {
-            for i in 0..segments {
-                let ix1 = (ix0 - 1 - len * i / segments) % len;
-                let ix2 = (ix0 - 1 - len * (segments - 1 - i) / segments) % len;
-                let v = (self.voltage_l[ix1] + self.voltage_r[ix2]) / 2.0;
-                set_voltage_color(g, &self.base, c, v);
-                let a = interp_point(self.inner[0], self.inner[1], i as f64 * segf);
-                let b = interp_point(self.inner[2], self.inner[3], i as f64 * segf);
-                g.draw_line(a.x, a.y, b.x, b.y);
-                let a2 = interp_point(self.inner[2], self.inner[3], (i + 1) as f64 * segf);
-                draw_thick_line(g, a2, b);
-            }
+        // the buffers of this copy when it runs the circuit, else what the worker published
+        let mut volts = self.segment_voltages();
+        if volts.is_empty() {
+            volts.clone_from(&self.shown);
+        }
+        let segments = volts.len();
+        let segf = 1.0 / segments.max(1) as f64;
+        for (i, v) in volts.iter().enumerate() {
+            set_voltage_color(g, &self.base, c, *v);
+            let a = interp_point(self.inner[0], self.inner[1], i as f64 * segf);
+            let b = interp_point(self.inner[2], self.inner[3], i as f64 * segf);
+            g.draw_line(a.x, a.y, b.x, b.y);
+            let a2 = interp_point(self.inner[2], self.inner[3], (i + 1) as f64 * segf);
+            draw_thick_line(g, a2, b);
         }
         set_voltage_color(g, &self.base, c, self.base.volts[0]);
         draw_thick_line(g, self.inner[0], self.inner[1]);
@@ -833,6 +890,343 @@ impl Element for TransLineElm {
             _ => return,
         }
         self.reset();
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Tapped transformer
+// ---------------------------------------------------------------------------------------------
+
+const TAPPED_FLIP: i32 = 1;
+
+/// A transformer whose secondary winding has a center tap.
+pub struct TappedTransformer {
+    base: Base,
+    inductance: f64,
+    ratio: f64,
+    coupling: f64,
+    flip: i32,
+    ends: [Point; 5],
+    coil: [Point; 5],
+    core: [Point; 4],
+    current: [f64; 4],
+    curcount: [f64; 4],
+    volt_diff: [f64; 3],
+    cur_source: [f64; 3],
+    a: [f64; 9],
+}
+
+impl TappedTransformer {
+    fn blank(base: Base) -> Self {
+        let mut base = base;
+        base.no_diagonal = true;
+        TappedTransformer {
+            base,
+            inductance: 4.0,
+            ratio: 1.0,
+            coupling: 0.99,
+            flip: 1,
+            ends: [Point::default(); 5],
+            coil: [Point::default(); 5],
+            core: [Point::default(); 4],
+            current: [0.0; 4],
+            curcount: [0.0; 4],
+            volt_diff: [0.0; 3],
+            cur_source: [0.0; 3],
+            a: [0.0; 9],
+        }
+    }
+
+    /// A transformer being placed.
+    pub fn new(x: i32, y: i32) -> Self {
+        Self::blank(Base::new(x, y))
+    }
+
+    /// A transformer read from a file.
+    pub fn from_dump(xa: i32, ya: i32, xb: i32, yb: i32, f: i32, st: &mut Tokenizer<'_>) -> Self {
+        let mut t = Self::blank(Base::from_dump(xa, ya, xb, yb, f));
+        t.inductance = st.next_f64().unwrap_or(4.0);
+        t.ratio = st.next_f64().unwrap_or(1.0);
+        t.current[0] = st.next_f64().unwrap_or(0.0);
+        t.current[1] = st.next_f64().unwrap_or(0.0);
+        t.current[2] = st.next_f64().unwrap_or(0.0);
+        t.coupling = st.next_f64().unwrap_or(0.99);
+        t
+    }
+
+    fn trapezoidal(&self) -> bool {
+        self.base.flags & FLAG_BACK_EULER == 0
+    }
+
+    fn update_diffs(&mut self) {
+        let v = &self.base.volts;
+        self.volt_diff = [v[0] - v[1], v[2] - v[3], v[3] - v[4]];
+    }
+}
+
+impl Element for TappedTransformer {
+    impl_element_base!("TappedTransformerElm");
+
+    fn visual_state(&self) -> Vec<f64> {
+        self.current.to_vec()
+    }
+    fn set_visual_state(&mut self, state: &[f64]) {
+        if let [a, b, c, d] = state[..] {
+            self.current = [a, b, c, d];
+        }
+    }
+
+    fn dump_type(&self) -> i32 {
+        169
+    }
+    fn xml_dump_type(&self) -> String {
+        "tt".into()
+    }
+    fn dump(&self) -> String {
+        format!(
+            "{} {} {} {} {} {} {}",
+            self.base.dump_prefix(169),
+            js_number(self.inductance),
+            js_number(self.ratio),
+            js_number(self.current[0]),
+            js_number(self.current[1]),
+            js_number(self.current[2]),
+            js_number(self.coupling)
+        )
+    }
+    fn dump_xml(&self, out: &mut XmlOut) {
+        default_dump_xml(&self.base, out);
+        out.double_attr("in", self.inductance);
+        out.double_attr("ra", self.ratio);
+        out.double_attr("co", self.coupling);
+    }
+    fn dump_xml_state(&self, out: &mut XmlOut) {
+        out.double_attr("c0", self.current[0]);
+        out.double_attr("c1", self.current[1]);
+        out.double_attr("c2", self.current[2]);
+    }
+    fn undump_xml(&mut self, xml: &XmlNode) {
+        self.base.flags = xml.int_attr("f", self.base.flags);
+        self.inductance = xml.double_attr("in", self.inductance);
+        self.ratio = xml.double_attr("ra", self.ratio);
+        self.coupling = xml.double_attr("co", self.coupling);
+        self.current[0] = xml.double_attr("c0", 0.0);
+        self.current[1] = xml.double_attr("c1", 0.0);
+        self.current[2] = xml.double_attr("c2", 0.0);
+    }
+
+    fn post_count(&self) -> usize {
+        5
+    }
+    fn get_post(&self, n: usize) -> Option<Point> {
+        self.ends.get(n).copied()
+    }
+
+    fn set_points(&mut self) {
+        self.base.set_points();
+        self.flip = if self.base.flags & TAPPED_FLIP != 0 { -1 } else { 1 };
+        let hs = f64::from(32 * self.flip);
+        let (p1, p2, dn) = (self.base.point1, self.base.point2, self.base.dn);
+        self.ends = [
+            p1,
+            interp_point_g(p1, p2, 0.0, -hs * 2.0),
+            p2,
+            interp_point_g(p1, p2, 1.0, -hs),
+            interp_point_g(p1, p2, 1.0, -hs * 2.0),
+        ];
+        let ce = 0.5 - 12.0 / dn;
+        let cd = 0.5 - 2.0 / dn;
+        let (e0, e2) = (self.ends[0], self.ends[2]);
+        self.coil = [
+            interp_point(e0, e2, ce),
+            interp_point_g(e0, e2, ce, -hs * 2.0),
+            interp_point(e0, e2, 1.0 - ce),
+            interp_point_g(e0, e2, 1.0 - ce, -hs),
+            interp_point_g(e0, e2, 1.0 - ce, -hs * 2.0),
+        ];
+        for i in 0..2 {
+            let b = -hs * f64::from(i) * 2.0;
+            self.core[i as usize] = interp_point_g(e0, e2, cd, b);
+            self.core[i as usize + 2] = interp_point_g(e0, e2, 1.0 - cd, b);
+        }
+        self.alloc_nodes();
+    }
+
+    fn draw(&mut self, g: &mut dyn Painter, c: &DrawCtx) {
+        let v = self.base.volts.clone();
+        for i in 0..5 {
+            set_voltage_color(g, &self.base, c, v[i]);
+            draw_thick_line(g, self.ends[i], self.coil[i]);
+        }
+        for i in 0..4 {
+            if i == 1 {
+                continue;
+            }
+            set_power_color_w(g, &self.base, c, self.current[i] * (v[i] - v[i + 1]));
+            let cs = if i > 1 { -6 * self.flip } else { 6 * self.flip };
+            draw_coil(g, &self.base, c, cs, self.coil[i], self.coil[i + 1], v[i], v[i + 1]);
+        }
+        g.set_color(if self.base.needs_highlight() { c.select_color } else { c.light_gray });
+        for i in [0, 2] {
+            draw_thick_line(g, self.core[i], self.core[i + 1]);
+        }
+        for i in 0..4 {
+            self.curcount[i] = self.base.update_dot_count_for(self.current[i], self.curcount[i], c);
+        }
+        let (e, co, cc) = (&self.ends, &self.coil, &self.curcount);
+        draw_dots(g, c, e[0], co[0], cc[0]);
+        draw_dots(g, c, co[0], co[1], cc[0]);
+        draw_dots(g, c, co[1], e[1], cc[0]);
+        draw_dots(g, c, e[2], co[2], cc[1]);
+        draw_dots(g, c, co[2], co[3], cc[1]);
+        draw_dots(g, c, co[3], e[3], cc[3]);
+        draw_dots(g, c, co[3], co[4], cc[2]);
+        draw_dots(g, c, co[4], e[4], cc[2]);
+        draw_posts(g, &self.base, self, c);
+        let (a, b) = (self.ends[0], self.ends[4]);
+        self.base.set_bbox_pts(a, b, 0.0);
+    }
+
+    fn reset(&mut self) {
+        self.current = [0.0; 4];
+        self.curcount = [0.0; 4];
+        self.cur_source = [0.0; 3];
+        self.base.volts.fill(0.0);
+    }
+
+    fn stamp(&mut self, s: &mut Stamper) {
+        let l1 = self.inductance;
+        let l2 = self.inductance * self.ratio * self.ratio / 4.0;
+        let m1 = self.coupling * (l1 * l2).sqrt();
+        let m2 = self.coupling * l2;
+        let mut a = [0.0; 9];
+        a[0] = l2 + m2;
+        a[1] = -m1;
+        a[2] = -m1;
+        a[3] = -m1;
+        a[6] = -m1;
+        a[4] = (l1 * l2 - m1 * m1) / (l2 - m2);
+        a[8] = a[4];
+        a[5] = (m1 * m1 - l1 * m2) / (l2 - m2);
+        a[7] = a[5];
+        let det = l1 * (l2 + m2) - 2.0 * m1 * m1;
+        let ts = if self.trapezoidal() { s.time_step / 2.0 } else { s.time_step };
+        for x in &mut a {
+            *x *= ts / det;
+        }
+        self.a = a;
+        let n = &self.base.nodes;
+        s.stamp_conductance(n[0], n[1], a[0]);
+        s.stamp_vccs(n[0], n[1], n[2], n[3], a[1]);
+        s.stamp_vccs(n[0], n[1], n[3], n[4], a[2]);
+        s.stamp_vccs(n[2], n[3], n[0], n[1], a[3]);
+        s.stamp_conductance(n[2], n[3], a[4]);
+        s.stamp_vccs(n[2], n[3], n[3], n[4], a[5]);
+        s.stamp_vccs(n[3], n[4], n[0], n[1], a[6]);
+        s.stamp_vccs(n[3], n[4], n[2], n[3], a[7]);
+        s.stamp_conductance(n[3], n[4], a[8]);
+    }
+
+    fn start_iteration(&mut self, _s: &Stamper) {
+        self.update_diffs();
+        for i in 0..3 {
+            self.cur_source[i] = self.current[i];
+            if self.trapezoidal() {
+                for j in 0..3 {
+                    self.cur_source[i] += self.a[i * 3 + j] * self.volt_diff[j];
+                }
+            }
+        }
+    }
+
+    fn do_step(&mut self, s: &mut Stamper) {
+        let n = &self.base.nodes;
+        s.stamp_current_source(n[0], n[1], self.cur_source[0]);
+        s.stamp_current_source(n[2], n[3], self.cur_source[1]);
+        s.stamp_current_source(n[3], n[4], self.cur_source[2]);
+    }
+
+    fn calculate_current(&mut self) {
+        self.update_diffs();
+        for i in 0..3 {
+            self.current[i] = self.cur_source[i];
+            for j in 0..3 {
+                self.current[i] += self.a[i * 3 + j] * self.volt_diff[j];
+            }
+        }
+        self.current[3] = self.current[1] - self.current[2];
+    }
+
+    fn get_current_into_node(&self, n: usize) -> f64 {
+        match n {
+            0 => -self.current[0],
+            1 => self.current[0],
+            2 => -self.current[1],
+            3 => self.current[3],
+            _ => self.current[2],
+        }
+    }
+
+    fn get_connection(&self, n1: usize, n2: usize) -> bool {
+        matches!((n1.min(n2), n1.max(n2)), (0, 1) | (2, 3) | (3, 4) | (2, 4))
+    }
+    fn get_matrix_connection(&self, _n1: usize, _n2: usize) -> bool {
+        true
+    }
+
+    fn get_info(&self, arr: &mut Vec<String>) {
+        let v = &self.base.volts;
+        arr.push("transformer".into());
+        arr.push(format!("L = {}", unit_text(self.inductance, "H")));
+        arr.push(format!("Ratio = 1:{}", self.ratio));
+        arr.push(format!("Vd1 = {}", voltage_text(v[0] - v[2])));
+        arr.push(format!("Vd2 = {}", voltage_text(v[1] - v[3])));
+    }
+
+    fn get_edit_info(&self, n: usize) -> Option<EditInfo> {
+        match n {
+            0 => Some(
+                EditInfo::new("Primary Inductance (H)", self.inductance, 0.01, 5.0).set_positive(),
+            ),
+            1 => Some(
+                EditInfo::new("Ratio (N1/N2)", 1.0 / self.ratio, 1.0, 10.0)
+                    .set_dimensionless()
+                    .set_positive(),
+            ),
+            2 => Some(
+                EditInfo::new("Coupling Coefficient", self.coupling, 0.0, 1.0)
+                    .set_dimensionless()
+                    .set_positive(),
+            ),
+            3 => Some(EditInfo::checkbox("Trapezoidal Approximation", self.trapezoidal())),
+            _ => None,
+        }
+    }
+    fn set_edit_value(&mut self, n: usize, ei: &mut EditInfo) {
+        match n {
+            0 if ei.value > 0.0 => self.inductance = ei.value,
+            1 if self.ratio > 0.0 => self.ratio = 1.0 / ei.value,
+            2 => {
+                if ei.value > 0.0 && ei.value < 1.0 {
+                    self.coupling = ei.value;
+                } else {
+                    ei.error = Some("must be > 0 and < 1".into());
+                }
+            }
+            3 => self.base.flags = ei.change_flag_inverted(self.base.flags, FLAG_BACK_EULER),
+            _ => {}
+        }
+    }
+
+    fn flip_x(&mut self, center2: i32, _count: usize) {
+        self.base.flags ^= TAPPED_FLIP;
+        self.base.flip_x(center2);
+        self.set_points();
+    }
+    fn flip_y(&mut self, center2: i32, _count: usize) {
+        self.base.flags ^= TAPPED_FLIP;
+        self.base.flip_y(center2);
+        self.set_points();
     }
 }
 

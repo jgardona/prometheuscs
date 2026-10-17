@@ -281,7 +281,6 @@ impl ChipCore {
     }
 
     /// Creates `count` pins for a bit field (the original's `makeBitPins`).
-    #[allow(clippy::too_many_arguments)]
     pub fn make_bit_pins(
         &mut self,
         count: usize,
@@ -363,7 +362,6 @@ impl ChipCore {
         }
     }
 
-    #[allow(clippy::too_many_arguments)]
     fn set_pin_point(
         p: &mut Pin,
         g: &PinGeometry,
@@ -459,6 +457,11 @@ pub trait ChipLogic: Clone + std::fmt::Debug + 'static {
     }
     /// Reads input pins and writes output pins, once per iteration.
     fn execute(&mut self, _c: &mut ChipCore, _s: &Stamper) {}
+    /// True when [`ChipLogic::execute`] reads the input pins itself and needs their values
+    /// from the previous step (the generic code would update them first).
+    fn reads_own_inputs(&self) -> bool {
+        false
+    }
     /// True for chips with a configurable number of bits.
     fn needs_bits(&self) -> bool {
         false
@@ -576,6 +579,28 @@ pub trait ChipLogic: Clone + std::fmt::Debug + 'static {
     /// Index into the node array of the node voltage source `j` drives, when it is not the
     /// node of its output pin.
     fn voltage_source_node(&self, _c: &ChipCore, _j: usize) -> Option<usize> {
+        None
+    }
+    /// State the drawing needs that is not a voltage (currents of LED segments, brightness).
+    fn visual_state(&self, _c: &ChipCore) -> Vec<f64> {
+        Vec::new()
+    }
+    /// Receives the state published by [`ChipLogic::visual_state`].
+    fn set_visual_state(&mut self, _c: &mut ChipCore, _state: &[f64]) {}
+    /// Pin that voltage source `j` drives, when it is not the `j`th output pin.
+    fn output_pin_for_source(&self, _c: &ChipCore, _j: usize) -> Option<usize> {
+        None
+    }
+    /// Number of input pairs that sense the current of voltage sources outside the chip.
+    fn spice_pairs(&self, _c: &ChipCore) -> usize {
+        0
+    }
+    /// Gives input pair `i` the voltage source it senses.
+    fn set_spice_source(&mut self, _c: &mut ChipCore, _i: usize, _vs: VsId) {}
+    /// Gives input pair `i` the current of the voltage source it senses.
+    fn set_spice_current(&mut self, _c: &mut ChipCore, _i: usize, _current: f64) {}
+    /// The model tag this chip needs in files (custom logic).
+    fn model_xml(&self) -> Option<XmlOut> {
         None
     }
     /// XML tag when it differs from the class name without `Elm`.
@@ -850,6 +875,9 @@ impl<L: ChipLogic> Element for ChipElm<L> {
         self.logic.write_xml_state(&self.core, out);
     }
 
+    fn set_high_voltage(&mut self, hv: f64) {
+        self.core.high_voltage = hv;
+    }
     fn post_count(&self) -> usize {
         self.core.pins.len()
     }
@@ -888,8 +916,22 @@ impl<L: ChipLogic> Element for ChipElm<L> {
         self.set_points();
     }
 
+    fn dump_model_xml(&self) -> Option<XmlOut> {
+        self.logic.model_xml()
+    }
+    fn spice_pairs(&self) -> usize {
+        self.logic.spice_pairs(&self.core)
+    }
+    fn set_spice_source(&mut self, i: usize, vs: VsId) {
+        self.logic.set_spice_source(&mut self.core, i, vs);
+    }
+    fn set_spice_current(&mut self, i: usize, current: f64) {
+        self.logic.set_spice_current(&mut self.core, i, current);
+    }
     fn set_voltage_source(&mut self, j: usize, vs: VsId) {
-        if let Some(i) = self.output_pin_index(j) {
+        let pin =
+            self.logic.output_pin_for_source(&self.core, j).or_else(|| self.output_pin_index(j));
+        if let Some(i) = pin {
             self.core.pins[i].volt_source = Some(vs);
         }
     }
@@ -897,7 +939,8 @@ impl<L: ChipLogic> Element for ChipElm<L> {
         if let Some(i) = self.logic.voltage_source_node(&self.core, j) {
             return self.core.base.nodes.get(i).map(|&n| (NodeId::GROUND, n));
         }
-        let i = self.output_pin_index(j)?;
+        let i =
+            self.logic.output_pin_for_source(&self.core, j).or_else(|| self.output_pin_index(j))?;
         self.core.base.nodes.get(i).map(|&n| (NodeId::GROUND, n))
     }
 
@@ -913,10 +956,12 @@ impl<L: ChipLogic> Element for ChipElm<L> {
     }
 
     fn start_iteration(&mut self, s: &Stamper) {
-        let threshold = self.core.threshold();
-        for (i, p) in self.core.pins.iter_mut().enumerate() {
-            if !p.output {
-                p.value = self.core.base.volts[i] > threshold;
+        if !self.logic.reads_own_inputs() {
+            let threshold = self.core.threshold();
+            for (i, p) in self.core.pins.iter_mut().enumerate() {
+                if !p.output {
+                    p.value = self.core.base.volts[i] > threshold;
+                }
             }
         }
         self.logic.execute(&mut self.core, s);
@@ -980,6 +1025,12 @@ impl<L: ChipLogic> Element for ChipElm<L> {
     fn calculate_current(&mut self) {
         self.logic.calculate_current(&mut self.core);
     }
+    fn visual_state(&self) -> Vec<f64> {
+        self.logic.visual_state(&self.core)
+    }
+    fn set_visual_state(&mut self, state: &[f64]) {
+        self.logic.set_visual_state(&mut self.core, state);
+    }
     fn is_wire_equivalent(&self) -> bool {
         self.logic.wire_equivalent()
     }
@@ -988,6 +1039,17 @@ impl<L: ChipLogic> Element for ChipElm<L> {
     }
     fn bus_width(&self) -> usize {
         self.logic.bus_width(&self.core)
+    }
+    fn bus_role(&self) -> BusRole {
+        if self.logic.class_name() == "BusSplitterElm" {
+            if let Some(p) = self.core.pins.first() {
+                return BusRole::Splitter {
+                    anchor: p.post(),
+                    bits: self.core.bits.max(1) as usize,
+                };
+            }
+        }
+        BusRole::None
     }
     fn connected_post(&self, bit: usize, _labels: &mut LabelRegistry) -> Option<Point> {
         let i = self.logic.connected_pin(bit)?;

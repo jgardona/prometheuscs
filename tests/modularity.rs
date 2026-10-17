@@ -96,3 +96,21 @@ fn the_standard_registry_does_not_know_it() {
     assert!(!r.contains("DummyElm"));
     assert!(r.menu().iter().all(|g| g.category != "Test Parts"));
 }
+
+/// SC-013: a circuit that uses a family left out of the build loads with an error that names
+/// the element, and the rest of it loads.
+#[cfg(not(feature = "passive"))]
+#[test]
+fn a_circuit_using_a_missing_family_reports_the_element_and_loads_the_rest() {
+    use prometheuscs::error::LoadError;
+    let text = "$ 1 0.000005 10 50 5 50 5e-11\nr 0 0 64 0 0 1000\nv 0 64 0 0 0 0 40 5 0 0 0.5\n";
+    let r = parse(text, &Registry::standard());
+    assert!(
+        r.errors
+            .iter()
+            .any(|e| matches!(e, LoadError::UnknownType { type_code, .. } if type_code == "r")),
+        "{:?}",
+        r.errors
+    );
+    assert!(!r.circuit.elements.is_empty(), "the source still loads");
+}

@@ -89,16 +89,27 @@ fn check(name: &str) {
     }
 }
 
+#[cfg(feature = "passive")]
+#[cfg(feature = "reactive")]
+#[cfg(feature = "sources")]
+#[cfg(feature = "switches")]
 #[test]
 fn lrc_matches_the_recorded_run() {
     check("lrc");
 }
 
+#[cfg(feature = "passive")]
+#[cfg(feature = "reactive")]
+#[cfg(feature = "sources")]
+#[cfg(feature = "switches")]
 #[test]
 fn lrcswitch_matches_the_recorded_run_through_a_switch_event() {
     check("lrcswitch");
 }
 
+#[cfg(feature = "passive")]
+#[cfg(feature = "reactive")]
+#[cfg(feature = "sources")]
 #[test]
 fn capac_with_an_ac_source_matches_the_recorded_run() {
     check("capac");

@@ -107,23 +107,22 @@ impl OpAmpElm {
     pub fn from_dump(xa: i32, ya: i32, xb: i32, yb: i32, f: i32, st: &mut Tokenizer<'_>) -> Self {
         let mut e = Self::blank(Base::from_dump(xa, ya, xb, yb, f));
         e.alloc_nodes();
-        let fields = (|| {
-            Ok::<_, crate::format::tokenizer::TokenError>((
-                st.next_f64()?,
-                st.next_f64()?,
-                st.next_f64()?,
-                st.next_f64()?,
-                st.next_f64()?,
-                st.next_f64()?,
-            ))
-        })();
-        if let Ok((max_out, min_out, gbw, v0, v1, gain)) = fields {
-            e.max_out = max_out;
+        // like the original, keep what was read before the first missing field
+        e.max_out = st.next_f64().unwrap_or(15.0);
+        if let Ok(min_out) = st.next_f64() {
             e.min_out = min_out;
-            e.gbw = gbw;
-            e.base.volts[0] = v0;
-            e.base.volts[1] = v1;
-            e.gain = gain;
+            if let Ok(gbw) = st.next_f64() {
+                e.gbw = gbw;
+                if let Ok(v0) = st.next_f64() {
+                    e.base.volts[0] = v0;
+                    if let Ok(v1) = st.next_f64() {
+                        e.base.volts[1] = v1;
+                        if let Ok(gain) = st.next_f64() {
+                            e.gain = gain;
+                        }
+                    }
+                }
+            }
         }
         e.set_size(if f & FLAG_SMALL != 0 { 1 } else { 2 });
         e.set_gain();
@@ -378,6 +377,8 @@ mod tests {
         sim
     }
 
+    #[cfg(feature = "passive")]
+    #[cfg(feature = "sources")]
     /// Non-inverting amplifier: Vin 1 V on the + input, gain 1 + R2/R1 = 3.
     #[test]
     fn non_inverting_amplifier_has_gain_one_plus_r2_over_r1() {
@@ -391,6 +392,8 @@ mod tests {
         assert!((out - 3.0).abs() < 0.01, "{out}");
     }
 
+    #[cfg(feature = "passive")]
+    #[cfg(feature = "sources")]
     #[test]
     fn output_saturates_at_the_supply_limits() {
         let text = format!(

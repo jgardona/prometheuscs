@@ -140,6 +140,8 @@ pub struct Stamper {
     pub dc_analysis: bool,
     /// Set when an element asks the simulation to stop.
     pub stop: Option<StopRequest>,
+    /// Set by an element that wants time to stop without it being an error (a stop trigger).
+    pub pause_requested: bool,
     pub(crate) rng_state: u64,
 }
 

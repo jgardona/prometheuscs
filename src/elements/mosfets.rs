@@ -5,6 +5,7 @@
 use super::element::*;
 use super::geometry::*;
 use super::junction::Diode;
+use super::model_edit::ModelEditor;
 use super::models::{DiodeModel, MosfetModel};
 use super::registry::{ElementDescriptor, Registry};
 use super::units::*;
@@ -209,9 +210,12 @@ impl MosfetElm {
         let mut m = Self::blank(jfet, Base::from_dump(xa, ya, xb, yb, f), pnp);
         let mut vt0 = if jfet { -4.0 } else { 1.5 };
         let mut beta0 = if jfet { 0.00125 } else { 0.02 };
-        if let (Ok(v), Ok(b)) = (st.next_f64(), st.next_f64()) {
+        // like the original, keep what was read before the first missing field
+        if let Ok(v) = st.next_f64() {
             vt0 = v;
-            beta0 = b;
+            if let Ok(b) = st.next_f64() {
+                beta0 = b;
+            }
         }
         m.model = m.legacy_model(vt0, beta0);
         m.model_name = m.model.name.clone();
@@ -731,6 +735,40 @@ impl MosfetElm {
 impl Element for MosfetElm {
     impl_element_base!();
 
+    fn visual_state(&self) -> Vec<f64> {
+        vec![self.ids, self.cap_cur_gs, self.cap_cur_gd, self.diode_current1, self.diode_current2]
+    }
+    fn set_visual_state(&mut self, state: &[f64]) {
+        if let [ids, gs, gd, d1, d2] = state[..] {
+            (self.ids, self.cap_cur_gs, self.cap_cur_gd) = (ids, gs, gd);
+            (self.diode_current1, self.diode_current2) = (d1, d2);
+        }
+    }
+
+    fn model_buttons(&self) -> Vec<String> {
+        let mut v = vec!["Create New Model".to_string()];
+        if !self.model.read_only {
+            v.push("Edit Model".into());
+        }
+        v
+    }
+    fn start_model_edit(&self, button: usize) -> Option<ModelEditor> {
+        match button {
+            0 => Some(ModelEditor::new_mosfet(&self.model)),
+            1 if !self.model.read_only => Some(ModelEditor::Mosfet(self.model.clone())),
+            _ => None,
+        }
+    }
+    fn use_model(&mut self, name: &str) {
+        self.model_name = name.to_string();
+        self.setup();
+        self.set_points();
+    }
+    fn update_models(&mut self) {
+        self.setup();
+        self.set_points();
+    }
+
     fn class_name(&self) -> &'static str {
         match (self.jfet, self.pnp == -1) {
             (false, false) => "NMosfetElm",
@@ -1096,6 +1134,8 @@ mod tests {
         sim
     }
 
+    #[cfg(feature = "passive")]
+    #[cfg(feature = "sources")]
     /// N-channel MOSFET with the gate at 3 V, drain through 1 k to 10 V, source grounded. Vt is
     /// 1.5 V and beta 0.02: in saturation Id = beta/2 (Vgs - Vt)^2 = 22.5 mA would pull the
     /// drain far below Vgs - Vt, so the device is in the linear region.
@@ -1145,6 +1185,8 @@ mod tests {
         assert_eq!(body.post_count(), 4);
     }
 
+    #[cfg(feature = "passive")]
+    #[cfg(feature = "sources")]
     #[test]
     fn jfet_conducts_with_zero_gate_voltage() {
         // n-channel JFET: Vt = -4 V, so with the gate at the source it conducts

@@ -33,6 +33,9 @@ fn run(w: &Worker, xml: String, steps: usize) -> FrameSnapshot {
     w.latest().expect("a snapshot")
 }
 
+#[cfg(feature = "passive")]
+#[cfg(feature = "reactive")]
+#[cfg(feature = "sources")]
 #[test]
 fn a_loaded_circuit_runs_and_matches_a_headless_run() {
     let w = worker();
@@ -52,6 +55,9 @@ fn a_loaded_circuit_runs_and_matches_a_headless_run() {
     }
 }
 
+#[cfg(feature = "passive")]
+#[cfg(feature = "reactive")]
+#[cfg(feature = "sources")]
 #[test]
 fn a_parameter_message_changes_the_next_snapshot_without_a_reload() {
     let w = worker();
@@ -106,6 +112,9 @@ fn sending_commands_does_not_wait_for_the_solver() {
     assert!(w.sync());
 }
 
+#[cfg(feature = "passive")]
+#[cfg(feature = "reactive")]
+#[cfg(feature = "sources")]
 #[test]
 fn the_dump_carries_the_running_state() {
     let w = worker();
@@ -116,6 +125,9 @@ fn the_dump_carries_the_running_state() {
     assert!(after.contains("<c "));
 }
 
+#[cfg(feature = "passive")]
+#[cfg(feature = "reactive")]
+#[cfg(feature = "sources")]
 #[test]
 fn a_failing_circuit_is_reported_in_the_snapshot() {
     // a polarized capacitor wired backwards charges past its reverse-voltage limit and stops
@@ -127,6 +139,9 @@ fn a_failing_circuit_is_reported_in_the_snapshot() {
     assert!(err.message.contains("reverse voltage"), "{}", err.message);
 }
 
+#[cfg(feature = "passive")]
+#[cfg(feature = "reactive")]
+#[cfg(feature = "sources")]
 #[test]
 fn a_session_with_a_worker_draws_what_the_worker_computed() {
     let mut s = Session::load(RC, &Registry::standard()).unwrap();
@@ -146,6 +161,9 @@ fn a_session_with_a_worker_draws_what_the_worker_computed() {
     assert!(s.time() < 640.0 * 5e-6);
 }
 
+#[cfg(feature = "passive")]
+#[cfg(feature = "reactive")]
+#[cfg(feature = "sources")]
 #[test]
 fn an_edit_of_a_running_circuit_keeps_its_state_and_clock() {
     let mut s = Session::load(RC, &Registry::standard()).unwrap();

@@ -6,6 +6,7 @@
 use super::element::*;
 use super::geometry::*;
 use super::registry::{ElementDescriptor, Registry};
+#[cfg(feature = "switches")]
 use super::switches::SwitchElm;
 use super::units::*;
 use crate::format::tokenizer::Tokenizer;
@@ -13,7 +14,9 @@ use crate::format::xml::{XmlNode, XmlOut};
 use crate::impl_element_base;
 use crate::render::painter::{Painter, TextBaseline};
 use crate::solver::path::Validator;
-use crate::solver::stamper::{NodeId, Stamper, VsId};
+#[cfg(feature = "switches")]
+use crate::solver::stamper::VsId;
+use crate::solver::stamper::{NodeId, Stamper};
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 
 /// Family name, also the Cargo feature that enables these elements.
@@ -34,6 +37,8 @@ fn set_last_high_voltage(v: f64) {
 
 /// Registers the elements of this family.
 pub fn register(r: &mut Registry) {
+    // a logic input is a switch, so it comes with the switches family
+    #[cfg(feature = "switches")]
     r.add(
         ElementDescriptor::new("LogicInputElm", FAMILY, "Add Logic Input", CAT, |x, y| {
             Box::new(LogicInputElm::new(x, y))
@@ -415,6 +420,10 @@ impl GateElm {
 impl Element for GateElm {
     impl_element_base!();
 
+    fn set_high_voltage(&mut self, hv: f64) {
+        self.high_voltage = hv;
+    }
+
     fn class_name(&self) -> &'static str {
         self.kind.class_name()
     }
@@ -794,9 +803,12 @@ impl InverterElm {
     /// An inverter read from a file.
     pub fn from_dump(xa: i32, ya: i32, xb: i32, yb: i32, f: i32, st: &mut Tokenizer<'_>) -> Self {
         let mut e = Self::blank(Base::from_dump(xa, ya, xb, yb, f), 5.0);
-        if let (Ok(sr), Ok(hv)) = (st.next_f64(), st.next_f64()) {
+        // like the original, keep what was read before the first missing field
+        if let Ok(sr) = st.next_f64() {
             e.slew_rate = sr;
-            e.high_voltage = hv;
+            if let Ok(hv) = st.next_f64() {
+                e.high_voltage = hv;
+            }
         }
         e
     }
@@ -1021,21 +1033,22 @@ impl SchmittElm {
         st: &mut Tokenizer<'_>,
     ) -> Self {
         let mut e = Self::blank(inverting, Base::from_dump(xa, ya, xb, yb, f));
-        let fields = (|| {
-            Ok::<_, crate::format::tokenizer::TokenError>((
-                st.next_f64()?,
-                st.next_f64()?,
-                st.next_f64()?,
-                st.next_f64()?,
-                st.next_f64()?,
-            ))
-        })();
-        if let Ok((sr, lt, ut, on, off)) = fields {
-            e.slew_rate = sr;
-            e.lower_trigger = lt;
-            e.upper_trigger = ut;
-            e.logic_on_level = on;
-            e.logic_off_level = off;
+        // like the original, keep what was read before the first missing field
+        let mut read = || st.next_f64().ok();
+        if let Some(v) = read() {
+            e.slew_rate = v;
+            if let Some(v) = read() {
+                e.lower_trigger = v;
+                if let Some(v) = read() {
+                    e.upper_trigger = v;
+                    if let Some(v) = read() {
+                        e.logic_on_level = v;
+                        if let Some(v) = read() {
+                            e.logic_off_level = v;
+                        }
+                    }
+                }
+            }
         }
         e.dlt = e.lower_trigger;
         e.dut = e.upper_trigger;
@@ -1227,10 +1240,13 @@ impl Element for SchmittElm {
 // Logic input and output
 // ---------------------------------------------------------------------------------------------
 
+#[cfg(feature = "switches")]
 const LI_FLAG_TERNARY: i32 = 1;
+#[cfg(feature = "switches")]
 const LI_FLAG_NUMERIC: i32 = 2;
 
 /// A logic input: a switch that drives a node high or low.
+#[cfg(feature = "switches")]
 #[derive(Clone, Debug)]
 pub struct LogicInputElm {
     inner: SwitchElm,
@@ -1240,6 +1256,7 @@ pub struct LogicInputElm {
     pub lo_v: f64,
 }
 
+#[cfg(feature = "switches")]
 impl LogicInputElm {
     /// A logic input being placed at (`xx`, `yy`).
     pub fn new(xx: i32, yy: i32) -> Self {
@@ -1274,6 +1291,7 @@ impl LogicInputElm {
     }
 }
 
+#[cfg(feature = "switches")]
 impl Element for LogicInputElm {
     fn base(&self) -> &Base {
         self.inner.base()
@@ -1639,6 +1657,8 @@ mod tests {
         gate.base().volts[gate.post_count() - 1]
     }
 
+    #[cfg(feature = "passive")]
+    #[cfg(feature = "switches")]
     #[test]
     fn gate_truth_tables() {
         for (code, table) in [
@@ -1666,6 +1686,8 @@ mod tests {
         assert_eq!(g.post_count(), 4);
     }
 
+    #[cfg(feature = "passive")]
+    #[cfg(feature = "switches")]
     #[test]
     fn inverter_inverts_with_a_limited_slew_rate() {
         let hdr = "$ 1 0.000005 10 50 5 50 5e-11";
@@ -1694,6 +1716,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "switches")]
     fn logic_input_reads_true_false_reversed_and_cycles_ternary_positions() {
         let mut st = Tokenizer::new("true false 5 0");
         let li = LogicInputElm::from_dump(0, 0, 64, 0, 0, &mut st).unwrap();

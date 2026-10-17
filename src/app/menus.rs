@@ -57,8 +57,11 @@ pub fn build_menu(
     let menu = gio::Menu::new();
     for node in nodes {
         match node {
-            Node::Item(cmd, label, glyph, _) => {
+            Node::Item(cmd, label, glyph, accel) => {
                 let entry = gio::MenuItem::new(Some(&ls(label)), None);
+                if let Some(accel) = accel {
+                    entry.set_attribute_value("accel", Some(&accel.to_variant()));
+                }
                 match cmd.target() {
                     Some(t) => entry.set_action_and_target_value(
                         Some(&format!("win.{}", cmd.action_name())),
@@ -127,7 +130,14 @@ pub fn install_actions(
     let mut made: Vec<String> = Vec::new();
     let mut cmds = all_commands(registry);
     // the examples menu is built from the catalogue, so its action is not in the tables
-    cmds.extend([Cmd::Fullscreen, Cmd::Undo, Cmd::Example(String::new())]);
+    cmds.extend([
+        Cmd::Fullscreen,
+        Cmd::DockScope,
+        Cmd::AddSliders,
+        Cmd::Undo,
+        Cmd::Example(String::new()),
+        Cmd::Language(String::new()),
+    ]);
     for cmd in cmds {
         let name = cmd.action_name();
         if made.contains(&name) {
@@ -135,7 +145,7 @@ pub fn install_actions(
         }
         made.push(name.clone());
         let action = match &cmd {
-            Cmd::Place(_) | Cmd::Example(_) => {
+            Cmd::Place(_) | Cmd::Example(_) | Cmd::Language(_) => {
                 gio::SimpleAction::new(&name, Some(glib::VariantTy::STRING))
             }
             Cmd::Toggle(_) | Cmd::SetTool(_) => {
@@ -157,16 +167,29 @@ pub fn install_actions(
     entries
 }
 
-/// Registers every keyboard accelerator of the menus.
-pub fn install_accels(app: &impl IsA<gtk::Application>, registry: &Registry) {
+/// Registers every keyboard accelerator of the menus as a shortcut of `window`. They are not
+/// given to the application (`set_accels_for_action`): GTK refreshes every menu item for each
+/// of those, which kept the window from showing for nearly two seconds (SC-005). The menu
+/// items carry their accelerator as an `accel` attribute, which is only displayed.
+pub fn install_shortcuts(window: &impl IsA<gtk::Widget>, registry: &Registry) {
+    let controller = gtk::ShortcutController::new();
+    // a text field being edited gets the key before the shortcut does
+    controller.set_propagation_phase(gtk::PropagationPhase::Bubble);
+    controller.set_scope(gtk::ShortcutScope::Global);
     for (cmd, accel, _) in accelerators(registry) {
-        // a shortcut GTK cannot parse is left out instead of raising a critical warning
-        if gtk::accelerator_parse(&accel).is_none() {
+        let Some(trigger) = gtk::ShortcutTrigger::parse_string(&accel) else {
+            // a shortcut GTK cannot parse is left out instead of raising a critical warning
             tracing::warn!(accel, "ignoring an unparsable accelerator");
             continue;
+        };
+        let action = gtk::NamedAction::new(&format!("win.{}", cmd.action_name()));
+        let shortcut = gtk::Shortcut::new(Some(trigger), Some(action));
+        if let Some(target) = cmd.target() {
+            shortcut.set_arguments(Some(&target.to_variant()));
         }
-        app.set_accels_for_action(&detailed(&cmd), &[accel.as_str()]);
+        controller.add_shortcut(shortcut);
     }
+    window.add_controller(controller);
 }
 
 /// Brings enabled and checked states of the actions in line with the session.
@@ -183,7 +206,7 @@ pub fn sync_actions(entries: &[ActionEntry], s: &Session) {
                 e.action.set_enabled(s.editing_allowed());
             }
             Cmd::Place(_) => e.action.set_enabled(s.editing_allowed()),
-            Cmd::Example(_) => e.action.set_enabled(true),
+            Cmd::Example(_) | Cmd::Language(_) => e.action.set_enabled(true),
             cmd => e.action.set_enabled(cmd.enabled(s)),
         }
     }

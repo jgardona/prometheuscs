@@ -1,0 +1,10 @@
+{
+  "circuits": {
+    "ladder": 18531.0,
+    "mixed": 657.0,
+    "rlc": 43663.0
+  },
+  "measured_ms_per_circuit": 5000,
+  "source": "CircuitJS1 (Electron build), run with --bench",
+  "unit": "time steps per second"
+}

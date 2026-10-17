@@ -11,6 +11,84 @@ pub const OHM: &str = "\u{03a9}";
 pub const MU: &str = "\u{03bc}";
 
 static MAP: RwLock<Option<HashMap<String, String>>> = RwLock::new(None);
+static CURRENT: RwLock<String> = RwLock::new(String::new());
+
+/// The languages with a translation file (`assets/locale/locale_<code>.txt`), and their names
+/// in their own language. English is the language of the keys and needs no file.
+pub const LANGUAGES: &[(&str, &str)] = &[
+    ("en", "English"),
+    ("pt", "Português"),
+    ("csx", "Čeština"),
+    ("da", "Dansk"),
+    ("de", "Deutsch"),
+    ("es", "Español"),
+    ("fi", "Suomi"),
+    ("fr", "Français"),
+    ("it", "Italiano"),
+    ("ja", "日本語"),
+    ("kr", "한국어"),
+    ("nb", "Norsk bokmål"),
+    ("pl", "Polski"),
+    ("ru", "Русский"),
+    ("zh-tw", "繁體中文"),
+    ("zh", "简体中文"),
+];
+
+/// The code of the language in use.
+pub fn current_language() -> String {
+    CURRENT.read().map(|c| c.clone()).unwrap_or_default()
+}
+
+/// Remembers the code of the language in use.
+pub fn set_current_language(code: &str) {
+    if let Ok(mut c) = CURRENT.write() {
+        *c = code.to_string();
+    }
+}
+
+/// The supported language that matches a locale name such as `pt_BR.UTF-8`; English when none
+/// does.
+pub fn language_from_locale(name: &str) -> &'static str {
+    let name = name.to_ascii_lowercase().replace('_', "-");
+    let name = name.split(['.', '@']).next().unwrap_or("");
+    if name.starts_with("zh") {
+        return if name.contains("tw") || name.contains("hk") || name.contains("hant") {
+            "zh-tw"
+        } else {
+            "zh"
+        };
+    }
+    let lang = name.split('-').next().unwrap_or("");
+    let lang = match lang {
+        "cs" => "csx",
+        "ko" => "kr",
+        "no" | "nn" => "nb",
+        other => other,
+    };
+    LANGUAGES.iter().map(|(c, _)| *c).find(|c| *c == lang).unwrap_or("en")
+}
+
+/// The language the environment asks for (`LC_ALL`, `LC_MESSAGES`, `LANG`).
+pub fn detect_language() -> &'static str {
+    for var in ["LC_ALL", "LC_MESSAGES", "LANG"] {
+        if let Ok(v) = std::env::var(var) {
+            if !v.is_empty() && v != "C" && v != "POSIX" {
+                return language_from_locale(&v);
+            }
+        }
+    }
+    "en"
+}
+
+/// Reads the translation file of `code` from `assets/locale`. Missing files and English give an
+/// empty table, so every string falls back to its English text.
+pub fn load_language(code: &str, assets: &std::path::Path) -> HashMap<String, String> {
+    if code == "en" {
+        return HashMap::new();
+    }
+    let path = assets.join("locale").join(format!("locale_{code}.txt"));
+    std::fs::read_to_string(path).map(|t| parse_translations(&t)).unwrap_or_default()
+}
 
 /// Replaces the translation table.
 pub fn set_translations(map: HashMap<String, String>) {
@@ -69,6 +147,24 @@ pub fn ls(s: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn locale_names_map_to_supported_languages() {
+        assert_eq!(language_from_locale("pt_BR.UTF-8"), "pt");
+        assert_eq!(language_from_locale("zh_TW.UTF-8"), "zh-tw");
+        assert_eq!(language_from_locale("zh_CN"), "zh");
+        assert_eq!(language_from_locale("ko_KR"), "kr");
+        assert_eq!(language_from_locale("cs_CZ"), "csx");
+        assert_eq!(language_from_locale("sw_KE"), "en");
+    }
+
+    #[test]
+    fn every_listed_language_has_a_translation_file() {
+        let assets = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("assets");
+        for (code, _) in LANGUAGES.iter().filter(|(c, _)| *c != "en") {
+            assert!(!load_language(code, &assets).is_empty(), "{code}");
+        }
+    }
 
     #[test]
     fn parses_pairs_and_strips_submenu_markup() {

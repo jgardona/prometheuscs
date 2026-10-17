@@ -13,3 +13,24 @@ jobs:
       - run: cargo fmt --check
       - run: cargo clippy --all-targets -- -D warnings
       - run: cargo test
+
+  # SC-013: with any one element family left out of the build, the project still builds and the
+  # tests that are not about that family pass. The interface (`gui`) is not part of this job,
+  # so it needs no system libraries.
+  families:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        without: [passive, reactive, sources, switches, outputs, logic, diodes, analog, transistors, mosfets, digital, subcircuits]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - name: Features of every family but ${{ matrix.without }}
+        run: |
+          all="passive reactive sources switches outputs logic diodes analog transistors mosfets digital subcircuits"
+          echo "FEATURES=$(echo $all | tr ' ' '\n' | grep -vx '${{ matrix.without }}' | paste -sd, -)" >> "$GITHUB_ENV"
+      - run: cargo clippy --no-default-features --features "$FEATURES" --lib --bins -- -D warnings
+      - run: cargo test --no-default-features --features "$FEATURES"

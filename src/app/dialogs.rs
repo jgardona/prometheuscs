@@ -2,9 +2,12 @@
 //! Dialogs and file choosers of the main window.
 
 use super::commands::accelerators;
+use super::edit::SliderEntry;
 use super::session::Session;
+use super::subcircuits::ModelScope;
 use crate::elements::element::EditInfo;
 use crate::elements::registry::Registry;
+use crate::elements::subcircuit::CompositeModel;
 use crate::elements::units::{edit_value_text, parse_edit_value};
 use crate::locale::ls;
 use relm4::adw::{self, prelude::*};
@@ -71,6 +74,51 @@ pub fn shortcuts(parent: &impl IsA<gtk::Widget>, registry: &Registry) {
     scroll.set_child(Some(&padded(&list)));
     scroll.set_vexpand(true);
     dialog("Atalhos de teclado", 420, 560, &scroll).present(Some(parent));
+}
+
+/// One line of the list of loading problems, in the interface language.
+fn load_problem_text(e: &crate::error::LoadError) -> (String, String) {
+    use crate::error::LoadError;
+    match e {
+        LoadError::UnknownType { line, type_code } => (
+            format!("Linha {line}: elemento desconhecido"),
+            format!("O tipo `{type_code}` não existe nesta versão; a linha foi ignorada."),
+        ),
+        LoadError::Malformed { line, type_code, message } => (
+            format!("Linha {line}: entrada `{type_code}` malformada"),
+            format!("{message}; a linha foi ignorada."),
+        ),
+        LoadError::Xml(message) => ("O arquivo XML é inválido".into(), message.clone()),
+    }
+}
+
+/// Lists what could not be read from a circuit file (the rest of the circuit was loaded).
+pub fn load_problems(parent: &impl IsA<gtk::Widget>, errors: &[crate::error::LoadError]) {
+    let list = gtk::ListBox::new();
+    list.add_css_class("boxed-list");
+    list.set_selection_mode(gtk::SelectionMode::None);
+    for e in errors {
+        let (title, detail) = load_problem_text(e);
+        let row = adw::ActionRow::new();
+        row.set_title(&glib::markup_escape_text(&title));
+        row.set_subtitle(&glib::markup_escape_text(&detail));
+        row.set_subtitle_selectable(true);
+        list.append(&row);
+    }
+    let intro = gtk::Label::new(Some(&format!(
+        "{} {} não puderam ser lidas. O restante do circuito foi carregado.",
+        errors.len(),
+        if errors.len() == 1 { "entrada" } else { "entradas" }
+    )));
+    intro.set_wrap(true);
+    intro.set_xalign(0.0);
+    let body = gtk::Box::new(gtk::Orientation::Vertical, 12);
+    body.append(&intro);
+    body.append(&list);
+    let scroll = gtk::ScrolledWindow::new();
+    scroll.set_child(Some(&padded(&body)));
+    scroll.set_vexpand(true);
+    dialog("Problemas ao carregar o circuito", 520, 420, &scroll).present(Some(parent));
 }
 
 /// Shows text that can be selected and copied.
@@ -217,6 +265,22 @@ pub fn edit_element(
     fields: Vec<EditInfo>,
     on_apply: impl Fn(Vec<EditInfo>) + 'static,
 ) {
+    edit_element_with(parent, title, fields, Vec::new(), None, on_apply);
+}
+
+/// What a button of an edit dialog does once the dialog has closed.
+pub type DialogButton = (String, Box<dyn Fn()>);
+
+/// [`edit_element`] with extra buttons under the fields (each closes the dialog and then runs
+/// its action) and an optional error message shown when it opens.
+pub fn edit_element_with(
+    parent: &impl IsA<gtk::Widget>,
+    title: &str,
+    fields: Vec<EditInfo>,
+    buttons: Vec<DialogButton>,
+    error: Option<&str>,
+    on_apply: impl Fn(Vec<EditInfo>) + 'static,
+) {
     let group = adw::PreferencesGroup::new();
     let mut widgets: Vec<Field> = Vec::new();
     for ei in &fields {
@@ -232,7 +296,9 @@ pub fn edit_element(
             widgets.push(Field::Combo(row));
         } else if let Some(state) = ei.checkbox {
             let row = adw::SwitchRow::new();
-            row.set_title(&name);
+            // the label of a checkbox field is kept in its text
+            let label = if name.is_empty() { ls(ei.text.as_deref().unwrap_or("")) } else { name };
+            row.set_title(&label);
             row.set_active(state);
             group.add(&row);
             widgets.push(Field::Switch(row));
@@ -261,6 +327,21 @@ pub fn edit_element(
                 Some(t) => row.set_text(t),
                 None => row.set_text(&edit_value_text(ei.value, ei.dimensionless)),
             }
+            if let Some(choice) = ei.file_chooser.clone() {
+                let button = gtk::Button::from_icon_name("document-open-symbolic");
+                button.set_valign(gtk::Align::Center);
+                button.add_css_class("flat");
+                button.set_tooltip_text(Some(&ls("Choose File...")));
+                let (entry, anchor) = (row.clone(), parent.clone().upcast::<gtk::Widget>());
+                button.connect_clicked(move |_| {
+                    let Some(window) = anchor.root().and_downcast::<gtk::Window>() else { return };
+                    let entry = entry.clone();
+                    choose_path(&window, &choice, entry.text().as_str(), move |path| {
+                        entry.set_text(&path.to_string_lossy());
+                    });
+                });
+                row.add_suffix(&button);
+            }
             group.add(&row);
             widgets.push(Field::Entry(row));
         }
@@ -268,17 +349,33 @@ pub fn edit_element(
     let apply = gtk::Button::with_label("Aplicar");
     apply.add_css_class("suggested-action");
     apply.set_halign(gtk::Align::End);
-    let message = gtk::Label::new(None);
+    let message = gtk::Label::new(error);
     message.add_css_class("error");
     message.set_xalign(0.0);
+    message.set_wrap(true);
     let body = gtk::Box::new(gtk::Orientation::Vertical, 12);
     body.append(&group);
+    let extra: Vec<(gtk::Button, Box<dyn Fn()>)> = buttons
+        .into_iter()
+        .map(|(label, action)| {
+            let b = gtk::Button::with_label(&ls(&label));
+            body.append(&b);
+            (b, action)
+        })
+        .collect();
     body.append(&message);
     body.append(&apply);
     let scroll = gtk::ScrolledWindow::new();
     scroll.set_child(Some(&padded(&body)));
     scroll.set_propagate_natural_height(true);
     let d = dialog(title, 420, 480, &scroll);
+    for (button, action) in extra {
+        let d3 = d.clone();
+        button.connect_clicked(move |_| {
+            d3.close();
+            action();
+        });
+    }
     let d2 = d.clone();
     apply.connect_clicked(move |_| {
         let mut out = fields.clone();
@@ -318,6 +415,289 @@ pub fn edit_element(
         d2.close();
         on_apply(out);
     });
+    d.present(Some(parent));
+}
+
+/// The Add Sliders dialog of an element: for each field that can have a slider, a switch and,
+/// when it is on, the range, step, scale type and label of the slider.
+pub fn element_sliders(
+    parent: &impl IsA<gtk::Widget>,
+    title: &str,
+    entries: Vec<SliderEntry>,
+    error: Option<&str>,
+    on_apply: impl Fn(Vec<SliderEntry>) + 'static,
+) {
+    struct Row {
+        expander: adw::ExpanderRow,
+        min: adw::EntryRow,
+        max: adw::EntryRow,
+        step: adw::EntryRow,
+        label: adw::EntryRow,
+        log: adw::SwitchRow,
+    }
+    let group = adw::PreferencesGroup::new();
+    let mut rows = Vec::new();
+    for e in &entries {
+        let expander = adw::ExpanderRow::new();
+        expander.set_title(&e.name);
+        expander.set_show_enable_switch(true);
+        expander.set_enable_expansion(e.enabled);
+        expander.set_expanded(e.enabled);
+        let entry = |title: &str, v: f64| {
+            let r = adw::EntryRow::new();
+            r.set_title(&ls(title));
+            r.set_text(&edit_value_text(v, false));
+            expander.add_row(&r);
+            r
+        };
+        let min = entry("Min Value", e.min);
+        let max = entry("Max Value", e.max);
+        let step = entry("Step (0=continuous)", e.step);
+        let label = adw::EntryRow::new();
+        label.set_title(&ls("Label"));
+        label.set_text(&e.label);
+        expander.add_row(&label);
+        let log = adw::SwitchRow::new();
+        log.set_title(&ls("Logarithmic"));
+        log.set_active(e.logarithmic);
+        expander.add_row(&log);
+        group.add(&expander);
+        rows.push(Row { expander, min, max, step, label, log });
+    }
+    let apply = gtk::Button::with_label("Aplicar");
+    apply.add_css_class("suggested-action");
+    apply.set_halign(gtk::Align::End);
+    let message = gtk::Label::new(error);
+    message.add_css_class("error");
+    message.set_xalign(0.0);
+    message.set_wrap(true);
+    let body = gtk::Box::new(gtk::Orientation::Vertical, 12);
+    body.append(&group);
+    body.append(&message);
+    body.append(&apply);
+    let scroll = gtk::ScrolledWindow::new();
+    scroll.set_child(Some(&padded(&body)));
+    scroll.set_propagate_natural_height(true);
+    let d = dialog(title, 420, 480, &scroll);
+    let d2 = d.clone();
+    apply.connect_clicked(move |_| {
+        let mut out = entries.clone();
+        for (e, r) in out.iter_mut().zip(&rows) {
+            e.enabled = r.expander.enables_expansion();
+            if !e.enabled {
+                continue;
+            }
+            let read = |row: &adw::EntryRow| parse_edit_value(row.text().as_str());
+            match (read(&r.min), read(&r.max), read(&r.step)) {
+                (Some(min), Some(max), Some(step)) => {
+                    e.min = min;
+                    e.max = max;
+                    e.step = step;
+                }
+                _ => {
+                    message.set_text(&format!("{}: valor inválido", e.name));
+                    return;
+                }
+            }
+            e.label = r.label.text().to_string();
+            e.logarithmic = r.log.is_active();
+        }
+        d2.close();
+        on_apply(out);
+    });
+    d.present(Some(parent));
+}
+
+/// The pin layout dialog of a subcircuit: its name, whether the chip shows it, the size of the
+/// chip, where it is kept, and the side and place of every pin. `on_apply` gets the changed
+/// model and where to keep it.
+pub fn subcircuit_pins(
+    parent: &impl IsA<gtk::Widget>,
+    model: &CompositeModel,
+    error: Option<&str>,
+    on_apply: impl Fn(CompositeModel, ModelScope) + 'static,
+) {
+    let group = adw::PreferencesGroup::new();
+    let name = adw::EntryRow::new();
+    name.set_title(&ls("Model Name"));
+    name.set_text(&model.name);
+    group.add(&name);
+    let label = adw::SwitchRow::new();
+    label.set_title(&ls("Show Label"));
+    label.set_active(model.show_label());
+    group.add(&label);
+    let spin = |title: &str, v: i32| {
+        let r = adw::SpinRow::with_range(1.0, 40.0, 1.0);
+        r.set_title(&ls(title));
+        r.set_value(f64::from(v));
+        group.add(&r);
+        r
+    };
+    let width = spin("Width", model.size_x);
+    let height = spin("Height", model.size_y);
+    let scope = adw::ComboRow::new();
+    scope.set_title(&ls("Scope:"));
+    let items = [ls("This Circuit"), ls("This Session"), ls("Save Across Sessions")];
+    let refs: Vec<&str> = items.iter().map(String::as_str).collect();
+    scope.set_model(Some(&gtk::StringList::new(&refs)));
+    group.add(&scope);
+
+    // one row per pin (a bus is one row for all its bits)
+    let pins = adw::PreferencesGroup::new();
+    pins.set_title(&ls("Edit Subcircuit Pin Layout"));
+    let sides = [ls("North"), ls("South"), ls("West"), ls("East")];
+    let side_refs: Vec<&str> = sides.iter().map(String::as_str).collect();
+    let mut rows = Vec::new();
+    for (i, p) in model.ext.iter().enumerate().filter(|(_, p)| p.bus_z == 0) {
+        let row = adw::ActionRow::new();
+        row.set_title(&p.name);
+        let side =
+            gtk::DropDown::new(Some(gtk::StringList::new(&side_refs)), gtk::Expression::NONE);
+        side.set_selected(p.side as u32);
+        side.set_valign(gtk::Align::Center);
+        let pos = gtk::SpinButton::with_range(0.0, 39.0, 1.0);
+        pos.set_value(f64::from(p.pos));
+        pos.set_valign(gtk::Align::Center);
+        row.add_suffix(&side);
+        row.add_suffix(&pos);
+        pins.add(&row);
+        rows.push((i, side, pos));
+    }
+    let apply = gtk::Button::with_label("Aplicar");
+    apply.add_css_class("suggested-action");
+    apply.set_halign(gtk::Align::End);
+    let message = gtk::Label::new(error.map(ls).as_deref());
+    message.add_css_class("error");
+    message.set_xalign(0.0);
+    message.set_wrap(true);
+    let body = gtk::Box::new(gtk::Orientation::Vertical, 12);
+    body.append(&group);
+    body.append(&pins);
+    body.append(&message);
+    body.append(&apply);
+    let scroll = gtk::ScrolledWindow::new();
+    scroll.set_child(Some(&padded(&body)));
+    scroll.set_propagate_natural_height(true);
+    let d = dialog(&ls("Edit Subcircuit Pin Layout"), 460, 560, &scroll);
+    let d2 = d.clone();
+    let model = model.clone();
+    apply.connect_clicked(move |_| {
+        let mut m = model.clone();
+        m.name = name.text().to_string();
+        if label.is_active() {
+            m.flags |= 1;
+        } else {
+            m.flags &= !1;
+        }
+        m.size_x = width.value() as i32;
+        m.size_y = height.value() as i32;
+        for (i, side, pos) in &rows {
+            let (s, p) = (side.selected() as i32, pos.value() as i32);
+            // the bits of a bus follow its first pin and share its place
+            let first = &model.ext[*i];
+            for pin in m.ext.iter_mut() {
+                if pin.name == first.name && pin.bus_width == first.bus_width {
+                    pin.side = s;
+                    pin.pos = p;
+                }
+            }
+        }
+        let scope = match scope.selected() {
+            1 => ModelScope::Session,
+            2 => ModelScope::Saved,
+            _ => ModelScope::Circuit,
+        };
+        d2.close();
+        on_apply(m, scope);
+    });
+    d.present(Some(parent));
+}
+
+/// The subcircuit manager: the subcircuits there are, with buttons to place one, change its pin
+/// layout or delete it.
+pub fn subcircuit_manager(
+    parent: &impl IsA<gtk::Widget>,
+    names: &[String],
+    on_place: impl Fn(String) + 'static,
+    on_edit: impl Fn(String) + 'static,
+    on_delete: impl Fn(String) + 'static,
+) {
+    let list = gtk::ListBox::new();
+    list.add_css_class("boxed-list");
+    list.set_selection_mode(gtk::SelectionMode::Single);
+    for n in names {
+        let row = adw::ActionRow::new();
+        row.set_title(n);
+        list.append(&row);
+    }
+    let empty = gtk::Label::new(Some(&ls("No subcircuits yet. Use File > Create Subcircuit.")));
+    empty.set_wrap(true);
+    empty.set_visible(names.is_empty());
+    let (place, edit, delete) = (
+        gtk::Button::with_label(&ls("Place")),
+        gtk::Button::with_label(&ls("Edit Subcircuit Pin Layout")),
+        gtk::Button::with_label(&ls("Delete")),
+    );
+    delete.add_css_class("destructive-action");
+    let buttons = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+    buttons.append(&place);
+    buttons.append(&edit);
+    buttons.append(&delete);
+    buttons.set_halign(gtk::Align::End);
+    let body = gtk::Box::new(gtk::Orientation::Vertical, 12);
+    body.append(&list);
+    body.append(&empty);
+    body.append(&buttons);
+    let scroll = gtk::ScrolledWindow::new();
+    scroll.set_child(Some(&padded(&body)));
+    let d = dialog(&ls("Subcircuit Manager"), 420, 420, &scroll);
+    let names: Vec<String> = names.to_vec();
+    let chosen = {
+        let (list, names) = (list.clone(), names.clone());
+        move || list.selected_row().and_then(|r| names.get(r.index() as usize).cloned())
+    };
+    let on_place = Rc::new(on_place);
+    let on_edit = Rc::new(on_edit);
+    let on_delete = Rc::new(on_delete);
+    {
+        let (d2, ch) = (d.clone(), chosen.clone());
+        place.connect_clicked(move |_| {
+            if let Some(n) = ch() {
+                d2.close();
+                on_place(n);
+            }
+        });
+    }
+    {
+        let (d2, ch) = (d.clone(), chosen.clone());
+        edit.connect_clicked(move |_| {
+            if let Some(n) = ch() {
+                d2.close();
+                on_edit(n);
+            }
+        });
+    }
+    {
+        let (d2, parent2) = (d.clone(), parent.clone().upcast::<gtk::Widget>());
+        delete.connect_clicked(move |_| {
+            let Some(n) = chosen() else { return };
+            // asks first; a deleted subcircuit cannot be brought back
+            let alert = gtk::AlertDialog::builder()
+                .message(format!("{} {n}?", ls("Are you sure you want to delete")))
+                .buttons([ls("Cancel"), ls("Delete")])
+                .cancel_button(0)
+                .default_button(0)
+                .build();
+            let (d3, on_delete) = (d2.clone(), on_delete.clone());
+            let window = parent2.root().and_downcast::<gtk::Window>();
+            alert.choose(window.as_ref(), gio::Cancellable::NONE, move |r| {
+                if r == Ok(1) {
+                    d3.close();
+                    on_delete(n.clone());
+                }
+            });
+        });
+    }
     d.present(Some(parent));
 }
 
@@ -390,6 +770,49 @@ fn filter(name: &str, patterns: &[&str]) -> gio::ListStore {
     store
 }
 
+/// Asks for the file a path field names: one to read or one to write. The folder of the path
+/// already typed is where the chooser starts.
+fn choose_path(
+    parent: &gtk::Window,
+    choice: &crate::elements::element::FileChoice,
+    current: &str,
+    on_path: impl Fn(PathBuf) + 'static,
+) {
+    use crate::elements::element::FileChoice;
+    let d = gtk::FileDialog::new();
+    let start = std::path::Path::new(current.trim());
+    if let Some(dir) = start.parent().filter(|p| p.is_dir()) {
+        d.set_initial_folder(Some(&gio::File::for_path(dir)));
+    }
+    match choice {
+        FileChoice::Open(patterns) => {
+            d.set_title("Escolher arquivo");
+            let refs: Vec<&str> = patterns.iter().map(String::as_str).collect();
+            let store = filter("Arquivos de dados", &refs);
+            let all = gtk::FileFilter::new();
+            all.set_name(Some("Todos os arquivos"));
+            all.add_pattern("*");
+            store.append(&all);
+            d.set_filters(Some(&store));
+            d.open(Some(parent), gio::Cancellable::NONE, move |r| {
+                if let Some(path) = r.ok().and_then(|f| f.path()) {
+                    on_path(path);
+                }
+            });
+        }
+        FileChoice::Save(name) => {
+            d.set_title("Salvar como");
+            let suggested = start.file_name().and_then(|n| n.to_str()).unwrap_or(name);
+            d.set_initial_name(Some(suggested));
+            d.save(Some(parent), gio::Cancellable::NONE, move |r| {
+                if let Some(path) = r.ok().and_then(|f| f.path()) {
+                    on_path(path);
+                }
+            });
+        }
+    }
+}
+
 /// Asks for a circuit file to open.
 pub fn choose_open(parent: &impl IsA<gtk::Window>, on_path: impl Fn(PathBuf) + 'static) {
     let d = gtk::FileDialog::new();
@@ -439,4 +862,23 @@ pub fn copy_png(parent: &impl IsA<gtk::Widget>, png: &[u8]) -> Result<(), String
     let tex = gtk::gdk::Texture::from_bytes(&glib::Bytes::from(png)).map_err(|e| e.to_string())?;
     parent.clipboard().set_texture(&tex);
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::error::LoadError;
+
+    #[test]
+    fn loading_problems_are_described_with_line_and_type() {
+        let (t, d) =
+            load_problem_text(&LoadError::UnknownType { line: 12, type_code: "zz".into() });
+        assert!(t.contains("12") && d.contains("zz"));
+        let (t, d) = load_problem_text(&LoadError::Malformed {
+            line: 3,
+            type_code: "r".into(),
+            message: "missing field".into(),
+        });
+        assert!(t.contains('3') && t.contains('r') && d.contains("missing field"));
+    }
 }

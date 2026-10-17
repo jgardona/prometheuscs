@@ -64,7 +64,13 @@ fn parse_text(text: &str, registry: &Registry) -> ParseResult {
                 }
                 continue;
             }
-            '!' | '.' => {
+            '!' => {
+                if !crate::elements::models::undump_text_custom_logic(&mut st) {
+                    circuit.model_lines.push(raw.to_string());
+                }
+                continue;
+            }
+            '.' => {
                 circuit.model_lines.push(raw.to_string());
                 continue;
             }
@@ -222,7 +228,12 @@ fn parse_xml(text: &str, registry: &Registry) -> ParseResult {
         2 => crate::solver::sim::SolverType::Sparse,
         _ => crate::solver::sim::SolverType::Auto,
     };
-    for node in &root.children {
+    // models first, so the elements that use them can be built whatever the file's order
+    let is_model = |t: &str| matches!(t, "dm" | "rlm" | "tm" | "mm" | "clm" | "ccm");
+    for node in root.children.iter().filter(|n| is_model(&n.tag)) {
+        read_xml_child(node, registry, &mut circuit, &mut errors);
+    }
+    for node in root.children.iter().filter(|n| !is_model(&n.tag)) {
         read_xml_child(node, registry, &mut circuit, &mut errors);
     }
     ParseResult { circuit, errors }
@@ -237,7 +248,15 @@ fn read_xml_child(
     match node.tag.as_str() {
         "o" => circuit.scope_xml.push(node.clone()),
         "dm" | "rlm" | "tm" | "mm" | "clm" | "ccm" => {
-            if !crate::elements::models::undump_xml_model(node) {
+            let defined = crate::elements::models::undump_xml_model(node);
+            // a subcircuit model belongs to the circuit even when nothing uses it yet: keep it
+            // so that saving writes it again
+            let keep = !defined
+                || (node.tag == "ccm"
+                    && !circuit.model_xml.iter().any(|m| {
+                        m.tag == "ccm" && m.string_attr("nm", "") == node.string_attr("nm", "")
+                    }));
+            if keep {
                 circuit.model_xml.push(node.clone());
             }
         }

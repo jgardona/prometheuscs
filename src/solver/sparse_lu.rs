@@ -147,7 +147,6 @@ impl SparseLu {
     }
 }
 
-#[allow(clippy::too_many_arguments)]
 fn solve_col_b(
     g: &Csc,
     lower: bool,

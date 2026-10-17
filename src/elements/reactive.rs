@@ -443,6 +443,10 @@ impl Element for CapacitorElm {
         }
     }
 
+    fn scope_values(&self) -> Vec<i32> {
+        vec![scope::VAL_CHARGE]
+    }
+
     fn scope_units(&self, x: i32) -> i32 {
         match x {
             scope::VAL_CHARGE => scope::UNITS_C,
@@ -672,9 +676,12 @@ impl InductorElm {
             saturation_current: 0.0,
         };
         e.base.current = st.next_f64()?;
-        if let (Ok(ic), Ok(isat)) = (st.next_f64(), st.next_f64()) {
+        // like the original, keep what was read before the first missing field
+        if let Ok(ic) = st.next_f64() {
             e.initial_current = ic;
-            e.saturation_current = isat;
+            if let Ok(isat) = st.next_f64() {
+                e.saturation_current = isat;
+            }
         }
         e.setup_ind();
         Ok(e)

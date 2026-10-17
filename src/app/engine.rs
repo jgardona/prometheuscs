@@ -64,11 +64,29 @@ impl Session {
         }
     }
 
+    /// Number of scopes in the circuit.
+    pub fn scope_count(&self) -> usize {
+        self.sim.scopes.len()
+    }
+
+    /// What every scope shows now.
+    pub fn scope_views(&self) -> Vec<crate::scope::ScopeView> {
+        if self.worker.is_some() {
+            self.scope_views.clone()
+        } else {
+            let dt = self.sim.st.max_time_step;
+            self.sim.scopes.iter().map(|s| s.view(&self.sim.elements, dt, self.sim.st.t)).collect()
+        }
+    }
+
     /// Takes the worker's newest snapshot, if any, and refreshes the drawing settings.
     pub(crate) fn pump(&mut self, elapsed: Duration) -> Result<(), StepError> {
         let snapshot = self.worker.as_ref().and_then(Worker::latest);
         if let Some(snap) = snapshot {
             self.apply_snapshot(&snap);
+        }
+        if self.worker.is_none() {
+            self.sim.push_embedded_views();
         }
         self.highlight_stop_element();
         self.refresh_draw_ctx(elapsed.min(super::session::MAX_FRAME_GAP));
@@ -77,6 +95,19 @@ impl Session {
 
     fn apply_snapshot(&mut self, snap: &FrameSnapshot) {
         self.snapshot_time = snap.time;
+        self.scope_views.clone_from(&snap.scopes);
+        if snap.pause_count != self.pause_seen {
+            // an element (a stop trigger) paused the worker's simulation
+            if snap.pause_count > self.pause_seen {
+                self.running = false;
+            }
+            self.pause_seen = snap.pause_count;
+        }
+        for (i, v) in &snap.embedded {
+            if let Some(e) = self.sim.elements.get_mut(*i) {
+                e.set_scope_view(v.clone());
+            }
+        }
         // a snapshot of a circuit that has since been edited does not fit the elements
         if snap.element_currents.len() == self.sim.elements.len() {
             for ((e, volts), current) in
@@ -87,6 +118,11 @@ impl Session {
                     b.volts.copy_from_slice(volts);
                 }
                 b.current = *current;
+            }
+            for (e, state) in self.sim.elements.iter_mut().zip(&snap.element_states) {
+                if !state.is_empty() {
+                    e.set_visual_state(state);
+                }
             }
         }
         if let Some(err) = &snap.error {

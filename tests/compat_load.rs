@@ -5,7 +5,7 @@
 //!
 //! `coverage_report` prints how many examples load completely and which element types still
 //! stop the rest (`cargo test --test compat_load coverage_report -- --nocapture`). The strict
-//! tests are ignored until the last element family is ported (task T080).
+//! tests check every bundled example.
 
 use prometheuscs::elements::registry::Registry;
 use prometheuscs::error::LoadError;
@@ -66,8 +66,19 @@ fn coverage_report() {
     assert!(!all.is_empty());
 }
 
+#[cfg(feature = "analog")]
+#[cfg(feature = "digital")]
+#[cfg(feature = "diodes")]
+#[cfg(feature = "logic")]
+#[cfg(feature = "mosfets")]
+#[cfg(feature = "outputs")]
+#[cfg(feature = "passive")]
+#[cfg(feature = "reactive")]
+#[cfg(feature = "sources")]
+#[cfg(feature = "subcircuits")]
+#[cfg(feature = "switches")]
+#[cfg(feature = "transistors")]
 #[test]
-#[ignore = "enabled when every element family is ported (T080)"]
 fn every_example_loads_without_errors() {
     let registry = Registry::standard();
     let mut failing = Vec::new();
@@ -86,7 +97,6 @@ fn every_example_loads_without_errors() {
 }
 
 #[test]
-#[ignore = "enabled when every element family is ported (T080)"]
 fn every_example_round_trips_through_save_and_load() {
     let registry = Registry::standard();
     for (name, text) in examples() {

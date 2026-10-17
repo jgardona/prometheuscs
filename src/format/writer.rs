@@ -49,17 +49,33 @@ pub fn write_xml(circuit: &Circuit) -> String {
     }
     // models the elements use are written once each, before the elements that need them are read
     let mut seen: Vec<String> = Vec::new();
+    // subcircuit models an element writes win over the copy kept from the file: the model
+    // may have been changed since
+    let mut by_instance: Vec<String> = Vec::new();
     for e in &circuit.elements {
         if let Some(model) = e.dump_model_xml() {
             let text = model.to_pretty_string();
             if !seen.contains(&text) {
                 seen.push(text);
+                if model.tag == "ccm" {
+                    if let Some((_, name)) = model.attrs.iter().find(|(k, _)| k == "nm") {
+                        by_instance.push(name.clone());
+                    }
+                }
                 root.child(model);
             }
         }
     }
     for m in &circuit.model_xml {
-        root.child(m.to_out());
+        if m.tag == "ccm" && by_instance.contains(&m.string_attr("nm", "")) {
+            continue;
+        }
+        let out = m.to_out();
+        let text = out.to_pretty_string();
+        if !seen.contains(&text) {
+            seen.push(text);
+            root.child(out);
+        }
     }
     for s in &circuit.scope_xml {
         root.child(s.to_out());
@@ -110,6 +126,9 @@ mod tests {
         assert!(text.trim_end().ends_with("/>"));
     }
 
+    #[cfg(feature = "passive")]
+    #[cfg(feature = "reactive")]
+    #[cfg(feature = "sources")]
     #[test]
     fn written_circuit_parses_back() {
         let reg = Registry::standard();

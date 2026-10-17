@@ -36,6 +36,17 @@ pub enum Command {
         /// Keep the simulated time instead of starting from zero.
         keep_time: bool,
     },
+    /// Empty the recorded history of one scope.
+    ResetScope(usize),
+    /// Move a plot of a scope in manual scale mode (while it is being dragged).
+    PlotPosition {
+        /// Scope index.
+        scope: usize,
+        /// Plot index.
+        plot: usize,
+        /// Position in steps.
+        pos: i32,
+    },
     /// Start or stop time.
     SetRunning(bool),
     /// Reset time and element state, then run.
@@ -57,10 +68,25 @@ pub enum Command {
     RunSteps(usize),
     /// Send back the circuit with its current state.
     Dump(Sender<String>),
+    /// Send back what the audio outputs have recorded.
+    Audio(Sender<Vec<AudioClip>>),
     /// Reply once every earlier command has been carried out.
     Sync(Sender<()>),
     /// Stop the thread.
     Shutdown,
+}
+
+/// What an audio output recorded.
+#[derive(Clone, Debug, PartialEq)]
+pub struct AudioClip {
+    /// Index of the element.
+    pub elm: usize,
+    /// Its name.
+    pub label: String,
+    /// Samples per second.
+    pub rate: i32,
+    /// The samples, in volts, oldest first.
+    pub samples: Vec<f64>,
 }
 
 /// Handle of a running worker thread. Dropping it stops the thread.
@@ -102,6 +128,13 @@ impl Worker {
         rx.recv_timeout(REPLY_TIMEOUT).ok()
     }
 
+    /// What the audio outputs of the circuit have recorded so far.
+    pub fn audio(&self) -> Option<Vec<AudioClip>> {
+        let (tx, rx) = mpsc::channel();
+        self.send(Command::Audio(tx));
+        rx.recv_timeout(REPLY_TIMEOUT).ok()
+    }
+
     /// Waits until every command sent so far has been carried out.
     pub fn sync(&self) -> bool {
         let (tx, rx) = mpsc::channel();
@@ -126,11 +159,35 @@ fn handle(s: &mut Session, command: Command, syncs: &mut Vec<Sender<()>>) -> boo
         Command::Load { xml, keep_time } => {
             let (t, running) = (s.sim.time(), s.running);
             let title = s.title.clone();
+            let old_scopes = std::mem::take(&mut s.sim.scopes);
             let loaded = s.open_text(&xml, &title, None).is_ok();
             if keep_time {
                 s.sim.set_time(t);
+                // scopes that did not change keep what they recorded
+                let mut old: Vec<Option<crate::scope::Scope>> =
+                    old_scopes.into_iter().map(Some).collect();
+                for sc in &mut s.sim.scopes {
+                    let found =
+                        old.iter().position(|o| o.as_ref().is_some_and(|o| o.same_plots(sc)));
+                    if let Some(mut old_scope) = found.and_then(|i| old[i].take()) {
+                        old_scope.take_settings_from(sc);
+                        *sc = old_scope;
+                    }
+                }
             }
             s.running = running && loaded;
+        }
+        Command::ResetScope(i) => {
+            let t = s.sim.time();
+            if let Some(sc) = s.sim.scopes.get_mut(i) {
+                sc.reset(t);
+            }
+        }
+        Command::PlotPosition { scope, plot, pos } => {
+            if let Some(p) = s.sim.scopes.get_mut(scope).and_then(|sc| sc.plots.get_mut(plot)) {
+                p.man_pos = pos;
+                p.man_set = true;
+            }
         }
         Command::SetRunning(on) => s.set_running(on),
         Command::Reset => s.reset(),
@@ -143,6 +200,9 @@ fn handle(s: &mut Session, command: Command, syncs: &mut Vec<Sender<()>>) -> boo
         Command::RunSteps(n) => s.run_steps_now(n),
         Command::Dump(reply) => {
             let _ = reply.send(s.circuit_xml());
+        }
+        Command::Audio(reply) => {
+            let _ = reply.send(s.audio_clips());
         }
         // answered after the next snapshot is published, so the caller can read it at once
         Command::Sync(reply) => syncs.push(reply),

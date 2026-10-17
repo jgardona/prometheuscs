@@ -7,6 +7,7 @@
 use super::session::Session;
 use crate::elements::element::{EditInfo, Element};
 use crate::elements::geometry::{Rect, distance_sq};
+use crate::elements::model_edit::ModelEditor;
 use crate::format::parser::parse;
 use crate::format::writer::write_elements_xml;
 use crate::locale::ls;
@@ -47,6 +48,250 @@ pub struct Mods {
     pub shift: bool,
     /// Control is held: add to the selection.
     pub ctrl: bool,
+}
+
+/// How many fields of the scope properties dialog come after the measurements: two checkboxes,
+/// six plot choices and the trail persistence.
+const XY_FIELDS: usize = 9;
+
+/// A scope's samples as a CSV file: the time, then the smallest and largest value of each plot.
+fn csv_of(view: &crate::scope::ScopeView) -> Option<String> {
+    use crate::format::number::js_number;
+    let first = view.plots.first()?;
+    let unit = |u: i32| match u {
+        crate::scope::UNITS_V => "V",
+        crate::scope::UNITS_A => "A",
+        crate::scope::UNITS_W => "W",
+        crate::scope::UNITS_OHMS => "ohm",
+        crate::scope::UNITS_C => "C",
+        _ => "",
+    };
+    let mut out = String::from("time");
+    for p in &view.plots {
+        for edge in ["min", "max"] {
+            out += &format!(",\"{} {} {edge}\"", p.title, unit(p.units));
+        }
+    }
+    out.push('\n');
+    let n = first.min.len();
+    for i in 0..n {
+        let t = view.time - (n - 1 - i) as f64 * view.time_per_sample;
+        if t < 0.0 {
+            continue;
+        }
+        out += &js_number(t);
+        for p in &view.plots {
+            out += &format!(",{},{}", js_number(p.min[i]), js_number(p.max[i]));
+        }
+        out.push('\n');
+    }
+    Some(out)
+}
+
+/// The fields of the properties dialog of `sc` (see [`Session::scope_properties`]).
+fn scope_fields(sc: &crate::scope::Scope, elements: &[Box<dyn Element>]) -> Vec<EditInfo> {
+    use crate::scope::{FLAG_LOG_SPECTRUM, FLAG_PHASE_ANGLE, TRIGGER_EDGE_FALLING};
+    let titles: Vec<String> = sc
+        .view(elements, 0.0, 0.0)
+        .plots
+        .iter()
+        .map(|p| format!("{} {}", p.title, crate::render::scopes::plot_label(p)))
+        .collect();
+    let mut f = vec![
+        EditInfo::checkbox("Manual Scale", sc.is_manual()),
+        EditInfo::checkbox("Max Scale", sc.flags & crate::scope::FLAG_MAX_SCALE != 0),
+        EditInfo::number("# of Divisions", f64::from(sc.man_divisions)).set_dimensionless(),
+        EditInfo::number("Time Steps per Sample", f64::from(sc.speed)).set_dimensionless(),
+        EditInfo::choice(
+            "Trigger Mode",
+            vec!["Free Run".into(), "Normal".into(), "Auto".into()],
+            sc.trigger.mode.clamp(0, 2) as usize,
+        ),
+        EditInfo::choice(
+            "Trigger Edge",
+            vec!["Rising".into(), "Falling".into()],
+            usize::from(sc.trigger.edge == TRIGGER_EDGE_FALLING),
+        ),
+        EditInfo::number("Trigger Level", sc.trigger.level),
+    ];
+    for (i, p) in sc.plots.iter().enumerate() {
+        let name = titles.get(i).cloned().unwrap_or_default();
+        let scale = if p.man_set { p.man_scale } else { sc.man_scale_from_max(p.units, true) };
+        let div = f64::from(sc.man_divisions.max(1));
+        let pos = f64::from(p.man_pos) * div / f64::from(crate::scope::V_POSITION_STEPS);
+        f.push(
+            EditInfo::number(&format!("{}: {name}", ls("Scale per Division")), scale)
+                .set_positive(),
+        );
+        f.push(EditInfo::number(&format!("{}: {name}", ls("Position (divisions)")), pos));
+        if p.can_ac_couple() {
+            f.push(EditInfo::checkbox(&format!("{}: {name}", ls("AC Coupled")), p.ac_coupled));
+        }
+    }
+    for (label, bit, inverted) in INFO_FLAGS {
+        f.push(EditInfo::checkbox(label, (sc.flags & bit != 0) != inverted));
+    }
+    f.push(EditInfo::checkbox("Show Phase Angle", sc.flags & FLAG_PHASE_ANGLE != 0));
+    f.push(EditInfo::checkbox("Log Spectrum", sc.flags & FLAG_LOG_SPECTRUM != 0));
+    // the axes only matter to an X/Y plot, so only that one is offered them
+    if !(sc.xy && sc.plot_xy) {
+        return f;
+    }
+    // which plots are the axes of an X/Y plot, and which ones modulate its trace
+    let axes = sc.axes;
+    let count = sc.plots.len();
+    let named = |label: &str, current: i32| {
+        EditInfo::choice(
+            label,
+            (0..count).map(|i| titles.get(i).cloned().unwrap_or_default()).collect(),
+            crate::scope::XyAxes::valid(current, 0, count),
+        )
+    };
+    let optional = |label: &str, current: i32| {
+        let mut names = vec![ls("None")];
+        names.extend((0..count).map(|i| titles.get(i).cloned().unwrap_or_default()));
+        let at = crate::scope::XyAxes::modulator(current, count).map_or(0, |i| i + 1);
+        EditInfo::choice(label, names, at)
+    };
+    f.push(named("X Axis", axes.x));
+    f.push(named("Y Axis", axes.y));
+    f.push(optional("Brightness", axes.brightness));
+    f.push(optional("Red", axes.red));
+    f.push(optional("Green", axes.green));
+    f.push(optional("Blue", axes.blue));
+    f.push(
+        EditInfo::number("Trail Persistence (time steps)", f64::from(axes.trail))
+            .set_dimensionless(),
+    );
+    f
+}
+
+/// Checks the fields of the properties dialog of `sc`; the first invalid one is reported.
+fn check_scope_fields(sc: &crate::scope::Scope, fields: &[EditInfo]) -> Result<(), String> {
+    let per_plot: usize = sc.plots.iter().map(|p| 2 + usize::from(p.can_ac_couple())).sum();
+    if fields.len() < 7 + per_plot + INFO_FLAGS.len() + 2 {
+        return Err("missing fields".into());
+    }
+    let divisions = fields[2].value;
+    if divisions.fract() != 0.0 || !(2.0..=20.0).contains(&divisions) {
+        return Err("# of Divisions: must be a whole number from 2 to 20".into());
+    }
+    let speed = fields[3].value;
+    if speed.fract() != 0.0 || !(1.0..=1024.0).contains(&speed) {
+        return Err("Time Steps per Sample: must be a whole number from 1 to 1024".into());
+    }
+    let mut at = 7;
+    for p in &sc.plots {
+        if fields[at].value <= 0.0 {
+            return Err("Scale per Division: must be > 0".into());
+        }
+        at += 2 + usize::from(p.can_ac_couple());
+    }
+    Ok(())
+}
+
+/// Puts the fields of the properties dialog (already checked) into `sc`.
+fn apply_scope_fields(sc: &mut crate::scope::Scope, fields: &[EditInfo]) {
+    use crate::scope::{
+        FLAG_LOG_SPECTRUM, FLAG_MAX_SCALE, FLAG_PHASE_ANGLE, TRIGGER_EDGE_FALLING,
+        TRIGGER_EDGE_RISING,
+    };
+    let divisions = fields[2].value;
+    sc.speed = fields[3].value as i32;
+    sc.man_divisions = divisions as i32;
+    if fields[1].checkbox.unwrap_or(false) {
+        sc.flags |= FLAG_MAX_SCALE;
+    } else {
+        sc.flags &= !FLAG_MAX_SCALE;
+    }
+    sc.trigger.mode = fields[4].choice_index.min(2) as i32;
+    sc.trigger.edge =
+        if fields[5].choice_index == 1 { TRIGGER_EDGE_FALLING } else { TRIGGER_EDGE_RISING };
+    sc.trigger.level = fields[6].value;
+    let steps = f64::from(crate::scope::V_POSITION_STEPS);
+    let mut at = 7;
+    for p in &mut sc.plots {
+        p.man_scale = fields[at].value;
+        p.man_pos = (fields[at + 1].value * steps / divisions).round().clamp(-steps, steps) as i32;
+        p.man_set = true;
+        at += 2;
+        if p.can_ac_couple() {
+            p.ac_coupled = fields[at].checkbox.unwrap_or(false);
+            at += 1;
+        }
+    }
+    for (k, (_, bit, inverted)) in INFO_FLAGS.iter().enumerate() {
+        let on = fields[at + k].checkbox.unwrap_or(false) != *inverted;
+        if on {
+            sc.flags |= bit;
+        } else {
+            sc.flags &= !bit;
+        }
+    }
+    let at = at + INFO_FLAGS.len();
+    for (k, bit) in [FLAG_PHASE_ANGLE, FLAG_LOG_SPECTRUM].into_iter().enumerate() {
+        if fields[at + k].checkbox.unwrap_or(false) {
+            sc.flags |= bit;
+        } else {
+            sc.flags &= !bit;
+        }
+    }
+    // the axes are in the dialog of an X/Y plot only
+    if fields.len() >= at + XY_FIELDS {
+        let pick = |k: usize| fields[at + 2 + k].choice_index as i32;
+        sc.axes = crate::scope::XyAxes {
+            x: pick(0),
+            y: pick(1),
+            brightness: pick(2) - 1,
+            red: pick(3) - 1,
+            green: pick(4) - 1,
+            blue: pick(5) - 1,
+            trail: fields[at + 8].value.round().clamp(0.0, 1e9) as i32,
+        };
+    }
+    let manual = fields[0].checkbox.unwrap_or(false);
+    if manual {
+        sc.flags |= crate::scope::FLAG_MAN_SCALE;
+    } else {
+        sc.flags &= !crate::scope::FLAG_MAN_SCALE;
+    }
+}
+
+pub use crate::scope::ScopeMode;
+
+/// The measurements a scope can show: the label, the flag bit, and whether the bit being set
+/// means "do not show".
+const INFO_FLAGS: [(&str, i32, bool); 9] = [
+    ("Show Peak Value", crate::scope::FLAG_NO_MAX, true),
+    ("Show Negative Peak Value", crate::scope::FLAG_MIN, false),
+    ("Show Peak to Peak", crate::scope::FLAG_P2P, false),
+    ("Show Frequency", crate::scope::FLAG_FREQ, false),
+    ("Show RMS Average", crate::scope::FLAG_RMS, false),
+    ("Show Average", crate::scope::FLAG_AVERAGE, false),
+    ("Show Duty Cycle", crate::scope::FLAG_DUTY, false),
+    ("Show Scale", crate::scope::FLAG_SCALE, false),
+    ("Show Element Info", crate::scope::FLAG_ELM_INFO, false),
+];
+
+/// One field of the Add Sliders dialog: whether it has a slider and how the slider is set.
+#[derive(Clone, Debug, PartialEq)]
+pub struct SliderEntry {
+    /// Index of the field in the element's edit list.
+    pub item: usize,
+    /// Name of the field.
+    pub name: String,
+    /// The field has a slider.
+    pub enabled: bool,
+    /// Value at the left end.
+    pub min: f64,
+    /// Value at the right end.
+    pub max: f64,
+    /// Step of the slider (0 for continuous).
+    pub step: f64,
+    /// Logarithmic slider.
+    pub logarithmic: bool,
+    /// Label above the slider.
+    pub label: String,
 }
 
 /// Which elements a move gesture affects.
@@ -145,7 +390,7 @@ impl Session {
 
     /// True unless editing is disabled in the options.
     pub fn editing_allowed(&self) -> bool {
-        !self.settings.disable_editing
+        !self.settings.disable_editing && self.inspect.is_empty()
     }
 
     /// The toolbar's mode text, for example `Modo: Modo Edição`.
@@ -205,6 +450,8 @@ impl Session {
     /// Updates the highlighted element and the crosshair for the mouse at surface position
     /// (`px`, `py`), or when the mouse left the canvas.
     pub fn hover_at(&mut self, pos: Option<(f64, f64)>) {
+        // what is shown inside an instance is not the circuit the pointer would find
+        let pos = pos.filter(|_| self.inspect.is_empty());
         self.pointer = pos.map(|(px, py)| {
             let (gx, gy) = self.view.to_circuit(px, py);
             (self.snap(gx), self.snap(gy))
@@ -301,6 +548,10 @@ impl Session {
     /// A mouse button was pressed at surface position (`px`, `py`). Returns true when the
     /// circuit or the view changed.
     pub fn mouse_down(&mut self, px: f64, py: f64, mods: Mods, button: u32) -> bool {
+        // looking inside an instance: the view can be moved, nothing else
+        if !self.inspect.is_empty() && !(mods.shift || button == 2) {
+            return false;
+        }
         if button == 3 {
             let changed = self.tool != Tool::Select || !matches!(self.drag, Drag::None);
             self.set_tool(Tool::Select);
@@ -583,6 +834,529 @@ impl Session {
             .collect()
     }
 
+    /// Elements a scope can be opened for: the selection, or else the element under the mouse.
+    pub fn scope_targets(&self) -> Vec<usize> {
+        let mut v: Vec<usize> = self
+            .selected_indices()
+            .into_iter()
+            .filter(|&i| self.sim.elements[i].can_view_in_scope())
+            .collect();
+        if v.is_empty() {
+            v.extend(self.hover.filter(|&i| self.sim.elements[i].can_view_in_scope()));
+        }
+        v
+    }
+
+    /// Opens a scope for every element of [`Session::scope_targets`]; returns how many.
+    pub fn view_in_scope(&mut self) -> usize {
+        let targets = self.scope_targets();
+        if targets.is_empty() {
+            return 0;
+        }
+        self.push_undo();
+        for i in &targets {
+            let position = self.sim.scopes.len() as i32;
+            if let Some(sc) = crate::scope::Scope::for_element(*i, &self.sim.elements, position) {
+                self.sim.scopes.push(sc);
+            }
+        }
+        self.store_scopes();
+        self.dirty = true;
+        self.reanalyze();
+        targets.len()
+    }
+
+    /// The values scope `idx` can plot, with whether each is plotted now.
+    pub fn scope_menu(&self, idx: usize) -> Vec<(i32, &'static str, bool)> {
+        self.sim.scopes.get(idx).map(|s| s.menu_items(&self.sim.elements)).unwrap_or_default()
+    }
+
+    /// Starts or stops plotting `value` in scope `idx`.
+    pub fn toggle_scope_value(&mut self, idx: usize, value: i32, on: bool) {
+        if idx >= self.sim.scopes.len() {
+            return;
+        }
+        self.push_undo();
+        let elements = std::mem::take(&mut self.sim.elements);
+        self.sim.scopes[idx].set_value(value, on, &elements);
+        self.sim.elements = elements;
+        self.store_scopes();
+        self.dirty = true;
+        self.reanalyze();
+    }
+
+    /// Whether scope `idx` is in `mode`.
+    pub fn scope_mode(&self, idx: usize, mode: ScopeMode) -> bool {
+        self.sim.scopes.get(idx).is_some_and(|s| s.has_mode(mode))
+    }
+
+    /// Turns the X/Y plot, the plot of voltage against current or the spectrum of scope `idx`
+    /// on or off.
+    pub fn set_scope_mode(&mut self, idx: usize, mode: ScopeMode, on: bool) {
+        if idx >= self.sim.scopes.len() {
+            return;
+        }
+        self.push_undo();
+        self.sim.scopes[idx].set_mode(mode, on);
+        self.store_scopes();
+        self.dirty = true;
+        self.reanalyze();
+    }
+
+    /// Stops plotting plot `plot` of scope `idx`; a scope left with no plots goes away.
+    pub fn remove_scope_plot(&mut self, idx: usize, plot: usize) {
+        let Some(sc) = self.sim.scopes.get_mut(idx) else { return };
+        if plot >= sc.plots.len() {
+            return;
+        }
+        self.push_undo();
+        if !self.sim.scopes[idx].remove_plot(plot) {
+            self.sim.scopes.remove(idx);
+        }
+        self.store_scopes();
+        self.dirty = true;
+        self.reanalyze();
+    }
+
+    /// Empties what scope `idx` has recorded.
+    pub fn reset_scope(&mut self, idx: usize) {
+        let t = self.sim.time();
+        if let Some(sc) = self.sim.scopes.get_mut(idx) {
+            sc.reset(t);
+        }
+        if let Some(w) = &self.worker {
+            w.send(super::worker::Command::ResetScope(idx));
+        }
+    }
+
+    /// What scope `idx` shows now as a CSV file: the time, then the smallest and largest value
+    /// of each plot in every sample, oldest first.
+    pub fn scope_csv(&self, idx: usize) -> Option<String> {
+        csv_of(&self.scope_views().into_iter().nth(idx)?)
+    }
+
+    /// The same for the scope placed in the circuit as element `elm`.
+    pub fn embedded_scope_csv(&self, elm: usize) -> Option<String> {
+        csv_of(self.sim.elements.get(elm)?.scope_view()?)
+    }
+
+    /// Turns docked scope `idx` into a scope element placed in the circuit, near the first
+    /// element it plots.
+    pub fn undock_scope(&mut self, idx: usize) -> bool {
+        use crate::elements::geometry::snap_grid;
+        if !self.editing_allowed() || idx >= self.sim.scopes.len() {
+            return false;
+        }
+        let scope = &self.sim.scopes[idx];
+        let Some(first) = scope.plots.first().and_then(|p| self.sim.elements.get(p.elm)) else {
+            return false;
+        };
+        let (x, y) = (snap_grid(first.base().x + 50), snap_grid(first.base().y + 50));
+        let Ok(node) = crate::format::xml::parse(&scope.to_xml().to_pretty_string()) else {
+            return false;
+        };
+        let Some(mut elm) = self.registry.create("ScopeElm", x, y) else { return false };
+        let holder = crate::format::xml::XmlNode {
+            tag: "ScopeElm".into(),
+            children: vec![node],
+            ..Default::default()
+        };
+        elm.undump_xml(&holder);
+        self.push_undo();
+        self.sim.scopes.remove(idx);
+        self.sim.elements.push(elm);
+        self.store_scopes();
+        self.dirty = true;
+        self.reanalyze();
+        true
+    }
+
+    /// Index of the selected element when it is the only one and has a field that can take a
+    /// slider.
+    pub fn selected_slider_element(&self) -> Option<usize> {
+        match self.selected_indices()[..] {
+            [i] if !self.slider_entries(i).is_empty() => Some(i),
+            _ => None,
+        }
+    }
+
+    /// Index of the selected element when it is a scope placed in the circuit.
+    pub fn selected_scope_element(&self) -> Option<usize> {
+        let sel = self.selected_indices();
+        match sel[..] {
+            [i] if self.sim.elements[i].scope_source().is_some() => Some(i),
+            _ => None,
+        }
+    }
+
+    /// Turns the scope element `elm` back into a docked scope.
+    pub fn dock_scope(&mut self, elm: usize) -> bool {
+        if !self.editing_allowed() {
+            return false;
+        }
+        let Some((_, mut scope)) =
+            self.sim.embedded.iter().find(|(i, _)| *i == elm).map(|(i, s)| (*i, s.clone()))
+        else {
+            return false;
+        };
+        self.push_undo();
+        // the scope plots element indices, which move when the scope element goes away
+        let removed = [elm];
+        if !scope.drop_elements(&removed) {
+            return false;
+        }
+        scope.position = self.sim.scopes.iter().map(|s| s.position + 1).max().unwrap_or(0);
+        self.remove_elements(&removed);
+        self.sim.scopes.push(scope);
+        self.store_scopes();
+        self.dirty = true;
+        self.reanalyze();
+        true
+    }
+
+    /// The scope placed in the circuit as element `elm`, with the settings of the file.
+    pub fn embedded_scope(&self, elm: usize) -> Option<&crate::scope::Scope> {
+        self.sim.embedded.iter().find(|(i, _)| *i == elm).map(|(_, s)| s)
+    }
+
+    /// Changes the settings of the scope placed in the circuit as element `elm`: `edit` works
+    /// on a copy, which is written back as the settings of the element. The scope starts its
+    /// history again. Returns false when there is no such scope.
+    pub fn edit_embedded_scope(
+        &mut self,
+        elm: usize,
+        edit: impl FnOnce(&mut crate::scope::Scope, &[Box<dyn Element>]),
+    ) -> bool {
+        let Some(mut scope) = self.embedded_scope(elm).cloned() else { return false };
+        edit(&mut scope, &self.sim.elements);
+        let Ok(node) = crate::format::xml::parse(&scope.to_xml().to_pretty_string()) else {
+            return false;
+        };
+        self.push_undo();
+        self.sim.elements[elm].set_scope_source(crate::elements::element::ScopeSource::Xml(node));
+        self.store_scopes();
+        self.dirty = true;
+        self.reanalyze();
+        true
+    }
+
+    /// What the scope placed as element `elm` can plot: the value, its name and whether it is
+    /// plotted.
+    pub fn embedded_scope_menu(&self, elm: usize) -> Vec<(i32, &'static str, bool)> {
+        self.embedded_scope(elm).map(|s| s.menu_items(&self.sim.elements)).unwrap_or_default()
+    }
+
+    /// Starts or stops plotting `value` in the scope placed as element `elm`.
+    pub fn toggle_embedded_value(&mut self, elm: usize, value: i32, on: bool) {
+        self.edit_embedded_scope(elm, |sc, els| sc.set_value(value, on, els));
+    }
+
+    /// Whether the scope placed as element `elm` is in `mode`.
+    pub fn embedded_scope_mode(&self, elm: usize, mode: ScopeMode) -> bool {
+        self.embedded_scope(elm).is_some_and(|s| s.has_mode(mode))
+    }
+
+    /// Turns `mode` on or off for the scope placed as element `elm`.
+    pub fn set_embedded_scope_mode(&mut self, elm: usize, mode: ScopeMode, on: bool) {
+        self.edit_embedded_scope(elm, |sc, _| sc.set_mode(mode, on));
+    }
+
+    /// The names of the plots of the scope placed as element `elm`.
+    pub fn embedded_plot_names(&self, elm: usize) -> Vec<String> {
+        let Some(sc) = self.embedded_scope(elm) else { return Vec::new() };
+        sc.view(&self.sim.elements, 0.0, 0.0)
+            .plots
+            .iter()
+            .map(|p| format!("{} {}", p.title, crate::render::scopes::plot_label(p)))
+            .collect()
+    }
+
+    /// Stops plotting plot `plot` of the scope placed as element `elm`; the element goes away
+    /// with its last plot.
+    pub fn remove_embedded_plot(&mut self, elm: usize, plot: usize) {
+        let Some(sc) = self.embedded_scope(elm) else { return };
+        if plot >= sc.plots.len() {
+            return;
+        }
+        if sc.plots.len() == 1 {
+            self.push_undo();
+            self.remove_elements(&[elm]);
+            self.store_scopes();
+            self.dirty = true;
+            self.reanalyze();
+        } else {
+            self.edit_embedded_scope(elm, |sc, _| {
+                sc.remove_plot(plot);
+            });
+        }
+    }
+
+    /// What the audio outputs have recorded: with a worker, what its circuit recorded.
+    #[cfg(feature = "outputs")]
+    pub fn audio_clips(&self) -> Vec<super::worker::AudioClip> {
+        use crate::elements::audio::AudioOutput;
+        self.sim
+            .elements
+            .iter()
+            .enumerate()
+            .filter_map(|(elm, e)| {
+                let a = e.as_any().downcast_ref::<AudioOutput>()?;
+                Some(super::worker::AudioClip {
+                    elm,
+                    label: a.label(),
+                    rate: a.sampling_rate(),
+                    samples: a.samples(),
+                })
+            })
+            .collect()
+    }
+
+    /// The audio outputs of the circuit: the element and the name of its play button.
+    #[cfg(feature = "outputs")]
+    pub fn audio_outputs(&self) -> Vec<(usize, String)> {
+        use crate::elements::audio::AudioOutput;
+        self.sim
+            .elements
+            .iter()
+            .enumerate()
+            .filter_map(|(i, e)| Some((i, e.as_any().downcast_ref::<AudioOutput>()?.label())))
+            .collect()
+    }
+
+    /// The recording of audio output `elm` as a WAV file; `None` when there is nothing to
+    /// play yet.
+    #[cfg(feature = "outputs")]
+    pub fn audio_wav(&self, elm: usize) -> Option<Vec<u8>> {
+        let clips = match &self.worker {
+            Some(w) => w.audio()?,
+            None => self.audio_clips(),
+        };
+        let clip = clips.into_iter().find(|c| c.elm == elm)?;
+        (!clip.samples.is_empty())
+            .then(|| crate::elements::audio::wav_bytes(&clip.samples, clip.rate))
+    }
+
+    /// Without the outputs family there are no audio outputs.
+    #[cfg(not(feature = "outputs"))]
+    pub fn audio_clips(&self) -> Vec<super::worker::AudioClip> {
+        Vec::new()
+    }
+
+    /// Without the outputs family there are no audio outputs.
+    #[cfg(not(feature = "outputs"))]
+    pub fn audio_outputs(&self) -> Vec<(usize, String)> {
+        Vec::new()
+    }
+
+    /// Without the outputs family there is nothing to play.
+    #[cfg(not(feature = "outputs"))]
+    pub fn audio_wav(&self, _elm: usize) -> Option<Vec<u8>> {
+        None
+    }
+
+    /// Removes the scope placed in the circuit as element `elm`.
+    pub fn remove_embedded_scope(&mut self, elm: usize) {
+        if self.embedded_scope(elm).is_none() {
+            return;
+        }
+        self.push_undo();
+        self.remove_elements(&[elm]);
+        self.store_scopes();
+        self.dirty = true;
+        self.reanalyze();
+    }
+
+    /// Sets how many time steps one sample of scope `idx` (and of the scopes stacked with it)
+    /// covers, between 1 and 1024. The recorded history of those scopes starts again.
+    pub fn set_scope_speed(&mut self, idx: usize, speed: i32) {
+        let Some(place) = self.sim.scopes.get(idx).map(|s| s.position) else { return };
+        let speed = speed.clamp(1, 1024);
+        if self.sim.scopes.iter().filter(|s| s.position == place).all(|s| s.speed == speed) {
+            return;
+        }
+        self.push_undo();
+        for s in self.sim.scopes.iter_mut().filter(|s| s.position == place) {
+            s.speed = speed;
+        }
+        self.store_scopes();
+        self.dirty = true;
+        self.reanalyze();
+    }
+
+    /// The fields of the properties dialog of scope `idx`: manual scale and its divisions, the
+    /// time scale, the trigger, a scale, a position (and AC coupling for voltages) for each
+    /// plot, and the measurements to show.
+    pub fn scope_properties(&self, idx: usize) -> Option<Vec<EditInfo>> {
+        Some(scope_fields(self.sim.scopes.get(idx)?, &self.sim.elements))
+    }
+
+    /// The same for the scope placed in the circuit as element `elm`.
+    pub fn embedded_scope_properties(&self, elm: usize) -> Option<Vec<EditInfo>> {
+        Some(scope_fields(self.embedded_scope(elm)?, &self.sim.elements))
+    }
+
+    /// Applies the fields of [`Session::scope_properties`]; an invalid value is reported and
+    /// nothing changes.
+    pub fn apply_scope_properties(
+        &mut self,
+        idx: usize,
+        fields: &[EditInfo],
+    ) -> Result<(), String> {
+        let sc = self.sim.scopes.get(idx).ok_or("no such scope")?;
+        check_scope_fields(sc, fields)?;
+        self.push_undo();
+        // scopes stacked in one place share their time scale
+        let place = self.sim.scopes[idx].position;
+        let speed = fields[3].value as i32;
+        for s in self.sim.scopes.iter_mut().filter(|s| s.position == place) {
+            s.speed = speed;
+        }
+        apply_scope_fields(&mut self.sim.scopes[idx], fields);
+        self.store_scopes();
+        self.dirty = true;
+        self.reanalyze();
+        Ok(())
+    }
+
+    /// Applies the fields of [`Session::embedded_scope_properties`].
+    pub fn apply_embedded_scope_properties(
+        &mut self,
+        elm: usize,
+        fields: &[EditInfo],
+    ) -> Result<(), String> {
+        check_scope_fields(self.embedded_scope(elm).ok_or("no such scope")?, fields)?;
+        self.edit_embedded_scope(elm, |sc, _| apply_scope_fields(sc, fields));
+        Ok(())
+    }
+
+    /// Moves plot `plot` of scope `idx` up or down (manual scale only) to `pos` steps of
+    /// `V_POSITION_STEPS`, without restarting anything: this follows the mouse while dragging.
+    pub fn set_plot_position(&mut self, idx: usize, plot: usize, pos: i32) {
+        let steps = crate::scope::V_POSITION_STEPS;
+        let Some(p) = self.sim.scopes.get_mut(idx).and_then(|s| s.plots.get_mut(plot)) else {
+            return;
+        };
+        p.man_pos = pos.clamp(-steps, steps);
+        p.man_set = true;
+        self.dirty = true;
+        if let Some(w) = &self.worker {
+            w.send(super::worker::Command::PlotPosition { scope: idx, plot, pos });
+        }
+    }
+
+    /// Whether scope `idx` is in manual scale mode, and where plot `plot` sits.
+    pub fn plot_position(&self, idx: usize, plot: usize) -> Option<(bool, i32)> {
+        let sc = self.sim.scopes.get(idx)?;
+        Some((sc.is_manual(), sc.plots.get(plot)?.man_pos))
+    }
+
+    /// Time steps per sample of scope `idx`.
+    pub fn scope_speed(&self, idx: usize) -> i32 {
+        self.sim.scopes.get(idx).map_or(64, |s| s.speed)
+    }
+
+    /// Removes scope `idx`.
+    pub fn remove_scope(&mut self, idx: usize) {
+        if idx >= self.sim.scopes.len() {
+            return;
+        }
+        self.push_undo();
+        self.sim.scopes.remove(idx);
+        self.store_scopes();
+        self.scope_views.clear();
+        self.dirty = true;
+        self.reanalyze();
+    }
+
+    /// Removes every scope.
+    pub fn remove_scopes(&mut self) {
+        if self.sim.scopes.is_empty() {
+            return;
+        }
+        self.push_undo();
+        self.sim.scopes.clear();
+        self.store_scopes();
+        self.scope_views.clear();
+        self.dirty = true;
+        self.reanalyze();
+    }
+
+    /// Puts every scope in the same place so they are drawn over one another.
+    pub fn stack_scopes(&mut self) {
+        self.rearrange_scopes(|scopes| scopes.iter_mut().for_each(|s| s.position = 0));
+    }
+
+    /// Gives every scope a place of its own.
+    pub fn unstack_scopes(&mut self) {
+        self.rearrange_scopes(|scopes| {
+            scopes.iter_mut().enumerate().for_each(|(i, s)| s.position = i as i32);
+        });
+    }
+
+    /// Moves the plots of all scopes into the first one.
+    pub fn combine_scopes(&mut self) {
+        self.rearrange_scopes(|scopes| {
+            let mut all = std::mem::take(scopes).into_iter();
+            if let Some(mut first) = all.next() {
+                for s in all {
+                    first.combine(s);
+                }
+                scopes.push(first);
+            }
+        });
+    }
+
+    /// Gives every plot a scope of its own.
+    pub fn separate_scopes(&mut self) {
+        self.rearrange_scopes(|scopes| {
+            let all: Vec<_> = std::mem::take(scopes)
+                .into_iter()
+                .flat_map(crate::scope::Scope::separate)
+                .collect();
+            *scopes = all;
+            scopes.iter_mut().enumerate().for_each(|(i, s)| s.position = i as i32);
+        });
+    }
+
+    fn rearrange_scopes(&mut self, f: impl FnOnce(&mut Vec<crate::scope::Scope>)) {
+        if self.sim.scopes.is_empty() {
+            return;
+        }
+        self.push_undo();
+        f(&mut self.sim.scopes);
+        self.store_scopes();
+        self.scope_views.clear();
+        self.dirty = true;
+        self.reanalyze();
+    }
+
+    /// Keeps the scopes in the form that is saved and sent to the worker.
+    pub(crate) fn store_scopes(&mut self) {
+        self.sim.embedded = crate::scope::embedded_scopes(&self.sim.elements);
+        self.extras.scope_xml = self
+            .sim
+            .scopes
+            .iter()
+            .filter_map(|s| crate::format::xml::parse(&s.to_xml().to_pretty_string()).ok())
+            .collect();
+        self.extras.scope_lines.clear();
+    }
+
+    /// Selects only the element under surface position (`px`, `py`), for a context menu.
+    /// Returns false when there is none.
+    pub fn select_for_context(&mut self, px: f64, py: f64) -> bool {
+        if !self.inspect.is_empty() {
+            return false;
+        }
+        let (gx, gy) = self.view.to_circuit(px, py);
+        let Some(i) = self.element_at(gx, gy) else { return false };
+        if !self.sim.elements[i].base().selected {
+            self.deselect_all();
+            self.sim.elements[i].base_mut().selected = true;
+        }
+        true
+    }
+
     /// True when at least one element is selected.
     pub fn has_selection(&self) -> bool {
         self.sim.elements.iter().any(|e| e.base().selected)
@@ -615,6 +1389,8 @@ impl Session {
                 self.sim.elements.remove(i);
             }
         }
+        self.sim.scopes.retain_mut(|sc| sc.drop_elements(&sorted));
+        self.store_scopes();
         let shift = |idx: usize| idx - sorted.iter().filter(|&&r| r < idx).count();
         let old = std::mem::take(&mut self.adjustables);
         let kept: Vec<usize> = (0..old.len()).filter(|&k| !sorted.contains(&old[k].elm)).collect();
@@ -748,6 +1524,12 @@ impl Session {
         let parsed = parse(text, &self.registry);
         self.sim.elements = parsed.circuit.elements;
         self.adjustables = parsed.circuit.adjustables;
+        self.sim.scopes = crate::scope::scopes_from_circuit(
+            &parsed.circuit.scope_lines,
+            &parsed.circuit.scope_xml,
+            &self.sim.elements,
+        );
+        self.store_scopes();
         self.drag = Drag::None;
         self.held = None;
         self.hover = None;
@@ -857,10 +1639,137 @@ impl Session {
         self.reanalyze();
     }
 
+    /// The fields of element `idx` that can have a slider, with the slider each has now.
+    pub fn slider_entries(&self, idx: usize) -> Vec<SliderEntry> {
+        let Some(e) = self.sim.elements.get(idx) else { return Vec::new() };
+        (0..)
+            .map_while(|n| e.get_edit_info(n).map(|ei| (n, ei)))
+            .filter(|(_, ei)| ei.can_create_adjustable() && ei.text.is_none())
+            .map(|(item, ei)| {
+                let found = self.adjustables.iter().find(|a| a.elm == idx && a.edit_item == item);
+                // like the original: the field's own range when it has one, else 1 to 1000
+                let (lo, hi) =
+                    if ei.max_val > 0.0 { (ei.min_val, ei.max_val) } else { (1.0, 1000.0) };
+                let name = ls(&ei.name);
+                let label = match name.rfind(" (") {
+                    Some(i) if name.ends_with(')') => name[..i].to_string(),
+                    _ => name.clone(),
+                };
+                SliderEntry {
+                    item,
+                    name,
+                    enabled: found.is_some(),
+                    min: found.map_or(lo, |a| a.min_value),
+                    max: found.map_or(hi, |a| a.max_value),
+                    step: found.map_or(0.0, |a| a.slider_step),
+                    logarithmic: found.is_some_and(|a| a.logarithmic),
+                    label: found.map_or(label, |a| a.slider_text.clone()),
+                }
+            })
+            .collect()
+    }
+
+    /// Creates, changes or removes the sliders of element `idx` as `choices` say.
+    pub fn apply_sliders(&mut self, idx: usize, choices: &[SliderEntry]) -> Result<(), String> {
+        use crate::format::circuit::Adjustable;
+        if !self.editing_allowed() || idx >= self.sim.elements.len() {
+            return Ok(());
+        }
+        for c in choices.iter().filter(|c| c.enabled) {
+            if c.min.is_nan() || c.max.is_nan() || c.min >= c.max {
+                return Err(format!("{}: the minimum must be below the maximum", c.name));
+            }
+            if c.step < 0.0 {
+                return Err(format!("{}: the step cannot be negative", c.name));
+            }
+        }
+        self.push_undo();
+        for c in choices {
+            let at = self.adjustables.iter().position(|a| a.elm == idx && a.edit_item == c.item);
+            match (c.enabled, at) {
+                (true, Some(k)) => {
+                    let a = &mut self.adjustables[k];
+                    a.min_value = c.min;
+                    a.max_value = c.max;
+                    a.slider_step = c.step;
+                    a.logarithmic = c.logarithmic && c.min > 0.0;
+                    a.slider_text.clone_from(&c.label);
+                }
+                (true, None) => self.adjustables.push(Adjustable {
+                    elm: idx,
+                    edit_item: c.item,
+                    min_value: c.min,
+                    max_value: c.max,
+                    slider_text: c.label.clone(),
+                    slider_step: c.step,
+                    logarithmic: c.logarithmic && c.min > 0.0,
+                    shared_slider: None,
+                }),
+                (false, Some(k)) => {
+                    self.adjustables.remove(k);
+                    // sliders that shared the removed one lose it; later indexes move up
+                    for a in &mut self.adjustables {
+                        a.shared_slider = match a.shared_slider {
+                            Some(s) if s == k => None,
+                            Some(s) if s > k => Some(s - 1),
+                            other => other,
+                        };
+                    }
+                }
+                (false, None) => {}
+            }
+        }
+        self.dirty = true;
+        self.refresh_slider_positions();
+        Ok(())
+    }
+
+    /// Labels of the model buttons of element `idx`'s edit dialog.
+    pub fn model_buttons(&self, idx: usize) -> Vec<String> {
+        self.sim.elements.get(idx).map(|e| e.model_buttons()).unwrap_or_default()
+    }
+
+    /// Starts the model dialog for model button `button` of element `idx`.
+    pub fn start_model_edit(&self, idx: usize, button: usize) -> Option<ModelEditor> {
+        self.sim.elements.get(idx)?.start_model_edit(button)
+    }
+
+    /// Reads the edited fields of a model dialog. Returns true when they change which fields
+    /// the dialog has, so it must be shown again from `editor` (which keeps what was typed);
+    /// otherwise the model is stored, element `idx` takes it, and every element looks its
+    /// model up again.
+    pub fn finish_model_edit(
+        &mut self,
+        idx: usize,
+        editor: &mut ModelEditor,
+        fields: &mut [EditInfo],
+    ) -> Result<bool, String> {
+        if !self.editing_allowed() || idx >= self.sim.elements.len() {
+            return Ok(false);
+        }
+        editor.apply(fields)?;
+        if ModelEditor::needs_new_dialog(fields) {
+            return Ok(true);
+        }
+        self.push_undo();
+        let name = editor.finish()?;
+        self.sim.elements[idx].use_model(&name);
+        for e in &mut self.sim.elements {
+            e.update_models();
+        }
+        self.dirty = true;
+        self.reanalyze();
+        Ok(false)
+    }
+
     /// The element under surface position (`px`, `py`) that a double click should edit.
     pub fn element_for_edit(&self, px: f64, py: f64) -> Option<usize> {
+        if !self.inspect.is_empty() {
+            return None;
+        }
         let (gx, gy) = self.view.to_circuit(px, py);
-        self.element_at(gx, gy).filter(|&i| !self.edit_fields(i).is_empty())
+        self.element_at(gx, gy)
+            .filter(|&i| !self.edit_fields(i).is_empty() || self.embedded_scope(i).is_some())
     }
 
     /// Operates the switches whose keyboard shortcut is `key`. Returns true when one was found.
@@ -1034,6 +1943,14 @@ impl Session {
         }
         self.refresh_draw_ctx_now();
     }
+
+    /// Chooses the interface language; it is applied the next time the program starts.
+    pub fn set_language(&mut self, code: &str) {
+        self.settings.language = code.to_string();
+        if let Some(path) = &self.settings_path {
+            let _ = self.settings.save(path);
+        }
+    }
 }
 
 /// A geometric change applied to the selection.
@@ -1068,6 +1985,7 @@ mod tests {
         s.mouse_down(x, y, Mods::default(), 1);
     }
 
+    #[cfg(feature = "passive")]
     #[test]
     fn dragging_with_the_resistor_tool_places_a_resistor() {
         let mut s = session();
@@ -1086,6 +2004,7 @@ mod tests {
         assert_eq!(s.sim.elements.len(), before + 1);
     }
 
+    #[cfg(feature = "passive")]
     #[test]
     fn undo_and_redo_restore_the_element_list() {
         let mut s = session();
@@ -1154,6 +2073,7 @@ mod tests {
         assert_eq!(pos(&s), start);
     }
 
+    #[cfg(feature = "passive")]
     #[test]
     fn dragging_a_selected_element_moves_it_by_whole_grid_steps() {
         let mut s = session();
@@ -1207,6 +2127,8 @@ mod tests {
         assert!(s.draw_ctx.euro_resistors);
     }
 
+    #[cfg(feature = "passive")]
+    #[cfg(feature = "sources")]
     #[test]
     fn edit_fields_round_trip_through_apply() {
         let mut s = session();
@@ -1219,7 +2141,9 @@ mod tests {
         assert_eq!(s.edit_fields(1)[0].value, 1000.0);
     }
 
+    #[cfg(feature = "sources")]
     #[test]
+    #[cfg(feature = "switches")]
     fn keyboard_shortcut_operates_the_matching_switch() {
         let text = "$ 1 0.000005 10 50 5 50 5e-11\nv 0 64 0 0 0 0 40 5 0 0 0.5\ns 0 0 64 0 0 0 false\nr 64 0 64 64 0 1000\nw 64 64 0 64 0\n";
         let mut s = Session::load(text, &Registry::standard()).unwrap();

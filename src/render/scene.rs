@@ -141,7 +141,8 @@ pub fn draw_overlay(
     }
 }
 
-#[cfg(test)]
+// the tests draw resistors
+#[cfg(all(test, feature = "passive"))]
 mod tests {
     use super::*;
     use crate::elements::passive::ResistorElm;

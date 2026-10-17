@@ -106,6 +106,46 @@ pub fn register(r: &mut Registry) {
         .dump(172, |a, b, c, d, f, st| Ok(Box::new(RailElm::from_dump_var(a, b, c, d, f, st)?))),
     );
     r.add(
+        ElementDescriptor::new("ExtVoltageElm", FAMILY, "Add External Voltage", SOURCES, |x, y| {
+            Box::new(RailElm::new(x, y, RailKind::Ext))
+        })
+        .dump(418, |a, b, c, d, f, st| Ok(Box::new(RailElm::from_dump_ext(a, b, c, d, f, st))))
+        .hidden(),
+    );
+    r.add(
+        ElementDescriptor::new("DataInputElm", FAMILY, "Add Data Input", SOURCES, |x, y| {
+            Box::new(RailElm::new(x, y, RailKind::Data))
+        })
+        .dump(424, |a, b, c, d, f, st| Ok(Box::new(RailElm::from_dump_data(a, b, c, d, f, st)))),
+    );
+    r.add(
+        ElementDescriptor::new("AudioInputElm", FAMILY, "Add Audio Input", SOURCES, |x, y| {
+            Box::new(RailElm::new(x, y, RailKind::Audio))
+        })
+        .dump(411, |a, b, c, d, f, st| Ok(Box::new(RailElm::from_dump_audio(a, b, c, d, f, st)))),
+    );
+    r.add(
+        ElementDescriptor::new("AntennaElm", FAMILY, "Add Antenna", SOURCES, |x, y| {
+            Box::new(RailElm::new(x, y, RailKind::Antenna))
+        })
+        .dump(i32::from(b'A'), |a, b, c, d, f, st| {
+            Ok(Box::new(RailElm::from_dump_antenna(a, b, c, d, f, st)))
+        })
+        .hidden(),
+    );
+    r.add(
+        ElementDescriptor::new(
+            "OhmMeterElm",
+            FAMILY,
+            "Add Ohmmeter",
+            "Outputs and Labels",
+            |x, y| Box::new(CurrentElm::new_ohmmeter(x, y)),
+        )
+        .dump(216, |a, b, c, d, f, st| {
+            Ok(Box::new(CurrentElm::from_dump_ohmmeter(a, b, c, d, f, st)))
+        }),
+    );
+    r.add(
         ElementDescriptor::new("CurrentElm", FAMILY, "Add Current Source", SOURCES, |x, y| {
             Box::new(CurrentElm::new(x, y))
         })
@@ -133,7 +173,8 @@ pub const FLAG_TIME_SPEC: i32 = 32;
 /// Flag: show the voltage next to a rail.
 pub const FLAG_SHOW_VOLTAGE_RAIL: i32 = 64;
 /// Rail flag: draw "CLK" instead of a waveform.
-pub const FLAG_CLOCK: i32 = 1;
+pub const FLAG_REPEAT: i32 = 1 << 8;
+const FLAG_CLOCK: i32 = 1;
 
 /// Direct current.
 pub const WF_DC: i32 = 0;
@@ -625,7 +666,6 @@ impl Waveform {
     }
 
     /// Draws the waveform symbol in a circle centred on `center`.
-    #[allow(clippy::too_many_arguments)]
     fn draw_waveform(
         &self,
         g: &mut dyn Painter,
@@ -1003,6 +1043,83 @@ pub enum RailKind {
     Clock,
     /// Variable voltage controlled by a slider.
     Var,
+    /// A voltage named for an outside program to set.
+    Ext,
+    /// An amplified radio antenna.
+    Antenna,
+    /// Plays back the numbers of a data file, one per sample length.
+    Data,
+    /// Plays back an audio file.
+    Audio,
+}
+
+/// What the data input and the audio input play back.
+#[derive(Clone, Debug)]
+struct Media {
+    file_num: i32,
+    file_name: Option<String>,
+    data: Option<std::sync::Arc<Vec<f64>>>,
+    /// Samples per second of an audio file.
+    sampling_rate: u32,
+    /// Seconds per value of a data file.
+    sample_length: f64,
+    scale_factor: f64,
+    /// Volts of a full-scale audio sample.
+    max_voltage: f64,
+    start_position: f64,
+    /// Playback position in seconds.
+    time_offset: f64,
+}
+
+impl Default for Media {
+    fn default() -> Self {
+        Media {
+            file_num: 0,
+            file_name: None,
+            data: None,
+            sampling_rate: 0,
+            sample_length: 1e-3,
+            scale_factor: 1.0,
+            max_voltage: 5.0,
+            start_position: 0.0,
+            time_offset: 0.0,
+        }
+    }
+}
+
+impl Media {
+    /// Takes the file stored under the current number, if there is one.
+    fn look_up(&mut self) {
+        if let Some(f) = super::samples::lookup(self.file_num) {
+            self.file_name = Some(f.name);
+            self.data = Some(f.data);
+            if f.rate > 0 {
+                self.sampling_rate = f.rate;
+            }
+        }
+    }
+
+    /// Loads the file at `path` (a data file for `audio` false, else a WAV file).
+    fn load(&mut self, path: &str, audio: bool) -> Result<(), String> {
+        let bytes = std::fs::read(path).map_err(|e| format!("{path}: {e}"))?;
+        let (data, rate) = if audio {
+            super::samples::decode_wav(&bytes)?
+        } else {
+            (super::samples::parse_data_text(&String::from_utf8_lossy(&bytes))?, 0)
+        };
+        let file = super::samples::SampleFile {
+            name: super::samples::display_name(path),
+            data: std::sync::Arc::new(data),
+            rate,
+        };
+        self.file_num = super::samples::store(0, file);
+        self.look_up();
+        Ok(())
+    }
+
+    fn name(&self) -> String {
+        self.file_name.clone().unwrap_or_else(|| crate::locale::ls("No file"))
+    }
 }
 
 /// A one-terminal voltage source: a rail connected to ground through the source.
@@ -1014,6 +1131,11 @@ pub struct RailElm {
     kind: RailKind,
     slider_text: String,
     slider_value: i32,
+    /// Name of an external voltage, and the value it was last given.
+    ext_name: String,
+    ext_voltage: f64,
+    fm_phase: f64,
+    media: Media,
 }
 
 impl RailElm {
@@ -1021,7 +1143,9 @@ impl RailElm {
     pub fn new(xx: i32, yy: i32, kind: RailKind) -> Self {
         let wf = match kind {
             RailKind::Dc => WF_DC,
-            RailKind::Ac => WF_AC,
+            RailKind::Ac | RailKind::Ext | RailKind::Antenna | RailKind::Data | RailKind::Audio => {
+                WF_AC
+            }
             RailKind::Square | RailKind::Clock => WF_SQUARE,
             RailKind::Var => WF_VAR,
         };
@@ -1039,7 +1163,17 @@ impl RailElm {
             RailKind::Var => wave.frequency = wave.max_voltage,
             _ => {}
         }
-        let mut r = RailElm { base, wave, kind, slider_text: "Voltage".into(), slider_value: 100 };
+        let mut r = RailElm {
+            base,
+            wave,
+            kind,
+            slider_text: "Voltage".into(),
+            slider_value: 100,
+            ext_name: "ext".into(),
+            ext_voltage: 0.0,
+            fm_phase: 0.0,
+            media: Media::default(),
+        };
         if kind == RailKind::Var {
             r.slider_value = r.slider_from_frequency();
         }
@@ -1050,7 +1184,96 @@ impl RailElm {
     pub fn from_dump(xa: i32, ya: i32, xb: i32, yb: i32, f: i32, st: &mut Tokenizer<'_>) -> Self {
         let mut base = Base::from_dump(xa, ya, xb, yb, f);
         let wave = Waveform::from_dump(st, &mut base.flags);
-        RailElm { base, wave, kind: RailKind::Dc, slider_text: "Voltage".into(), slider_value: 100 }
+        RailElm {
+            base,
+            wave,
+            kind: RailKind::Dc,
+            slider_text: "Voltage".into(),
+            slider_value: 100,
+            ext_name: "ext".into(),
+            ext_voltage: 0.0,
+            fm_phase: 0.0,
+            media: Media::default(),
+        }
+    }
+
+    /// A data input read from a file: sample length, scale factor and file number follow the
+    /// waveform.
+    pub fn from_dump_data(
+        xa: i32,
+        ya: i32,
+        xb: i32,
+        yb: i32,
+        f: i32,
+        st: &mut Tokenizer<'_>,
+    ) -> Self {
+        let mut r = Self::from_dump(xa, ya, xb, yb, f, st);
+        r.kind = RailKind::Data;
+        r.wave.waveform = WF_AC;
+        r.media.sample_length = st.next_f64().unwrap_or(1e-3);
+        r.media.scale_factor = st.next_f64().unwrap_or(1.0);
+        r.media.file_num = st.next_i32().unwrap_or(0);
+        r.media.look_up();
+        r
+    }
+
+    /// An audio input read from a file: maximum voltage, start position and file number follow
+    /// the waveform.
+    pub fn from_dump_audio(
+        xa: i32,
+        ya: i32,
+        xb: i32,
+        yb: i32,
+        f: i32,
+        st: &mut Tokenizer<'_>,
+    ) -> Self {
+        let mut r = Self::from_dump(xa, ya, xb, yb, f, st);
+        r.kind = RailKind::Audio;
+        r.wave.waveform = WF_AC;
+        r.media.max_voltage = st.next_f64().unwrap_or(5.0);
+        r.media.start_position = st.next_f64().unwrap_or(0.0);
+        r.media.file_num = st.next_i32().unwrap_or(0);
+        r.media.look_up();
+        r
+    }
+
+    /// An external voltage read from a file: a rail with a name.
+    pub fn from_dump_ext(
+        xa: i32,
+        ya: i32,
+        xb: i32,
+        yb: i32,
+        f: i32,
+        st: &mut Tokenizer<'_>,
+    ) -> Self {
+        let mut r = Self::from_dump(xa, ya, xb, yb, f, st);
+        r.kind = RailKind::Ext;
+        r.ext_name =
+            st.next_token().map_or_else(|| "ext".into(), crate::format::tokenizer::unescape);
+        r.wave.waveform = WF_AC;
+        r
+    }
+
+    /// An antenna read from a file.
+    pub fn from_dump_antenna(
+        xa: i32,
+        ya: i32,
+        xb: i32,
+        yb: i32,
+        f: i32,
+        st: &mut Tokenizer<'_>,
+    ) -> Self {
+        let mut r = Self::from_dump(xa, ya, xb, yb, f, st);
+        r.kind = RailKind::Antenna;
+        r.wave.waveform = WF_AC;
+        r
+    }
+
+    /// Gives an external voltage its value (ignored by other rails).
+    pub fn set_external_voltage(&mut self, v: f64) {
+        if !v.is_nan() {
+            self.ext_voltage = v;
+        }
     }
 
     /// A variable rail read from a file.
@@ -1080,7 +1303,51 @@ impl RailElm {
             as i32
     }
 
+    /// The voltage at the playback position of a data or audio input.
+    fn media_voltage(&mut self) -> f64 {
+        let m = &mut self.media;
+        let Some(data) = m.data.clone() else { return 0.0 };
+        if self.kind == RailKind::Data {
+            if data.is_empty() {
+                return 0.0;
+            }
+            let mut ptr = (m.time_offset / m.sample_length).max(0.0) as usize;
+            if ptr >= data.len() {
+                if self.base.flags & FLAG_REPEAT != 0 {
+                    ptr = 0;
+                    m.time_offset = 0.0;
+                } else {
+                    ptr = data.len() - 1;
+                }
+            }
+            return data[ptr] * m.scale_factor;
+        }
+        if m.time_offset < m.start_position {
+            m.time_offset = m.start_position;
+        }
+        let dptr = m.time_offset * f64::from(m.sampling_rate);
+        let iptr = dptr as usize;
+        let frac = dptr - iptr as f64;
+        let Some(&v1) = data.get(iptr) else { return 0.0 };
+        let v2 = data.get(iptr + 1).copied().unwrap_or(0.0);
+        (v1 * (1.0 - frac) + v2 * frac) * m.max_voltage
+    }
+
     fn voltage(&mut self, t: f64) -> f64 {
+        if matches!(self.kind, RailKind::Data | RailKind::Audio) {
+            return self.media_voltage();
+        }
+        if self.kind == RailKind::Ext {
+            return self.ext_voltage;
+        }
+        if self.kind == RailKind::Antenna {
+            let tau = std::f64::consts::TAU;
+            let fm = 3.0 * self.fm_phase.sin();
+            return (tau * t * 3000.0).sin() * (1.3 + (tau * t * 12.0).sin()) * 3.0
+                + (tau * t * 2710.0).sin() * (1.3 + (tau * t * 13.0).sin()) * 3.0
+                + (tau * t * 2433.0).sin() * (1.3 + (tau * t * 14.0).sin()) * 3.0
+                + fm;
+        }
         if self.kind == RailKind::Var {
             self.wave.frequency =
                 f64::from(self.slider_value) * (self.wave.max_voltage - self.wave.bias) / 100.0
@@ -1091,11 +1358,20 @@ impl RailElm {
     }
 
     fn rail_text(&self) -> Option<String> {
-        None
+        match self.kind {
+            RailKind::Ext => Some(self.ext_name.clone()),
+            RailKind::Antenna => Some("Ant".into()),
+            RailKind::Data | RailKind::Audio => Some(self.media.name()),
+            _ => None,
+        }
     }
 
     fn draw_rail(&mut self, g: &mut dyn Painter, c: &DrawCtx) {
         let (p1, p2, l1) = (self.base.point1, self.base.point2, self.base.lead1);
+        if let Some(name) = self.rail_text() {
+            self.draw_rail_text(g, c, &name);
+            return;
+        }
         if self.wave.waveform == WF_SQUARE && self.base.flags & FLAG_CLOCK != 0 {
             self.draw_rail_text(g, c, "CLK");
         } else if self.wave.waveform == WF_DC || self.wave.waveform == WF_VAR {
@@ -1147,13 +1423,30 @@ impl Element for RailElm {
             RailKind::Square => "SquareRailElm",
             RailKind::Clock => "ClockElm",
             RailKind::Var => "VarRailElm",
+            RailKind::Ext => "ExtVoltageElm",
+            RailKind::Antenna => "AntennaElm",
+            RailKind::Data => "DataInputElm",
+            RailKind::Audio => "AudioInputElm",
         }
     }
     fn dump_type(&self) -> i32 {
-        if self.kind == RailKind::Var { 172 } else { i32::from(b'R') }
+        match self.kind {
+            RailKind::Var => 172,
+            RailKind::Ext => 418,
+            RailKind::Data => 424,
+            RailKind::Audio => 411,
+            RailKind::Antenna => i32::from(b'A'),
+            _ => i32::from(b'R'),
+        }
     }
     fn xml_dump_type(&self) -> String {
-        if self.kind == RailKind::Var { "VarRail".into() } else { "R".into() }
+        match self.kind {
+            RailKind::Var => "VarRail".into(),
+            RailKind::Ext => "ExtVoltage".into(),
+            RailKind::Data => "DataInput".into(),
+            RailKind::Audio => "ain".into(),
+            _ => "R".into(),
+        }
     }
     fn is_rail(&self) -> bool {
         true
@@ -1178,18 +1471,61 @@ impl Element for RailElm {
             self.slider_text = xml.string_attr("st", &self.slider_text);
             self.slider_value = self.slider_from_frequency();
         }
+        if self.kind == RailKind::Ext {
+            self.ext_name = xml.string_attr("nm", &self.ext_name);
+        }
+        let m = &mut self.media;
+        match self.kind {
+            RailKind::Data => {
+                m.sample_length = xml.double_attr("sl", m.sample_length);
+                m.scale_factor = xml.double_attr("sf", m.scale_factor);
+                m.file_num = xml.int_attr("fn", 0);
+                m.look_up();
+            }
+            RailKind::Audio => {
+                m.max_voltage = xml.double_attr("ma", m.max_voltage);
+                m.start_position = xml.double_attr("st", m.start_position);
+                m.file_num = xml.int_attr("fi", m.file_num);
+                m.look_up();
+            }
+            _ => {}
+        }
     }
     fn dump_xml(&self, out: &mut XmlOut) {
         default_dump_xml(&self.base, out);
         self.wave.dump_xml(out);
+        if self.kind == RailKind::Ext {
+            out.str_attr("nm", &self.ext_name);
+        }
+        let m = &self.media;
+        match self.kind {
+            RailKind::Data => {
+                out.double_attr("sl", m.sample_length);
+                out.double_attr("sf", m.scale_factor);
+            }
+            RailKind::Audio => {
+                out.double_attr("ma", m.max_voltage);
+                out.double_attr("st", m.start_position);
+                out.int_attr("fi", m.file_num);
+            }
+            _ => {}
+        }
         if self.kind == RailKind::Var {
             out.str_attr("st", &self.slider_text);
+        }
+    }
+
+    fn dump_xml_state(&self, out: &mut XmlOut) {
+        if self.kind == RailKind::Data && self.media.data.is_some() {
+            out.int_attr("fn", self.media.file_num);
         }
     }
 
     fn reset(&mut self) {
         self.wave.freq_time_zero = 0.0;
         self.base.curcount = 0.0;
+        self.media.time_offset =
+            if self.kind == RailKind::Audio { self.media.start_position } else { 0.0 };
     }
 
     fn set_points(&mut self) {
@@ -1267,6 +1603,13 @@ impl Element for RailElm {
     }
 
     fn step_finished(&mut self, s: &mut Stamper) {
+        if matches!(self.kind, RailKind::Data | RailKind::Audio) {
+            self.media.time_offset += s.time_step;
+        }
+        if self.kind == RailKind::Antenna {
+            let tau = std::f64::consts::TAU;
+            self.fm_phase += tau * (2200.0 + (tau * s.t * 13.0).sin() * 100.0) * s.time_step;
+        }
         if self.wave.waveform == WF_NOISE {
             self.wave.noise_value =
                 (s.random() * 2.0 - 1.0) * self.wave.max_voltage + self.wave.bias;
@@ -1293,9 +1636,59 @@ impl Element for RailElm {
 
     fn get_info(&self, arr: &mut Vec<String>) {
         self.wave.info(true, self.base.current, self.get_voltage_diff(), self.get_power(), arr);
+        if self.kind == RailKind::Ext {
+            arr[0] = format!("ext. voltage ({})", self.ext_name);
+        }
+        if self.kind == RailKind::Antenna {
+            arr[0] = "Antenna (amplified)".into();
+        }
+        if matches!(self.kind, RailKind::Data | RailKind::Audio) {
+            let m = &self.media;
+            arr.clear();
+            arr.push(if self.kind == RailKind::Data { "data input" } else { "audio input" }.into());
+            let Some(data) = &m.data else {
+                arr.push("no file loaded".into());
+                return;
+            };
+            arr.push(format!("V = {}", voltage_text(self.base.volts[0])));
+            arr.push(format!("pos = {}", unit_text(m.time_offset, "s")));
+            let dur = if self.kind == RailKind::Data {
+                data.len() as f64 * m.sample_length
+            } else {
+                data.len() as f64 / f64::from(m.sampling_rate.max(1))
+            };
+            arr.push(format!("dur = {}", unit_text(dur, "s")));
+        }
     }
 
     fn get_edit_info(&self, n: usize) -> Option<EditInfo> {
+        if self.kind == RailKind::Antenna {
+            return None;
+        }
+        if self.kind == RailKind::Data {
+            let m = &self.media;
+            return match n {
+                0 => Some(
+                    EditInfo::text("Data File (path)", "").open_file(&["*.txt", "*.csv", "*.dat"]),
+                ),
+                1 => Some(EditInfo::number("Scale Factor", m.scale_factor)),
+                2 => Some(EditInfo::number("Sample Length (s)", m.sample_length)),
+                3 => Some(EditInfo::checkbox("Repeat", self.base.flags & FLAG_REPEAT != 0)),
+                _ => None,
+            };
+        }
+        if self.kind == RailKind::Audio {
+            let m = &self.media;
+            return match n {
+                0 => Some(EditInfo::text("Audio File (path, WAV)", "").open_file(&["*.wav"])),
+                1 => Some(EditInfo::number("Max Voltage", m.max_voltage).set_unit_step()),
+                2 => Some(EditInfo::number("Start Position (s)", m.start_position)),
+                _ => None,
+            };
+        }
+        if self.kind == RailKind::Ext {
+            return (n == 0).then(|| EditInfo::text("Name", &self.ext_name));
+        }
         if self.kind == RailKind::Var {
             return match n {
                 0 => {
@@ -1316,6 +1709,32 @@ impl Element for RailElm {
     }
 
     fn set_edit_value(&mut self, n: usize, ei: &mut EditInfo) {
+        if matches!(self.kind, RailKind::Data | RailKind::Audio) {
+            let audio = self.kind == RailKind::Audio;
+            match n {
+                0 => {
+                    let path = ei.text.as_deref().map(str::trim).unwrap_or_default();
+                    if !path.is_empty() {
+                        if let Err(e) = self.media.load(path, audio) {
+                            ei.error = Some(e);
+                        }
+                    }
+                }
+                1 if audio => self.media.max_voltage = ei.value,
+                1 => self.media.scale_factor = ei.value,
+                2 if audio => self.media.start_position = ei.value,
+                2 => self.media.sample_length = ei.value,
+                3 if !audio => self.base.flags = ei.change_flag(self.base.flags, FLAG_REPEAT),
+                _ => {}
+            }
+            return;
+        }
+        if self.kind == RailKind::Ext {
+            if let (0, Some(t)) = (n, &ei.text) {
+                self.ext_name.clone_from(t);
+            }
+            return;
+        }
         if self.kind == RailKind::Var {
             match n {
                 0 => self.wave.bias = ei.value,
@@ -1363,6 +1782,8 @@ pub struct CurrentElm {
     arrow: Polygon,
     ashaft: [Point; 2],
     center: Point,
+    /// True for the ohmmeter, a current source that shows voltage over current.
+    ohmmeter: bool,
 }
 
 impl CurrentElm {
@@ -1377,7 +1798,33 @@ impl CurrentElm {
             arrow: Polygon::new(),
             ashaft: [Point::default(); 2],
             center: Point::default(),
+            ohmmeter: false,
         }
+    }
+
+    /// An ohmmeter being placed.
+    pub fn new_ohmmeter(xx: i32, yy: i32) -> Self {
+        let mut c = Self::new(xx, yy);
+        c.ohmmeter = true;
+        c
+    }
+
+    /// An ohmmeter read from a file.
+    pub fn from_dump_ohmmeter(
+        xa: i32,
+        ya: i32,
+        xb: i32,
+        yb: i32,
+        f: i32,
+        st: &mut Tokenizer<'_>,
+    ) -> Self {
+        let mut c = Self::from_dump(xa, ya, xb, yb, f, st);
+        c.ohmmeter = true;
+        c
+    }
+
+    fn resistance(&self) -> f64 {
+        (self.base.volts[1] - self.base.volts[0]) / self.base.current
     }
 
     /// A current source read from a file.
@@ -1402,10 +1849,36 @@ impl CurrentElm {
 }
 
 impl Element for CurrentElm {
-    impl_element_base!("CurrentElm");
+    impl_element_base!();
 
+    fn class_name(&self) -> &'static str {
+        if self.ohmmeter { "OhmMeterElm" } else { "CurrentElm" }
+    }
     fn dump_type(&self) -> i32 {
-        i32::from(b'i')
+        if self.ohmmeter { 216 } else { i32::from(b'i') }
+    }
+    fn scope_value(&self, x: i32) -> f64 {
+        if self.ohmmeter && x == crate::scope::VAL_R {
+            return self.resistance();
+        }
+        match x {
+            crate::scope::VAL_CURRENT => self.get_current(),
+            crate::scope::VAL_POWER => self.get_power(),
+            _ => self.get_voltage_diff(),
+        }
+    }
+    fn scope_units(&self, x: i32) -> i32 {
+        if self.ohmmeter && x == crate::scope::VAL_R {
+            return crate::scope::UNITS_OHMS;
+        }
+        match x {
+            crate::scope::VAL_CURRENT => crate::scope::UNITS_A,
+            crate::scope::VAL_POWER => crate::scope::UNITS_W,
+            _ => crate::scope::UNITS_V,
+        }
+    }
+    fn can_show_value_in_scope(&self, v: i32) -> bool {
+        self.ohmmeter && v == crate::scope::VAL_R
     }
     fn undump_xml(&mut self, xml: &XmlNode) {
         self.base.flags = xml.int_attr("f", self.base.flags);
@@ -1446,13 +1919,22 @@ impl Element for CurrentElm {
         set_voltage_color(g, b, c, (b.volts[0] + b.volts[1]) / 2.0);
         set_power_color_w(g, b, c, self.get_power());
         draw_thick_circle(g, self.center.x, self.center.y, cr);
-        draw_thick_line(g, self.ashaft[0], self.ashaft[1]);
-        fill_polygon(g, &self.arrow);
+        if self.ohmmeter {
+            let (cx, cy) = (self.center.x, self.center.y);
+            draw_centered_text(g, &mut self.base, crate::locale::OHM, cx, cy, true);
+        } else {
+            draw_thick_line(g, self.ashaft[0], self.ashaft[1]);
+            fill_polygon(g, &self.arrow);
+        }
         let (p1, p2) = (self.base.point1, self.base.point2);
         self.base.set_bbox_pts(p1, p2, f64::from(cr));
         do_dots(g, &mut self.base, c);
         if c.show_values && self.base.current != 0.0 {
-            let s = short_unit_text(self.base.current, "A");
+            let s = if self.ohmmeter {
+                short_unit_text(self.resistance(), crate::locale::OHM)
+            } else {
+                short_unit_text(self.base.current, "A")
+            };
             if self.base.dx == 0 || self.base.dy == 0 {
                 draw_values(g, &self.base, c, Some(&s), f64::from(cr), false, false);
             }
@@ -1519,6 +2001,9 @@ impl Element for CurrentElm {
     }
 
     fn get_edit_info(&self, n: usize) -> Option<EditInfo> {
+        if self.ohmmeter {
+            return None;
+        }
         match n {
             0 => Some(EditInfo::new("Current (A)", self.current_value, 0.0, 0.1)),
             1 => Some(
@@ -1539,6 +2024,15 @@ impl Element for CurrentElm {
     }
 
     fn get_info(&self, arr: &mut Vec<String>) {
+        if self.ohmmeter {
+            arr.push("ohmmeter".into());
+            arr.push(if self.base.current == 0.0 {
+                "R = \u{221e}".to_string()
+            } else {
+                format!("R = {}", unit_text(self.resistance(), crate::locale::OHM))
+            });
+            return;
+        }
         arr.push("current source".into());
         basic_info(self, arr);
         arr.push(format!("P = {}", unit_text(self.get_power(), "W")));

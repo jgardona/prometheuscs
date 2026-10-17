@@ -67,6 +67,8 @@ pub fn register(r: &mut Registry) {
         })
         .hidden(),
     );
+    chip!("TimeDelayRelayElm", "Add Time Delay Relay", 414, TimeDelayRelay::new());
+    chip!("AnalogMuxElm", "Add Analog Multiplexer", 432, AnalogMux::new());
     chip!("ADCElm", "Add ADC", 167, Adc);
     chip!("DACElm", "Add DAC", 166, Dac);
 }
@@ -272,6 +274,9 @@ impl ChipLogic for PhaseComp {
         true
     }
     fn stamp(&mut self, _c: &mut ChipCore, _s: &mut Stamper) -> bool {
+        true
+    }
+    fn reads_own_inputs(&self) -> bool {
         true
     }
     fn execute(&mut self, c: &mut ChipCore, _s: &Stamper) {
@@ -579,6 +584,363 @@ impl ChipLogic for Cc2 {
         arr.push(format!("X,Y = {}", crate::elements::units::voltage_text(c.base.volts[0])));
         arr.push(format!("Z = {}", crate::elements::units::voltage_text(c.base.volts[2])));
         arr.push(format!("I = {}", crate::elements::units::current_text(c.pins[0].current)));
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Time delay relay
+// ---------------------------------------------------------------------------------------------
+
+const VIN_RESISTANCE: f64 = 10e3;
+
+/// A relay whose contact closes some time after its supply has been applied.
+#[derive(Clone, Debug)]
+pub struct TimeDelayRelay {
+    last_transition: f64,
+    powered: bool,
+    on_state: bool,
+    on_delay: f64,
+    off_delay: f64,
+    on_resistance: f64,
+    off_resistance: f64,
+}
+
+impl TimeDelayRelay {
+    fn new() -> Self {
+        TimeDelayRelay {
+            last_transition: 0.0,
+            powered: false,
+            on_state: false,
+            on_delay: 1.0,
+            off_delay: 0.0,
+            on_resistance: 1.0,
+            off_resistance: 10e6,
+        }
+    }
+
+    fn resistance(&self) -> f64 {
+        if self.on_state { self.on_resistance } else { self.off_resistance }
+    }
+}
+
+impl ChipLogic for TimeDelayRelay {
+    fn class_name(&self) -> &'static str {
+        "TimeDelayRelayElm"
+    }
+    fn dump_type(&self) -> i32 {
+        414
+    }
+    fn chip_name(&self) -> &'static str {
+        "time delay relay"
+    }
+    fn is_digital(&self) -> bool {
+        false
+    }
+    fn non_linear(&self) -> bool {
+        true
+    }
+    fn voltage_source_count(&self, _c: &ChipCore) -> usize {
+        0
+    }
+    fn setup_pins(&mut self, c: &mut ChipCore) {
+        c.size_x = 2;
+        c.size_y = 2;
+        c.pins = vec![
+            Pin::new(1, SIDE_W, "Vin"),
+            Pin::new(1, SIDE_E, "gnd"),
+            Pin::new(0, SIDE_W, "in"),
+            Pin::new(0, SIDE_E, "out"),
+        ];
+    }
+    fn read_extra(&mut self, _c: &mut ChipCore, st: &mut Tokenizer<'_>) {
+        self.on_delay = st.next_f64().unwrap_or(self.on_delay);
+        self.off_delay = st.next_f64().unwrap_or(self.off_delay);
+        self.on_resistance = st.next_f64().unwrap_or(self.on_resistance);
+        self.off_resistance = st.next_f64().unwrap_or(self.off_resistance);
+    }
+    fn write_extra(&self, _c: &ChipCore) -> String {
+        format!(
+            " {} {} {} {}",
+            js_number(self.on_delay),
+            js_number(self.off_delay),
+            js_number(self.on_resistance),
+            js_number(self.off_resistance)
+        )
+    }
+    fn read_xml(&mut self, _c: &mut ChipCore, xml: &XmlNode) {
+        self.on_delay = xml.double_attr("ond", self.on_delay);
+        self.off_delay = xml.double_attr("ofd", self.off_delay);
+        self.on_resistance = xml.double_attr("onr", self.on_resistance);
+        self.off_resistance = xml.double_attr("ofr", self.off_resistance);
+    }
+    fn write_xml(&self, _c: &ChipCore, out: &mut XmlOut) {
+        out.double_attr("ond", self.on_delay);
+        out.double_attr("ofd", self.off_delay);
+        out.double_attr("onr", self.on_resistance);
+        out.double_attr("ofr", self.off_resistance);
+    }
+    fn on_reset(&mut self, _c: &mut ChipCore) {
+        self.last_transition = 0.0;
+        self.powered = false;
+        self.on_state = false;
+    }
+
+    fn stamp(&mut self, c: &mut ChipCore, s: &mut Stamper) -> bool {
+        let n = &c.base.nodes;
+        s.stamp_resistor(n[0], n[1], VIN_RESISTANCE);
+        s.stamp_non_linear(n[2]);
+        s.stamp_non_linear(n[3]);
+        true
+    }
+    fn do_step(&mut self, c: &mut ChipCore, s: &mut Stamper) -> bool {
+        let n = &c.base.nodes;
+        s.stamp_resistor(n[2], n[3], self.resistance());
+        true
+    }
+    fn step_finished(&mut self, c: &mut ChipCore, s: &mut Stamper) {
+        // power applied, then the delay, then in and out are connected
+        let old = self.powered;
+        self.powered = c.base.volts[0] - c.base.volts[1] > 2.5;
+        if old != self.powered {
+            self.last_transition = s.t;
+        }
+        if s.t > self.last_transition + if self.powered { self.on_delay } else { self.off_delay } {
+            self.on_state = self.powered;
+        }
+    }
+    fn calculate_current(&mut self, c: &mut ChipCore) {
+        let v = &c.base.volts;
+        let (a, b) = (-(v[0] - v[1]) / VIN_RESISTANCE, -(v[2] - v[3]) / self.resistance());
+        c.pins[0].current = a;
+        c.pins[1].current = -a;
+        c.pins[2].current = b;
+        c.pins[3].current = -b;
+    }
+    fn connection(&self, n1: usize, n2: usize) -> bool {
+        matches!((n1.min(n2), n1.max(n2)), (0, 1) | (2, 3))
+    }
+    fn ground_connection(&self, _c: &ChipCore, _n: usize) -> bool {
+        false
+    }
+    fn visual_state(&self, _c: &ChipCore) -> Vec<f64> {
+        vec![if self.on_state { 1.0 } else { 0.0 }]
+    }
+    fn set_visual_state(&mut self, _c: &mut ChipCore, state: &[f64]) {
+        if let Some(v) = state.first() {
+            self.on_state = *v != 0.0;
+        }
+    }
+    fn chip_edit_info(&self, _c: &ChipCore, n: usize) -> Option<EditInfo> {
+        match n {
+            0 => Some(EditInfo::new("On Delay (s)", self.on_delay, 0.0, 0.0)),
+            1 => Some(EditInfo::new("Off Delay (s)", self.off_delay, 0.0, 0.0)),
+            2 => Some(
+                EditInfo::new("On Resistance (ohms)", self.on_resistance, 0.0, 0.0).set_positive(),
+            ),
+            3 => Some(
+                EditInfo::new("Off Resistance (ohms)", self.off_resistance, 0.0, 0.0)
+                    .set_positive(),
+            ),
+            _ => None,
+        }
+    }
+    fn set_chip_edit_value(&mut self, _c: &mut ChipCore, n: usize, ei: &mut EditInfo) {
+        match n {
+            0 => self.on_delay = ei.value,
+            1 => self.off_delay = ei.value,
+            2 => self.on_resistance = ei.value,
+            3 => self.off_resistance = ei.value,
+            _ => {}
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Analog multiplexer
+// ---------------------------------------------------------------------------------------------
+
+/// An analog multiplexer: the selected input is joined to the output through `r_on`.
+#[derive(Clone, Debug)]
+pub struct AnalogMux {
+    select_bits: usize,
+    r_on: f64,
+    r_off: f64,
+    threshold: f64,
+}
+
+impl AnalogMux {
+    const FLAG_PULLDOWN: i32 = 2;
+
+    fn new() -> Self {
+        AnalogMux { select_bits: 2, r_on: 20.0, r_off: 1e10, threshold: 2.5 }
+    }
+
+    fn inputs(&self) -> usize {
+        1 << self.select_bits
+    }
+    fn output(&self) -> usize {
+        self.inputs() + self.select_bits
+    }
+    fn selected(&self, c: &ChipCore) -> usize {
+        let ni = self.inputs();
+        (0..self.select_bits)
+            .filter(|&i| c.base.volts[ni + i] > self.threshold)
+            .fold(0, |a, i| a | (1 << i))
+    }
+    fn pulldown(c: &ChipCore) -> bool {
+        has(c, Self::FLAG_PULLDOWN)
+    }
+}
+
+impl ChipLogic for AnalogMux {
+    fn class_name(&self) -> &'static str {
+        "AnalogMuxElm"
+    }
+    fn dump_type(&self) -> i32 {
+        432
+    }
+    fn chip_name(&self) -> &'static str {
+        "Analog Mux"
+    }
+    fn non_linear(&self) -> bool {
+        true
+    }
+    fn voltage_source_count(&self, _c: &ChipCore) -> usize {
+        0
+    }
+    fn after_new(&mut self, c: &mut ChipCore) {
+        c.base.flags |= Self::FLAG_PULLDOWN;
+    }
+    fn setup_pins(&mut self, c: &mut ChipCore) {
+        let ni = self.inputs();
+        c.size_x = self.select_bits as i32 + 1;
+        c.size_y = ni as i32 + 1;
+        let mut pins = Vec::with_capacity(ni + self.select_bits + 1);
+        for i in 0..ni {
+            pins.push(Pin::new(i as i32, SIDE_W, &format!("I{i}")));
+        }
+        for i in 0..self.select_bits {
+            pins.push(Pin::new(i as i32 + 1, SIDE_S, &format!("S{i}")));
+        }
+        pins.push(Pin::new(0, SIDE_E, "Z"));
+        c.pins = pins;
+    }
+    fn read_extra(&mut self, c: &mut ChipCore, st: &mut Tokenizer<'_>) {
+        if let Ok(b) = st.next_i32() {
+            self.select_bits = b.clamp(1, 8) as usize;
+            self.r_on = st.next_f64().unwrap_or(self.r_on);
+            self.r_off = st.next_f64().unwrap_or(self.r_off);
+            self.threshold = st.next_f64().unwrap_or(self.threshold);
+        }
+        self.setup_pins(c);
+        c.base.alloc_nodes(c.pins.len());
+    }
+    fn write_extra(&self, _c: &ChipCore) -> String {
+        format!(
+            " {} {} {} {}",
+            self.select_bits,
+            js_number(self.r_on),
+            js_number(self.r_off),
+            js_number(self.threshold)
+        )
+    }
+    fn read_xml(&mut self, _c: &mut ChipCore, xml: &XmlNode) {
+        self.select_bits = xml.int_attr("sb", self.select_bits as i32).clamp(1, 8) as usize;
+        self.r_on = xml.double_attr("ron", self.r_on);
+        self.r_off = xml.double_attr("rof", self.r_off);
+        self.threshold = xml.double_attr("thr", self.threshold);
+    }
+    fn write_xml(&self, _c: &ChipCore, out: &mut XmlOut) {
+        out.int_attr("sb", self.select_bits as i32);
+        out.double_attr("ron", self.r_on);
+        out.double_attr("rof", self.r_off);
+        out.double_attr("thr", self.threshold);
+    }
+
+    fn stamp(&mut self, c: &mut ChipCore, s: &mut Stamper) -> bool {
+        // the selected input changes while the circuit runs
+        for i in 0..self.inputs() {
+            s.stamp_non_linear(c.base.nodes[i]);
+        }
+        s.stamp_non_linear(c.base.nodes[self.output()]);
+        true
+    }
+    fn do_step(&mut self, c: &mut ChipCore, s: &mut Stamper) -> bool {
+        let sel = self.selected(c);
+        let out = c.base.nodes[self.output()];
+        for i in 0..self.inputs() {
+            let n = c.base.nodes[i];
+            if i == sel {
+                s.stamp_resistor(n, out, self.r_on);
+            } else if Self::pulldown(c) {
+                s.stamp_resistor(n, NodeId::GROUND, self.r_off);
+            } else {
+                s.stamp_resistor(n, out, self.r_off);
+            }
+        }
+        true
+    }
+    fn calculate_current(&mut self, c: &mut ChipCore) {
+        let sel = self.selected(c);
+        let o = self.output();
+        let mut total = 0.0;
+        for i in 0..self.inputs() {
+            if i == sel {
+                let cur = (c.base.volts[i] - c.base.volts[o]) / self.r_on;
+                c.pins[i].current = -cur;
+                total += cur;
+            } else if Self::pulldown(c) {
+                c.pins[i].current = -c.base.volts[i] / self.r_off;
+            } else {
+                let cur = (c.base.volts[i] - c.base.volts[o]) / self.r_off;
+                c.pins[i].current = -cur;
+                total += cur;
+            }
+        }
+        c.pins[o].current = total;
+        for i in 0..self.select_bits {
+            c.pins[self.inputs() + i].current = 0.0;
+        }
+    }
+    fn connection(&self, n1: usize, n2: usize) -> bool {
+        let (ni, o) = (self.inputs(), self.output());
+        // select pins are not connected to anything
+        !((ni..o).contains(&n1) || (ni..o).contains(&n2))
+    }
+    fn ground_connection(&self, c: &ChipCore, n: usize) -> bool {
+        Self::pulldown(c) && n < self.inputs()
+    }
+    fn info_extra(&self, c: &ChipCore, arr: &mut Vec<String>) {
+        arr.clear();
+        arr.push("analog multiplexer".into());
+        arr.push(format!("selected: I{}", self.selected(c)));
+        arr.push(format!(
+            "Vout = {}",
+            crate::elements::units::voltage_text(c.base.volts[self.output()])
+        ));
+    }
+    fn chip_edit_info(&self, c: &ChipCore, n: usize) -> Option<EditInfo> {
+        match n {
+            0 => Some(
+                EditInfo::new("# of Select Bits", self.select_bits as f64, 1.0, 8.0)
+                    .set_dimensionless(),
+            ),
+            1 => Some(EditInfo::new("On Resistance (ohms)", self.r_on, 0.0, 0.0).set_positive()),
+            2 => Some(EditInfo::new("Off Resistance (ohms)", self.r_off, 0.0, 0.0).set_positive()),
+            3 => Some(EditInfo::new("Threshold Voltage", self.threshold, 0.0, 0.0)),
+            4 => Some(EditInfo::checkbox("Pulldown Resistor", Self::pulldown(c))),
+            _ => None,
+        }
+    }
+    fn set_chip_edit_value(&mut self, c: &mut ChipCore, n: usize, ei: &mut EditInfo) {
+        match n {
+            0 if (1.0..=8.0).contains(&ei.value) => self.select_bits = ei.value as usize,
+            1 => self.r_on = ei.value,
+            2 => self.r_off = ei.value,
+            3 => self.threshold = ei.value,
+            4 => c.base.flags = ei.change_flag(c.base.flags, Self::FLAG_PULLDOWN),
+            _ => {}
+        }
     }
 }
 

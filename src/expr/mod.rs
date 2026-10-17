@@ -250,11 +250,16 @@ impl Expr {
     }
 }
 
+/// How deep parentheses, function calls and prefix operators may nest. The parser calls itself
+/// for each, so a long run of them (typed or in a damaged file) would overflow the stack.
+const MAX_DEPTH: usize = 128;
+
 struct Parser {
     text: Vec<char>,
     token: String,
     pos: usize,
     err: Option<String>,
+    depth: usize,
 }
 
 impl Parser {
@@ -264,6 +269,7 @@ impl Parser {
             token: String::new(),
             pos: 0,
             err: None,
+            depth: 0,
         };
         p.get_token();
         p
@@ -345,7 +351,26 @@ impl Parser {
         e
     }
 
+    /// Enters one more level of nesting; false (with the error set) when that is too many.
+    fn enter(&mut self) -> bool {
+        if self.depth >= MAX_DEPTH {
+            self.set_error("expression nested too deeply".to_string());
+            return false;
+        }
+        self.depth += 1;
+        true
+    }
+
     fn parse(&mut self) -> Expr {
+        if !self.enter() {
+            return Expr::val(0.0);
+        }
+        let e = self.parse_ternary();
+        self.depth -= 1;
+        e
+    }
+
+    fn parse_ternary(&mut self) -> Expr {
         let e = self.parse_or();
         if self.skip("?") {
             let e2 = self.parse_or();
@@ -462,6 +487,15 @@ impl Parser {
     }
 
     fn parse_uminus(&mut self) -> Expr {
+        if !self.enter() {
+            return Expr::val(0.0);
+        }
+        let e = self.parse_prefixed();
+        self.depth -= 1;
+        e
+    }
+
+    fn parse_prefixed(&mut self) -> Expr {
         self.skip("+");
         if self.skip("!") {
             let e = self.parse_uminus();

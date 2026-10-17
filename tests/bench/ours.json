@@ -1,0 +1,7 @@
+{
+  "source": "prometheuscs, cargo bench --bench solver (release profile)",
+  "unit": "time steps per second (analysis in milliseconds)",
+  "steps_per_second": { "rlc": 7486000, "ladder": 108710, "mixed": 10036 },
+  "analysis_ms": { "ladder": 2.86, "mixed": 6.98 },
+  "note": "one run on the development machine; the original's numbers come from `golden --bench`"
+}

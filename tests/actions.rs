@@ -50,6 +50,9 @@ fn stop_freezes_time_and_run_resumes_it() {
     assert!(s.time() > frozen);
 }
 
+#[cfg(feature = "passive")]
+#[cfg(feature = "reactive")]
+#[cfg(feature = "sources")]
 #[test]
 fn slider_changes_the_value_of_its_element_and_survives_restart() {
     let mut s = session();

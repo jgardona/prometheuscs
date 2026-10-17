@@ -22,6 +22,9 @@ const PASSIVE: &str = "Passive Components";
 
 /// Registers the elements of this module.
 pub fn register(r: &mut Registry) {
+    r.add(ElementDescriptor::new("GyratorElm", FAMILY, "Add Gyrator", ACTIVE, |x, y| {
+        Box::new(GyratorElm::new(x, y))
+    }));
     r.add(
         ElementDescriptor::new("MemristorElm", FAMILY, "Add Memristor", PASSIVE, |x, y| {
             Box::new(MemristorElm::new(x, y))
@@ -190,6 +193,15 @@ impl Element for MemristorElm {
 
     fn non_linear(&self) -> bool {
         true
+    }
+    fn visual_state(&self) -> Vec<f64> {
+        vec![self.dope_width, self.resistance]
+    }
+    fn set_visual_state(&mut self, state: &[f64]) {
+        if let [w, r] = state {
+            self.dope_width = *w;
+            self.resistance = *r;
+        }
     }
     fn calculate_current(&mut self) {
         self.base.current = (self.base.volts[0] - self.base.volts[1]) / self.resistance;
@@ -431,6 +443,17 @@ impl Element for LampElm {
         draw_posts(g, &self.base, self, c);
     }
 
+    // the filament temperature is what the drawing shows (and the info panel reads)
+    fn visual_state(&self) -> Vec<f64> {
+        vec![self.temp]
+    }
+    fn set_visual_state(&mut self, state: &[f64]) {
+        if let Some(&t) = state.first() {
+            self.temp = t;
+            self.update_resistance();
+        }
+    }
+
     fn calculate_current(&mut self) {
         self.base.current = if self.resistance == 0.0 {
             0.0
@@ -577,11 +600,15 @@ impl AnalogSwitchElm {
         st: &mut Tokenizer<'_>,
     ) -> Self {
         let mut s = AnalogSwitchElm::blank(spdt, Base::from_dump(xa, ya, xb, yb, f));
-        let mut next = || st.next_f64();
-        if let (Ok(a), Ok(b), Ok(c)) = (next(), next(), next()) {
+        // like the original, keep what was read before the first missing field
+        if let Ok(a) = st.next_f64() {
             s.r_on = a;
-            s.r_off = b;
-            s.threshold = c;
+            if let Ok(b) = st.next_f64() {
+                s.r_off = b;
+                if let Ok(c) = st.next_f64() {
+                    s.threshold = c;
+                }
+            }
         }
         s
     }
@@ -673,6 +700,16 @@ impl Element for AnalogSwitchElm {
             let (a, b) = interp_point2(p1, p2, 1.0 - 10.0 / self.base.dn, hs + extra);
             self.label_pts = [a, b];
             self.ctl_point = interp_point_g(l1, l2, 0.5, hs);
+        }
+    }
+
+    // the position of the blade is decided while stepping, so the interface needs to be told
+    fn visual_state(&self) -> Vec<f64> {
+        vec![f64::from(u8::from(self.open))]
+    }
+    fn set_visual_state(&mut self, state: &[f64]) {
+        if let [open] = state {
+            self.open = *open != 0.0;
         }
     }
 
@@ -842,6 +879,242 @@ impl Element for AnalogSwitchElm {
     }
     fn flip_xy(&mut self, xmy: i32, _count: usize) {
         self.base.flags ^= FLAG_FLIPPED;
+        self.base.flip_xy(xmy);
+        self.set_points();
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Gyrator
+// ---------------------------------------------------------------------------------------------
+
+const GYRATOR_VERTICAL: i32 = 8;
+const GYRATOR_FLIP: i32 = 16;
+
+/// A gyrator: two ports coupled by `I1 = G V2`, `I2 = -G V1`.
+pub struct GyratorElm {
+    base: Base,
+    resistance: f64,
+    width: i32,
+    ends: [Point; 4],
+    stubs: [Point; 4],
+    arrow_tail: Point,
+    arrow_head: Point,
+    arrow: Polygon,
+    current: [f64; 2],
+    curcount: [f64; 2],
+}
+
+impl GyratorElm {
+    /// A gyrator being placed.
+    pub fn new(x: i32, y: i32) -> Self {
+        let mut base = Base::new(x, y);
+        base.no_diagonal = true;
+        GyratorElm {
+            base,
+            resistance: 1000.0,
+            width: 32,
+            ends: [Point::default(); 4],
+            stubs: [Point::default(); 4],
+            arrow_tail: Point::default(),
+            arrow_head: Point::default(),
+            arrow: Polygon::default(),
+            current: [0.0; 2],
+            curcount: [0.0; 2],
+        }
+    }
+
+    fn vertical(&self) -> bool {
+        self.base.flags & GYRATOR_VERTICAL != 0
+    }
+}
+
+impl Element for GyratorElm {
+    impl_element_base!("GyratorElm");
+
+    fn visual_state(&self) -> Vec<f64> {
+        self.current.to_vec()
+    }
+    fn set_visual_state(&mut self, state: &[f64]) {
+        if let [a, b] = state[..] {
+            self.current = [a, b];
+        }
+    }
+
+    // the original writes nothing of its own; the resistance is kept in an extra attribute
+    fn dump_xml(&self, out: &mut XmlOut) {
+        default_dump_xml(&self.base, out);
+        if self.resistance != 1000.0 {
+            out.double_attr("gr", self.resistance);
+        }
+    }
+    fn undump_xml(&mut self, xml: &XmlNode) {
+        self.base.flags = xml.int_attr("f", self.base.flags);
+        self.resistance = xml.double_attr("gr", self.resistance);
+    }
+
+    fn post_count(&self) -> usize {
+        4
+    }
+    fn get_post(&self, n: usize) -> Option<Point> {
+        self.ends.get(n).copied()
+    }
+
+    fn drag(&mut self, xx: i32, yy: i32) {
+        let (xx, mut yy) = (snap_grid(xx), snap_grid(yy));
+        let b = &mut self.base;
+        if (xx - b.x).abs() > (yy - b.y).abs() {
+            b.flags &= !GYRATOR_VERTICAL;
+        } else {
+            b.flags |= GYRATOR_VERTICAL;
+        }
+        self.width = if b.flags & GYRATOR_VERTICAL != 0 {
+            -32.max((xx - b.x).abs())
+        } else {
+            32.max((yy - b.y).abs())
+        };
+        if xx == b.x {
+            yy = b.y;
+        }
+        b.x2 = xx;
+        b.y2 = yy;
+        self.set_points();
+    }
+
+    fn set_points(&mut self) {
+        self.base.set_points();
+        if self.vertical() {
+            self.base.point2.x = self.base.point1.x;
+        } else {
+            self.base.point2.y = self.base.point1.y;
+        }
+        let (p1, p2, dn, dsign) =
+            (self.base.point1, self.base.point2, self.base.dn, self.base.dsign);
+        let flip = if self.base.flags & GYRATOR_FLIP != 0 { -1 } else { 1 };
+        let off = f64::from(-dsign * self.width * flip);
+        self.ends = [p1, p2, interp_point_g(p1, p2, 0.0, off), interp_point_g(p1, p2, 1.0, off)];
+        let cs = 0.5 - 12.0 / dn;
+        for i in [0, 2] {
+            self.stubs[i] = interp_point(self.ends[i], self.ends[i + 1], cs);
+            self.stubs[i + 1] = interp_point(self.ends[i + 1], self.ends[i], cs);
+        }
+        let (tl, br) = (self.stubs[0], self.stubs[3]);
+        let (cx, cy) = ((tl.x + br.x) / 2, (tl.y + br.y) / 2);
+        if self.vertical() {
+            self.arrow_tail = Point::new(cx, cy + 6);
+            self.arrow_head = Point::new(cx, cy + 14);
+        } else {
+            self.arrow_tail = Point::new(cx - 8, cy + 8);
+            self.arrow_head = Point::new(cx + 8, cy + 8);
+        }
+        self.arrow = calc_arrow(self.arrow_tail, self.arrow_head, 4.0, 3.0);
+        let (e0, e3) = (self.ends[0], self.ends[3]);
+        self.base.bbox = {
+            let mut r = Rect::default();
+            r.set_bounds(
+                e0.x.min(e3.x),
+                e0.y.min(e3.y),
+                (e3.x - e0.x).abs() + 1,
+                (e3.y - e0.y).abs() + 1,
+            );
+            r
+        };
+        self.alloc_nodes();
+    }
+
+    fn reset(&mut self) {
+        self.base.volts.iter_mut().for_each(|v| *v = 0.0);
+        self.current = [0.0; 2];
+        self.curcount = [0.0; 2];
+    }
+
+    fn stamp(&mut self, s: &mut Stamper) {
+        let g = 1.0 / self.resistance;
+        let n = &self.base.nodes;
+        s.stamp_vccs(n[0], n[2], n[1], n[3], g);
+        s.stamp_vccs(n[1], n[3], n[0], n[2], -g);
+    }
+    fn calculate_current(&mut self) {
+        let g = 1.0 / self.resistance;
+        let v = &self.base.volts;
+        self.current = [g * (v[1] - v[3]), -g * (v[0] - v[2])];
+    }
+    fn get_current(&self) -> f64 {
+        self.current[0]
+    }
+    fn get_current_into_node(&self, n: usize) -> f64 {
+        if n < 2 { -self.current[n] } else { self.current[n - 2] }
+    }
+    // the controlled sources couple all four nodes, so they share one matrix
+    fn get_matrix_connection(&self, _n1: usize, _n2: usize) -> bool {
+        true
+    }
+    fn get_connection(&self, n1: usize, n2: usize) -> bool {
+        matches!((n1.min(n2), n1.max(n2)), (0, 2) | (1, 3))
+    }
+
+    fn draw(&mut self, g: &mut dyn Painter, c: &DrawCtx) {
+        for i in 0..4 {
+            set_voltage_color(g, &self.base, c, self.base.volts[i]);
+            draw_thick_line(g, self.ends[i], self.stubs[i]);
+        }
+        g.set_color(if self.base.needs_highlight() { c.select_color } else { c.light_gray });
+        let (tl, tr, bl, br) = (self.stubs[0], self.stubs[1], self.stubs[2], self.stubs[3]);
+        draw_thick_line(g, tl, tr);
+        draw_thick_line(g, tr, br);
+        draw_thick_line(g, br, bl);
+        draw_thick_line(g, bl, tl);
+        let (cx, cy) = ((tl.x + br.x) / 2, (tl.y + br.y) / 2);
+        g.set_font_size(c.value_font_size);
+        g.draw_string("\u{3c0}", f64::from(cx - 4), f64::from(cy - 1));
+        g.draw_line(self.arrow_tail.x, self.arrow_tail.y, self.arrow_head.x, self.arrow_head.y);
+        fill_polygon(g, &self.arrow);
+        for i in 0..2 {
+            self.curcount[i] = self.base.update_dot_count_for(self.current[i], self.curcount[i], c);
+            draw_dots(g, c, self.ends[i], self.stubs[i], self.curcount[i]);
+            draw_dots(g, c, self.ends[i + 2], self.stubs[i + 2], -self.curcount[i]);
+        }
+        draw_posts(g, &self.base, self, c);
+        let (e0, e3) = (self.ends[0], self.ends[3]);
+        self.base.set_bbox_pts(e0, e3, 0.0);
+    }
+
+    fn get_info(&self, arr: &mut Vec<String>) {
+        let v = &self.base.volts;
+        arr.push("gyrator".into());
+        arr.push(format!("R = {}", unit_text(self.resistance, "\u{2126}")));
+        arr.push(format!("Vd1 = {}", voltage_text(v[0] - v[2])));
+        arr.push(format!("Vd2 = {}", voltage_text(v[1] - v[3])));
+        arr.push(format!("I1 = {}", current_text(self.current[0])));
+        arr.push(format!("I2 = {}", current_text(self.current[1])));
+    }
+
+    fn get_edit_info(&self, n: usize) -> Option<EditInfo> {
+        (n == 0).then(|| EditInfo::new("Gyration Resistance (\u{2126})", self.resistance, 1.0, 0.0))
+    }
+    fn set_edit_value(&mut self, n: usize, ei: &mut EditInfo) {
+        if n == 0 && ei.value > 0.0 {
+            self.resistance = ei.value;
+        }
+    }
+
+    fn flip_x(&mut self, center2: i32, _count: usize) {
+        if self.vertical() {
+            self.base.flags ^= GYRATOR_FLIP;
+        }
+        self.base.flip_x(center2);
+        self.set_points();
+    }
+    fn flip_y(&mut self, center2: i32, _count: usize) {
+        if !self.vertical() {
+            self.base.flags ^= GYRATOR_FLIP;
+        }
+        self.base.flip_y(center2);
+        self.set_points();
+    }
+    fn flip_xy(&mut self, xmy: i32, _count: usize) {
+        self.base.flags ^= GYRATOR_VERTICAL;
+        self.width = -self.width;
         self.base.flip_xy(xmy);
         self.set_points();
     }

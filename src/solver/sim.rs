@@ -100,6 +100,10 @@ pub struct Simulation {
     pub elements: Vec<Box<dyn Element>>,
     /// Matrices, nodes and simulation state shared with the elements.
     pub st: Stamper,
+    /// The scopes recording the run.
+    pub scopes: Vec<crate::scope::Scope>,
+    /// The scopes placed in the circuit as elements, with the index of the element holding each.
+    pub embedded: Vec<(usize, crate::scope::Scope)>,
     settings: SimSettings,
     labels: LabelRegistry,
     wire_info: Vec<WireSegment>,
@@ -114,6 +118,8 @@ pub struct Simulation {
     path_graph: PathGraph,
     delay_wire_processing: bool,
     analyzed: bool,
+    /// How many times an element has asked for time to stop (a stop trigger).
+    pub pause_count: u64,
 }
 
 /// Union-find over grid points, used to merge points joined by wires into one node.
@@ -176,9 +182,12 @@ impl Simulation {
             time_step: settings.max_time_step,
             ..Stamper::default()
         };
+        let embedded = crate::scope::embedded_scopes(&elements);
         Simulation {
             elements,
             st,
+            scopes: Vec::new(),
+            embedded,
             settings,
             labels: LabelRegistry::default(),
             wire_info: Vec::new(),
@@ -193,6 +202,7 @@ impl Simulation {
             path_graph: PathGraph::default(),
             delay_wire_processing: false,
             analyzed: false,
+            pause_count: 0,
         }
     }
 
@@ -272,6 +282,12 @@ impl Simulation {
         for e in &mut self.elements {
             e.reset();
         }
+        for sc in &mut self.scopes {
+            sc.reset(0.0);
+        }
+        for (_, sc) in &mut self.embedded {
+            sc.reset(0.0);
+        }
         if self.analyzed {
             self.st.stop = None;
             let _ = self.analyze();
@@ -285,6 +301,7 @@ impl Simulation {
         if self.elements.is_empty() {
             return Ok(());
         }
+        self.detect_bus_widths();
         // an element's validation may change the circuit; analyse again (at most 10 times)
         let mut ok = false;
         for _ in 0..10 {
@@ -317,6 +334,82 @@ impl Simulation {
         }
         self.analyzed = true;
         Ok(())
+    }
+
+    /// Works out the width of bus wires and bus labels from the elements they touch, passing
+    /// widths along wire chains and between labels of the same name until nothing changes.
+    fn detect_bus_widths(&mut self) {
+        use crate::elements::element::BusRole;
+        use std::collections::HashMap;
+        let key = |p: Point| Point::new(p.x, p.y);
+        let mut widths: HashMap<Point, usize> = HashMap::new();
+        for e in &self.elements {
+            if e.is_removable_wire() {
+                continue;
+            }
+            for j in 0..e.post_count() {
+                let w = e.post_width(j);
+                if w > 1 {
+                    if let Some(p) = e.get_post(j) {
+                        let slot = widths.entry(key(p)).or_insert(w);
+                        *slot = (*slot).max(w);
+                    }
+                }
+            }
+        }
+        let mut label_widths: HashMap<String, usize> = HashMap::new();
+        let mut changed = true;
+        while changed {
+            changed = false;
+            for e in &mut self.elements {
+                match e.bus_role() {
+                    BusRole::Wire => {
+                        let (p1, p2) = (key(e.base().point1), key(e.base().point2));
+                        let w1 = widths.get(&p1).copied();
+                        let w2 = widths.get(&p2).copied();
+                        let w = w1.unwrap_or(1).max(w2.unwrap_or(1));
+                        if e.apply_bus_width(w) {
+                            changed = true;
+                        }
+                        if w > 1 {
+                            for (p, old) in [(p1, w1), (p2, w2)] {
+                                if old.is_none_or(|o| o < w) {
+                                    widths.insert(p, w);
+                                    changed = true;
+                                }
+                            }
+                        }
+                    }
+                    BusRole::Label(text) => {
+                        let p = key(e.base().point1);
+                        let w = widths.get(&p).copied();
+                        let lw = label_widths.get(&text).copied();
+                        let bw = w.unwrap_or(1).max(lw.unwrap_or(1));
+                        if e.apply_bus_width(bw) {
+                            changed = true;
+                        }
+                        if bw > 1 {
+                            if w.is_none_or(|o| o < bw) {
+                                widths.insert(p, bw);
+                                changed = true;
+                            }
+                            if lw.is_none_or(|o| o < bw) {
+                                label_widths.insert(text, bw);
+                                changed = true;
+                            }
+                        }
+                    }
+                    BusRole::Splitter { anchor, bits } => {
+                        let p = key(anchor);
+                        if widths.get(&p).is_none_or(|&o| o < bits) {
+                            widths.insert(p, bits);
+                            changed = true;
+                        }
+                    }
+                    BusRole::None => {}
+                }
+            }
+        }
     }
 
     fn calculate_wire_closure(&mut self) -> PointClasses {
@@ -369,7 +462,7 @@ impl Simulation {
         classes
     }
 
-    fn set_ground_node(&mut self, classes: &mut PointClasses) {
+    fn set_ground_node(&mut self, classes: &mut PointClasses, subcircuit: bool) {
         self.st.nodes.push(Node { index: 0, ..Node::default() });
         let mut got_ground = false;
         let mut got_rail = false;
@@ -395,8 +488,9 @@ impl Simulation {
                 battery = Some(i);
             }
         }
-        // no ground and no rails: the first voltage source's first terminal is ground
-        if !got_ground && !got_rail {
+        // no ground and no rails: the first voltage source's first terminal is ground (but not
+        // when numbering a subcircuit's nodes: the model has to say what is grounded)
+        if !subcircuit && !got_ground && !got_rail {
             if let Some(i) = volt.or(battery) {
                 if let Some(pt) = self.elements[i].get_post(0) {
                     match classes.class_of(pt) {
@@ -689,11 +783,30 @@ impl Simulation {
         self.st.nodes[0].matrix = None;
     }
 
+    /// Numbers the nodes of the circuit the way a subcircuit model needs: like a normal analysis
+    /// (ground elements are node 0), except that a circuit without ground is not given one.
+    /// Returns the node number of every post of every element. The circuit has to be analysed
+    /// again afterwards.
+    pub fn model_node_numbers(&mut self) -> Vec<Vec<usize>> {
+        self.st.nodes.clear();
+        self.st.voltage_sources.clear();
+        let mut classes = self.calculate_wire_closure();
+        self.set_ground_node(&mut classes, true);
+        self.make_node_list(&mut classes);
+        self.elements
+            .iter()
+            .map(|e| {
+                let n = e.post_count().min(e.base().nodes.len());
+                e.base().nodes[..n].iter().map(|n| n.0).collect()
+            })
+            .collect()
+    }
+
     fn pre_stamp_circuit(&mut self) -> bool {
         self.st.nodes.clear();
         self.st.voltage_sources.clear();
         let mut classes = self.calculate_wire_closure();
-        self.set_ground_node(&mut classes);
+        self.set_ground_node(&mut classes, false);
         let vscount = self.make_node_list(&mut classes);
         if !self.calc_wire_info() {
             return false;
@@ -763,11 +876,12 @@ impl Simulation {
             _ => (v.n1, v.n2),
         };
         let matrix = pick(n1).or_else(|| pick(n2)).or_else(|| {
+            // the element's last post, then the others, then its internal nodes; the last
+            // post alone fails when it is the ground node
             let elm = &self.elements[v.elm];
-            elm.base()
-                .nodes
-                .get(elm.post_count().saturating_sub(1))
-                .and_then(|n| self.st.nodes[n.0].matrix)
+            let nodes = &elm.base().nodes;
+            let posts = elm.post_count().min(nodes.len());
+            nodes[..posts].iter().rev().chain(nodes[posts..].iter()).find_map(|n| pick(Some(*n)))
         });
         self.st.voltage_sources[vs].matrix = matrix;
     }
@@ -884,6 +998,10 @@ impl Simulation {
     /// When convergence fails and time step adjustment is on, the step is retried with a
     /// smaller time step.
     pub fn step(&mut self) -> Result<(), StepError> {
+        // an empty circuit has nothing to solve; it is not an error to let time pass over it
+        if self.elements.is_empty() {
+            return Ok(());
+        }
         if !self.is_ready() {
             return Err(StepError::Stopped {
                 message: self
@@ -983,6 +1101,12 @@ impl Simulation {
             for i in 0..self.elements.len() {
                 self.elements[i].step_finished(&mut self.st);
             }
+            for sc in &mut self.scopes {
+                sc.time_step(&self.elements, self.st.t, self.st.max_time_step);
+            }
+            for (_, sc) in &mut self.embedded {
+                sc.time_step(&self.elements, self.st.t, self.st.max_time_step);
+            }
             self.check_stop()?;
             if !self.delay_wire_processing {
                 self.calc_wire_currents();
@@ -1014,6 +1138,12 @@ impl Simulation {
     pub fn run_steps(&mut self, n: usize) -> Result<(), StepError> {
         for _ in 0..n {
             self.step()?;
+            // an element asked for time to stop: the rest of the steps are not taken
+            if self.st.pause_requested {
+                self.st.pause_requested = false;
+                self.pause_count += 1;
+                break;
+            }
         }
         Ok(())
     }
@@ -1075,8 +1205,29 @@ impl Simulation {
             node_voltages: (0..self.st.nodes.len()).map(|n| self.node_voltage(NodeId(n))).collect(),
             element_volts: self.elements.iter().map(|e| e.base().volts.clone()).collect(),
             element_currents: self.elements.iter().map(|e| e.get_current()).collect(),
-            scope_samples: Vec::new(),
+            element_states: self.elements.iter().map(|e| e.visual_state()).collect(),
+            scopes: self
+                .scopes
+                .iter()
+                .map(|s| s.view(&self.elements, self.st.max_time_step, self.st.t))
+                .collect(),
+            embedded: self
+                .embedded
+                .iter()
+                .map(|(i, s)| (*i, s.view(&self.elements, self.st.max_time_step, self.st.t)))
+                .collect(),
+            pause_count: self.pause_count,
             error,
+        }
+    }
+
+    /// Hands what the scopes placed in the circuit show now to the elements that draw them.
+    pub fn push_embedded_views(&mut self) {
+        for (i, sc) in &self.embedded {
+            let view = sc.view(&self.elements, self.st.max_time_step, self.st.t);
+            if let Some(e) = self.elements.get_mut(*i) {
+                e.set_scope_view(view);
+            }
         }
     }
 
@@ -1111,6 +1262,8 @@ impl Simulation {
 mod tests {
     use super::*;
 
+    #[cfg(feature = "passive")]
+    #[cfg(feature = "sources")]
     #[test]
     fn snapshot_copies_time_voltages_and_currents() {
         use crate::elements::registry::Registry;

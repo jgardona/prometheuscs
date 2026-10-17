@@ -468,12 +468,25 @@ pub struct LabeledNodeElm {
     base: Base,
     /// The node's name.
     pub text: String,
+    /// Number of bits when the label names a bus (found by the bus detection).
+    bus_width: usize,
+    /// Current into each bit of a bus label.
+    currents: Option<Vec<f64>>,
 }
 
 impl LabeledNodeElm {
     /// A labeled node being placed at (`xx`, `yy`).
     pub fn new(xx: i32, yy: i32) -> Self {
-        LabeledNodeElm { base: Base::new(xx, yy), text: "label".into() }
+        LabeledNodeElm {
+            base: Base::new(xx, yy),
+            text: "label".into(),
+            bus_width: 1,
+            currents: None,
+        }
+    }
+
+    fn bus_value(&self) -> i32 {
+        (0..self.bus_width).filter(|&i| self.base.volts[i] > 2.5).fold(0, |v, i| v | (1 << i))
     }
 
     /// A labeled node read from a file.
@@ -487,7 +500,12 @@ impl LabeledNodeElm {
         } else {
             text = unescape(&text);
         }
-        LabeledNodeElm { base: Base::from_dump(xa, ya, xb, yb, f), text }
+        LabeledNodeElm {
+            base: Base::from_dump(xa, ya, xb, yb, f),
+            text,
+            bus_width: 1,
+            currents: None,
+        }
     }
 
     fn is_rotate_text(&self) -> bool {
@@ -547,7 +565,29 @@ impl Element for LabeledNodeElm {
         out.str_attr("te", &self.text);
     }
     fn post_count(&self) -> usize {
-        1
+        self.bus_width
+    }
+    fn post_width(&self, _n: usize) -> usize {
+        self.bus_width
+    }
+    fn bus_width(&self) -> usize {
+        self.bus_width
+    }
+    fn bus_role(&self) -> BusRole {
+        BusRole::Label(self.text.clone())
+    }
+    fn apply_bus_width(&mut self, width: usize) -> bool {
+        if width == self.bus_width {
+            return false;
+        }
+        self.bus_width = width;
+        self.currents = (width > 1).then(|| vec![0.0; width]);
+        self.alloc_nodes();
+        true
+    }
+    fn get_post(&self, n: usize) -> Option<Point> {
+        let p = self.base.point1;
+        Some(if self.bus_width == 1 { p } else { Point { x: p.x, y: p.y, z: n as i32 } })
     }
 
     fn set_points(&mut self) {
@@ -556,8 +596,10 @@ impl Element for LabeledNodeElm {
             interp_point(self.base.point1, self.base.point2, 1.0 - LN_CIRCLE_SIZE / self.base.dn);
     }
 
-    fn connected_post(&self, _bit: usize, labels: &mut LabelRegistry) -> Option<Point> {
-        labels.connect(&self.text, self.base.point1)
+    fn connected_post(&self, bit: usize, labels: &mut LabelRegistry) -> Option<Point> {
+        let key =
+            if self.bus_width > 1 { format!("{}:{bit}", self.text) } else { self.text.clone() };
+        labels.connect(&key, self.get_post(bit)?)
     }
     fn is_wire_equivalent(&self) -> bool {
         true
@@ -571,7 +613,8 @@ impl Element for LabeledNodeElm {
 
     fn draw(&mut self, g: &mut dyn Painter, c: &DrawCtx) {
         set_voltage_color(g, &self.base, c, self.base.volts[0]);
-        draw_thick_line_w(g, self.base.point1, self.base.lead1, 3.0);
+        let width = if self.bus_width > 1 { 5.0 } else { 3.0 };
+        draw_thick_line_w(g, self.base.point1, self.base.lead1, width);
         g.set_color(if self.base.needs_highlight() { c.select_color } else { c.white });
         let (p1, p2) = (self.base.point1, self.base.point2);
         let ps2 = interp_point(p1, p2, 1.0 + 11.0 / self.base.dn);
@@ -583,12 +626,28 @@ impl Element for LabeledNodeElm {
         } else {
             draw_labeled_node(g, &mut self.base, c, &text, pt1, pt2);
         }
+        if let Some(cur) = &self.currents {
+            self.base.current = cur.iter().sum();
+        }
         do_dots(g, &mut self.base, c);
         draw_posts(g, &self.base, self, c);
     }
 
-    fn get_current_into_node(&self, _n: usize) -> f64 {
-        -self.base.current
+    fn get_current_into_node(&self, n: usize) -> f64 {
+        match &self.currents {
+            Some(c) => -c.get(n).copied().unwrap_or(0.0),
+            None => -self.base.current,
+        }
+    }
+    fn set_wire_current(&mut self, bit: usize, c: f64) {
+        match &mut self.currents {
+            Some(cur) => {
+                if let Some(slot) = cur.get_mut(bit) {
+                    *slot = c;
+                }
+            }
+            None => self.base.current = c,
+        }
     }
     fn get_voltage_diff(&self) -> f64 {
         self.base.volts[0]
@@ -598,8 +657,14 @@ impl Element for LabeledNodeElm {
     }
     fn get_info(&self, arr: &mut Vec<String>) {
         arr.push(format!("{} ({})", ls(&self.text), ls("Labeled Node")));
-        arr.push(format!("I = {}", current_text(self.get_current())));
-        arr.push(format!("V = {}", voltage_text(self.base.volts[0])));
+        if self.bus_width > 1 {
+            let value = self.bus_value();
+            arr.push(format!("value = {value}"));
+            arr.push(format!("hex = 0x{value:X}"));
+        } else {
+            arr.push(format!("I = {}", current_text(self.get_current())));
+            arr.push(format!("V = {}", voltage_text(self.base.volts[0])));
+        }
     }
     fn scope_text(&self, _v: i32) -> Option<String> {
         Some(self.text.clone())

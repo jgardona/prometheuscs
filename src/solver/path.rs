@@ -68,6 +68,11 @@ impl Validator<'_> {
         self.graph.find_path(kind, first_elm, start, dest)
     }
 
+    /// Index, in the search graph, of the `k`th part of element `idx` (a composite).
+    pub fn part_index(&self, idx: usize, k: usize) -> usize {
+        self.graph.child_start.get(idx).copied().filter(|s| *s != usize::MAX).map_or(idx, |s| s + k)
+    }
+
     /// Asks the simulation to stop with `message`, blaming element `elm`.
     pub fn stop(&mut self, message: &str, elm: usize) {
         self.st.stop(message, Some(elm));
@@ -83,38 +88,82 @@ pub struct PathGraph {
     pub links: Vec<Vec<(usize, usize)>>,
     /// Elements that connect some post to ground.
     pub with_ground_connection: Vec<usize>,
+    /// For each element, the index of its first part when it is made of other elements.
+    pub child_start: Vec<usize>,
 }
 
 impl PathGraph {
-    /// Builds the snapshot from the analysed circuit.
+    /// Builds the snapshot from the analysed circuit. Elements made of other elements
+    /// (subcircuits) are followed down: their parts are added after the top-level elements,
+    /// each with its own connections, and the composite itself connects nothing.
     pub fn build(elements: &[Box<dyn Element>], st: &Stamper, with_ground: Vec<usize>) -> Self {
-        let elms = elements
-            .iter()
-            .map(|e| {
-                let pc = e.post_count();
-                let role = match e.class_name() {
-                    "CurrentElm" => PathRole::Current,
-                    "LogicInputElm" => PathRole::LogicInput,
-                    "InductorElm" => PathRole::Inductor,
-                    _ if e.is_ground() => PathRole::Ground,
-                    _ if e.is_voltage_elm() => PathRole::Voltage,
-                    _ => PathRole::Other,
-                };
-                PathElement {
-                    nodes: e.base().nodes.iter().take(pc).copied().collect(),
-                    ground: (0..pc).map(|j| e.has_ground_connection(j)).collect(),
-                    connection: (0..pc)
-                        .map(|j| (0..pc).map(|k| e.get_connection(j, k)).collect())
-                        .collect(),
-                    wire_equivalent: e.is_wire_equivalent(),
-                    ideal_capacitor: e.is_ideal_capacitor(),
-                    role,
-                    current: e.get_current(),
+        let mut graph = PathGraph {
+            elements: Vec::new(),
+            links: st.nodes.iter().map(|n| n.links.clone()).collect(),
+            with_ground_connection: with_ground,
+            child_start: Vec::new(),
+        };
+        for e in elements {
+            graph.push(e.as_ref(), true);
+        }
+        // parts of composites come after all the top-level elements, in a fixed order
+        let mut i = 0;
+        let mut starts: Vec<usize> = Vec::new();
+        let mut parts: Vec<&dyn Element> = Vec::new();
+        let mut queue: Vec<&dyn Element> = elements.iter().map(|e| e.as_ref()).collect();
+        while i < queue.len() {
+            let e = queue[i];
+            let kids = e.child_elements();
+            starts.push(if kids.is_empty() { usize::MAX } else { queue.len() });
+            for k in kids {
+                queue.push(k.as_ref());
+                parts.push(k.as_ref());
+            }
+            i += 1;
+        }
+        for p in parts {
+            graph.push(p, false);
+        }
+        graph.child_start = starts;
+        graph
+    }
+
+    fn push(&mut self, e: &dyn Element, top_level: bool) {
+        let idx = self.elements.len();
+        let pc = e.post_count();
+        let role = match e.class_name() {
+            "CurrentElm" => PathRole::Current,
+            "LogicInputElm" => PathRole::LogicInput,
+            "InductorElm" => PathRole::Inductor,
+            _ if e.is_ground() => PathRole::Ground,
+            _ if e.is_voltage_elm() => PathRole::Voltage,
+            _ => PathRole::Other,
+        };
+        let composite = !e.child_elements().is_empty();
+        let nodes: Vec<NodeId> = e.base().nodes.iter().take(pc).copied().collect();
+        let ground: Vec<bool> = (0..pc).map(|j| !composite && e.has_ground_connection(j)).collect();
+        if !top_level {
+            for (j, n) in nodes.iter().enumerate() {
+                if let Some(l) = self.links.get_mut(n.0) {
+                    l.push((idx, j));
                 }
-            })
-            .collect();
-        let links = st.nodes.iter().map(|n| n.links.clone()).collect();
-        PathGraph { elements: elms, links, with_ground_connection: with_ground }
+            }
+            if ground.iter().any(|g| *g) {
+                self.with_ground_connection.push(idx);
+            }
+        }
+        self.elements.push(PathElement {
+            nodes,
+            ground,
+            connection: (0..pc)
+                .map(|j| (0..pc).map(|k| !composite && e.get_connection(j, k)).collect())
+                .collect(),
+            wire_equivalent: e.is_wire_equivalent(),
+            ideal_capacitor: e.is_ideal_capacitor(),
+            role,
+            current: e.get_current(),
+        });
+        self.child_start.push(usize::MAX);
     }
 
     /// Looks for a path of the given kind from `start` back to `dest`, ignoring element
@@ -247,7 +296,7 @@ mod tests {
                 links[n.0].push((i, j));
             }
         }
-        PathGraph { elements, links, with_ground_connection: Vec::new() }
+        PathGraph { elements, links, with_ground_connection: Vec::new(), child_start: Vec::new() }
     }
 
     #[test]

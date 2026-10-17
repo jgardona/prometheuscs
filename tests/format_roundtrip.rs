@@ -42,6 +42,8 @@ proptest! {
         prop_assert_eq!(write_xml(&second.circuit), xml);
     }
 
+    #[cfg(feature = "passive")]
+    #[cfg(feature = "reactive")]
     #[test]
     fn generic_element_lines_survive_write_and_read(
         x in -2000i32..2000,

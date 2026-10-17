@@ -73,16 +73,51 @@ fn ported_classes_are_registered() {
     }
 }
 
+/// Classes of the original that no circuit file can contain, with the reason.
+const NOT_FILE_ELEMENTS: &[(&str, &str)] = &[
+    ("GraphicElm", "abstract base of the text, box and line elements, which are registered"),
+    (
+        "CustomCompositeChipElm",
+        "built inside a subcircuit instance; its pins are the instance's (src/elements/subcircuit.rs)",
+    ),
+];
+
+/// The code a file uses for a class: a number, or one character.
+fn dump_code(entry: &Value) -> Option<i32> {
+    let t = entry["dump_type"].as_str()?;
+    t.parse()
+        .ok()
+        .or_else(|| (t.chars().count() == 1).then(|| t.chars().next().map(|c| c as i32))?)
+}
+
+#[cfg(feature = "analog")]
+#[cfg(feature = "digital")]
+#[cfg(feature = "diodes")]
+#[cfg(feature = "logic")]
+#[cfg(feature = "mosfets")]
+#[cfg(feature = "outputs")]
+#[cfg(feature = "passive")]
+#[cfg(feature = "reactive")]
+#[cfg(feature = "sources")]
+#[cfg(feature = "subcircuits")]
+#[cfg(feature = "switches")]
+#[cfg(feature = "transistors")]
+/// Every class of the original that a file can hold has an element here: one registered under
+/// its name, or one that reads the dump code the class writes (the original's generic
+/// transistor, MOSFET, JFET and Darlington entries are read as the N and P variants).
 #[test]
-#[ignore = "enabled by the inventory-completion task"]
 fn every_inventory_entry_has_a_registered_element() {
     let registry = Registry::standard();
     let missing: Vec<String> = inventory()
         .iter()
         .filter(|e| e["instantiable"] == true)
-        .filter_map(|e| e["class"].as_str())
-        .filter(|class| !skipped(class) && !registry.contains(class))
-        .map(str::to_string)
+        .filter_map(|e| {
+            let class = e["class"].as_str()?;
+            let excused = NOT_FILE_ELEMENTS.iter().any(|(c, _)| *c == class);
+            let by_code = dump_code(e).is_some_and(|c| registry.get_by_dump(c).is_some());
+            (!skipped(class) && !excused && !registry.contains(class) && !by_code)
+                .then(|| class.to_string())
+        })
         .collect();
     assert!(missing.is_empty(), "{} classes not ported: {missing:?}", missing.len());
 }

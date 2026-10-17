@@ -34,6 +34,10 @@ fn switch_events_are_inside_the_run() {
     assert_eq!(auto_test::load("lrcswitch").switch_events.len(), 1);
 }
 
+#[cfg(feature = "passive")]
+#[cfg(feature = "reactive")]
+#[cfg(feature = "sources")]
+#[cfg(feature = "switches")]
 #[test]
 fn the_rlc_fixtures_load_without_errors() {
     for name in ["lrc", "lrcswitch", "capac"] {

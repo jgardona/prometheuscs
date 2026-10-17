@@ -175,16 +175,22 @@ pub fn escape(s: &str) -> String {
 
 /// Parses an XML document and returns its root element.
 pub fn parse(text: &str) -> Result<XmlNode, LoadError> {
-    let mut p = Parser { s: text.as_bytes(), text, pos: 0 };
+    let mut p = Parser { s: text.as_bytes(), text, pos: 0, depth: 0 };
     p.skip_prolog()?;
     let root = p.element()?;
     Ok(root)
 }
 
+/// How deep elements may nest. The parser calls itself for each level (as does dropping the
+/// tree), so a damaged file of endless open tags would overflow the stack. The deepest circuit
+/// has a few levels: a model inside a model inside a circuit.
+const MAX_DEPTH: usize = 256;
+
 struct Parser<'a> {
     s: &'a [u8],
     text: &'a str,
     pos: usize,
+    depth: usize,
 }
 
 impl Parser<'_> {
@@ -246,6 +252,16 @@ impl Parser<'_> {
     }
 
     fn element(&mut self) -> Result<XmlNode, LoadError> {
+        if self.depth >= MAX_DEPTH {
+            return Err(self.err("elements nested too deeply"));
+        }
+        self.depth += 1;
+        let node = self.element_inner();
+        self.depth -= 1;
+        node
+    }
+
+    fn element_inner(&mut self) -> Result<XmlNode, LoadError> {
         if self.peek() != Some(b'<') {
             return Err(self.err("expected '<'"));
         }

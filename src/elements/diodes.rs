@@ -6,6 +6,7 @@
 use super::element::*;
 use super::geometry::*;
 use super::junction::Diode;
+use super::model_edit::ModelEditor;
 use super::models::DiodeModel;
 use super::registry::{ElementDescriptor, Registry};
 use super::units::*;
@@ -257,6 +258,20 @@ impl DiodeElm {
 
 impl Element for DiodeElm {
     impl_element_base!();
+
+    fn model_buttons(&self) -> Vec<String> {
+        self.model_buttons_list()
+    }
+    fn start_model_edit(&self, button: usize) -> Option<ModelEditor> {
+        self.start_model_editor(button)
+    }
+    fn use_model(&mut self, name: &str) {
+        self.model_name = name.to_string();
+        self.setup();
+    }
+    fn update_models(&mut self) {
+        self.setup();
+    }
 
     fn class_name(&self) -> &'static str {
         match self.kind {
@@ -633,6 +648,22 @@ impl Element for DiodeElm {
 }
 
 impl DiodeElm {
+    fn model_buttons_list(&self) -> Vec<String> {
+        let mut v = vec!["Create New Simple Model".to_string(), "Create New Advanced Model".into()];
+        if !self.model.read_only {
+            v.push("Edit Model".into());
+        }
+        v
+    }
+
+    fn start_model_editor(&self, button: usize) -> Option<ModelEditor> {
+        match button {
+            0 | 1 => Some(ModelEditor::new_diode(&self.model, button == 0)),
+            2 if !self.model.read_only => Some(ModelEditor::edit_diode(&self.model)),
+            _ => None,
+        }
+    }
+
     fn model_edit_info(&self, n: usize) -> Option<EditInfo> {
         if n != 0 {
             return None;
@@ -991,6 +1022,8 @@ mod tests {
         )
     }
 
+    #[cfg(feature = "passive")]
+    #[cfg(feature = "sources")]
     #[test]
     fn forward_diode_conducts_with_the_models_drop() {
         // 'd' with the model flag: anode at (64, 0), cathode at (64, 64); source + at (0, 0)
@@ -1006,6 +1039,8 @@ mod tests {
         assert!((i - (5.0 - drop) / 1000.0).abs() < 1e-6, "{i}");
     }
 
+    #[cfg(feature = "passive")]
+    #[cfg(feature = "sources")]
     #[test]
     fn reverse_diode_blocks_and_zener_clamps() {
         let sim = diode_loop("d 64 64 64 0 2 default");
@@ -1021,6 +1056,8 @@ mod tests {
         assert!(vz > 5.2 && vz < 6.2, "{vz}");
     }
 
+    #[cfg(feature = "passive")]
+    #[cfg(feature = "sources")]
     #[test]
     fn old_files_without_a_model_use_the_forward_drop() {
         // flag 1: a forward drop follows
@@ -1032,6 +1069,8 @@ mod tests {
         assert!(sim.elements[2].dump().contains("fwdrop\\q0.7"), "{}", sim.elements[2].dump());
     }
 
+    #[cfg(feature = "passive")]
+    #[cfg(feature = "sources")]
     #[test]
     fn model_definitions_travel_through_xml() {
         let text = format!(
@@ -1047,6 +1086,8 @@ mod tests {
         assert!(!crate::format::writer::write_xml(&r.circuit).contains("<dm "));
     }
 
+    #[cfg(feature = "passive")]
+    #[cfg(feature = "sources")]
     #[test]
     fn led_dump_reads_colours_and_brightness() {
         let sim = diode_loop("162 64 0 64 64 2 default-led 0 1 0 0.02");
@@ -1055,6 +1096,8 @@ mod tests {
         assert!(led.get_current() > 1e-3);
     }
 
+    #[cfg(feature = "passive")]
+    #[cfg(feature = "sources")]
     #[test]
     fn varactor_and_tunnel_diode_and_spark_gap_run() {
         let sim = diode_loop("176 64 0 64 64 2 default 0 4e-12");

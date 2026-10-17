@@ -843,7 +843,6 @@ impl MosfetModel {
 
     /// The model for an old file that stores only a threshold and a beta (and a few drawing
     /// flags); an existing model with the same parameters is reused.
-    #[allow(clippy::too_many_arguments)]
     pub fn with_parameters(
         vt: f64,
         beta: f64,
@@ -949,6 +948,242 @@ thread_local! {
 // Reading models out of circuit files
 // ---------------------------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------------------------
+// Relay models
+// ---------------------------------------------------------------------------------------------
+
+/// A relay model: coil and contact parameters shared by relays.
+#[derive(Clone, Debug, PartialEq)]
+pub struct RelayModel {
+    /// Name elements refer to the model by.
+    pub name: String,
+    /// Model flags.
+    pub flags: i32,
+    /// Coil inductance in henries.
+    pub inductance: f64,
+    /// Contact resistance when closed.
+    pub r_on: f64,
+    /// Contact resistance when open.
+    pub r_off: f64,
+    /// Coil current at which the relay operates.
+    pub on_current: f64,
+    /// Coil current at which the relay releases.
+    pub off_current: f64,
+    /// Coil resistance.
+    pub coil_r: f64,
+    /// Time the armature takes to move (0 selects the original's old model).
+    pub switching_time: f64,
+    /// 0 coil across both sides, 1 on side 1, 2 on side 2.
+    pub coil_style: i32,
+    /// Number of poles.
+    pub pole_count: i32,
+    /// Draw the box around the coil.
+    pub show_box: bool,
+    /// Connect the open contacts to ground through the off resistance.
+    pub pulldown: bool,
+    /// Part of the program; never written to files.
+    pub built_in: bool,
+    /// The user may not edit it.
+    pub read_only: bool,
+}
+
+impl Default for RelayModel {
+    fn default() -> Self {
+        RelayModel {
+            name: String::new(),
+            flags: 0,
+            inductance: 0.2,
+            r_on: 0.05,
+            r_off: 1e6,
+            on_current: 0.02,
+            off_current: 0.015,
+            coil_r: 20.0,
+            switching_time: 5e-3,
+            coil_style: 0,
+            pole_count: 1,
+            show_box: true,
+            pulldown: true,
+            built_in: false,
+            read_only: false,
+        }
+    }
+}
+
+fn builtin_relay_models() -> HashMap<String, RelayModel> {
+    let mut v = HashMap::new();
+    for (name, poles) in [("default", 1), ("default-2-poles", 2), ("default-3-poles", 3)] {
+        let m = RelayModel {
+            name: name.into(),
+            pole_count: poles,
+            built_in: true,
+            read_only: true,
+            ..RelayModel::default()
+        };
+        v.insert(name.to_string(), m);
+    }
+    v
+}
+
+thread_local! {
+    static RELAY_MODELS: RefCell<HashMap<String, RelayModel>> = RefCell::new(builtin_relay_models());
+}
+
+impl RelayModel {
+    /// The model called `name`, if the library has it.
+    pub fn lookup(name: &str) -> Option<RelayModel> {
+        RELAY_MODELS.with(|l| l.borrow().get(name).cloned())
+    }
+
+    /// The default model.
+    pub fn default_model() -> RelayModel {
+        Self::lookup("default").unwrap_or_default()
+    }
+
+    /// Adds or replaces a model in the library.
+    pub fn define(m: RelayModel) {
+        RELAY_MODELS.with(|l| {
+            l.borrow_mut().insert(m.name.clone(), m);
+        });
+    }
+
+    /// The model called `name`; when there is none, a copy of `old` under that name, or the
+    /// default model when there is no `old` either.
+    pub fn named_or_copy(name: &str, old: Option<&RelayModel>) -> RelayModel {
+        if let Some(m) = Self::lookup(name) {
+            return m;
+        }
+        match old {
+            None => Self::default_model(),
+            Some(old) => {
+                let mut m = old.clone();
+                m.name = name.to_string();
+                m.built_in = false;
+                m.read_only = false;
+                Self::define(m.clone());
+                m
+            }
+        }
+    }
+
+    /// The model for an old file that stores the parameters in each relay; made on first use
+    /// and found again by its values.
+    pub fn with_parameters(
+        inductance: f64,
+        r_on: f64,
+        r_off: f64,
+        on_current: f64,
+        off_current: f64,
+        coil_r: f64,
+        switching_time: f64,
+        coil_style: i32,
+        show_box: bool,
+        pulldown: bool,
+        pole_count: i32,
+    ) -> RelayModel {
+        let same = |a: f64, b: f64| (a - b).abs() < 1e-15;
+        let existing = RELAY_MODELS.with(|l| {
+            let l = l.borrow();
+            let mut names: Vec<&String> = l.keys().collect();
+            names.sort();
+            names
+                .into_iter()
+                .map(|n| &l[n])
+                .find(|m| {
+                    same(m.inductance, inductance)
+                        && same(m.r_on, r_on)
+                        && same(m.r_off, r_off)
+                        && same(m.on_current, on_current)
+                        && same(m.off_current, off_current)
+                        && same(m.coil_r, coil_r)
+                        && same(m.switching_time, switching_time)
+                        && m.coil_style == coil_style
+                        && m.show_box == show_box
+                        && m.pulldown == pulldown
+                        && m.pole_count == pole_count
+                })
+                .cloned()
+        });
+        if let Some(m) = existing {
+            return m;
+        }
+        let name = (1..)
+            .map(|n| if n == 1 { "old-relay".to_string() } else { format!("old-relay-{n}") })
+            .find(|n| Self::lookup(n).is_none())
+            .unwrap_or_else(|| "old-relay".into());
+        let m = RelayModel {
+            name,
+            inductance,
+            r_on,
+            r_off,
+            on_current,
+            off_current,
+            coil_r,
+            switching_time,
+            coil_style,
+            pole_count,
+            show_box,
+            pulldown,
+            ..RelayModel::default()
+        };
+        Self::define(m.clone());
+        m
+    }
+
+    /// Reads a `rlm` tag of the XML format.
+    pub fn undump_xml(xml: &XmlNode) -> Option<RelayModel> {
+        let name = xml.attr("nm")?.to_string();
+        let mut m = Self::lookup(&name)
+            .unwrap_or_else(|| RelayModel { name: name.clone(), ..Self::default() });
+        m.flags = xml.int_attr("f", m.flags);
+        m.inductance = xml.double_attr("in", m.inductance);
+        m.r_on = xml.double_attr("ron", m.r_on);
+        m.r_off = xml.double_attr("rof", m.r_off);
+        m.on_current = xml.double_attr("on", m.on_current);
+        m.off_current = xml.double_attr("of", m.off_current);
+        m.coil_r = xml.double_attr("coR", m.coil_r);
+        m.switching_time = xml.double_attr("sw", m.switching_time);
+        m.coil_style = xml.int_attr("cs", m.coil_style);
+        m.pole_count = xml.int_attr("po", m.pole_count);
+        m.show_box = xml.int_attr("sb", i32::from(m.show_box)) != 0;
+        m.pulldown = xml.int_attr("pd", i32::from(m.pulldown)) != 0;
+        Some(m)
+    }
+
+    /// The model as the XML tag files carry it.
+    pub fn dump_xml(&self) -> XmlOut {
+        let mut o = XmlOut::new("rlm");
+        o.str_attr("nm", &self.name);
+        o.int_attr("f", self.flags);
+        o.double_attr("in", self.inductance);
+        o.double_attr("ron", self.r_on);
+        o.double_attr("rof", self.r_off);
+        o.double_attr("on", self.on_current);
+        o.double_attr("of", self.off_current);
+        o.double_attr("coR", self.coil_r);
+        o.double_attr("sw", self.switching_time);
+        o.int_attr("cs", self.coil_style);
+        if self.pole_count != 1 {
+            o.int_attr("po", self.pole_count);
+        }
+        if self.show_box {
+            o.int_attr("sb", 1);
+        }
+        if self.pulldown {
+            o.int_attr("pd", 1);
+        }
+        o
+    }
+
+    /// Names of the models in the library, sorted, for model lists.
+    pub fn names() -> Vec<String> {
+        RELAY_MODELS.with(|l| {
+            let mut v: Vec<String> = l.borrow().keys().cloned().collect();
+            v.sort();
+            v
+        })
+    }
+}
+
 /// Reads a model line of the text format that carries type code `code`. Returns true when a
 /// model library took it.
 pub fn undump_text_model(code: i32, st: &mut Tokenizer<'_>) -> bool {
@@ -959,12 +1194,29 @@ pub fn undump_text_model(code: i32, st: &mut Tokenizer<'_>) -> bool {
     }
 }
 
+/// Reads a custom logic model line (`!`) of the text format. Returns true when it was taken.
+#[cfg(feature = "digital")]
+pub fn undump_text_custom_logic(st: &mut Tokenizer<'_>) -> bool {
+    super::custom_logic::define_from_text(st)
+}
+
+/// Without the digital family there are no custom logic models to read.
+#[cfg(not(feature = "digital"))]
+pub fn undump_text_custom_logic(_st: &mut Tokenizer<'_>) -> bool {
+    false
+}
+
 /// Reads a model tag of the XML format. Returns true when a model library took it.
 pub fn undump_xml_model(node: &XmlNode) -> bool {
     match node.tag.as_str() {
         "dm" => DiodeModel::undump_xml(node).map(DiodeModel::define).is_some(),
         "tm" => TransistorModel::undump_xml(node).map(TransistorModel::define).is_some(),
         "mm" => MosfetModel::undump_xml(node).map(MosfetModel::define).is_some(),
+        "rlm" => RelayModel::undump_xml(node).map(RelayModel::define).is_some(),
+        #[cfg(feature = "subcircuits")]
+        "ccm" => super::subcircuit::define_from_xml(node),
+        #[cfg(feature = "digital")]
+        "clm" => super::custom_logic::define_from_xml(node),
         _ => false,
     }
 }

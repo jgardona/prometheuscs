@@ -3,7 +3,7 @@
 
 use super::commands::{Action, Cmd, Outcome, apply, dispatch};
 use super::dialogs::{self, OtherOptions};
-use super::edit::{Mods, Tool};
+use super::edit::{Mods, ScopeMode, Tool};
 use super::examples::{ExampleItem, ExampleList, parse_setup_list};
 use super::menus::{self, ActionEntry};
 use super::session::Session;
@@ -38,20 +38,27 @@ fn assets_dir() -> PathBuf {
         .unwrap_or_else(|| PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("assets"))
 }
 
+/// Shown after another language was chosen.
+const LANGUAGE_NOTICE: &str = "The language will change the next time the program starts.";
+
 /// Loads the Portuguese translations and the few strings the original does not translate.
-fn load_translations(assets: &std::path::Path) {
-    let text =
-        std::fs::read_to_string(assets.join("locale").join("locale_pt.txt")).unwrap_or_default();
-    let mut map = locale::parse_translations(&text);
-    for (k, v) in [
-        ("Mode~", "Modo"),
-        ("Show \u{3a9} Unit", "Mostrar Unidade \u{3a9}"),
-        ("Drag", "Arrastar"),
-        ("Delete", "Excluir"),
-    ] {
-        map.entry(k.to_string()).or_insert_with(|| v.to_string());
+fn load_translations(assets: &std::path::Path, setting: &str) {
+    let code = if setting == "auto" { locale::detect_language() } else { setting };
+    let mut map = locale::load_language(code, assets);
+    if code == "pt" {
+        for (k, v) in [
+            ("Mode~", "Modo"),
+            ("Show \u{3a9} Unit", "Mostrar Unidade \u{3a9}"),
+            ("Drag", "Arrastar"),
+            ("Delete", "Excluir"),
+            (LANGUAGE_NOTICE, "O idioma será aplicado na próxima vez que o programa for aberto."),
+            ("Language", "Idioma"),
+        ] {
+            map.entry(k.to_string()).or_insert_with(|| v.to_string());
+        }
     }
     locale::set_translations(map);
+    locale::set_current_language(code);
 }
 
 /// Runs a GTK callback body. A panic that escapes into GTK aborts the whole program, so it is
@@ -75,10 +82,16 @@ fn guarded<T>(what: &str, fallback: T, f: impl FnOnce() -> T) -> T {
 fn paint_frame(s: &mut Session, g: &mut dyn Painter, w: f64, h: f64) {
     s.canvas_size = (w, h);
     if s.fit_pending && w > 0.0 && h > 0.0 {
-        s.view = View::fit(&s.sim.elements, w, h, 2.0);
+        s.view = View::fit(s.display_elements(), w, h, 2.0);
         s.fit_pending = false;
     }
-    let posts = post_draw_list(&s.sim.elements);
+    let posts = post_draw_list(s.display_elements());
+    if s.inspecting() {
+        // inside an instance there is nothing to select or place: no rubber band, no crosshair
+        let (ctx, view) = (s.draw_ctx.clone(), s.view);
+        draw_scene(g, s.display_elements_mut(), &posts, &ctx, view, (w, h));
+        return;
+    }
     draw_scene(g, &mut s.sim.elements, &posts, &s.draw_ctx, s.view, (w, h));
     let cross = if s.settings.crosshair { s.pointer } else { None };
     draw_overlay(g, &s.draw_ctx, s.view, (w, h), s.rubber_band(), cross);
@@ -150,7 +163,9 @@ pub struct App {
 type GlSlot = Rc<RefCell<Option<(GlCanvas, Option<femtovg::FontId>)>>>;
 
 /// Identity of the circuit sliders, to rebuild them only when they change.
-type SliderKey = Vec<(usize, usize, String)>;
+/// (element, field, label, range and step as bits, logarithmic): a slider is rebuilt when any
+/// of these change.
+type SliderKey = Vec<(usize, usize, String, [u64; 3], bool)>;
 
 /// Widgets that change after start-up.
 pub struct Widgets {
@@ -164,9 +179,23 @@ pub struct Widgets {
     toolbar: Toolbar,
     actions: Vec<ActionEntry>,
     shown_sliders: SliderKey,
+    /// The play buttons of the audio outputs.
+    audio: gtk::Box,
+    /// The bar shown while a subcircuit model is edited, and the label with its name.
+    context_bar: gtk::Box,
+    context_label: gtk::Label,
+    /// The buttons of the bar that only make sense while a model is being edited.
+    context_save: [gtk::Button; 2],
+    shown_audio: Vec<(usize, String)>,
 }
 
-fn slider_row(title: &str, value: f64) -> (gtk::Box, gtk::Scale, gtk::Label) {
+/// Range of the simulation speed slider, as in the original: the speed grows exponentially,
+/// so only a range this wide reaches both very slow and very fast runs.
+const SPEED_RANGE: (f64, f64) = (0.0, 260.0);
+/// Range of the current speed and power brightness sliders.
+const BAR_RANGE: (f64, f64) = (1.0, 100.0);
+
+fn slider_row(title: &str, value: f64, range: (f64, f64)) -> (gtk::Box, gtk::Scale, gtk::Label) {
     let row = gtk::Box::new(gtk::Orientation::Vertical, 2);
     let head = gtk::Box::new(gtk::Orientation::Horizontal, 6);
     let name = gtk::Label::new(Some(title));
@@ -176,7 +205,7 @@ fn slider_row(title: &str, value: f64) -> (gtk::Box, gtk::Scale, gtk::Label) {
     val.add_css_class("dim-label");
     head.append(&name);
     head.append(&val);
-    let scale = gtk::Scale::with_range(gtk::Orientation::Horizontal, 0.0, 100.0, 1.0);
+    let scale = gtk::Scale::with_range(gtk::Orientation::Horizontal, range.0, range.1, 1.0);
     scale.set_value(value);
     scale.set_draw_value(false);
     scale.set_hexpand(true);
@@ -199,7 +228,499 @@ fn slider_row(title: &str, value: f64) -> (gtk::Box, gtk::Scale, gtk::Label) {
 }
 
 fn slider_key(s: &Session) -> SliderKey {
-    s.adjustables.iter().map(|a| (a.elm, a.edit_item, a.slider_text.clone())).collect()
+    s.adjustables
+        .iter()
+        .map(|a| {
+            (
+                a.elm,
+                a.edit_item,
+                a.slider_text.clone(),
+                [a.min_value.to_bits(), a.max_value.to_bits(), a.slider_step.to_bits()],
+                a.logarithmic,
+            )
+        })
+        .collect()
+}
+
+/// Opens the edit dialog of element `i`, with the buttons for its device model. A model
+/// button closes the dialog, shows the model dialog and then opens this dialog again so it
+/// shows the new model.
+fn open_element_editor(
+    win: &adw::ApplicationWindow,
+    ses: &Rc<RefCell<Session>>,
+    tx: &relm4::Sender<Msg>,
+    i: usize,
+) {
+    let (title, fields, labels) = {
+        let s = ses.borrow();
+        (s.element_title(i), s.edit_fields(i), s.model_buttons(i))
+    };
+    let mut buttons: Vec<dialogs::DialogButton> = labels
+        .into_iter()
+        .enumerate()
+        .map(|(b, label)| {
+            let (win, ses, tx) = (win.clone(), ses.clone(), tx.clone());
+            let action: Box<dyn Fn()> = Box::new(move || {
+                let editor = ses.borrow().start_model_edit(i, b);
+                match editor {
+                    Some(editor) => open_model_editor(&win, &ses, &tx, i, editor, None),
+                    None => open_element_editor(&win, &ses, &tx, i),
+                }
+            });
+            (label, action)
+        })
+        .collect();
+    // the parts of an instance can be looked at, whatever its model
+    if ses.borrow().can_view_components(i) {
+        let (s2, t) = (ses.clone(), tx.clone());
+        buttons.push((
+            "View Components".to_string(),
+            Box::new(move || {
+                let result = guarded("view components", Err("failed".to_string()), || {
+                    s2.borrow_mut().view_components(i)
+                });
+                if let Err(e) = result {
+                    let _ = t.send(Msg::Notice(locale::ls(&e)));
+                }
+                let _ = t.send(Msg::Refresh);
+            }),
+        ));
+    }
+    // an instance of a subcircuit model can have its pins and its circuit edited
+    let model = ses.borrow().sim.elements.get(i).and_then(|e| e.subcircuit_model_name());
+    if let Some(name) = model {
+        let (w, s2, t) = (win.clone(), ses.clone(), tx.clone());
+        buttons.push((
+            "Edit Pin Layout".to_string(),
+            Box::new(move || {
+                match crate::elements::subcircuit::lookup(&name) {
+                    Some(m) => open_subcircuit_dialog(&w, &s2, &t, &m, None),
+                    None => {
+                        let _ = t.send(Msg::Notice(locale::ls("Can't edit this model.")));
+                    }
+                };
+            }),
+        ));
+        let (s2, t) = (ses.clone(), tx.clone());
+        buttons.push((
+            "Edit Model".to_string(),
+            Box::new(move || {
+                let result = guarded("edit model", Err("failed".to_string()), || {
+                    s2.borrow_mut().edit_model(i)
+                });
+                if let Err(e) = result {
+                    let _ = t.send(Msg::Notice(locale::ls(&e)));
+                }
+                let _ = t.send(Msg::Refresh);
+            }),
+        ));
+    }
+    let tx = tx.clone();
+    dialogs::edit_element_with(win, &title, fields, buttons, None, move |f| {
+        let _ = tx.send(Msg::ApplyEdit(i, f));
+    });
+}
+
+/// Shows the pin layout dialog of a subcircuit being made or changed; a name or layout that
+/// does not work shows it again with the reason.
+fn open_subcircuit_dialog(
+    win: &adw::ApplicationWindow,
+    ses: &Rc<RefCell<Session>>,
+    tx: &relm4::Sender<Msg>,
+    model: &crate::elements::subcircuit::CompositeModel,
+    error: Option<String>,
+) {
+    let (win2, ses2, tx2) = (win.clone(), ses.clone(), tx.clone());
+    dialogs::subcircuit_pins(win, model, error.as_deref(), move |m, scope| {
+        let r = guarded("subcircuit", Err("failed".to_string()), || {
+            ses2.borrow_mut().finish_subcircuit(m.clone(), scope)
+        });
+        match r {
+            Ok(()) => {
+                let _ = tx2.send(Msg::Refresh);
+            }
+            Err(e) => open_subcircuit_dialog(&win2, &ses2, &tx2, &m, Some(e)),
+        }
+    });
+}
+
+/// Shows the subcircuit manager.
+fn open_subcircuit_manager(
+    win: &adw::ApplicationWindow,
+    ses: &Rc<RefCell<Session>>,
+    tx: &relm4::Sender<Msg>,
+) {
+    let names = ses.borrow().subcircuit_names();
+    let (w1, s1, t1) = (win.clone(), ses.clone(), tx.clone());
+    let (w2, s2, t2) = (win.clone(), ses.clone(), tx.clone());
+    let (w3, s3, t3) = (win.clone(), ses.clone(), tx.clone());
+    dialogs::subcircuit_manager(
+        win,
+        &names,
+        move |n| {
+            s1.borrow_mut().place_subcircuit(&n);
+            let _ = t1.send(Msg::Refresh);
+            let _ = &w1;
+        },
+        move |n| {
+            let model = s2.borrow().subcircuit_model(&n);
+            if let Some(m) = model {
+                open_subcircuit_dialog(&w2, &s2, &t2, &m, None);
+            }
+        },
+        move |n| {
+            s3.borrow_mut().delete_subcircuit(&n);
+            let _ = t3.send(Msg::Refresh);
+            open_subcircuit_manager(&w3, &s3, &t3);
+        },
+    );
+}
+
+/// Shows the Add Sliders dialog of element `i`; values that are not allowed show it again.
+fn open_slider_dialog(
+    win: &adw::ApplicationWindow,
+    ses: &Rc<RefCell<Session>>,
+    tx: &relm4::Sender<Msg>,
+    i: usize,
+    error: Option<String>,
+) {
+    let (title, entries) = {
+        let s = ses.borrow();
+        (s.element_title(i), s.slider_entries(i))
+    };
+    let (win2, ses2, tx2) = (win.clone(), ses.clone(), tx.clone());
+    dialogs::element_sliders(
+        win,
+        &format!("{} - {}", locale::ls("Add Sliders"), title),
+        entries,
+        error.as_deref(),
+        move |choices| {
+            let r = guarded("add sliders", Err("failed".to_string()), || {
+                ses2.borrow_mut().apply_sliders(i, &choices)
+            });
+            match r {
+                Ok(()) => {
+                    let _ = tx2.send(Msg::Refresh);
+                }
+                Err(m) => open_slider_dialog(&win2, &ses2, &tx2, i, Some(locale::ls(&m))),
+            }
+        },
+    );
+}
+
+/// Shows the properties dialog of scope `idx`; a value that is not allowed shows the dialog
+/// again with the reason.
+/// A scope the interface can act on: one of the diagrams under the canvas, or one placed in
+/// the circuit as an element.
+#[derive(Clone, Copy, Debug)]
+enum ScopeTarget {
+    /// The diagram with this index.
+    Docked(usize),
+    /// The scope element with this index.
+    Embedded(usize),
+}
+
+fn open_scope_properties(
+    win: &adw::ApplicationWindow,
+    ses: &Rc<RefCell<Session>>,
+    target: ScopeTarget,
+    fields: Option<Vec<EditInfo>>,
+    error: Option<String>,
+) {
+    let Some(fields) = fields.or_else(|| match target {
+        ScopeTarget::Docked(i) => ses.borrow().scope_properties(i),
+        ScopeTarget::Embedded(e) => ses.borrow().embedded_scope_properties(e),
+    }) else {
+        return;
+    };
+    let (win2, ses2) = (win.clone(), ses.clone());
+    let shown = fields.clone();
+    dialogs::edit_element_with(
+        win,
+        &locale::ls("Scope Properties"),
+        shown,
+        Vec::new(),
+        error.as_deref(),
+        move |f| {
+            let result = guarded("scope properties", Err("failed".to_string()), || match target {
+                ScopeTarget::Docked(i) => ses2.borrow_mut().apply_scope_properties(i, &f),
+                ScopeTarget::Embedded(e) => {
+                    ses2.borrow_mut().apply_embedded_scope_properties(e, &f)
+                }
+            });
+            if let Err(message) = result {
+                open_scope_properties(&win2, &ses2, target, Some(f), Some(locale::ls(&message)));
+            }
+        },
+    );
+}
+
+/// The menu of a scope: what it plots, how it draws, and what can be done with it. It opens
+/// over `parent` at (`x`, `y`).
+fn show_scope_menu(
+    win: &adw::ApplicationWindow,
+    ses: &Rc<RefCell<Session>>,
+    tx: &relm4::Sender<Msg>,
+    parent: &gtk::Widget,
+    target: ScopeTarget,
+    (x, y): (f64, f64),
+) {
+    let items = match target {
+        ScopeTarget::Docked(i) => ses.borrow().scope_menu(i),
+        ScopeTarget::Embedded(e) => ses.borrow().embedded_scope_menu(e),
+    };
+    let body = gtk::Box::new(gtk::Orientation::Vertical, 2);
+    for (value, key, active) in items {
+        let check = gtk::CheckButton::with_label(&locale::ls(key));
+        check.set_active(active);
+        let ses = ses.clone();
+        check.connect_toggled(move |c| {
+            guarded("scope value", (), || match target {
+                ScopeTarget::Docked(i) => {
+                    ses.borrow_mut().toggle_scope_value(i, value, c.is_active());
+                }
+                ScopeTarget::Embedded(e) => {
+                    ses.borrow_mut().toggle_embedded_value(e, value, c.is_active());
+                }
+            });
+        });
+        body.append(&check);
+    }
+    body.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+    for (mode, key) in [
+        (ScopeMode::VoltageCurrent, "Show V vs I"),
+        (ScopeMode::Xy, "Plot X/Y"),
+        (ScopeMode::Spectrum, "Show Spectrum"),
+    ] {
+        let check = gtk::CheckButton::with_label(&locale::ls(key));
+        check.set_active(match target {
+            ScopeTarget::Docked(i) => ses.borrow().scope_mode(i, mode),
+            ScopeTarget::Embedded(e) => ses.borrow().embedded_scope_mode(e, mode),
+        });
+        let ses = ses.clone();
+        check.connect_toggled(move |c| {
+            guarded("scope mode", (), || match target {
+                ScopeTarget::Docked(i) => ses.borrow_mut().set_scope_mode(i, mode, c.is_active()),
+                ScopeTarget::Embedded(e) => {
+                    ses.borrow_mut().set_embedded_scope_mode(e, mode, c.is_active());
+                }
+            });
+        });
+        body.append(&check);
+    }
+    body.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+    let popover = gtk::Popover::new();
+    // one flat button that does `action` and closes the menu
+    let entry = |label: &str, action: Box<dyn Fn()>| {
+        let b = menu_button(&locale::ls(label));
+        let pop = popover.clone();
+        b.connect_clicked(move |_| {
+            pop.popdown();
+            action();
+        });
+        b
+    };
+    // a scope with several plots can drop one of them
+    let plots: Vec<String> = match target {
+        ScopeTarget::Docked(i) => ses
+            .borrow()
+            .scope_views()
+            .get(i)
+            .map(|v| {
+                v.plots
+                    .iter()
+                    .map(|p| format!("{} {}", p.title, crate::render::scopes::plot_label(p)))
+                    .collect()
+            })
+            .unwrap_or_default(),
+        ScopeTarget::Embedded(e) => ses.borrow().embedded_plot_names(e),
+    };
+    if plots.len() > 1 {
+        for (k, name) in plots.iter().enumerate() {
+            let ses = ses.clone();
+            let label = format!("{}: {name}", locale::ls("Remove Plot"));
+            body.append(&entry(
+                &label,
+                Box::new(move || {
+                    guarded("remove plot", (), || match target {
+                        ScopeTarget::Docked(i) => ses.borrow_mut().remove_scope_plot(i, k),
+                        ScopeTarget::Embedded(e) => ses.borrow_mut().remove_embedded_plot(e, k),
+                    });
+                }),
+            ));
+        }
+    }
+    // the history of a scope placed in the circuit starts again whenever its settings change,
+    // so there is nothing to reset there
+    if let ScopeTarget::Docked(i) = target {
+        let ses = ses.clone();
+        body.append(&entry(
+            "Reset",
+            Box::new(move || {
+                guarded("reset scope", (), || ses.borrow_mut().reset_scope(i));
+            }),
+        ));
+    }
+    {
+        let (ses, win) = (ses.clone(), win.clone());
+        body.append(&entry(
+            "Export CSV...",
+            Box::new(move || {
+                let csv = match target {
+                    ScopeTarget::Docked(i) => ses.borrow().scope_csv(i),
+                    ScopeTarget::Embedded(e) => ses.borrow().embedded_scope_csv(e),
+                };
+                let Some(csv) = csv else { return };
+                dialogs::choose_save(
+                    &win,
+                    "Exportar dados do osciloscópio",
+                    "scope-data.csv",
+                    "*.csv",
+                    move |path| {
+                        if let Err(e) = std::fs::write(&path, &csv) {
+                            tracing::warn!("cannot write {}: {e}", path.display());
+                        }
+                    },
+                );
+            }),
+        ));
+    }
+    {
+        let (ses, win) = (ses.clone(), win.clone());
+        body.append(&entry(
+            "Properties...",
+            Box::new(move || open_scope_properties(&win, &ses, target, None, None)),
+        ));
+    }
+    {
+        let (ses, tx) = (ses.clone(), tx.clone());
+        let label = match target {
+            ScopeTarget::Docked(_) => "Undock Scope",
+            ScopeTarget::Embedded(_) => "Dock Scope",
+        };
+        body.append(&entry(
+            label,
+            Box::new(move || {
+                guarded("dock scope", false, || match target {
+                    ScopeTarget::Docked(i) => ses.borrow_mut().undock_scope(i),
+                    ScopeTarget::Embedded(e) => ses.borrow_mut().dock_scope(e),
+                });
+                let _ = tx.send(Msg::Refresh);
+            }),
+        ));
+    }
+    let remove = menu_button(&locale::ls("Remove Scope"));
+    {
+        let (ses, pop, tx) = (ses.clone(), popover.clone(), tx.clone());
+        remove.connect_clicked(move |_| {
+            guarded("remove scope", (), || match target {
+                ScopeTarget::Docked(i) => ses.borrow_mut().remove_scope(i),
+                ScopeTarget::Embedded(e) => ses.borrow_mut().remove_embedded_scope(e),
+            });
+            pop.popdown();
+            let _ = tx.send(Msg::Refresh);
+        });
+    }
+    body.append(&remove);
+    popover.set_child(Some(&body));
+    popover.set_parent(parent);
+    popover.set_pointing_to(Some(&gdk::Rectangle::new(x as i32, y as i32, 1, 1)));
+    popover.connect_closed(|p| {
+        let p = p.clone();
+        glib::idle_add_local_once(move || p.unparent());
+    });
+    popover.popup();
+}
+
+/// Shows the dialog of a device model being created or edited for element `i`.
+fn open_model_editor(
+    win: &adw::ApplicationWindow,
+    ses: &Rc<RefCell<Session>>,
+    tx: &relm4::Sender<Msg>,
+    i: usize,
+    editor: crate::elements::model_edit::ModelEditor,
+    error: Option<String>,
+) {
+    let title = locale::ls(editor.title());
+    let fields = editor.fields();
+    let (win2, ses2, tx2) = (win.clone(), ses.clone(), tx.clone());
+    dialogs::edit_element_with(win, &title, fields, Vec::new(), error.as_deref(), move |mut f| {
+        let mut editor = editor.clone();
+        let result = ses2.borrow_mut().finish_model_edit(i, &mut editor, &mut f);
+        match result {
+            // the options changed: show the dialog again with what was typed
+            Ok(true) => open_model_editor(&win2, &ses2, &tx2, i, editor, None),
+            Ok(false) => {
+                let _ = tx2.send(Msg::Refresh);
+                open_element_editor(&win2, &ses2, &tx2, i);
+            }
+            Err(message) => {
+                open_model_editor(&win2, &ses2, &tx2, i, editor, Some(locale::ls(&message)));
+            }
+        }
+    });
+}
+
+/// The row of an audio output in the side panel: a button that plays what it recorded and one
+/// that saves it as a WAV file.
+fn audio_row(
+    win: &adw::ApplicationWindow,
+    ses: &Rc<RefCell<Session>>,
+    tx: &relm4::Sender<Msg>,
+    elm: usize,
+    label: &str,
+) -> gtk::Box {
+    let row = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+    let play = gtk::Button::with_label(&format!("\u{25b6} {} {label}", locale::ls("Play Audio")));
+    play.set_hexpand(true);
+    {
+        let (ses, tx) = (ses.clone(), tx.clone());
+        play.connect_clicked(move |_| {
+            let wav = guarded("audio", None, || ses.borrow().audio_wav(elm));
+            let result = match wav {
+                Some(bytes) => super::playback::play(&bytes),
+                None => Err(locale::ls(
+                    "Audio data is not ready yet.  Increase simulation speed to make data ready sooner.",
+                )),
+            };
+            if let Err(e) = result {
+                let _ = tx.send(Msg::Notice(e));
+            }
+        });
+    }
+    let save = gtk::Button::from_icon_name("document-save-symbolic");
+    save.set_tooltip_text(Some(&locale::ls("Download last played audio")));
+    {
+        let (ses, win, tx) = (ses.clone(), win.clone(), tx.clone());
+        save.connect_clicked(move |_| {
+            let Some(bytes) = guarded("audio", None, || ses.borrow().audio_wav(elm)) else {
+                let _ = tx.send(Msg::Notice(locale::ls(
+                    "Audio data is not ready yet.  Increase simulation speed to make data ready sooner.",
+                )));
+                return;
+            };
+            dialogs::choose_save(&win, "Salvar áudio", "audio.wav", "*.wav", move |path| {
+                if let Err(e) = std::fs::write(&path, &bytes) {
+                    tracing::warn!("cannot write {}: {e}", path.display());
+                }
+            });
+        });
+    }
+    row.append(&play);
+    row.append(&save);
+    row
+}
+
+/// A flat button for a popover menu: its text is left aligned and in the normal weight, like
+/// the check buttons around it.
+fn menu_button(text: &str) -> gtk::Button {
+    let label = gtk::Label::new(Some(text));
+    label.set_xalign(0.0);
+    label.add_css_class("body");
+    let b = gtk::Button::new();
+    b.set_child(Some(&label));
+    b.add_css_class("flat");
+    b
 }
 
 fn example_title(list: &[ExampleItem], file: &str) -> Option<String> {
@@ -211,6 +732,14 @@ fn example_title(list: &[ExampleItem], file: &str) -> Option<String> {
 }
 
 impl App {
+    /// Tells the user about the lines of the file that could not be read.
+    fn show_load_problems(&self) {
+        let errors = self.session.borrow().load_errors.clone();
+        if !errors.is_empty() {
+            dialogs::load_problems(&self.window, &errors);
+        }
+    }
+
     fn load_example(&mut self, file: &str) {
         let path = self.assets.join("circuits").join(file);
         let title = example_title(&self.examples.items, file).unwrap_or_else(|| file.to_string());
@@ -218,6 +747,7 @@ impl App {
             Ok(text) => {
                 let r = self.session.borrow_mut().open_text(&text, &locale::ls(&title), None);
                 self.notice = r.err().map(|e| e.to_string());
+                self.show_load_problems();
             }
             Err(e) => self.notice = Some(format!("{}: {e}", path.display())),
         }
@@ -289,11 +819,34 @@ impl App {
             Cmd::Recover => {
                 let r = self.session.borrow_mut().recover_autosave();
                 self.notice = r.err();
+                self.show_load_problems();
             }
             Cmd::Print => dialogs::print(&w, self.session.clone()),
             Cmd::Fullscreen => w.set_fullscreened(!w.is_fullscreen()),
             Cmd::About => dialogs::about(&w),
             Cmd::Shortcuts => dialogs::shortcuts(&w, &self.registry),
+            Cmd::CreateSubcircuit => {
+                let made = self.session.borrow_mut().start_subcircuit();
+                match made {
+                    Ok(model) => open_subcircuit_dialog(
+                        &w,
+                        &self.session,
+                        sender.input_sender(),
+                        &model,
+                        None,
+                    ),
+                    Err(e) => self.notice = Some(locale::ls(&e)),
+                }
+            }
+            Cmd::SubcircuitManager => {
+                open_subcircuit_manager(&w, &self.session, sender.input_sender());
+            }
+            Cmd::AddSliders => {
+                let target = self.session.borrow().selected_slider_element();
+                if let Some(i) = target {
+                    open_slider_dialog(&w, &self.session, sender.input_sender(), i, None);
+                }
+            }
             Cmd::Find => {
                 let labels = self.session.borrow().element_labels();
                 let s = sender.input_sender().clone();
@@ -324,6 +877,10 @@ impl App {
                 });
             }
             Cmd::Example(file) => self.load_example(&file),
+            Cmd::Language(code) => {
+                self.session.borrow_mut().set_language(&code);
+                self.notice = Some(locale::ls(LANGUAGE_NOTICE));
+            }
             other => self.notice = Some(format!("Recurso ainda não disponível: {other:?}")),
         }
     }
@@ -371,8 +928,9 @@ impl SimpleComponent for App {
         root: Self::Root,
         sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
+        tracing::debug!(ms = super::bench::since_start(), "init begins");
         let assets = assets_dir();
-        load_translations(&assets);
+        load_translations(&assets, &AppSettings::load(&settings_path()).language);
         let registry = Registry::standard();
         let examples = std::fs::read_to_string(assets.join("setuplist.txt"))
             .map(|t| parse_setup_list(&t))
@@ -380,13 +938,18 @@ impl SimpleComponent for App {
         let settings = AppSettings::load(&settings_path());
         let dark = adw::StyleManager::default().is_dark();
 
+        // the subcircuits kept for every circuit
+        super::subcircuits::load_saved();
         let mut session = Session::empty_with(&registry, settings.clone());
         // the solver runs on its own thread; the window only draws what it publishes
         session.attach_worker(Worker::spawn(registry.clone(), settings));
         session.settings_path = Some(settings_path());
         let startup = examples.startup.clone().unwrap_or_else(|| "lrc.txt".into());
         let mut notice = None;
-        match std::fs::read_to_string(assets.join("circuits").join(&startup)) {
+        // a render benchmark draws the circuit it was given instead of the start-up example
+        let bench_path = super::bench::config().map(|c| c.path.clone());
+        let startup_path = bench_path.unwrap_or_else(|| assets.join("circuits").join(&startup));
+        match std::fs::read_to_string(&startup_path) {
             Ok(text) => {
                 let title = example_title(&examples.items, &startup).unwrap_or(startup.clone());
                 if let Err(e) = session.open_text(&text, &locale::ls(&title), None) {
@@ -395,17 +958,29 @@ impl SimpleComponent for App {
             }
             Err(e) => notice = Some(format!("{startup}: {e}")),
         }
+        tracing::debug!(ms = super::bench::since_start(), "session loaded");
         let session = Rc::new(RefCell::new(session));
+        // the render benchmark, when asked for on the command line
+        let bench: Rc<RefCell<Option<super::bench::Bench>>> =
+            Rc::new(RefCell::new(super::bench::config().map(|c| {
+                let n = session.borrow().sim.elements.len();
+                super::bench::Bench::new(c.clone(), n)
+            })));
 
         // --- canvas: a GPU canvas (GtkGLArea + femtovg) with the Cairo canvas as fallback
         let cairo_area = gtk::DrawingArea::new();
         cairo_area.set_hexpand(true);
         cairo_area.set_vexpand(true);
         let draw_session = session.clone();
+        let cairo_bench = bench.clone();
         cairo_area.set_draw_func(move |_, cr, w, h| {
             guarded("drawing", (), || {
+                let began = std::time::Instant::now();
                 let mut g = CairoPainter::new(cr);
                 paint_frame(&mut draw_session.borrow_mut(), &mut g, f64::from(w), f64::from(h));
+                if let Some(b) = cairo_bench.borrow_mut().as_mut() {
+                    b.on_draw(began.elapsed());
+                }
             });
         });
         let gl_area = gtk::GLArea::new();
@@ -432,12 +1007,14 @@ impl SimpleComponent for App {
                     Some(e) => Err(e.to_string()),
                     None => GlCanvas::new(),
                 };
+                tracing::debug!(ms = super::bench::since_start(), "GL canvas created");
                 match created {
                     Ok(mut c) => {
                         let font = c.load_font();
                         if font.is_none() {
                             tracing::warn!("no system font found; text will not be drawn");
                         }
+                        tracing::debug!(ms = super::bench::since_start(), "font loaded");
                         *gl_slot.borrow_mut() = Some((c, font));
                     }
                     Err(e) => {
@@ -452,10 +1029,12 @@ impl SimpleComponent for App {
                 *gl_slot.borrow_mut() = None;
             });
             let (gl_slot, ses) = (gl.clone(), session.clone());
+            let gl_bench = bench.clone();
             let frames = Cell::new(0_u32);
             gl_area.connect_render(move |a, _| {
                 guarded("GPU drawing", (), || {
                     if let Some((c, font)) = gl_slot.borrow_mut().as_mut() {
+                        let began = std::time::Instant::now();
                         let scale = a.scale_factor();
                         let (w, h) = (a.width(), a.height());
                         let px = |v: i32| u32::try_from(v * scale).unwrap_or(1).max(1);
@@ -463,6 +1042,9 @@ impl SimpleComponent for App {
                         let mut g = GlPainter::new(&mut c.canvas, *font);
                         paint_frame(&mut ses.borrow_mut(), &mut g, f64::from(w), f64::from(h));
                         c.end();
+                        if let Some(b) = gl_bench.borrow_mut().as_mut() {
+                            b.on_draw(began.elapsed());
+                        }
                         // a diagnostic for GPU problems: once, read back how much was drawn
                         frames.set(frames.get() + 1);
                         if frames.get() == 60 && tracing::enabled!(tracing::Level::DEBUG) {
@@ -515,18 +1097,94 @@ impl SimpleComponent for App {
                 }
                 let target = guarded("double click", None, || ses.borrow().element_for_edit(x, y));
                 if let Some(i) = target {
-                    let (title, fields) = {
-                        let s = ses.borrow();
-                        (s.element_title(i), s.edit_fields(i))
-                    };
-                    let tx = tx.clone();
-                    dialogs::edit_element(&win, &title, fields, move |f| {
-                        let _ = tx.send(Msg::ApplyEdit(i, f));
-                    });
+                    if ses.borrow().embedded_scope(i).is_some() {
+                        open_scope_properties(&win, &ses, ScopeTarget::Embedded(i), None, None);
+                    } else {
+                        open_element_editor(&win, &ses, &tx, i);
+                    }
                 }
             });
         }
         area.add_controller(click);
+        // right click on an element: a small menu of what can be done with it
+        let context = gtk::GestureClick::builder().button(3).build();
+        {
+            let (ses, area_ctx, assets_ctx) = (session.clone(), area.clone(), assets.clone());
+            let (tx_ctx, win_ctx) = (sender.input_sender().clone(), root.clone());
+            context.connect_pressed(move |_, _, x, y| {
+                let hit =
+                    guarded("context menu", false, || ses.borrow_mut().select_for_context(x, y));
+                if !hit {
+                    return;
+                }
+                // the entries are enabled according to the new selection
+                let _ = tx_ctx.send(Msg::Refresh);
+                // a scope placed in the circuit has the menu of a diagram
+                let scope_element = ses.borrow().selected_scope_element();
+                if let Some(elm) = scope_element {
+                    show_scope_menu(
+                        &win_ctx,
+                        &ses,
+                        &tx_ctx,
+                        area_ctx.upcast_ref(),
+                        ScopeTarget::Embedded(elm),
+                        (x, y),
+                    );
+                    return;
+                }
+                let on_scope_element = false;
+                let first = if on_scope_element {
+                    crate::app::commands::Node::Item(
+                        Cmd::DockScope,
+                        "Dock Scope".to_string(),
+                        None,
+                        None,
+                    )
+                } else {
+                    crate::app::commands::Node::Item(
+                        Cmd::ViewInScope,
+                        "View in Scope".to_string(),
+                        None,
+                        None,
+                    )
+                };
+                let nodes = vec![
+                    crate::app::commands::Node::Section(vec![first]),
+                    crate::app::commands::Node::Section(vec![crate::app::commands::Node::Item(
+                        Cmd::AddSliders,
+                        "Add Sliders".to_string(),
+                        None,
+                        None,
+                    )]),
+                    crate::app::commands::Node::Section(vec![
+                        crate::app::commands::Node::Item(
+                            Cmd::Duplicate,
+                            "Duplicate".to_string(),
+                            None,
+                            None,
+                        ),
+                        crate::app::commands::Node::Item(
+                            Cmd::Delete,
+                            "Delete".to_string(),
+                            None,
+                            None,
+                        ),
+                    ]),
+                ];
+                let mut seen = std::collections::HashMap::new();
+                let model = menus::build_menu(&nodes, &assets_ctx, false, &mut seen);
+                let popover = gtk::PopoverMenu::from_model(Some(&model));
+                popover.set_parent(&area_ctx);
+                popover.set_pointing_to(Some(&gdk::Rectangle::new(x as i32, y as i32, 1, 1)));
+                popover.connect_closed(|p| {
+                    // the popover is rebuilt for every click
+                    let p = p.clone();
+                    glib::idle_add_local_once(move || p.unparent());
+                });
+                popover.popup();
+            });
+        }
+        area.add_controller(context);
         let motion = gtk::EventControllerMotion::new();
         {
             let (ses, lp) = (session.clone(), last_pointer.clone());
@@ -608,12 +1266,21 @@ impl SimpleComponent for App {
         }
         panel.append(&reset);
         panel.append(&run_button);
-        let (speed_row, speed, speed_val) =
-            slider_row("Velocidade da Simulação", f64::from(session.borrow().options.speed_bar()));
-        let (current_row, current, current_val) =
-            slider_row("Velocidade da Corrente", f64::from(session.borrow().options.current_bar));
-        let (bright_row, brightness, bright_val) =
-            slider_row("Brilho da Potência", f64::from(session.borrow().options.power_bar));
+        let (speed_row, speed, speed_val) = slider_row(
+            "Velocidade da Simulação",
+            f64::from(session.borrow().options.speed_bar()),
+            SPEED_RANGE,
+        );
+        let (current_row, current, current_val) = slider_row(
+            "Velocidade da Corrente",
+            f64::from(session.borrow().options.current_bar),
+            BAR_RANGE,
+        );
+        let (bright_row, brightness, bright_val) = slider_row(
+            "Brilho da Potência",
+            f64::from(session.borrow().options.power_bar),
+            BAR_RANGE,
+        );
         for v in [&speed_val, &current_val, &bright_val] {
             v.set_text("");
         }
@@ -635,6 +1302,8 @@ impl SimpleComponent for App {
         panel.append(&circuit_label);
         let sliders = gtk::Box::new(gtk::Orientation::Vertical, 12);
         panel.append(&sliders);
+        let audio = gtk::Box::new(gtk::Orientation::Vertical, 6);
+        panel.append(&audio);
         let panel_scroll = gtk::ScrolledWindow::new();
         panel_scroll.set_child(Some(&panel));
         panel_scroll.set_hscrollbar_policy(gtk::PolicyType::Never);
@@ -654,7 +1323,8 @@ impl SimpleComponent for App {
                 let _ = command_sender.send(Msg::Command(cmd));
             }),
         );
-        menus::install_accels(&relm4::main_application(), &registry);
+
+        menus::install_shortcuts(&root, &registry);
 
         // --- layout
         let banner = adw::Banner::new("");
@@ -663,19 +1333,256 @@ impl SimpleComponent for App {
             let s = sender.clone();
             banner.connect_button_clicked(move |_| s.input(Msg::DismissBanner));
         }
-        // the time diagrams will go under the canvas; until they exist the place is kept
-        let scope_area = gtk::Label::new(Some("Diagramas de tempo: ainda não disponíveis"));
-        scope_area.add_css_class("dim-label");
-        scope_area.set_height_request(96);
+        // the time diagrams go under the canvas; the area has no height without scopes
+        let scope_area = gtk::DrawingArea::new();
+        scope_area.set_hexpand(true);
+        scope_area.set_content_height(0);
+        scope_area.set_visible(false);
+        let scope_session = session.clone();
+        // where the pointer is over the diagrams, for the readout under it
+        let scope_pointer = Rc::new(Cell::new(None::<(f64, f64)>));
+        let draw_pointer = scope_pointer.clone();
+        scope_area.set_draw_func(move |_, cr, w, h| {
+            guarded("scope drawing", (), || {
+                let mut g = CairoPainter::new(cr);
+                let mut s = scope_session.borrow_mut();
+                let views = s.scope_views();
+                let light = s.settings.white_background;
+                let mut scales = std::mem::take(&mut s.scope_scales);
+                crate::render::scopes::draw_scopes(
+                    &mut g,
+                    &views,
+                    &mut scales,
+                    f64::from(w),
+                    f64::from(h),
+                    light,
+                    draw_pointer.get(),
+                );
+                s.scope_scales = scales;
+            });
+        });
+        let motion = gtk::EventControllerMotion::new();
+        {
+            let (pointer, area_m) = (scope_pointer.clone(), scope_area.clone());
+            motion.connect_motion(move |_, x, y| {
+                pointer.set(Some((x, y)));
+                area_m.queue_draw();
+            });
+            let (pointer, area_m) = (scope_pointer.clone(), scope_area.clone());
+            motion.connect_leave(move |_| {
+                pointer.set(None);
+                area_m.queue_draw();
+            });
+        }
+        scope_area.add_controller(motion);
+        // right click on a diagram: choose what it plots
+        let scope_menu = gtk::GestureClick::builder().button(3).build();
+        {
+            let (ses, area_s) = (session.clone(), scope_area.clone());
+            let (win_s, tx_s) = (root.clone(), sender.input_sender().clone());
+            scope_menu.connect_pressed(move |_, _, x, y| {
+                let (count, idx) = {
+                    let s = ses.borrow();
+                    let groups = crate::render::scopes::bands(&s.scope_views());
+                    let n = groups.len().max(1);
+                    let band = f64::from(area_s.height()) / n as f64;
+                    let pick = ((y / band) as usize).min(n - 1);
+                    (
+                        s.scope_count(),
+                        groups.get(pick).and_then(|g| g.first()).copied().unwrap_or(0),
+                    )
+                };
+                if count == 0 {
+                    return;
+                }
+                show_scope_menu(
+                    &win_s,
+                    &ses,
+                    &tx_s,
+                    area_s.upcast_ref(),
+                    ScopeTarget::Docked(idx),
+                    (x, y),
+                );
+            });
+        }
+        scope_area.add_controller(scope_menu);
+        // the wheel over a scope changes its time scale: down is slower, up is faster
+        let wheel = gtk::EventControllerScroll::new(gtk::EventControllerScrollFlags::VERTICAL);
+        {
+            let (ses, area_w, pointer) =
+                (session.clone(), scope_area.clone(), scope_pointer.clone());
+            let delta = Cell::new(0.0_f64);
+            wheel.connect_scroll(move |_, _, dy| {
+                delta.set(delta.get() + dy);
+                if delta.get().abs() < 1.0 {
+                    return glib::Propagation::Stop;
+                }
+                let faster = delta.get() < 0.0;
+                delta.set(0.0);
+                let Some((_, y)) = pointer.get() else { return glib::Propagation::Stop };
+                guarded("scope speed", (), || {
+                    let mut s = ses.borrow_mut();
+                    let groups = crate::render::scopes::bands(&s.scope_views());
+                    if groups.is_empty() {
+                        return;
+                    }
+                    let band = f64::from(area_w.height()) / groups.len() as f64;
+                    let pick = ((y / band) as usize).min(groups.len() - 1);
+                    if let Some(&idx) = groups[pick].first() {
+                        let now = s.scope_speed(idx);
+                        s.set_scope_speed(idx, if faster { now / 2 } else { now * 2 });
+                    }
+                });
+                area_w.queue_draw();
+                glib::Propagation::Stop
+            });
+        }
+        scope_area.add_controller(wheel);
+        // in manual scale mode, dragging the plot under the pointer moves it up or down
+        let plot_drag = gtk::GestureDrag::builder().button(1).build();
+        {
+            // (scope, plot, position when the drag began, half height of the diagram)
+            let state = Rc::new(Cell::new(None::<(usize, usize, i32, f64)>));
+            let (ses, area_d, st) = (session.clone(), scope_area.clone(), state.clone());
+            plot_drag.connect_drag_begin(move |_, x, y| {
+                guarded("plot drag", (), || {
+                    let mut s = ses.borrow_mut();
+                    let views = s.scope_views();
+                    let groups = crate::render::scopes::bands(&views);
+                    // dragging along a plot in manual scale moves it; anywhere else it
+                    // measures the stretch of the signal that is dragged over
+                    if let Some((i, p)) = s.scope_scales.hover
+                        && let Some((true, pos)) = s.plot_position(i, p)
+                    {
+                        let bands = groups.len().max(1);
+                        let half = ((f64::from(area_d.height()) / bands as f64 - 2.0 - 1.0) / 2.0)
+                            .max(1.0);
+                        s.push_undo();
+                        s.scope_scales.dragging = true;
+                        st.set(Some((i, p, pos, half)));
+                        return;
+                    }
+                    if groups.is_empty() {
+                        return;
+                    }
+                    let band = ((y / (f64::from(area_d.height()) / groups.len() as f64)) as usize)
+                        .min(groups.len() - 1);
+                    let from = groups[band].first().and_then(|&i| {
+                        crate::render::scopes::time_at(&views[i], f64::from(area_d.width()), x)
+                    });
+                    s.scope_scales.drag_from = from.map(|t| (band, t));
+                });
+            });
+            let (ses, area_d, st) = (session.clone(), scope_area.clone(), state.clone());
+            plot_drag.connect_drag_update(move |_, _, dy| {
+                let Some((i, p, from, half)) = st.get() else { return };
+                guarded("plot drag", (), || {
+                    let steps = f64::from(crate::scope::V_POSITION_STEPS);
+                    let pos = from - (dy * steps / (2.0 * half)).round() as i32;
+                    ses.borrow_mut().set_plot_position(i, p, pos);
+                });
+                area_d.queue_draw();
+            });
+            let (ses, area_d) = (session.clone(), scope_area.clone());
+            plot_drag.connect_drag_end(move |_, _, _| {
+                let mut s = ses.borrow_mut();
+                s.scope_scales.drag_from = None;
+                if state.take().is_some() {
+                    s.scope_scales.dragging = false;
+                }
+                area_d.queue_draw();
+            });
+        }
+        scope_area.add_controller(plot_drag);
+        // the bar of a subcircuit model being edited: its name, back, save and save a copy
+        let context_bar = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+        context_bar.set_margin_start(8);
+        context_bar.set_margin_end(8);
+        context_bar.set_margin_top(4);
+        context_bar.set_margin_bottom(4);
+        context_bar.set_visible(false);
+        let context_save: [gtk::Button; 2];
+        let context_label = gtk::Label::new(None);
+        context_label.set_hexpand(true);
+        context_label.set_xalign(0.0);
+        context_bar.append(&context_label);
+        {
+            let back = gtk::Button::with_label(&format!("\u{25c0} {}", locale::ls("Back")));
+            let (ses, tx) = (session.clone(), sender.input_sender().clone());
+            back.connect_clicked(move |_| {
+                guarded("leave model", (), || {
+                    let mut s = ses.borrow_mut();
+                    if s.inspecting() {
+                        s.leave_components();
+                    } else {
+                        s.leave_context();
+                    }
+                });
+                let _ = tx.send(Msg::Refresh);
+            });
+            context_bar.append(&back);
+            let save = gtk::Button::with_label(&locale::ls("Save"));
+            save.add_css_class("suggested-action");
+            let (ses, tx) = (session.clone(), sender.input_sender().clone());
+            save.connect_clicked(move |_| {
+                let r = guarded("save model", Err("failed".to_string()), || {
+                    ses.borrow_mut().save_context(None)
+                });
+                if let Err(e) = r {
+                    let _ = tx.send(Msg::Notice(locale::ls(&e)));
+                }
+                let _ = tx.send(Msg::Refresh);
+            });
+            context_bar.append(&save);
+            let copy = gtk::Button::with_label(&locale::ls("Save Copy"));
+            let (ses, tx, win) = (session.clone(), sender.input_sender().clone(), root.clone());
+            copy.connect_clicked(move |_| {
+                let (ses, tx) = (ses.clone(), tx.clone());
+                dialogs::edit_element(
+                    &win,
+                    &locale::ls("Save Copy"),
+                    vec![EditInfo::text("Model Name", "")],
+                    move |f| {
+                        let name = f[0].text.clone().unwrap_or_default();
+                        let r = guarded("save model copy", Err("failed".to_string()), || {
+                            ses.borrow_mut().save_context(Some(&name))
+                        });
+                        if let Err(e) = r {
+                            let _ = tx.send(Msg::Notice(locale::ls(&e)));
+                        }
+                        let _ = tx.send(Msg::Refresh);
+                    },
+                );
+            });
+            context_bar.append(&copy);
+            context_save = [save, copy];
+        }
         let canvas_column = gtk::Box::new(gtk::Orientation::Vertical, 0);
         canvas_column.set_hexpand(true);
+        canvas_column.append(&context_bar);
         canvas_column.append(&area);
         canvas_column.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
         canvas_column.append(&scope_area);
-        let body = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-        body.append(&canvas_column);
-        body.append(&gtk::Separator::new(gtk::Orientation::Vertical));
-        body.append(&panel_scroll);
+        // the panel starts 350 px wide and can be resized by dragging the divider
+        let body = gtk::Paned::new(gtk::Orientation::Horizontal);
+        body.set_start_child(Some(&canvas_column));
+        body.set_end_child(Some(&panel_scroll));
+        body.set_resize_start_child(true);
+        body.set_resize_end_child(false);
+        body.set_shrink_start_child(false);
+        body.set_shrink_end_child(false);
+        body.set_vexpand(true);
+        {
+            // wait for a real width: the first notifications come before the window is laid out
+            let placed = std::cell::Cell::new(false);
+            body.connect_notify_local(Some("width"), move |paned, _| {
+                let width = paned.width();
+                if !placed.get() && width >= 700 {
+                    placed.set(true);
+                    paned.set_position(width - 350);
+                }
+            });
+        }
         let content = gtk::Box::new(gtk::Orientation::Vertical, 0);
         content.append(&banner);
         content.append(&body);
@@ -690,6 +1597,8 @@ impl SimpleComponent for App {
         let tick_session = session.clone();
         let tick_title = title.clone();
         let (gl_tick, cairo_tick) = (gl_area.clone(), cairo_area.clone());
+        let scope_tick = scope_area.clone();
+        let tick_bench = bench.clone();
         let last = Cell::new(None::<i64>);
         area.add_tick_callback(move |a, clock| {
             let now = clock.frame_time();
@@ -700,9 +1609,32 @@ impl SimpleComponent for App {
             guarded("frame update", (), || {
                 let mut s = tick_session.borrow_mut();
                 // an error stops the simulation; the message is shown by the next view update
+                let began = std::time::Instant::now();
                 let _ = s.update(dt);
+                if let Some(b) = tick_bench.borrow_mut().as_mut() {
+                    b.on_update(now, began.elapsed());
+                }
                 tick_title.set_subtitle(&format!("t = {}", time_text(s.time())));
+                // one band of 130 pixels per scope, at most three bands' worth of height
+                let n = crate::render::scopes::bands(&s.scope_views()).len();
+                let height = (n as i32 * 130).min(390);
+                if scope_tick.content_height() != height {
+                    scope_tick.set_content_height(height);
+                }
+                scope_tick.set_visible(n > 0);
             });
+            if let Some(b) = tick_bench.borrow_mut().as_mut() {
+                let done =
+                    guarded("benchmark", false, || b.on_tick(now, &mut tick_session.borrow_mut()));
+                if done {
+                    let backend =
+                        a.visible_child_name().map_or_else(String::new, |n| n.to_string());
+                    print!("{}", b.report(&backend));
+                    relm4::main_application().quit();
+                    return glib::ControlFlow::Break;
+                }
+            }
+            scope_tick.queue_draw();
             if a.visible_child_name().as_deref() == Some("gl") {
                 gl_tick.queue_render();
             } else {
@@ -720,6 +1652,7 @@ impl SimpleComponent for App {
         });
         let closing = session.clone();
         root.connect_close_request(move |_| {
+            super::playback::stop();
             let _ = closing.borrow_mut().autosave();
             glib::Propagation::Proceed
         });
@@ -736,7 +1669,13 @@ impl SimpleComponent for App {
             toolbar: tb,
             actions,
             shown_sliders: Vec::new(),
+            audio,
+            shown_audio: Vec::new(),
+            context_bar,
+            context_label,
+            context_save,
         };
+        tracing::debug!(ms = super::bench::since_start(), "init done");
         ComponentParts { model, widgets }
     }
 
@@ -783,6 +1722,7 @@ impl App {
             Msg::OpenPath(p) => {
                 let r = self.session.borrow_mut().open_file(&p);
                 self.notice = r.err();
+                self.show_load_problems();
             }
             Msg::SavePath(p) => {
                 let r = self.session.borrow_mut().save_to(&p);
@@ -791,6 +1731,7 @@ impl App {
             Msg::ImportText(text) => {
                 let r = self.session.borrow_mut().open_text(&text, "Importado", None);
                 self.notice = r.err().map(|e| e.to_string());
+                self.show_load_problems();
             }
             Msg::Paste(text) => {
                 let mut s = self.session.borrow_mut();
@@ -829,6 +1770,38 @@ impl App {
         widgets.toolbar.mode.set_text(&s.mode_text());
         widgets.brightness.set_sensitive(s.options.show_power);
         widgets.circuit_label.set_text(&format!("Circuito Atual: {}", s.title));
+        let inside = s.inspecting();
+        match s.editing_model() {
+            _ if inside => {
+                let path = s.inspect_names().join(" \u{25b8} ");
+                widgets.context_label.set_text(&format!("{} {path}", locale::ls("Subcircuit:")));
+                widgets.context_bar.set_visible(true);
+            }
+            Some(name) => {
+                widgets.context_label.set_text(&format!("{} {name}", locale::ls("Editing: ")));
+                widgets.context_bar.set_visible(true);
+            }
+            None => widgets.context_bar.set_visible(false),
+        }
+        for b in &widgets.context_save {
+            b.set_visible(!inside);
+        }
+        let outputs = s.audio_outputs();
+        if widgets.shown_audio != outputs {
+            while let Some(child) = widgets.audio.first_child() {
+                widgets.audio.remove(&child);
+            }
+            for (elm, label) in &outputs {
+                widgets.audio.append(&audio_row(
+                    &self.window,
+                    &self.session,
+                    sender.input_sender(),
+                    *elm,
+                    label,
+                ));
+            }
+            widgets.shown_audio = outputs;
+        }
         let key = slider_key(&s);
         if widgets.shown_sliders == key {
             return;
@@ -848,7 +1821,7 @@ impl App {
                 .and_then(|e| e.get_edit_info(a.edit_item))
                 .map_or(0.0, |ei| ei.value);
             let pos = s.slider_positions.get(i).copied().unwrap_or(0.0);
-            let (row, scale, label) = slider_row(&slider_title(&a.slider_text), pos);
+            let (row, scale, label) = slider_row(&slider_title(&a.slider_text), pos, (0.0, 100.0));
             label.set_text(&short_unit_text(value, ""));
             let tx = sender.input_sender().clone();
             let adj = a.clone();

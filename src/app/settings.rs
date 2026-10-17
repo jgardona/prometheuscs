@@ -37,6 +37,8 @@ pub struct AppSettings {
     pub show_values: bool,
     /// Use the small grid.
     pub small_grid: bool,
+    /// Interface language: a code of `locale::LANGUAGES`, or `auto` to follow the system.
+    pub language: String,
 }
 
 impl Default for AppSettings {
@@ -56,6 +58,7 @@ impl Default for AppSettings {
             show_power: false,
             show_values: true,
             small_grid: false,
+            language: "auto".into(),
         }
     }
 }

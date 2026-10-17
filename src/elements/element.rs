@@ -19,6 +19,15 @@ pub const COLOR_SCALE_COUNT: usize = 201;
 /// Marker current value meaning "moving too fast to animate".
 pub const CURRENT_TOO_FAST: f64 = 100.0;
 
+/// The settings of a scope placed in the circuit, as the file wrote them.
+#[derive(Clone, Debug)]
+pub enum ScopeSource {
+    /// Fields of a text-format entry, joined by `_`.
+    Line(String),
+    /// The `o` tag of an XML entry.
+    Xml(XmlNode),
+}
+
 /// Options and colours that influence how elements are drawn.
 #[derive(Clone, Debug)]
 pub struct DrawCtx {
@@ -189,6 +198,17 @@ pub struct EditInfo {
     pub error: Option<String>,
     /// Set by the element when the edit changes which fields exist, so the dialog rebuilds.
     pub new_dialog: bool,
+    /// The text is a file path and the dialog offers a file chooser for it.
+    pub file_chooser: Option<FileChoice>,
+}
+
+/// What a file chooser next to a path field asks for.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum FileChoice {
+    /// An existing file; the patterns (`*.wav`) of the files to show, besides all files.
+    Open(Vec<String>),
+    /// A file to write, with a suggested name.
+    Save(String),
 }
 
 impl EditInfo {
@@ -248,6 +268,18 @@ impl EditInfo {
     /// Marks the value as dimensionless.
     pub fn set_dimensionless(mut self) -> Self {
         self.dimensionless = true;
+        self
+    }
+
+    /// Offers a chooser for an existing file whose name matches one of `patterns`.
+    pub fn open_file(mut self, patterns: &[&str]) -> Self {
+        self.file_chooser = Some(FileChoice::Open(patterns.iter().map(|p| (*p).into()).collect()));
+        self
+    }
+
+    /// Offers a chooser for a file to write, suggesting `name`.
+    pub fn save_file(mut self, name: &str) -> Self {
+        self.file_chooser = Some(FileChoice::Save(name.into()));
         self
     }
 
@@ -663,6 +695,24 @@ impl LabelRegistry {
     }
 }
 
+/// What an element is for the detection of bus widths (see `Simulation::analyze`).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum BusRole {
+    /// Not part of the propagation.
+    None,
+    /// A wire: takes the widest bus at either end.
+    Wire,
+    /// A labeled node (with its name): takes the widest bus at its post or under its name.
+    Label(String),
+    /// A bus splitter: its bus side is at `anchor` and has `bits` bits.
+    Splitter {
+        /// Position of the bus side.
+        anchor: Point,
+        /// Number of bits.
+        bits: usize,
+    },
+}
+
 /// Behaviour of a circuit element. Defaults mirror the original `CircuitElm`.
 pub trait Element: Any {
     /// Shared state.
@@ -720,6 +770,46 @@ pub trait Element: Any {
         self.base_mut().flags = f;
     }
 
+    /// For a scope placed in the circuit: how its settings are written in the file.
+    fn scope_source(&self) -> Option<ScopeSource> {
+        None
+    }
+    /// Receives what the scope placed in the circuit shows (see [`Element::scope_source`]).
+    fn set_scope_view(&mut self, _view: crate::scope::ScopeView) {}
+    /// What the scope placed in the circuit showed last.
+    fn scope_view(&self) -> Option<&crate::scope::ScopeView> {
+        None
+    }
+    /// Replaces the settings of the scope placed in the circuit.
+    fn set_scope_source(&mut self, _source: ScopeSource) {}
+
+    /// For an instance of a subcircuit model that can be edited: the name of the model.
+    fn subcircuit_model_name(&self) -> Option<String> {
+        None
+    }
+
+    /// The elements this one is made of, for composites (subcircuits and the like).
+    fn child_elements(&self) -> &[Box<dyn Element>] {
+        &[]
+    }
+    /// The same, to draw or to hand state to.
+    fn child_elements_mut(&mut self) -> &mut [Box<dyn Element>] {
+        &mut []
+    }
+
+    /// Number of input pairs of a current-controlled source in "spice style", which senses
+    /// the current through voltage sources of its own circuit instead of creating its own.
+    fn spice_pairs(&self) -> usize {
+        0
+    }
+    /// Gives input pair `i` the voltage source it senses (see [`Element::spice_pairs`]).
+    fn set_spice_source(&mut self, _i: usize, _vs: VsId) {}
+    /// Gives input pair `i` the current of the voltage source it senses.
+    fn set_spice_current(&mut self, _i: usize, _current: f64) {}
+
+    /// Sets the high logic voltage of a digital element (used by subcircuit instances).
+    fn set_high_voltage(&mut self, _hv: f64) {}
+
     /// Number of posts the user can connect to.
     fn post_count(&self) -> usize {
         2
@@ -731,6 +821,27 @@ pub trait Element: Any {
     /// Number of bits when the element is a bus wire.
     fn bus_width(&self) -> usize {
         1
+    }
+    /// Labels of the buttons the edit dialog shows for the element's device model (create a
+    /// new model, edit this one).
+    fn model_buttons(&self) -> Vec<String> {
+        Vec::new()
+    }
+    /// Starts the model dialog for button `button` of [`Element::model_buttons`].
+    fn start_model_edit(&self, _button: usize) -> Option<super::model_edit::ModelEditor> {
+        None
+    }
+    /// Makes the element use the model called `name` (after the model dialog).
+    fn use_model(&mut self, _name: &str) {}
+    /// Looks the element's model up again after a model of the library changed.
+    fn update_models(&mut self) {}
+    /// How the element takes part in the detection of bus widths.
+    fn bus_role(&self) -> BusRole {
+        BusRole::None
+    }
+    /// Gives a bus wire or bus label the width the detection found; true when it changed.
+    fn apply_bus_width(&mut self, _width: usize) -> bool {
+        false
     }
     /// Number of voltage sources (extra matrix rows) the element needs.
     fn voltage_source_count(&self) -> usize {
@@ -910,6 +1021,14 @@ pub trait Element: Any {
         true
     }
 
+    /// State the drawing depends on that is not a voltage or a current (a lamp's temperature,
+    /// a relay's armature position). The worker publishes it with every frame.
+    fn visual_state(&self) -> Vec<f64> {
+        Vec::new()
+    }
+    /// Receives the state published by [`Element::visual_state`] on the worker's copy.
+    fn set_visual_state(&mut self, _state: &[f64]) {}
+
     /// Draws the element.
     fn draw(&mut self, _g: &mut dyn Painter, _c: &DrawCtx) {}
 
@@ -932,6 +1051,18 @@ pub trait Element: Any {
     /// Can a scope show value kind `v` for this element?
     fn can_show_value_in_scope(&self, _v: i32) -> bool {
         false
+    }
+    /// The value a new scope plots first (the voltage unless the element has a better one).
+    fn default_scope_value(&self) -> i32 {
+        crate::scope::VAL_VOLTAGE
+    }
+    /// Values besides voltage, current and power that a scope can plot for the element.
+    fn scope_values(&self) -> Vec<i32> {
+        if self.can_show_value_in_scope(crate::scope::VAL_R) {
+            vec![crate::scope::VAL_R]
+        } else {
+            Vec::new()
+        }
     }
     /// Can the element be viewed in a scope?
     fn can_view_in_scope(&self) -> bool {

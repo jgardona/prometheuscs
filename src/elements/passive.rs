@@ -206,6 +206,16 @@ impl Element for WireElm {
     fn bus_width(&self) -> usize {
         self.bus_width
     }
+    fn bus_role(&self) -> BusRole {
+        BusRole::Wire
+    }
+    fn apply_bus_width(&mut self, width: usize) -> bool {
+        if width == self.bus_width {
+            return false;
+        }
+        self.set_bus_width(width);
+        true
+    }
     fn post_width(&self, _n: usize) -> usize {
         self.bus_width
     }

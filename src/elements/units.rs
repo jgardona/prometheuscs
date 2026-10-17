@@ -195,6 +195,24 @@ mod tests {
     }
 
     #[test]
+    fn typed_text_with_multibyte_characters_is_not_a_number_and_not_a_crash() {
+        for text in [
+            "\u{20ac}a",
+            "a\u{20ac}",
+            "\u{e9}\u{e9}",
+            "1\u{20ac}",
+            "\u{1d11e}me",
+            "5\u{6bd}eg",
+            "1e\u{20ac}",
+        ] {
+            assert_eq!(parse_edit_value(text), None, "{text}");
+        }
+        // the plain cases still work
+        assert_eq!(parse_edit_value("4k7"), Some(4700.0));
+        assert_eq!(parse_edit_value("2 meg"), Some(2e6));
+    }
+
+    #[test]
     fn formats_time_and_scaled_values() {
         assert_eq!(time_text(0.0025), "2.5 ms");
         assert_eq!(time_text(75.5), "1:15.5");
@@ -226,7 +244,8 @@ pub fn parse_edit_value(text: &str) -> Option<f64> {
             );
         }
     }
-    if s.len() >= 3 && s[s.len() - 3..].eq_ignore_ascii_case("meg") {
+    // `get` gives nothing when the last three bytes start inside a character
+    if s.len() >= 3 && s.get(s.len() - 3..).is_some_and(|t| t.eq_ignore_ascii_case("meg")) {
         s = format!("{}M", &s[..s.len() - 3]);
     }
     if let Ok(v) = s.parse::<f64>() {
