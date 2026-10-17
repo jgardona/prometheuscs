@@ -435,8 +435,8 @@ const COLUMN_GAP: f64 = 10.0;
 /// as in the original).
 pub fn info_width(views: &[ScopeView], w: f64) -> f64 {
     let width = if bands(views).len() <= 2 { 240.0 } else { 160.0 };
-    // a narrow area is all scopes
-    if w < 4.0 * width { 0.0 } else { width }
+    // an area too narrow to share is all scopes
+    if w < 2.0 * width { 0.0 } else { width }
 }
 
 /// The rectangle of each scope in an area of `w` by `h`, as the original lays them out: one
@@ -1828,15 +1828,15 @@ mod tests {
         let v = signal(&sine(8.0, 0.0, 1.0), 0);
         let from = time_at(&v, 600.0, 300.0).unwrap();
         let mut scales = ScopeScales { drag_from: Some((0, from)), ..Default::default() };
-        let mut g = SvgPainter::new(600.0, 200.0);
+        let mut g = SvgPainter::new(440.0, 200.0);
         draw_scopes(
             &mut g,
             std::slice::from_ref(&v),
             &mut scales,
-            600.0,
+            440.0,
             200.0,
             false,
-            Some((450.0, 100.0)),
+            Some((400.0, 100.0)),
         );
         let svg = g.finish();
         assert!(svg.contains("\u{394}t=") && svg.contains("\u{394}="), "{svg}");
@@ -1877,17 +1877,21 @@ mod tests {
         let (mut a, mut b, mut c) = (view(&[1.0]), view(&[1.0]), view(&[1.0]));
         (a.position, b.position, c.position) = (0, 1, 1);
         let views = [a, b, c];
-        let r = layout(&views, 600.0, 260.0);
-        // two columns of 300, the second holding two scopes of 130
+        // 440 is too narrow to share with the information area, so the columns fill it
+        let r = layout(&views, 440.0, 260.0);
+        // two columns of 220, the second holding two scopes of 130
         assert_eq!((r[0].0, r[0].1, r[0].3), (0.0, 0.0, 258.0));
-        assert_eq!((r[1].0, r[1].1), (300.0, 0.0));
-        assert_eq!((r[2].0, r[2].1), (300.0, 130.0));
-        assert!(r[0].2 < 300.0, "a gap between the columns");
+        assert_eq!((r[1].0, r[1].1), (220.0, 0.0));
+        assert_eq!((r[2].0, r[2].1), (220.0, 130.0));
+        assert!(r[0].2 < 220.0, "a gap between the columns");
         assert_eq!(rows(&views), 2);
-        assert_eq!(scope_at(&views, 600.0, 260.0, 10.0, 200.0), Some(0));
-        assert_eq!(scope_at(&views, 600.0, 260.0, 400.0, 10.0), Some(1));
-        assert_eq!(scope_at(&views, 600.0, 260.0, 400.0, 200.0), Some(2));
-        assert_eq!(scope_at(&views, 600.0, 260.0, 700.0, 10.0), None);
+        assert_eq!(scope_at(&views, 440.0, 260.0, 10.0, 200.0), Some(0));
+        assert_eq!(scope_at(&views, 440.0, 260.0, 300.0, 10.0), Some(1));
+        assert_eq!(scope_at(&views, 440.0, 260.0, 300.0, 200.0), Some(2));
+        assert_eq!(scope_at(&views, 440.0, 260.0, 500.0, 10.0), None);
+        // wide enough, the information area takes its share at the right
+        let wide = layout(&views, 1000.0, 260.0);
+        assert!(wide[1].0 + wide[1].2 <= 1000.0 - info_width(&views, 1000.0));
     }
 
     #[test]

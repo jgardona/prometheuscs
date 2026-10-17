@@ -945,28 +945,54 @@ impl Session {
         }
     }
 
-    /// The lines of the information area: the time and the time step, then what the element
-    /// under the pointer says about itself (a plotted element when over a scope).
-    pub fn scope_info_lines(&self) -> Vec<String> {
-        use crate::elements::units::{time_text, unit_text};
-        let mut lines = vec![
-            format!("t = {}", time_text(self.time())),
-            format!(
-                "{} = {}",
-                crate::locale::ls("time step"),
-                unit_text(self.sim.time_step(), "s")
-            ),
-        ];
-        let elm = self
+    /// The lines of the information box, in the order the original gives them: the voltage of
+    /// a terminal when the pointer is on one; else what the element under the pointer (or the
+    /// plotted element of the scope under it) says about itself; else the same for the one
+    /// selected element; else the time and the time step.
+    pub fn info_lines(&self) -> Vec<String> {
+        use crate::elements::units::{time_text, unit_text, voltage_text};
+        let scope_elm = self
             .scope_hover
             .and_then(|i| self.sim.scopes.get(i))
             .and_then(|sc| sc.plots.first())
-            .map(|p| p.elm)
-            .or(self.hover);
-        if let Some(e) = elm.and_then(|i| self.sim.elements.get(i)) {
-            e.get_info(&mut lines);
+            .map(|p| p.elm);
+        let selected = self.selected_indices();
+        let elm = scope_elm
+            .or(self.hover)
+            .or_else(|| (selected.len() == 1).then(|| selected[0]))
+            .and_then(|i| self.sim.elements.get(i));
+        let mut lines = Vec::new();
+        match elm {
+            Some(e) => {
+                // the pointer on a terminal of the element under it: the voltage there
+                let post = self
+                    .pointer
+                    .filter(|_| scope_elm.is_none() && self.hover.is_some())
+                    .and_then(|(px, py)| {
+                        (0..e.post_count())
+                            .find(|&n| e.get_post(n).is_some_and(|p| (p.x, p.y) == (px, py)))
+                    });
+                match post {
+                    Some(n) => lines.push(format!("V = {}", voltage_text(e.get_post_voltage(n)))),
+                    None => e.get_info(&mut lines),
+                }
+            }
+            None => {
+                lines.push(format!("t = {}", time_text(self.time())));
+                lines.push(format!(
+                    "{}{}",
+                    crate::locale::ls("time step = "),
+                    unit_text(self.sim.time_step(), "s")
+                ));
+            }
         }
         lines
+    }
+
+    /// Whether the information box has an element to describe (and so is taller in the
+    /// original, which gives it a fifth of the window then and a small strip otherwise).
+    pub fn info_is_about_an_element(&self) -> bool {
+        self.scope_hover.is_some() || self.hover.is_some() || self.selected_indices().len() == 1
     }
 
     /// Whether scope `idx` is in `mode`.

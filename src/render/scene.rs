@@ -2,7 +2,7 @@
 // Derived from CircuitJS1 (C) Paul Falstad and Iain Sharp (CirSim drawing of posts).
 //! Drawing of a whole circuit through a [`Painter`].
 
-use super::painter::{Color, Painter};
+use super::painter::{Color, Painter, TextAlign};
 use crate::elements::element::{DrawCtx, Element};
 use crate::elements::geometry::Point;
 use std::collections::HashMap;
@@ -177,5 +177,34 @@ mod tests {
         assert!(v.scale > 0.0 && v.scale <= 2.0);
         let mid = 50.0 * v.scale + v.x;
         assert!((mid - 200.0).abs() < 1e-9);
+    }
+}
+
+/// Width of the information box.
+pub const INFO_BOX_WIDTH: f64 = 160.0;
+
+/// The information box of the original, for a canvas with no scopes under it: a dark panel in
+/// the bottom right corner with the lines of text. It is a fifth of the height when it
+/// describes an element (`tall`) and a small strip otherwise.
+pub fn draw_info_box(
+    g: &mut dyn Painter,
+    lines: &[String],
+    (w, h): (f64, f64),
+    tall: bool,
+    light: bool,
+) {
+    let box_h = if tall { h * 0.2 } else { 70.0 }.min(h);
+    let x = (w - INFO_BOX_WIDTH).max(0.0);
+    g.set_color(if light { Color::new(238, 238, 238) } else { Color::new(17, 17, 17) });
+    g.fill_rect(x, h - box_h, w - x, box_h);
+    g.set_color(if light { Color::new(0, 0, 0) } else { Color::new(255, 255, 255) });
+    g.set_font_size(12);
+    g.set_text_align(TextAlign::Left);
+    for (i, line) in lines.iter().enumerate() {
+        let y = h - box_h + 15.0 * (i + 1) as f64;
+        if y > h - 2.0 {
+            break;
+        }
+        g.draw_string(line, x + 5.0, y);
     }
 }

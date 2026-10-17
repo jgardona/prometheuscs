@@ -97,6 +97,13 @@ fn paint_frame(s: &mut Session, g: &mut dyn Painter, w: f64, h: f64) {
     draw_scene(g, &mut s.sim.elements, &posts, &s.draw_ctx, s.view, (w, h));
     let cross = if s.settings.crosshair { s.pointer } else { None };
     draw_overlay(g, &s.draw_ctx, s.view, (w, h), s.rubber_band(), cross);
+    // with no scopes under the canvas, the information box is part of the canvas, as in the
+    // original; with scopes it is the column to their right
+    if s.scope_count() == 0 {
+        let lines = s.info_lines();
+        let tall = s.info_is_about_an_element();
+        crate::render::scene::draw_info_box(g, &lines, (w, h), tall, s.settings.white_background);
+    }
 }
 
 /// Translates the slider names used by the bundled circuits.
@@ -1415,7 +1422,7 @@ impl SimpleComponent for App {
                 let views = s.scope_views();
                 let light = s.settings.white_background;
                 let mut scales = std::mem::take(&mut s.scope_scales);
-                scales.info = s.scope_info_lines();
+                scales.info = s.info_lines();
                 crate::render::scopes::draw_scopes(
                     &mut g,
                     &views,

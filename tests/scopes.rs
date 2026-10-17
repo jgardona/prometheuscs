@@ -937,15 +937,17 @@ fn the_information_area_tells_the_time_and_what_the_pointer_is_over() {
     use prometheuscs::render::scopes::{info_width, on_wheel};
     let mut s = Session::load(&lrc(), &Registry::standard()).unwrap();
     s.sim.run_until(0.002).unwrap();
-    let info = s.scope_info_lines();
+    // nothing under the pointer: the time and the time step
+    let info = s.info_lines();
     assert!(info[0].starts_with("t = ") && info[1].starts_with("time step = "), "{info:?}");
-    let plain = info.len();
+    // over a scope: what its first plot is of, and no longer the time
     s.set_scope_hover(Some(0));
-    assert!(s.scope_info_lines().len() > plain, "the plotted element adds its own lines");
-    // the area exists only when the scopes have room for it
+    let over = s.info_lines();
+    assert!(!over[0].starts_with("t = ") && over.len() > 1, "{over:?}");
+    // the area exists only when the scopes leave room for it
     let views = s.scope_views();
-    assert_eq!(info_width(&views, 400.0), 0.0);
-    assert!(info_width(&views, 1600.0) > 0.0);
+    assert_eq!(info_width(&views, 300.0), 0.0);
+    assert!(info_width(&views, 1000.0) > 0.0);
     // the settings wheel: the corner of a scope that is big enough
     assert!(on_wheel((0.0, 0.0, 300.0, 130.0), 10.0, 120.0));
     assert!(!on_wheel((0.0, 0.0, 300.0, 130.0), 100.0, 20.0));
