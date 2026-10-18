@@ -781,6 +781,8 @@ fn draw_scope_inside(
     // simulated time of sample `k` (which may lie outside the buffer)
     let time_of = |k: isize| view.time - (len as isize - 1 - k) as f64 * view.time_per_sample;
     let t_left = time_of(start);
+    // the scale labels of the corner: written after the curves, so that their plates cover them
+    let mut corner_labels: Vec<(String, f64, Color)> = Vec::new();
     // the grid is drawn once for the scopes that share a place
     if slot == 0 {
         // vertical grid: time
@@ -822,19 +824,17 @@ fn draw_scope_inside(
                 g.draw_line(x as i32, gy as i32, (x + w) as i32, gy as i32);
             }
             if !compact {
-                g.set_font_size(10);
                 for (s, ly) in [
                     (units_text(first.units, centre + span), y + 12.0),
                     (units_text(first.units, centre - span), y + h - 3.0),
                 ] {
-                    draw_label(g, &s, (x + 3.0, ly), (text, bg), (x, x + w));
+                    corner_labels.push((s, ly, text));
                 }
             }
         } else {
             g.set_color(grid);
             g.draw_line(x as i32, mid as i32, (x + w) as i32, mid as i32);
             // each units has its own full scale: name them in the corner
-            g.set_font_size(10);
             let mut ly = y + 12.0;
             let mut shown: Vec<i32> = Vec::new();
             for (i, p) in view.plots.iter().enumerate() {
@@ -848,7 +848,7 @@ fn draw_scope_inside(
                 let before = view.plots[..i].iter().filter(|q| q.units == p.units).count();
                 let color = plot_color(p.units, i, before, light);
                 let label = format!("\u{b1}{}", units_text(p.units, scale[p.units as usize]));
-                draw_label(g, &label, (x + 3.0, ly), (color, bg), (x, x + w));
+                corner_labels.push((label, ly, color));
                 ly += 12.0;
             }
         }
@@ -892,6 +892,11 @@ fn draw_scope_inside(
     }
     if let (Some(t), Some(p)) = (&view.trigger, view.plots.first()) {
         draw_trigger(g, t, place(p, t.level), (x, y, w, h));
+    }
+
+    g.set_font_size(10);
+    for (label, ly, color) in &corner_labels {
+        draw_label(g, label, (x + 3.0, *ly), (*color, bg), (x, x + w));
     }
 
     if compact {

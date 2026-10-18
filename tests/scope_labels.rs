@@ -308,3 +308,60 @@ fn every_scale_label_is_on_a_plate() {
         }
     }
 }
+
+// ---- the plates are painted over the curves, not under them
+
+/// The first line (index in the SVG) of each translucent plate with this fill, with its rectangle.
+fn plate_lines(svg: &str, fill: &str) -> Vec<(usize, (f64, f64, f64, f64))> {
+    let all = plates(svg, fill);
+    let mut k = 0;
+    svg.lines()
+        .enumerate()
+        .filter(|(_, l)| {
+            l.starts_with("<path") && l.contains("opacity=\"0.75\"") && l.contains(fill)
+        })
+        .map(|(i, _)| {
+            k += 1;
+            (i, all[k - 1])
+        })
+        .collect()
+}
+
+#[test]
+fn every_scale_label_plate_is_painted_after_the_curves() {
+    let mut same_units = views();
+    let units = same_units[0].plots[0].units;
+    same_units[0].plots.retain(|p| p.units == units);
+    for (name, mut v) in [("mixed units", views()), ("same units", same_units)] {
+        // one scope, so that the order in the drawing is the order of its own painting
+        v.truncate(1);
+        for (light, fill) in [(false, "fill=\"#000000\""), (true, "fill=\"#ffffff\"")] {
+            let out = svg(&v, light, None);
+            // the curves are the only strokes in the colours of the plots
+            let last_curve = out
+                .lines()
+                .enumerate()
+                .filter(|(_, l)| {
+                    l.starts_with("<path")
+                        && (l.contains("stroke=\"#00ff00\"")
+                            || l.contains("stroke=\"#ffff00\"")
+                            || l.contains("stroke=\"#a0a000\"")
+                            || l.contains("stroke=\"#00a000\""))
+                })
+                .map(|(i, _)| i)
+                .max()
+                .expect("the curves are drawn");
+            let found = plate_lines(&out, fill);
+            for (text, x, y) in scale_texts(&out) {
+                let (line, _) = found
+                    .iter()
+                    .find(|(_, (x0, y0, x1, y1))| *x0 <= x && x < *x1 && *y0 < y && y <= *y1)
+                    .unwrap_or_else(|| panic!("{name}: no plate under {text:?}"));
+                assert!(
+                    *line > last_curve,
+                    "{name}, light={light}: the plate of {text:?} (line {line}) is painted before the curves (last at {last_curve})"
+                );
+            }
+        }
+    }
+}
