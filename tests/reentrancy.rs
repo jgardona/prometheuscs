@@ -19,6 +19,7 @@ fn load(name: &str) -> Session {
     s
 }
 
+#[cfg(feature = "passive")]
 #[test]
 fn a_handler_that_finds_the_session_busy_skips_instead_of_panicking() {
     let session = RefCell::new(load("lrc.txt"));

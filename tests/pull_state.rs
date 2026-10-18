@@ -31,6 +31,7 @@ fn posts(s: &Session) -> Vec<Vec<(i32, i32)>> {
         .collect()
 }
 
+#[cfg(feature = "digital")]
 #[test]
 fn a_rom_keeps_its_pins_when_the_circuit_is_saved() {
     let mut s = with_worker("$ 1 0.000005 10 50 5 50 5e-11\n436 256 128 288 128 0\n");
@@ -64,6 +65,9 @@ fn no_element_moves_its_terminals_when_the_circuit_is_saved() {
     assert!(changed.is_empty(), "these elements move their terminals when saved: {changed:?}");
 }
 
+#[cfg(feature = "passive")]
+#[cfg(feature = "reactive")]
+#[cfg(feature = "sources")]
 #[test]
 fn the_running_state_still_reaches_the_saved_text() {
     // 5 V into 1 kohm and 1 uF: after a while the capacitor holds charge, and the text

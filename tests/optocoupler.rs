@@ -1,7 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // Integration tests may unwrap: a failure should fail the test.
 #![allow(clippy::expect_used, clippy::unwrap_used, clippy::panic)]
-#![cfg(feature = "subcircuits")]
+#![cfg(all(
+    feature = "subcircuits",
+    feature = "diodes",
+    feature = "analog",
+    feature = "transistors"
+))]
 //! The optocoupler's pins are short, and nothing of it is drawn at the origin of the circuit.
 
 use prometheuscs::elements::element::{DrawCtx, Element};

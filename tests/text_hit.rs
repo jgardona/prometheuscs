@@ -34,6 +34,7 @@ fn press(s: &mut Session, x: i32, y: i32) -> bool {
     hit
 }
 
+#[cfg(feature = "outputs")]
 #[test]
 fn a_press_anywhere_in_a_text_selects_it() {
     let mut s = drawn(TEXT);
@@ -52,6 +53,7 @@ fn a_press_anywhere_in_a_text_selects_it() {
     }
 }
 
+#[cfg(feature = "outputs")]
 #[test]
 fn a_press_well_outside_the_text_does_not_select_it() {
     let mut s = drawn(TEXT);
@@ -67,6 +69,7 @@ fn a_press_well_outside_the_text_does_not_select_it() {
     }
 }
 
+#[cfg(feature = "outputs")]
 #[test]
 fn a_text_dragged_from_its_edge_moves() {
     let mut s = drawn(TEXT);
@@ -80,6 +83,8 @@ fn a_text_dragged_from_its_edge_moves() {
     assert_eq!((after.0 - before.0, after.1 - before.1), (48, 32), "moved by the drag");
 }
 
+#[cfg(feature = "passive")]
+#[cfg(feature = "outputs")]
 #[test]
 fn a_part_under_a_text_still_wins_on_its_own_line() {
     // a resistor along y = 100 and the text over it: the line is the resistor, the rest is text
@@ -92,6 +97,7 @@ fn a_part_under_a_text_still_wins_on_its_own_line() {
     assert_eq!(s.selected_indices(), vec![1], "inside the text, away from the line");
 }
 
+#[cfg(feature = "outputs")]
 #[test]
 fn a_box_is_grabbed_by_its_edge_not_by_its_inside() {
     let mut s = drawn("$ 1 5e-6 10 63 10 62\nb 100 100 260 220 0\n");
@@ -114,6 +120,12 @@ fn a_press_inside_the_box_of_any_element_picks_it() {
     let mut checked = 0;
     for id in registry.ids() {
         if OWN_RULE.contains(&id) {
+            continue;
+        }
+        // the optocoupler is built from a diode, a controlled source and a transistor
+        let optocoupler_parts =
+            cfg!(all(feature = "diodes", feature = "analog", feature = "transistors"));
+        if id == "OptocouplerElm" && !optocoupler_parts {
             continue;
         }
         let Some(mut e) = registry.create(id, 256, 128) else { continue };

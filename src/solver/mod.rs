@@ -7,6 +7,8 @@
 //! a [`crate::error::StepError`], never a panic.
 //!
 //! ```
+//! # #[cfg(all(feature = "passive", feature = "reactive", feature = "sources"))]
+//! # fn main() {
 //! use prometheuscs::elements::registry::Registry;
 //! use prometheuscs::format::parser::parse;
 //! use prometheuscs::solver::sim::Simulation;
@@ -23,6 +25,9 @@
 //! sim.run_until(1e-3).unwrap();
 //! let v = sim.elements[2].get_voltage_diff();
 //! assert!((v - 5.0 * (1.0 - (-1.0f64).exp())).abs() < 0.05);
+//! # }
+//! # #[cfg(not(all(feature = "passive", feature = "reactive", feature = "sources")))]
+//! # fn main() {}
 //! ```
 
 pub mod dense_lu;

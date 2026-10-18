@@ -32,6 +32,7 @@ fn session() -> Session {
     s
 }
 
+#[cfg(feature = "passive")]
 fn select(s: &mut Session, circuit_x: i32) {
     s.deselect_all();
     let i = s
@@ -51,6 +52,7 @@ fn with_nothing_under_the_pointer_or_selected_it_tells_the_time() {
     assert!(!s.info_is_about_an_element());
 }
 
+#[cfg(feature = "passive")]
 #[test]
 fn a_selected_element_is_described_when_the_pointer_is_elsewhere() {
     let mut s = session();
@@ -64,6 +66,7 @@ fn a_selected_element_is_described_when_the_pointer_is_elsewhere() {
     assert!(s.info_is_about_an_element());
 }
 
+#[cfg(feature = "passive")]
 #[test]
 fn the_element_under_the_pointer_comes_before_the_selected_one() {
     let mut s = session();
@@ -85,6 +88,7 @@ fn the_element_under_the_pointer_comes_before_the_selected_one() {
     assert_eq!(s.info_lines(), selected);
 }
 
+#[cfg(feature = "passive")]
 #[test]
 fn the_pointer_on_a_terminal_gives_the_voltage_there() {
     let mut s = session();
@@ -94,6 +98,7 @@ fn the_pointer_on_a_terminal_gives_the_voltage_there() {
     assert!(l[0].starts_with("V = "), "{l:?}");
 }
 
+#[cfg(feature = "passive")]
 #[test]
 fn several_selected_elements_do_not_pick_one() {
     let mut s = session();

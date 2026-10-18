@@ -813,6 +813,12 @@ fn lit_cells(t: &prometheuscs::scope::trace::Trace) -> usize {
     t.pixels.chunks(3).filter(|p| p.iter().any(|v| *v != 0)).count()
 }
 
+#[cfg(feature = "analog")]
+#[cfg(feature = "digital")]
+#[cfg(feature = "logic")]
+#[cfg(feature = "passive")]
+#[cfg(feature = "sources")]
+#[cfg(feature = "outputs")]
 #[test]
 fn the_2d_scope_examples_paint_their_pictures_step_by_step() {
     // the smiley and the checkerboards are rasters scanned at 60 Hz and 12 kHz: they need
@@ -832,12 +838,18 @@ fn the_2d_scope_examples_paint_their_pictures_step_by_step() {
     assert!(!coloured(&checker));
 }
 
+#[cfg(feature = "sources")]
 #[test]
 fn lissajous_figures_are_drawn_from_every_step() {
     let t = xy_picture("lissa.txt", 0.05);
     assert!(lit_cells(&t) > 100, "{}", lit_cells(&t));
 }
 
+#[cfg(feature = "analog")]
+#[cfg(feature = "digital")]
+#[cfg(feature = "passive")]
+#[cfg(feature = "sources")]
+#[cfg(feature = "outputs")]
 #[test]
 fn the_picture_reaches_the_view_and_is_emptied_by_reset() {
     let text = std::fs::read_to_string("assets/circuits/plot2d-smile.txt").unwrap();
@@ -851,6 +863,9 @@ fn the_picture_reaches_the_view_and_is_emptied_by_reset() {
     assert!(s.sim.scopes.iter().filter_map(|sc| sc.trace.as_ref()).all(|t| lit_cells(t) == 0));
 }
 
+#[cfg(feature = "passive")]
+#[cfg(feature = "sources")]
+#[cfg(feature = "outputs")]
 #[test]
 fn the_pointer_over_a_scope_highlights_what_it_plots_and_names_the_axes() {
     use prometheuscs::elements::element::DrawCtx;
@@ -885,6 +900,7 @@ fn the_pointer_over_a_scope_highlights_what_it_plots_and_names_the_axes() {
     assert!(!s.sim.elements[6].base().needs_highlight());
 }
 
+#[cfg(feature = "outputs")]
 #[test]
 fn an_undocked_scope_can_be_dragged_by_any_point_of_it() {
     use prometheuscs::app::edit::Mods;
@@ -907,6 +923,7 @@ fn an_undocked_scope_can_be_dragged_by_any_point_of_it() {
     assert_eq!((after.x.min(after.x2), after.y.min(after.y2)), (x0 + 64, y0 + 48));
 }
 
+#[cfg(feature = "passive")]
 #[test]
 fn one_scope_can_be_stacked_unstacked_and_combined_as_in_the_original() {
     let mut s = Session::load(&lrc(), &Registry::standard()).unwrap();
@@ -954,6 +971,7 @@ fn the_information_area_tells_the_time_and_what_the_pointer_is_over() {
     assert!(!on_wheel((0.0, 0.0, 90.0, 130.0), 10.0, 120.0));
 }
 
+#[cfg(feature = "outputs")]
 #[test]
 fn a_scope_placed_in_the_circuit_has_a_settings_wheel_and_max_scale() {
     let mut s = Session::load(&lrc(), &Registry::standard()).unwrap();
@@ -980,6 +998,7 @@ fn a_scope_placed_in_the_circuit_has_a_settings_wheel_and_max_scale() {
     assert!(!s.embedded_max_scale(elm));
 }
 
+#[cfg(feature = "outputs")]
 #[test]
 fn selecting_a_scope_in_the_circuit_highlights_what_it_plots() {
     let mut s = Session::load(&lrc(), &Registry::standard()).unwrap();
@@ -1003,6 +1022,7 @@ fn selecting_a_scope_in_the_circuit_highlights_what_it_plots() {
     assert!(marked(&s).is_empty());
 }
 
+#[cfg(feature = "outputs")]
 #[test]
 fn a_scope_in_the_circuit_shows_its_scale_once_it_is_big_enough() {
     let mut s = Session::load(&lrc(), &Registry::standard()).unwrap();
@@ -1035,6 +1055,7 @@ fn a_scope_in_the_circuit_shows_its_scale_once_it_is_big_enough() {
     assert!(!big.contains(" V ="), "no line with the newest value");
 }
 
+#[cfg(feature = "outputs")]
 #[test]
 fn a_scope_in_the_circuit_is_resized_by_dragging_its_corner() {
     use prometheuscs::app::edit::Mods;

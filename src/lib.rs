@@ -9,6 +9,8 @@
 //! # Running a circuit without a window
 //!
 //! ```
+//! # #[cfg(all(feature = "passive", feature = "sources"))]
+//! # fn main() {
 //! use prometheuscs::elements::registry::Registry;
 //! use prometheuscs::format::parser::parse;
 //! use prometheuscs::solver::sim::Simulation;
@@ -26,6 +28,9 @@
 //! sim.run_steps(3).unwrap();
 //! let middle = sim.elements[1].get_post_voltage(1);
 //! assert!((middle - 3.75).abs() < 1e-9);
+//! # }
+//! # #[cfg(not(all(feature = "passive", feature = "sources")))]
+//! # fn main() {}
 //! ```
 
 pub mod app;

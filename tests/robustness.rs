@@ -93,6 +93,8 @@ impl Rng {
     }
 }
 
+#[cfg(feature = "passive")]
+#[cfg(feature = "switches")]
 #[test]
 fn random_user_actions_never_panic_with_a_worker() {
     let text = std::fs::read_to_string("assets/circuits/lrc.txt").unwrap();

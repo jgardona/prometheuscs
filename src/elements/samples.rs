@@ -191,6 +191,7 @@ mod tests {
         v
     }
 
+    #[cfg(feature = "outputs")]
     #[test]
     fn extensible_and_double_precision_wav_files_read() {
         let pcm: Vec<u8> = [16384i16, -16384].iter().flat_map(|v| v.to_le_bytes()).collect();
@@ -207,6 +208,7 @@ mod tests {
         assert!(decode_wav(&wav_with(2, 16, false, &pcm)).unwrap_err().contains("PCM"));
     }
 
+    #[cfg(feature = "outputs")]
     #[test]
     fn a_wav_made_by_the_audio_output_reads_back() {
         let wav = super::super::audio::wav_bytes(&[0.0, 0.5, -0.5, 1.0], 8000);

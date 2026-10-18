@@ -208,6 +208,7 @@ fn placed_scope_is_tinted_only_when_its_element_is_selected(
     assert!(!placed_svg(&mut s, elm).contains(&glow), "deselected");
 }
 
+#[cfg(feature = "outputs")]
 #[test]
 fn a_scope_placed_in_the_circuit_glows_for_its_selected_element() {
     placed_scope_is_tinted_only_when_its_element_is_selected(loaded(), |s| {
@@ -219,6 +220,7 @@ fn a_scope_placed_in_the_circuit_glows_for_its_selected_element() {
     });
 }
 
+#[cfg(feature = "outputs")]
 #[test]
 fn a_scope_placed_in_the_circuit_glows_with_the_simulation_on_its_own_thread() {
     let mut s = Session::empty_with(&Registry::standard(), AppSettings::default());
@@ -232,6 +234,7 @@ fn a_scope_placed_in_the_circuit_glows_with_the_simulation_on_its_own_thread() {
     });
 }
 
+#[cfg(feature = "outputs")]
 #[test]
 fn a_big_and_a_compact_placed_scope_are_both_tinted() {
     let mut s = loaded();

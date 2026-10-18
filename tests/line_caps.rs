@@ -29,6 +29,7 @@ fn strokes(svg: &str) -> Vec<&str> {
     svg.lines().filter(|l| l.starts_with("<path") && l.contains("fill=\"none\"")).collect()
 }
 
+#[cfg(feature = "passive")]
 #[test]
 fn a_wire_is_drawn_with_round_ends() {
     let out = svg("$ 1 0.000005 10 50 5 50 5e-11\nw 0 0 64 0 0\nw 64 0 64 64 0\n", &quiet());
