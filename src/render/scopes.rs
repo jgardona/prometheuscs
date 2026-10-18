@@ -781,8 +781,6 @@ fn draw_scope_inside(
     // simulated time of sample `k` (which may lie outside the buffer)
     let time_of = |k: isize| view.time - (len as isize - 1 - k) as f64 * view.time_per_sample;
     let t_left = time_of(start);
-    // how far the text in the left corner reaches: the readouts keep clear of it
-    let mut left_w = 0.0_f64;
     // the grid is drawn once for the scopes that share a place
     if slot == 0 {
         // vertical grid: time
@@ -824,14 +822,12 @@ fn draw_scope_inside(
                 g.draw_line(x as i32, gy as i32, (x + w) as i32, gy as i32);
             }
             if !compact {
-                g.set_color(text);
                 g.set_font_size(10);
                 for (s, ly) in [
                     (units_text(first.units, centre + span), y + 12.0),
                     (units_text(first.units, centre - span), y + h - 3.0),
                 ] {
-                    left_w = left_w.max(g.measure_text(&s));
-                    g.draw_string(&s, x + 3.0, ly);
+                    draw_label(g, &s, (x + 3.0, ly), (text, bg), (x, x + w));
                 }
             }
         } else {
@@ -850,10 +846,9 @@ fn draw_scope_inside(
                     continue;
                 }
                 let before = view.plots[..i].iter().filter(|q| q.units == p.units).count();
-                g.set_color(plot_color(p.units, i, before, light));
+                let color = plot_color(p.units, i, before, light);
                 let label = format!("\u{b1}{}", units_text(p.units, scale[p.units as usize]));
-                left_w = left_w.max(g.measure_text(&label));
-                g.draw_string(&label, x + 3.0, ly);
+                draw_label(g, &label, (x + 3.0, ly), (color, bg), (x, x + w));
                 ly += 12.0;
             }
         }
@@ -933,61 +928,31 @@ fn draw_scope_inside(
             if ty + 5.0 >= y + h {
                 break;
             }
-            left_w = left_w.max(g.measure_text(line));
-            g.draw_string(line, x + 3.0, ty);
+            draw_label(g, line, (x + 3.0, ty), (text, bg), (x, x + w));
             ty += 15.0;
         }
         if let Some(b) = &m.bottom {
             // the lowest value of the full scale is written in the bottom corner, when the
             // plots share it
             let shared = !view.manual && view.plots.windows(2).all(|p| p[0].units == p[1].units);
-            left_w = left_w.max(g.measure_text(b));
-            g.draw_string(b, x + 3.0, y + h - if shared { 17.0 } else { 5.0 });
+            let ly = y + h - if shared { 17.0 } else { 5.0 };
+            draw_label(g, b, (x + 3.0, ly), (text, bg), (x, x + w));
         }
     }
 
-    // readouts
-    g.set_font_size(11);
-    let mut ty = y + 14.0 + 26.0 * slot as f64;
-    g.set_text_align(TextAlign::Left);
-    let lines: Vec<String> = view
-        .plots
-        .iter()
-        .map(|p| {
-            let last = p.max.last().copied().unwrap_or(0.0);
-            format!("{} {} = {}", p.title, value_name(p.value, p.units), units_text(p.units, last))
-        })
-        .collect();
-    let widest = lines.iter().map(|l| g.measure_text(l)).fold(0.0, f64::max);
-    // centred on the scope, unless that runs into the text in the corner: then to the right of
-    // it, and left out when there is no room there either
-    let (from, to) = if (w - widest) / 2.0 >= left_w + 4.0 {
-        (x, x + w)
-    } else {
-        (x + left_w + 6.0, x + w - 4.0)
-    };
-    let fits = widest <= to - from;
-    for (i, (p, line)) in view.plots.iter().zip(&lines).enumerate() {
-        if !fits {
-            break;
-        }
-        let before = view.plots[..i].iter().filter(|q| q.units == p.units).count();
-        g.set_color(plot_color(p.units, i, before, light));
-        g.draw_string(line, (from + to) / 2.0 - g.measure_text(line) / 2.0, ty);
-        ty += 13.0;
-    }
     if slot == 0 {
         g.set_color(text);
         g.set_font_size(10);
         let span = unit_text(step, "s");
         let label = format!("{span}/div");
-        g.draw_string(&label, x + w - g.measure_text(&label) - 4.0, y + h - 3.0);
+        let at = (x + w - g.measure_text(&label) - 4.0, y + h - 3.0);
+        draw_label(g, &label, at, (text, bg), (x, x + w));
     }
     if let Some(cx) = cursor {
-        draw_cursor(g, view, (x, y, w, h), (cx, start, n), slot, (grid, text, light));
+        draw_cursor(g, view, (x, y, w, h), (cx, start, n), slot, (bg, text, light));
         if slot == 0 {
             if let Some(t0) = measure_from {
-                draw_measure(g, view, (x, y, w, h), (cx, start, n), (t0, selected), text);
+                draw_measure(g, view, (x, y, w, h), (cx, start, n), (t0, selected), (text, bg));
             }
         }
     }
@@ -1378,7 +1343,7 @@ fn draw_measure(
     (x, y, w, h): (f64, f64, f64, f64),
     (cx, start, n): (f64, isize, usize),
     (from, selected): (f64, Option<usize>),
-    text: Color,
+    (text, bg): (Color, Color),
 ) {
     let Some(p) = view.plots.get(selected.unwrap_or(0)).or(view.plots.first()) else { return };
     let len = p.min.len();
@@ -1411,7 +1376,8 @@ fn draw_measure(
     let on_right = gx < x + w / 2.0;
     for (i, line) in lines.iter().enumerate() {
         let tx = if on_right { gx + 6.0 } else { gx - 6.0 - g.measure_text(line) };
-        g.draw_string(line, tx, y + h - 32.0 - 13.0 * (1 - i) as f64);
+        let baseline = y + h - 32.0 - 13.0 * (1 - i) as f64;
+        draw_label(g, line, (tx, baseline), (text, bg), (x, x + w));
     }
 }
 
@@ -1452,13 +1418,36 @@ fn draw_trigger(
 }
 
 /// The vertical line under the pointer and the values of every plot at that time.
+/// Draws a label of the cursor on a plate: a rectangle in the panel colour `plate`, 75% opaque,
+/// so the grid and the curves behind the text do not get in the way of reading it. `at` is the
+/// left end and the baseline of the text, `color` its colour, and `bounds` the left and right edge
+/// of the scope: the label is moved to keep its plate inside them.
+fn draw_label(
+    g: &mut dyn Painter,
+    text: &str,
+    at: (f64, f64),
+    (color, plate): (Color, Color),
+    bounds: (f64, f64),
+) {
+    const MARGIN: f64 = 3.0;
+    let width = g.measure_text(text);
+    let size = f64::from(g.font_size());
+    let tx = at.0.min(bounds.1 - width - MARGIN).max(bounds.0 + MARGIN);
+    g.set_color(plate);
+    g.set_alpha(0.75);
+    g.fill_rect(tx - MARGIN, at.1 - size, width + 2.0 * MARGIN, size + 3.0);
+    g.set_alpha(1.0);
+    g.set_color(color);
+    g.draw_string(text, tx, at.1);
+}
+
 fn draw_cursor(
     g: &mut dyn Painter,
     view: &ScopeView,
     (x, y, w, h): (f64, f64, f64, f64),
     (cx, start, n): (f64, isize, usize),
     slot: usize,
-    (_, text, light): (Color, Color, bool),
+    (bg, text, light): (Color, Color, bool),
 ) {
     let j = (((cx - x) / w * n as f64) as usize).min(n - 1);
     let gx = x + (j as f64 + 0.5) * (w / n as f64);
@@ -1478,12 +1467,12 @@ fn draw_cursor(
     let on_right = gx < x + w / 2.0;
     for (i, p) in view.plots.iter().enumerate() {
         let before = view.plots[..i].iter().filter(|q| q.units == p.units).count();
-        g.set_color(plot_color(p.units, i, before, light));
         let v = (p.min[at] + p.max[at]) / 2.0;
         let line = format!("{} = {}", value_name(p.value, p.units), units_text(p.units, v));
         let tx = if on_right { gx + 6.0 } else { gx - 6.0 - g.measure_text(&line) };
         ty += 13.0;
-        g.draw_string(&line, tx, ty + 26.0);
+        let color = plot_color(p.units, i, before, light);
+        draw_label(g, &line, (tx, ty + 26.0), (color, bg), (x, x + w));
     }
     if slot == 0 {
         g.set_color(text);
@@ -1493,7 +1482,7 @@ fn draw_cursor(
             format!("t = {}", crate::elements::units::time_text(when))
         };
         let tx = if on_right { gx + 6.0 } else { gx - 6.0 - g.measure_text(&label) };
-        g.draw_string(&label, tx, y + h - 18.0);
+        draw_label(g, &label, (tx, y + h - 18.0), (text, bg), (x, x + w));
     }
 }
 
@@ -1549,8 +1538,10 @@ mod tests {
             "{:?}",
             scales.scales[0].values
         );
+        // the line with the element name and the newest value is not drawn: it is in the
+        // information area
         let svg = g.finish();
-        assert!(svg.contains("R1 V ="), "{svg}");
+        assert!(!svg.contains("R1 V ="), "{svg}");
     }
 
     #[test]

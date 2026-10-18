@@ -291,10 +291,14 @@ tempo e, sob o ponteiro, as informações do componente tocado (ou do que o osci
   sinal nunca é negativo, o zero fica embaixo.
 - As **curvas**, cada uma na sua cor (verde para tensão, amarelo para corrente). A curva mais
   perto do ponteiro fica mais grossa.
-- No alto, a **leitura atual** de cada valor.
-- O **tempo por divisão** no canto inferior direito.
-- Ao passar o mouse, uma linha vertical com os valores e o tempo naquele ponto.
-- **Arrastar** sobre o gráfico mede um trecho: aparecem `Δt` e `Δ` (a variação do valor).
+- O **tempo por divisão** no canto inferior direito. Esse texto, os valores da escala nos cantos
+  da esquerda e as medidas (como `Max=`) também ficam sobre placas translúcidas.
+- Ao passar o mouse, uma linha vertical com os valores e o tempo naquele ponto. Cada rótulo
+  fica sobre uma placa escura e translúcida (branca no fundo claro), para ler bem por cima da
+  curva e da grade. O nome do componente e os valores atuais aparecem na área de informações, à
+  direita dos osciloscópios.
+- **Arrastar** sobre o gráfico mede um trecho: aparecem `Δt` e `Δ` (a variação do valor), também
+  sobre placas.
 - Passar o mouse sobre um osciloscópio destaca em ciano os componentes que ele mede, com `+` e
   `−` nos terminais.
 

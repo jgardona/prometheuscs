@@ -44,6 +44,14 @@ fn drawn(s: &Session, glow: &[bool], light: bool) -> String {
     g.finish()
 }
 
+/// How many opaque panel fills of this colour the drawing has (the translucent plates behind
+/// the labels have the same colour and are not panels).
+fn panels(svg: &str, fill: &str) -> usize {
+    svg.lines()
+        .filter(|l| l.starts_with("<path") && l.contains(fill) && !l.contains("opacity"))
+        .count()
+}
+
 fn hex(light: bool, glow: bool) -> String {
     let c = if glow {
         glow_color(light)
@@ -89,10 +97,10 @@ fn the_glowing_scope_has_the_blue_background_and_the_others_do_not() {
         let mut flags = vec![false; n];
         flags[0] = true;
         let svg = drawn(&s, &flags, light);
-        assert_eq!(svg.matches(&hex(light, true)).count(), 1, "one glowing panel, light={light}");
-        assert_eq!(svg.matches(&hex(light, false)).count(), n - 1, "the others, light={light}");
+        assert_eq!(panels(&svg, &hex(light, true)), 1, "one glowing panel, light={light}");
+        assert_eq!(panels(&svg, &hex(light, false)), n - 1, "the others, light={light}");
         let none = drawn(&s, &vec![false; n], light);
-        assert_eq!(none.matches(&hex(light, true)).count(), 0);
+        assert_eq!(panels(&none, &hex(light, true)), 0);
         // the grid and the traces keep their colours
         let grid = if light { "#c8c8c8" } else { "#404040" };
         assert!(svg.contains(grid), "grid colour {grid}");

@@ -1004,7 +1004,7 @@ fn selecting_a_scope_in_the_circuit_highlights_what_it_plots() {
 }
 
 #[test]
-fn a_scope_in_the_circuit_shows_readouts_once_it_is_big_enough() {
+fn a_scope_in_the_circuit_shows_its_scale_once_it_is_big_enough() {
     let mut s = Session::load(&lrc(), &Registry::standard()).unwrap();
     for _ in 0..40 {
         s.update(Duration::from_millis(16)).unwrap();
@@ -1024,17 +1024,15 @@ fn a_scope_in_the_circuit_shows_readouts_once_it_is_big_enough() {
     // 128 by 64 is the size a scope has when it is made: only the curves fit, as in the original
     let b = s.sim.elements[elm].base();
     assert_eq!(((b.x2 - b.x).abs(), (b.y2 - b.y).abs()), (128, 64));
-    assert!(!draw(&mut s).contains(" V ="));
-    // made bigger, it shows the readouts of the plotted values like a docked scope
+    assert!(!draw(&mut s).contains("/div"));
+    // made bigger, it shows the time per division like a docked scope, and no line with the
+    // element's name and its newest value (that is in the information area)
     let b = s.sim.elements[elm].base_mut();
     b.x2 = b.x + 420;
     b.y2 = b.y + 200;
-    assert!(draw(&mut s).contains(" V ="));
-    // in between, the readouts would run into the scale and the measurements: they wait for room
-    let b = s.sim.elements[elm].base_mut();
-    b.x2 = b.x + 200;
-    b.y2 = b.y + 160;
-    assert!(!draw(&mut s).contains(" V ="));
+    let big = draw(&mut s);
+    assert!(big.contains("/div"));
+    assert!(!big.contains(" V ="), "no line with the newest value");
 }
 
 #[test]
