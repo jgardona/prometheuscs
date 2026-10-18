@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="385" height="353" viewBox="0 0 385 353">
+<defs>
+<linearGradient id="g0" gradientUnits="userSpaceOnUse" x1="104" y1="312" x2="136" y2="312"><stop offset="0" stop-color="#807f7f"/><stop offset="1" stop-color="#807f7f"/></linearGradient>
+<linearGradient id="g1" gradientUnits="userSpaceOnUse" x1="256" y1="312" x2="288" y2="312"><stop offset="0" stop-color="#807f7f"/><stop offset="1" stop-color="#807f7f"/></linearGradient>
+<linearGradient id="g2" gradientUnits="userSpaceOnUse" x1="200" y1="200" x2="200" y2="232"><stop offset="0" stop-color="#807f7f"/><stop offset="1" stop-color="#807f7f"/></linearGradient>
+</defs>
+<path d="M0 0 L385 0 L385 353 L0 353 Z" fill="#000000" stroke="none"/>
+<path d="M40 312 L40 180" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 172 L40 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M30 180 L50 180" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M24 172 L56 172" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M200 120 L200 96" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M184 64 L184 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M216 64 L216 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M200 96 L184 64" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 40 L184 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="112" y="34" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M40 312 L104 312" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M136 312 L200 312" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M104 312 L106 318 L110 306 L114 318 L118 306 L122 318 L126 306 L130 318 L134 306 L136 312" fill="none" stroke="url(#g0)" stroke-width="3" stroke-linecap="round"/>
+<text x="110" y="302" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">140</text>
+<path d="M200 312 L256 312" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M288 312 L344 312" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M256 312 L258 318 L262 306 L266 318 L270 306 L274 318 L278 306 L282 318 L286 306 L288 312" fill="none" stroke="url(#g1)" stroke-width="3" stroke-linecap="round"/>
+<text x="262" y="302" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">140</text>
+<path d="M216 40 L344 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="280" y="34" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M344 40 L344 312" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="350" y="182" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M200 120 L200 200" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M200 232 L200 312" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M200 200 L200 200 L201.38 200.18 L202.67 200.71 L203.77 201.56 L204.62 202.67 L205.15 203.95 L205.33 205.33 L205.15 206.71 L204.62 208 L203.77 209.1 L202.67 209.95 L201.38 210.48 L200 210.67 L200 210.67" fill="none" stroke="url(#g2)" stroke-width="3" stroke-linecap="round"/>
+<path d="M200 210.67 L200 210.67 L201.38 210.85 L202.67 211.38 L203.77 212.23 L204.62 213.33 L205.15 214.62 L205.33 216 L205.15 217.38 L204.62 218.67 L203.77 219.77 L202.67 220.62 L201.38 221.15 L200 221.33 L200 221.33" fill="none" stroke="url(#g2)" stroke-width="3" stroke-linecap="round"/>
+<path d="M200 221.33 L200 221.33 L201.38 221.52 L202.67 222.05 L203.77 222.9 L204.62 224 L205.15 225.29 L205.33 226.67 L205.15 228.05 L204.62 229.33 L203.77 230.44 L202.67 231.29 L201.38 231.82 L200 232 L200 232" fill="none" stroke="url(#g2)" stroke-width="3" stroke-linecap="round"/>
+<text x="210" y="222" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">3H</text>
+<path d="M203 312 L202.9 312.78 L202.6 313.5 L202.12 314.12 L201.5 314.6 L200.78 314.9 L200 315 L199.22 314.9 L198.5 314.6 L197.88 314.12 L197.4 313.5 L197.1 312.78 L197 312 L197.1 311.22 L197.4 310.5 L197.88 309.88 L198.5 309.4 L199.22 309.1 L200 309 L200.78 309.1 L201.5 309.4 L202.12 309.88 L202.6 310.5 L202.9 311.22 L203 312 Z" fill="#ffffff" stroke="none"/>
+</svg>

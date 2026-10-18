@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="385" height="305" viewBox="0 0 385 305">
+<defs>
+<linearGradient id="g0" gradientUnits="userSpaceOnUse" x1="344" y1="136" x2="344" y2="168"><stop offset="0" stop-color="#807f7f"/><stop offset="1" stop-color="#807f7f"/></linearGradient>
+</defs>
+<path d="M0 0 L385 0 L385 305 L0 305 Z" fill="#000000" stroke="none"/>
+<path d="M40 264 L40 169" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 135 L40 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M56.66 152 L56.09 156.31 L54.43 160.33 L51.78 163.78 L48.33 166.43 L44.31 168.09 L40 168.66 L35.69 168.09 L31.67 166.43 L28.22 163.78 L25.57 160.33 L23.91 156.31 L23.34 152 L23.91 147.69 L25.57 143.67 L28.22 140.22 L31.67 137.57 L35.69 135.91 L40 135.34 L44.31 135.91 L48.33 137.57 L51.78 140.22 L54.43 143.67 L56.09 147.69 L56.66 152" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<path d="M30 152 L31 150 L32 148 L33 146 L34 145 L35 145 L36 145 L37 146 L38 148 L39 150 L40 152 L41 154 L42 156 L43 158 L44 159 L45 159 L46 159 L47 158 L48 156 L49 154 L50 152" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<text x="47" y="135" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">*</text>
+<text x="-7" y="158" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">40Hz</text>
+<path d="M344 40 L344 136" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M344 168 L344 264" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M344 136 L338 138 L350 142 L338 146 L350 150 L338 154 L350 158 L338 162 L350 166 L344 168" fill="none" stroke="url(#g0)" stroke-width="3" stroke-linecap="round"/>
+<text x="354" y="158" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">640</text>
+<path d="M40 40 L184 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M200 40 L344 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M184 32 L184 48 L200 40 Z" fill="#807f7f" stroke="none"/>
+<path d="M200 32 L200 48" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 264 L344 264" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="192" y="258" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+</svg>

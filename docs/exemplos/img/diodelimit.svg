@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="273" height="225" viewBox="0 0 273 225">
+<defs>
+<linearGradient id="g0" gradientUnits="userSpaceOnUse" x1="72" y1="40" x2="104" y2="40"><stop offset="0" stop-color="#807f7f"/><stop offset="1" stop-color="#807f7f"/></linearGradient>
+</defs>
+<path d="M0 0 L273 0 L273 225 L0 225 Z" fill="#000000" stroke="none"/>
+<path d="M40 184 L40 129" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 95 L40 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M56.66 112 L56.09 116.31 L54.43 120.33 L51.78 123.78 L48.33 126.43 L44.31 128.09 L40 128.66 L35.69 128.09 L31.67 126.43 L28.22 123.78 L25.57 120.33 L23.91 116.31 L23.34 112 L23.91 107.69 L25.57 103.67 L28.22 100.22 L31.67 97.57 L35.69 95.91 L40 95.34 L44.31 95.91 L48.33 97.57 L51.78 100.22 L54.43 103.67 L56.09 107.69 L56.66 112" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<path d="M30 112 L31 110 L32 108 L33 106 L34 105 L35 105 L36 105 L37 106 L38 108 L39 110 L40 112 L41 114 L42 116 L43 118 L44 119 L45 119 L46 119 L47 118 L48 116 L49 114 L50 112" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<text x="47" y="95" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">*</text>
+<text x="-7" y="118" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">40Hz</text>
+<path d="M40 40 L72 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M104 40 L136 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M72 40 L74 46 L78 34 L82 46 L86 34 L90 46 L94 34 L98 46 L102 34 L104 40" fill="none" stroke="url(#g0)" stroke-width="3" stroke-linecap="round"/>
+<text x="78" y="30" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">110</text>
+<path d="M136 40 L136 88" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="142" y="70" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M136 88 L168 88" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="152" y="82" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M136 88 L104 88" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="120" y="82" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M40 184 L104 184" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="72" y="178" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M104 184 L168 184" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="136" y="178" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M104 88 L104 128" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M104 144 L104 184" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M112 128 L96 128 L104 144 Z" fill="#807f7f" stroke="none"/>
+<path d="M112 144 L96 144" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M168 184 L168 144" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M168 128 L168 88" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M160 144 L176 144 L168 128 Z" fill="#807f7f" stroke="none"/>
+<path d="M160 128 L176 128" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="232" y="40" font-size="14" text-anchor="middle" dominant-baseline="central" fill="#c0c0c0">out</text>
+<path d="M136 40 L212 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M139 40 L138.9 40.78 L138.6 41.5 L138.12 42.12 L137.5 42.6 L136.78 42.9 L136 43 L135.22 42.9 L134.5 42.6 L133.88 42.12 L133.4 41.5 L133.1 40.78 L133 40 L133.1 39.22 L133.4 38.5 L133.88 37.88 L134.5 37.4 L135.22 37.1 L136 37 L136.78 37.1 L137.5 37.4 L138.12 37.88 L138.6 38.5 L138.9 39.22 L139 40 Z" fill="#ffffff" stroke="none"/>
+<path d="M139 88 L138.9 88.78 L138.6 89.5 L138.12 90.12 L137.5 90.6 L136.78 90.9 L136 91 L135.22 90.9 L134.5 90.6 L133.88 90.12 L133.4 89.5 L133.1 88.78 L133 88 L133.1 87.22 L133.4 86.5 L133.88 85.88 L134.5 85.4 L135.22 85.1 L136 85 L136.78 85.1 L137.5 85.4 L138.12 85.88 L138.6 86.5 L138.9 87.22 L139 88 Z" fill="#ffffff" stroke="none"/>
+<path d="M107 184 L106.9 184.78 L106.6 185.5 L106.12 186.12 L105.5 186.6 L104.78 186.9 L104 187 L103.22 186.9 L102.5 186.6 L101.88 186.12 L101.4 185.5 L101.1 184.78 L101 184 L101.1 183.22 L101.4 182.5 L101.88 181.88 L102.5 181.4 L103.22 181.1 L104 181 L104.78 181.1 L105.5 181.4 L106.12 181.88 L106.6 182.5 L106.9 183.22 L107 184 Z" fill="#ffffff" stroke="none"/>
+</svg>
