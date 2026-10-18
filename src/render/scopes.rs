@@ -384,10 +384,10 @@ fn measures(view: &ScopeView, win: &Window, step_x: f64, step_y: f64) -> Measure
     };
     if flags & crate::scope::FLAG_RMS != 0 {
         if first.units == UNITS_V || first.units == UNITS_A {
-            let r = cycles(&samples, mid, |acc, (lo, hi)| {
-                let v = (hi + lo) * 0.5;
-                *acc += v * v;
-            });
+            // a column holds only the extremes of the samples it covers; one that spans an edge
+            // is half at each level, so its mean square is the mean of the squares of the
+            // extremes, not the square of their mean (which would make an edge column zero)
+            let r = cycles(&samples, mid, |acc, (lo, hi)| *acc += (lo * lo + hi * hi) * 0.5);
             if let Some((span, sum)) = r {
                 m.top.push(format!("{}rms", text((sum / span as f64).sqrt())));
             }
@@ -400,10 +400,15 @@ fn measures(view: &ScopeView, win: &Window, step_x: f64, step_y: f64) -> Measure
         average(&mut m);
     }
     if flags & crate::scope::FLAG_DUTY != 0 {
-        let r = cycles(&samples, mid, |acc, (_, hi)| {
-            if hi > mid {
-                *acc += 1.0;
-            }
+        // a column that spans the middle (an edge) counts for the fraction of its range above it
+        let r = cycles(&samples, mid, |acc, (lo, hi)| {
+            *acc += if lo > mid {
+                1.0
+            } else if hi > mid {
+                (hi - mid) / (hi - lo)
+            } else {
+                0.0
+            };
         });
         if let Some((span, on)) = r {
             m.top.push(format!(
@@ -1680,6 +1685,83 @@ mod tests {
         let line = m.top.iter().find(|l| l.contains('%')).expect("duty cycle");
         let pct: i64 = line.rsplit(' ').next().unwrap().trim_end_matches('%').parse().unwrap();
         assert!((24..=26).contains(&pct), "{line}");
+    }
+
+    /// A view whose columns hold the (min, max) of a fast signal, as the recorded buffer does:
+    /// `f(phase)` for phase in 0..1 is sampled finely and `columns` columns make up a period.
+    fn columns_of(f: impl Fn(f64) -> f64, columns: f64, periods: f64, flags: i32) -> ScopeView {
+        let n = (columns * periods) as usize;
+        let mut mn = Vec::new();
+        let mut mx = Vec::new();
+        for c in 0..n {
+            let (mut lo, mut hi) = (f64::INFINITY, f64::NEG_INFINITY);
+            for k in 0..200 {
+                let phase = ((c as f64 + k as f64 / 200.0) / columns).fract();
+                let v = f(phase);
+                lo = lo.min(v);
+                hi = hi.max(v);
+            }
+            mn.push(lo);
+            mx.push(hi);
+        }
+        let mut v = view(&[]);
+        let (mut a, mut b) = (vec![0.0; POINTS], vec![0.0; POINTS]);
+        a[POINTS - n..].copy_from_slice(&mn);
+        b[POINTS - n..].copy_from_slice(&mx);
+        v.plots[0].min = a;
+        v.plots[0].max = b;
+        v.plots[0].valid = n;
+        v.flags = flags;
+        v
+    }
+
+    fn reading(m: &Measures, end: &str) -> f64 {
+        let line = m.top.iter().find(|l| l.ends_with(end)).unwrap_or_else(|| panic!("{m:?}"));
+        let n = line.trim_end_matches(end).trim_end_matches(" V").trim();
+        n.rsplit(' ').next().unwrap().parse().unwrap()
+    }
+
+    #[test]
+    fn a_fast_bipolar_square_wave_reads_its_peak_as_rms_whatever_its_duty() {
+        use crate::scope::{FLAG_DUTY, FLAG_RMS};
+        // 11.87 columns a period, as the 263 Hz source of the bug report at 10 ms/div
+        for duty in [0.167, 0.3, 0.5, 0.701] {
+            let sq = |p: f64| if p < duty { 13.1 } else { -13.1 };
+            let m = lines(&columns_of(sq, 11.87, 70.0, FLAG_RMS | FLAG_DUTY));
+            let rms = reading(&m, "rms");
+            assert!((rms - 13.1).abs() < 0.02 * 13.1, "duty {duty}: {rms} V");
+            let pct = reading(&m, "%");
+            assert!((pct - 100.0 * duty).abs() <= 3.0, "duty {duty}: {pct}%");
+        }
+    }
+
+    #[test]
+    fn a_fast_unipolar_pulse_reads_peak_times_root_of_duty() {
+        use crate::scope::{FLAG_DUTY, FLAG_RMS};
+        for duty in [0.167, 0.5, 0.833] {
+            let pulse = |p: f64| if p < duty { 13.1 } else { 0.0 };
+            let m = lines(&columns_of(pulse, 11.87, 70.0, FLAG_RMS | FLAG_DUTY));
+            let want = 13.1 * f64::sqrt(duty);
+            let rms = reading(&m, "rms");
+            assert!((rms - want).abs() < 0.03 * want, "duty {duty}: {rms} V, want {want}");
+            let pct = reading(&m, "%");
+            assert!((pct - 100.0 * duty).abs() <= 3.0, "duty {duty}: {pct}%");
+        }
+    }
+
+    #[test]
+    fn a_sine_and_a_triangle_with_few_columns_a_period_keep_their_rms() {
+        use crate::scope::FLAG_RMS;
+        let sine = |p: f64| 5.0 * (std::f64::consts::TAU * p).sin();
+        let tri = |p: f64| 5.0 * (1.0 - 4.0 * (p - 0.5).abs());
+        for (name, f, want) in [
+            ("sine", &sine as &dyn Fn(f64) -> f64, 5.0 / 2f64.sqrt()),
+            ("triangle", &tri, 5.0 / 3f64.sqrt()),
+        ] {
+            let m = lines(&columns_of(f, 12.0, 60.0, FLAG_RMS));
+            let rms = reading(&m, "rms");
+            assert!((rms - want).abs() < 0.04 * want, "{name}: {rms} V, want {want}");
+        }
     }
 
     #[test]
