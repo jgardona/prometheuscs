@@ -1459,7 +1459,13 @@ impl SimpleComponent for App {
             let ses_m = session.clone();
             motion.connect_leave(move |_| {
                 pointer.set(None);
-                ses_m.borrow_mut().set_scope_hover(None);
+                // GTK sends this synchronously when the area is hidden, possibly while the
+                // frame callback still holds the session: then there is nothing to update
+                guarded("scope leave", (), || {
+                    let _ = crate::app::session::try_with_session(&ses_m, |s| {
+                        s.set_scope_hover(None);
+                    });
+                });
                 area_m.queue_draw();
             });
         }
@@ -1575,11 +1581,14 @@ impl SimpleComponent for App {
             });
             let (ses, area_d) = (session.clone(), scope_area.clone());
             plot_drag.connect_drag_end(move |_, _, _| {
-                let mut s = ses.borrow_mut();
-                s.scope_scales.drag_from = None;
-                if state.take().is_some() {
-                    s.scope_scales.dragging = false;
-                }
+                guarded("plot drag end", (), || {
+                    let _ = crate::app::session::try_with_session(&ses, |s| {
+                        s.scope_scales.drag_from = None;
+                        if state.take().is_some() {
+                            s.scope_scales.dragging = false;
+                        }
+                    });
+                });
                 area_d.queue_draw();
             });
         }
@@ -1696,7 +1705,7 @@ impl SimpleComponent for App {
                 Duration::from_micros(u64::try_from(now - l).unwrap_or(0))
             });
             last.set(Some(now));
-            guarded("frame update", (), || {
+            let frame = guarded("frame update", None, || {
                 let mut s = tick_session.borrow_mut();
                 // an error stops the simulation; the message is shown by the next view update
                 let began = std::time::Instant::now();
@@ -1704,15 +1713,17 @@ impl SimpleComponent for App {
                 if let Some(b) = tick_bench.borrow_mut().as_mut() {
                     b.on_update(now, began.elapsed());
                 }
-                tick_title.set_subtitle(&format!("t = {}", time_text(s.time())));
-                // 130 pixels for each scope of the tallest column, at most three of them
-                let n = crate::render::scopes::rows(&s.scope_views());
-                let height = (n as i32 * 130).min(390);
+                Some((format!("t = {}", time_text(s.time())), s.scope_area_state()))
+            });
+            // the widgets are changed once the session is free again: hiding the scope area
+            // makes GTK send "leave" to its pointer controller, whose handler needs the session
+            if let Some((subtitle, (height, visible))) = frame {
+                tick_title.set_subtitle(&subtitle);
                 if scope_tick.content_height() != height {
                     scope_tick.set_content_height(height);
                 }
-                scope_tick.set_visible(n > 0);
-            });
+                scope_tick.set_visible(visible);
+            }
             if let Some(b) = tick_bench.borrow_mut().as_mut() {
                 let done =
                     guarded("benchmark", false, || b.on_tick(now, &mut tick_session.borrow_mut()));

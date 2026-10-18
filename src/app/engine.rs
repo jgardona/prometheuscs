@@ -73,6 +73,14 @@ impl Session {
         self.sim.scopes.len()
     }
 
+    /// How big the area under the canvas has to be for the docked scopes, and whether it shows at
+    /// all: 130 pixels for each row of the tallest column, at most three rows, and hidden when
+    /// there are no scopes.
+    pub fn scope_area_state(&self) -> (i32, bool) {
+        let n = crate::render::scopes::rows(&self.scope_views());
+        ((n as i32 * 130).min(390), n > 0)
+    }
+
     /// What every scope shows now.
     pub fn scope_views(&self) -> Vec<crate::scope::ScopeView> {
         if self.worker.is_some() {

@@ -19,6 +19,17 @@ use crate::solver::sim::Simulation;
 use std::path::PathBuf;
 use std::time::Duration;
 
+/// Runs `f` on the session, unless the session is borrowed already: then `None`, and `f` does not
+/// run. Handlers of signals that GTK emits synchronously (hiding a widget makes its pointer
+/// controller send "leave") call this instead of `borrow_mut`: the code that caused the signal may
+/// still hold the session, and a panic there would cross the C boundary and abort the program.
+pub fn try_with_session<T>(
+    cell: &std::cell::RefCell<Session>,
+    f: impl FnOnce(&mut Session) -> T,
+) -> Option<T> {
+    cell.try_borrow_mut().ok().map(|mut s| f(&mut s))
+}
+
 /// Largest wall-clock gap one update accounts for; longer gaps (window hidden, debugger) are
 /// clipped so the simulation does not try to catch up.
 pub(crate) const MAX_FRAME_GAP: Duration = Duration::from_millis(100);
