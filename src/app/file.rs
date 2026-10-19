@@ -134,7 +134,7 @@ mod tests {
     #[cfg(feature = "sources")]
     #[test]
     fn save_then_open_gives_the_same_circuit() {
-        let dir = std::env::temp_dir().join(format!("prometheuscs-file-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(crate::app::consts::temp_name("file"));
         let path = dir.join("rc.xml");
         let mut s = session();
         s.dirty = true;

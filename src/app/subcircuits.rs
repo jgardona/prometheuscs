@@ -36,7 +36,7 @@ const LABEL_INTERNAL: i32 = 1;
 const MODEL_SHOW_LABEL: i32 = 1;
 
 fn saved_dir() -> PathBuf {
-    config_dir().join("subcircuits")
+    config_dir().join(super::consts::SUBCIRCUITS_DIR)
 }
 
 fn saved_path(name: &str) -> PathBuf {

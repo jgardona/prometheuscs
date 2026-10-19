@@ -103,7 +103,7 @@ pub fn themed_svg(path: &Path, dark: bool) -> Option<PathBuf> {
     let text = std::fs::read_to_string(path).ok()?;
     let color = if dark { "#e6e6e6" } else { "#2e3436" };
     let text = text.replace("currentColor", color).replace("#000000", color);
-    let dir = super::settings::config_dir().join("icon-cache");
+    let dir = super::settings::config_dir().join(super::consts::ICON_CACHE_DIR);
     std::fs::create_dir_all(&dir).ok()?;
     let name =
         format!("{}-{}", if dark { "dark" } else { "light" }, path.file_name()?.to_string_lossy());
@@ -125,7 +125,7 @@ mod tests {
     use super::*;
 
     fn assets() -> PathBuf {
-        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("assets")
+        crate::app::consts::assets_dir()
     }
 
     #[test]

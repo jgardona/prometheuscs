@@ -88,17 +88,17 @@ pub fn config_dir() -> PathBuf {
         .map(PathBuf::from)
         .or_else(|| std::env::var_os("HOME").map(|h| PathBuf::from(h).join(".config")))
         .unwrap_or_else(std::env::temp_dir);
-    base.join("prometheuscs")
+    base.join(super::consts::CONFIG_DIR_NAME)
 }
 
 /// Where the settings file lives.
 pub fn settings_path() -> PathBuf {
-    config_dir().join("settings.json")
+    config_dir().join(super::consts::SETTINGS_FILE)
 }
 
 /// Where the automatic save of the circuit being edited lives.
 pub fn autosave_path() -> PathBuf {
-    config_dir().join("autosave.xml")
+    config_dir().join(super::consts::AUTOSAVE_FILE)
 }
 
 #[cfg(test)]
@@ -108,7 +108,7 @@ mod tests {
     #[test]
     fn settings_round_trip_and_tolerate_missing_fields() {
         let dir =
-            std::env::temp_dir().join(format!("prometheuscs-settings-{}", std::process::id()));
+            std::env::temp_dir().join(crate::app::consts::temp_name("settings"));
         let path = dir.join("s.json");
         let s = AppSettings { crosshair: true, show_ohm: true, ..AppSettings::default() };
         s.save(&path).unwrap();

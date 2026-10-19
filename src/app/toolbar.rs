@@ -184,7 +184,7 @@ mod tests {
     #[test]
     fn every_toolbar_part_exists_and_has_an_icon() {
         let registry = Registry::standard();
-        let assets = Path::new(env!("CARGO_MANIFEST_DIR")).join("assets");
+        let assets = crate::app::consts::assets_dir();
         for group in PARTS {
             for (id, icon) in *group {
                 assert!(registry.contains(id), "no element {id}");

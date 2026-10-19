@@ -29,7 +29,7 @@ pub fn stop() {
 /// player could be started.
 pub fn play(wav: &[u8]) -> Result<(), String> {
     stop();
-    let file = std::env::temp_dir().join(format!("prometheuscs-audio-{}.wav", std::process::id()));
+    let file = std::env::temp_dir().join(format!("{}.wav", super::consts::temp_name("audio")));
     std::fs::write(&file, wav).map_err(|e| format!("{}: {e}", file.display()))?;
     for (program, args) in PLAYERS {
         let spawned = Command::new(program)

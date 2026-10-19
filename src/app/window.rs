@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 //! The main window: menu bar, toolbar, circuit canvas and the side panel.
 
+use super::consts;
 use super::commands::{Action, Cmd, Outcome, apply, dispatch};
 use super::dialogs::{self, OtherOptions};
 use super::edit::{Mods, ScopeMode, Tool};
@@ -33,9 +34,7 @@ const AUTOSAVE_SECONDS: u32 = 30;
 
 /// Folder with the bundled circuits and `setuplist.txt`.
 fn assets_dir() -> PathBuf {
-    std::env::var_os("PROMETHEUSCS_ASSETS")
-        .map(PathBuf::from)
-        .unwrap_or_else(|| PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("assets"))
+    consts::assets_dir()
 }
 
 /// Shown after another language was chosen.
@@ -620,8 +619,8 @@ fn show_scope_menu(
                 dialogs::choose_save(
                     &win,
                     "Exportar dados do osciloscópio",
-                    "scope-data.csv",
-                    "*.csv",
+                    consts::SCOPE_DATA_FILE,
+                    consts::GLOB_CSV,
                     move |path| {
                         if let Err(e) = std::fs::write(&path, &csv) {
                             tracing::warn!("cannot write {}: {e}", path.display());
@@ -745,7 +744,7 @@ fn audio_row(
                 )));
                 return;
             };
-            dialogs::choose_save(&win, "Salvar áudio", "audio.wav", "*.wav", move |path| {
+            dialogs::choose_save(&win, "Salvar áudio", consts::AUDIO_FILE, consts::GLOB_WAV, move |path| {
                 if let Err(e) = std::fs::write(&path, &bytes) {
                     tracing::warn!("cannot write {}: {e}", path.display());
                 }
@@ -837,7 +836,7 @@ impl App {
             Cmd::SaveAs => {
                 let name = format!("{}.xml", self.session.borrow().title);
                 let s = sender.input_sender().clone();
-                dialogs::choose_save(&w, "Salvar circuito", &name, "*.xml", move |p| {
+                dialogs::choose_save(&w, "Salvar circuito", &name, consts::GLOB_XML, move |p| {
                     let _ = s.send(Msg::SavePath(p));
                 });
             }
@@ -850,10 +849,10 @@ impl App {
                 dialogs::text_view(&w, "Exportar em Formato Texto", &text);
             }
             Cmd::ExportImage => {
-                self.export_picture(sender, "Exportar como Imagem", "circuito.png", "*.png", false)
+                self.export_picture(sender, "Exportar como Imagem", consts::IMAGE_FILE, consts::GLOB_PNG, false)
             }
             Cmd::ExportSvg => {
-                self.export_picture(sender, "Exportar como SVG", "circuito.svg", "*.svg", true)
+                self.export_picture(sender, "Exportar como SVG", consts::SVG_FILE, consts::GLOB_SVG, true)
             }
             Cmd::CopyImage => {
                 let result = export::png_bytes(&mut self.session.borrow_mut())
@@ -963,9 +962,9 @@ impl SimpleComponent for App {
 
     fn init_root() -> Self::Root {
         adw::ApplicationWindow::builder()
-            .title("prometheuscs")
-            .default_width(1280)
-            .default_height(800)
+            .title(consts::APP_NAME)
+            .default_width(consts::DEFAULT_WINDOW_WIDTH)
+            .default_height(consts::DEFAULT_WINDOW_HEIGHT)
             .build()
     }
 
@@ -978,7 +977,7 @@ impl SimpleComponent for App {
         let assets = assets_dir();
         load_translations(&assets, &AppSettings::load(&settings_path()).language);
         let registry = Registry::standard();
-        let examples = std::fs::read_to_string(assets.join("setuplist.txt"))
+        let examples = std::fs::read_to_string(assets.join(consts::SETUPLIST_FILE))
             .map(|t| parse_setup_list(&t))
             .unwrap_or_default();
         let settings = AppSettings::load(&settings_path());
@@ -990,7 +989,7 @@ impl SimpleComponent for App {
         // the solver runs on its own thread; the window only draws what it publishes
         session.attach_worker(Worker::spawn(registry.clone(), settings));
         session.settings_path = Some(settings_path());
-        let startup = examples.startup.clone().unwrap_or_else(|| "lrc.txt".into());
+        let startup = examples.startup.clone().unwrap_or_else(|| consts::FALLBACK_STARTUP.into());
         let mut notice = None;
         // a render benchmark draws the circuit it was given instead of the start-up example
         let bench_path = super::bench::config().map(|c| c.path.clone());
@@ -1041,7 +1040,7 @@ impl SimpleComponent for App {
         area.add_named(&gl_area, Some("gl"));
         area.add_named(&cairo_area, Some("cairo"));
         // PROMETHEUSCS_RENDERER=cairo forces the CPU canvas
-        let force_cpu = std::env::var("PROMETHEUSCS_RENDERER").is_ok_and(|v| v == "cairo");
+        let force_cpu = std::env::var(consts::ENV_RENDERER).is_ok_and(|v| v == "cairo");
         area.set_visible_child_name(if force_cpu { "cairo" } else { "gl" });
         let gl: GlSlot = Rc::new(RefCell::new(None));
         {
@@ -1324,7 +1323,7 @@ impl SimpleComponent for App {
 
         // --- side panel
         let panel = gtk::Box::new(gtk::Orientation::Vertical, 12);
-        panel.set_width_request(270);
+        panel.set_width_request(consts::SIDE_PANEL_WIDTH);
         panel.set_margin_top(12);
         panel.set_margin_bottom(12);
         panel.set_margin_start(12);
@@ -1382,7 +1381,7 @@ impl SimpleComponent for App {
         panel_scroll.set_hscrollbar_policy(gtk::PolicyType::Never);
 
         // --- menus, toolbar, actions
-        let title = adw::WindowTitle::new("prometheuscs", "");
+        let title = adw::WindowTitle::new(consts::APP_NAME, "");
         let header = adw::HeaderBar::new();
         header.set_title_widget(Some(&title));
         let model = menus::menu_bar_model(&registry, &examples, &assets, dark);

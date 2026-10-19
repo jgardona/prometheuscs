@@ -41,14 +41,17 @@ fn padded(child: &impl IsA<gtk::Widget>) -> gtk::Box {
 /// The About dialog.
 pub fn about(parent: &impl IsA<gtk::Widget>) {
     let d = adw::AboutDialog::new();
-    d.set_application_name("prometheuscs");
+    d.set_application_name(super::consts::APP_NAME);
     d.set_application_icon("applications-engineering-symbolic");
     d.set_version(env!("CARGO_PKG_VERSION"));
     d.set_comments(
         "Simulador de circuitos: um porte em Rust do CircuitJS1 com interface GTK4 e libadwaita.",
     );
     d.set_license_type(gtk::License::Gpl20);
-    d.set_copyright("© Paul Falstad e Iain Sharp (CircuitJS1); porte prometheuscs");
+    d.set_copyright(&format!(
+        "© Paul Falstad e Iain Sharp (CircuitJS1); porte {}",
+        super::consts::PROGRAM_NAME
+    ));
     d.set_website("https://github.com/pfalstad/circuitjs1");
     d.present(Some(parent));
 }
@@ -817,7 +820,7 @@ fn choose_path(
 pub fn choose_open(parent: &impl IsA<gtk::Window>, on_path: impl Fn(PathBuf) + 'static) {
     let d = gtk::FileDialog::new();
     d.set_title("Abrir circuito");
-    d.set_filters(Some(&filter("Circuitos", &["*.txt", "*.xml", "*.circuitjs"])));
+    d.set_filters(Some(&filter("Circuitos", &super::consts::CIRCUIT_GLOBS)));
     d.open(Some(parent), gio::Cancellable::NONE, move |r| {
         if let Some(path) = r.ok().and_then(|f| f.path()) {
             on_path(path);
@@ -848,7 +851,7 @@ pub fn choose_save(
 pub fn print(parent: &impl IsA<gtk::Window>, session: Rc<RefCell<Session>>) {
     let op = gtk::PrintOperation::new();
     op.set_n_pages(1);
-    op.set_job_name("prometheuscs");
+    op.set_job_name(super::consts::PROGRAM_NAME);
     op.connect_draw_page(move |_, ctx, _| {
         let cr = ctx.cairo_context();
         crate::render::export::draw_page(&cr, &mut session.borrow_mut(), ctx.width(), ctx.height());

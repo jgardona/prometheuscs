@@ -3,6 +3,7 @@
 
 pub mod bench;
 pub mod commands;
+pub mod consts;
 #[cfg(feature = "subcircuits")]
 pub mod contexts;
 #[cfg(feature = "gui")]
@@ -39,5 +40,5 @@ pub fn run() {
     bench::configure(std::env::args().skip(1));
     // the options of this program are not GTK's: hand GTK only the program name
     let program = std::env::args().next().unwrap_or_default();
-    RelmApp::new("org.prometheuscs.App").with_args(vec![program]).run::<window::App>(());
+    RelmApp::new(consts::APP_ID).with_args(vec![program]).run::<window::App>(());
 }
