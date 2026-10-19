@@ -330,10 +330,10 @@ impl Element for TextElm {
             0 => Some(EditInfo::text("Text", &self.text.replace("\\n", "\n"))),
             1 => Some(EditInfo::new("Size", f64::from(self.size), 5.0, 100.0)),
             2 => Some(EditInfo::checkbox("Draw Bar On Top", self.base.flags & TEXT_FLAG_BAR != 0)),
-            3 => Some(
-                EditInfo::text("Color", self.color.as_deref().unwrap_or(&Color::LIGHT_GRAY.hex()))
-                    .set_is_color(),
-            ),
+            3 => {
+                let c = self.color.as_deref().and_then(Color::parse_hex);
+                Some(EditInfo::color("Color", &c.unwrap_or(Color::LIGHT_GRAY)))
+            }
             _ => None,
         }
     }
@@ -346,8 +346,8 @@ impl Element for TextElm {
             1 => self.size = ei.value as i32,
             2 => self.base.flags = ei.change_flag(self.base.flags, TEXT_FLAG_BAR),
             3 => {
-                let c = ei.text.clone().unwrap_or_default();
-                self.color = (c != Color::LIGHT_GRAY.hex()).then_some(c);
+                let Some(c) = ei.text.as_deref().and_then(Color::parse_hex) else { return };
+                self.color = (c != Color::LIGHT_GRAY).then(|| c.hex());
             }
             _ => {}
         }

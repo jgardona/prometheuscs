@@ -63,6 +63,17 @@ impl Color {
         Some(Color::new((v >> 16) as u8, (v >> 8) as u8, v as u8))
     }
 
+    /// Colour from components in 0-1 (rounded, out-of-range values clamped).
+    pub fn from_unit(c: [f64; 3]) -> Self {
+        let byte = |v: f64| (v.clamp(0.0, 1.0) * 255.0).round() as u8;
+        Color::new(byte(c[0]), byte(c[1]), byte(c[2]))
+    }
+
+    /// The components as 0-1 values.
+    pub fn to_unit(&self) -> [f64; 3] {
+        [f64::from(self.r) / 255.0, f64::from(self.g) / 255.0, f64::from(self.b) / 255.0]
+    }
+
     /// CSS-style hexadecimal form, for example `#ff0000`.
     pub fn hex(&self) -> String {
         format!("#{:02x}{:02x}{:02x}", self.r, self.g, self.b)
@@ -232,5 +243,12 @@ mod tests {
         assert_eq!(Color::RED.hex(), "#ff0000");
         assert_eq!(Color::parse_hex("#00ff7f"), Some(Color::new(0, 255, 127)));
         assert_eq!(Color::parse_hex("zzz"), None);
+    }
+
+    #[test]
+    fn unit_components_round_and_clamp() {
+        assert_eq!(Color::from_unit([-0.2, 0.5, 1.5]), Color::new(0, 128, 255));
+        assert_eq!(Color::from_unit([1.0, 0.0, 0.0]), Color::RED);
+        assert_eq!(Color::new(255, 0, 51).to_unit(), [1.0, 0.0, 0.2]);
     }
 }

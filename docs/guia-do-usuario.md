@@ -499,6 +499,8 @@ componente sob o ponteiro está fazendo: tensão, corrente, potência e valores 
 - **Lógica personalizada (Custom Logic):** um chip cujo comportamento é escrito como regras no modelo do
   elemento, que se edita nos campos dele.
 - **Texto, caixa e linha:** anotações; não participam da simulação.
+- **Cor (LED e texto):** nas propriedades do LED e do texto a cor se escolhe com um seletor de cor
+  (um botão com a cor atual), não digitando valores.
 - **Gatilho de parada (Stop Trigger):** pára o tempo quando a entrada passa de um nível.
 - **Gravador de dados (Data Export):** guarda o que passou pelo terminal; grava num arquivo
   (seção 12).

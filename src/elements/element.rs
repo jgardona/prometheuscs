@@ -186,8 +186,10 @@ pub struct EditInfo {
     pub unit_step: bool,
     /// Do not offer a slider for this field.
     pub no_sliders: bool,
-    /// The text is a colour.
+    /// The text is a colour (`#rrggbb`), edited with a colour chooser.
     pub is_color: bool,
+    /// The field only keeps its place in the edit list; the dialog shows nothing for it.
+    pub hidden: bool,
     /// Start a new dialog column.
     pub new_column: bool,
     /// Value must be positive.
@@ -231,6 +233,16 @@ impl EditInfo {
             no_sliders: true,
             ..Default::default()
         }
+    }
+
+    /// Colour field, edited with a colour chooser.
+    pub fn color(name: &str, color: &Color) -> Self {
+        EditInfo::text(name, &color.hex()).set_is_color()
+    }
+
+    /// A field that is not shown or edited; it keeps the index of a removed field stable.
+    pub fn hidden() -> Self {
+        EditInfo { hidden: true, no_sliders: true, ..Default::default() }
     }
 
     /// Multi-line text field.
@@ -1593,6 +1605,19 @@ pub fn read_prefix(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_color_field_carries_its_color_as_hex() {
+        let ei = EditInfo::color("Color", &Color::RED);
+        assert!(ei.is_color && ei.no_sliders && !ei.hidden);
+        assert_eq!((ei.name.as_str(), ei.text.as_deref()), ("Color", Some("#ff0000")));
+    }
+
+    #[test]
+    fn a_hidden_field_offers_no_slider() {
+        let ei = EditInfo::hidden();
+        assert!(ei.hidden && !ei.can_create_adjustable());
+    }
 
     #[test]
     fn set_points_computes_axis_vectors() {

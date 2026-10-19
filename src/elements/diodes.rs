@@ -128,6 +128,15 @@ pub struct DiodeElm {
 }
 
 impl DiodeElm {
+    /// Sets the LED colour from `#rrggbb`; text that is not a colour, or the colour already
+    /// shown, leaves the stored value as it is.
+    fn set_color(&mut self, hex: Option<&str>) {
+        let Some(chosen) = hex.and_then(Color::parse_hex) else { return };
+        if chosen != Color::from_unit(self.color) {
+            self.color = chosen.to_unit();
+        }
+    }
+
     fn blank(kind: DiodeKind, base: Base) -> Self {
         let model = DiodeModel::default_model();
         DiodeElm {
@@ -589,18 +598,10 @@ impl Element for DiodeElm {
         let n = match self.kind {
             DiodeKind::Led => {
                 return match n {
-                    0 => Some(
-                        EditInfo::new("Red Value (0-1)", self.color[0], 0.0, 1.0)
-                            .set_dimensionless(),
-                    ),
-                    1 => Some(
-                        EditInfo::new("Green Value (0-1)", self.color[1], 0.0, 1.0)
-                            .set_dimensionless(),
-                    ),
-                    2 => Some(
-                        EditInfo::new("Blue Value (0-1)", self.color[2], 0.0, 1.0)
-                            .set_dimensionless(),
-                    ),
+                    0 => Some(EditInfo::color("Color", &Color::from_unit(self.color))),
+                    // the former green and blue fields; kept so the later indices (also used by
+                    // saved sliders) do not move
+                    1 | 2 => Some(EditInfo::hidden()),
                     3 => Some(EditInfo::new(
                         "Max Brightness Current (A)",
                         self.max_brightness_current,
@@ -626,9 +627,8 @@ impl Element for DiodeElm {
     fn set_edit_value(&mut self, n: usize, ei: &mut EditInfo) {
         match self.kind {
             DiodeKind::Led => match n {
-                0 => self.color[0] = ei.value,
-                1 => self.color[1] = ei.value,
-                2 => self.color[2] = ei.value,
+                0 => self.set_color(ei.text.as_deref()),
+                1 | 2 => {}
                 3 => self.max_brightness_current = ei.value,
                 _ => self.set_model_edit(n - 4, ei),
             },

@@ -10,6 +10,7 @@ use crate::elements::registry::Registry;
 use crate::elements::subcircuit::CompositeModel;
 use crate::elements::units::{edit_value_text, parse_edit_value};
 use crate::locale::ls;
+use crate::render::painter::Color;
 use relm4::adw::{self, prelude::*};
 use relm4::gtk::{self, gio, glib};
 use std::cell::RefCell;
@@ -258,7 +259,19 @@ enum Field {
     Area(gtk::TextView),
     Switch(adw::SwitchRow),
     Combo(adw::ComboRow),
+    Color(gtk::ColorDialogButton),
     Fixed,
+}
+
+/// The chooser's form of a colour.
+fn to_rgba(c: Color) -> gtk::gdk::RGBA {
+    let [r, g, b] = c.to_unit();
+    gtk::gdk::RGBA::new(r as f32, g as f32, b as f32, 1.0)
+}
+
+/// The colour a chooser shows (alpha is not offered).
+fn from_rgba(c: &gtk::gdk::RGBA) -> Color {
+    Color::from_unit([f64::from(c.red()), f64::from(c.green()), f64::from(c.blue())])
 }
 
 /// The element edit dialog, generated from the element's edit fields.
@@ -305,8 +318,22 @@ pub fn edit_element_with(
             row.set_active(state);
             group.add(&row);
             widgets.push(Field::Switch(row));
-        } else if ei.button.is_some() {
+        } else if ei.button.is_some() || ei.hidden {
             widgets.push(Field::Fixed);
+        } else if ei.is_color {
+            let dialog = gtk::ColorDialog::new();
+            dialog.set_with_alpha(false);
+            dialog.set_title(&name);
+            let button = gtk::ColorDialogButton::new(Some(dialog));
+            button.set_valign(gtk::Align::Center);
+            let current =
+                ei.text.as_deref().and_then(Color::parse_hex).unwrap_or(Color::LIGHT_GRAY);
+            button.set_rgba(&to_rgba(current));
+            let row = adw::ActionRow::new();
+            row.set_title(&name);
+            row.add_suffix(&button);
+            group.add(&row);
+            widgets.push(Field::Color(button));
         } else if ei.multiline {
             let view = gtk::TextView::new();
             view.set_monospace(true);
@@ -412,6 +439,7 @@ pub fn edit_element_with(
                 }
                 Field::Switch(row) => ei.checkbox = Some(row.is_active()),
                 Field::Combo(row) => ei.choice_index = row.selected() as usize,
+                Field::Color(button) => ei.text = Some(from_rgba(&button.rgba()).hex()),
                 Field::Fixed => {}
             }
         }
