@@ -756,6 +756,48 @@ fn audio_row(
     row
 }
 
+/// A popover with one flat button per command of `nodes`, a separator between sections. Unlike
+/// `PopoverMenu` it always takes the height of all its entries.
+fn flat_menu_popover(nodes: &[crate::app::commands::Node]) -> gtk::Popover {
+    use crate::app::commands::Node;
+    let popover = gtk::Popover::new();
+    let body = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    for (i, node) in nodes.iter().enumerate() {
+        if i > 0 {
+            body.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+        }
+        let Node::Section(items) = node else { continue };
+        for item in items {
+            let Node::Item(cmd, label, _, accel) = item else { continue };
+            let row = gtk::Box::new(gtk::Orientation::Horizontal, 24);
+            let text = gtk::Label::new(Some(&locale::ls(label)));
+            text.set_xalign(0.0);
+            text.set_hexpand(true);
+            row.append(&text);
+            if let Some(accel) = accel {
+                let hint = gtk::Label::new(Some(accel));
+                hint.add_css_class("dim-label");
+                row.append(&hint);
+            }
+            let b = gtk::Button::new();
+            b.set_child(Some(&row));
+            b.add_css_class("flat");
+            let (pop, name, target) = (
+                popover.clone(),
+                format!("win.{}", cmd.action_name()),
+                cmd.target().map(|t| t.to_variant()),
+            );
+            b.connect_clicked(move |b| {
+                pop.popdown();
+                let _ = b.activate_action(&name, target.as_ref());
+            });
+            body.append(&b);
+        }
+    }
+    popover.set_child(Some(&body));
+    popover
+}
+
 /// A flat button for a popover menu: its text is left aligned and in the normal weight, like
 /// the check buttons around it.
 fn menu_button(text: &str) -> gtk::Button {
@@ -1181,7 +1223,7 @@ impl SimpleComponent for App {
         // right click on an element: a small menu of what can be done with it
         let context = gtk::GestureClick::builder().button(3).build();
         {
-            let (ses, area_ctx, assets_ctx) = (session.clone(), area.clone(), assets.clone());
+            let (ses, area_ctx) = (session.clone(), area.clone());
             let (tx_ctx, win_ctx) = (sender.input_sender().clone(), root.clone());
             context.connect_pressed(move |_, _, x, y| {
                 let hit =
@@ -1243,9 +1285,7 @@ impl SimpleComponent for App {
                         ),
                     ]),
                 ];
-                let mut seen = std::collections::HashMap::new();
-                let model = menus::build_menu(&nodes, &assets_ctx, false, &mut seen);
-                let popover = gtk::PopoverMenu::from_model(Some(&model));
+                let popover = flat_menu_popover(&nodes);
                 popover.set_parent(&area_ctx);
                 popover.set_pointing_to(Some(&gdk::Rectangle::new(x as i32, y as i32, 1, 1)));
                 popover.connect_closed(|p| {

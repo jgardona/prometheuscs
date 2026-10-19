@@ -114,17 +114,21 @@ impl WireElm {
 
     /// A wire being dragged out from (`xx`, `yy`).
     pub fn new(xx: i32, yy: i32) -> Self {
-        WireElm { base: Base::new(xx, yy), bus_width: 1, currents: None, route: None }
+        let mut w = WireElm { base: Base::new(xx, yy), bus_width: 1, currents: None, route: None };
+        w.alloc_nodes();
+        w
     }
 
     /// A wire read from a file.
     pub fn from_dump(xa: i32, ya: i32, xb: i32, yb: i32, f: i32) -> Self {
-        WireElm {
+        let mut w = WireElm {
             base: Base::from_dump(xa, ya, xb, yb, f),
             bus_width: 1,
             currents: None,
             route: None,
-        }
+        };
+        w.alloc_nodes();
+        w
     }
 
     /// Changes the bus width, resizing the per-bit state.
@@ -151,7 +155,7 @@ impl WireElm {
     }
 
     fn bus_value(&self) -> u32 {
-        (0..self.bus_width).filter(|&i| self.base.volts[i] > 2.5).fold(0, |v, i| v | (1 << i))
+        (0..self.bus_width).filter(|&i| self.base.volt(i) > 2.5).fold(0, |v, i| v | (1 << i))
     }
 }
 
@@ -271,7 +275,7 @@ impl Element for WireElm {
             self.base.current = cur.iter().sum();
         }
         let b = &self.base;
-        set_voltage_color(g, b, c, b.volts[0]);
+        set_voltage_color(g, b, c, b.volt(0));
         let width = if self.bus_width > 1 { 5.0 } else { 3.0 };
         let pts = self.route_points();
         for w in pts.windows(2) {
@@ -319,7 +323,7 @@ impl Element for WireElm {
                 if !s.is_empty() {
                     s.push(' ');
                 }
-                s.push_str(&short_unit_text(self.base.volts[0], "V"));
+                s.push_str(&short_unit_text(self.base.volt(0), "V"));
             }
         }
         draw_values(g, &self.base, c, Some(&s), 4.0, false, false);
@@ -335,7 +339,7 @@ impl Element for WireElm {
         } else {
             arr.push("wire".into());
             arr.push(format!("I = {}", current_d_text(self.get_current())));
-            arr.push(format!("V = {}", voltage_text(self.base.volts[0])));
+            arr.push(format!("V = {}", voltage_text(self.base.volt(0))));
         }
     }
 
@@ -343,7 +347,7 @@ impl Element for WireElm {
         0.0
     }
     fn get_voltage_diff(&self) -> f64 {
-        self.base.volts[0]
+        self.base.volt(0)
     }
     fn is_wire_equivalent(&self) -> bool {
         true
@@ -785,6 +789,33 @@ mod tests {
         assert_eq!(w.post_count(), 8);
         assert_eq!(w.get_post(5), Some(Point { x: 32, y: 0, z: 1 }));
         assert!(w.get_connection(1, 5) && !w.get_connection(1, 6));
+    }
+
+    #[test]
+    fn wires_draw_before_any_analysis() {
+        let mut g = crate::render::svg::SvgPainter::new(100.0, 100.0);
+        let ctx = DrawCtx::default();
+        let mut plain = WireElm::new(0, 0);
+        plain.base.volts.clear();
+        let mut routed =
+            WireElm::from_route(vec![Point::new(0, 0), Point::new(16, 0), Point::new(16, 16)]);
+        routed.base.volts.clear();
+        let mut bus = WireElm::from_dump(0, 0, 32, 0, 0);
+        bus.set_bus_width(8);
+        bus.base.volts.clear();
+        for w in [&mut plain, &mut routed, &mut bus] {
+            w.set_points();
+            w.draw(&mut g, &ctx);
+            let mut info = Vec::new();
+            w.get_info(&mut info);
+            assert_eq!(w.get_voltage_diff(), 0.0);
+        }
+    }
+
+    #[test]
+    fn new_wires_have_their_node_arrays() {
+        assert_eq!(WireElm::new(0, 0).base.volts.len(), 2);
+        assert_eq!(WireElm::from_dump(0, 0, 32, 0, 0).base.volts.len(), 2);
     }
 
     #[test]

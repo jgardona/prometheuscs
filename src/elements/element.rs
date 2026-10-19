@@ -531,6 +531,12 @@ impl Base {
         self.adjust_bbox(p1.x, p1.y, p2.x, p2.y);
     }
 
+    /// Voltage at node `n`; zero while the node arrays are not allocated yet, which is the case for
+    /// an element drawn before its first analysis.
+    pub fn volt(&self, n: usize) -> f64 {
+        self.volts.get(n).copied().unwrap_or(0.0)
+    }
+
     /// Voltage difference between the first two nodes; an element with a single post is
     /// measured against ground.
     pub fn voltage_diff(&self) -> f64 {
@@ -1334,9 +1340,9 @@ pub fn set_power_color_w(g: &mut dyn Painter, base: &Base, c: &DrawCtx, w0: f64)
 
 /// Draws both leads of a two-terminal element, coloured by terminal voltage.
 pub fn draw_2_leads(g: &mut dyn Painter, base: &Base, c: &DrawCtx) {
-    set_voltage_color(g, base, c, base.volts[0]);
+    set_voltage_color(g, base, c, base.volt(0));
     draw_thick_line(g, base.point1, base.lead1);
-    set_voltage_color(g, base, c, base.volts[1]);
+    set_voltage_color(g, base, c, base.volt(1));
     draw_thick_line(g, base.lead2, base.point2);
 }
 

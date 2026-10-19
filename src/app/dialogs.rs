@@ -663,6 +663,8 @@ pub fn subcircuit_manager(
     }
     let empty = gtk::Label::new(Some(&ls("No subcircuits yet. Use File > Create Subcircuit.")));
     empty.set_wrap(true);
+    empty.set_xalign(0.0);
+    empty.set_halign(gtk::Align::Start);
     empty.set_visible(names.is_empty());
     let (place, edit, delete) = (
         gtk::Button::with_label(&ls("Place")),
@@ -670,18 +672,25 @@ pub fn subcircuit_manager(
         gtk::Button::with_label(&ls("Delete")),
     );
     delete.add_css_class("destructive-action");
-    let buttons = gtk::Box::new(gtk::Orientation::Horizontal, 6);
-    buttons.append(&place);
-    buttons.append(&edit);
-    buttons.append(&delete);
-    buttons.set_halign(gtk::Align::End);
+    // the labels are long once translated, so the buttons wrap instead of widening the dialog
+    let buttons = gtk::FlowBox::new();
+    buttons.set_selection_mode(gtk::SelectionMode::None);
+    buttons.set_homogeneous(true);
+    buttons.set_column_spacing(6);
+    buttons.set_row_spacing(6);
+    buttons.set_max_children_per_line(3);
+    buttons.insert(&place, -1);
+    buttons.insert(&edit, -1);
+    buttons.insert(&delete, -1);
+    buttons.set_halign(gtk::Align::Fill);
     let body = gtk::Box::new(gtk::Orientation::Vertical, 12);
     body.append(&list);
     body.append(&empty);
     body.append(&buttons);
     let scroll = gtk::ScrolledWindow::new();
     scroll.set_child(Some(&padded(&body)));
-    let d = dialog(&ls("Subcircuit Manager"), 420, 420, &scroll);
+    scroll.set_hscrollbar_policy(gtk::PolicyType::Never);
+    let d = dialog(&ls("Subcircuit Manager"), 560, 420, &scroll);
     let names: Vec<String> = names.to_vec();
     let chosen = {
         let (list, names) = (list.clone(), names.clone());
