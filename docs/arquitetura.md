@@ -476,6 +476,8 @@ cargo test --no-default-features --features passive,reactive,sources,switches,lo
 7. **O desfazer guarda o circuito inteiro como XML.** Chame `push_undo` *antes* de mudar.
 8. **Os assets não vão dentro do binário:** os exemplos, traduções e ícones são lidos de
    `assets/` por caminho (`assets_dir()`), não embutidos no binário.
+   O emblema do diálogo Sobre segue o mesmo caminho: `assets/icons/hicolor/scalable/apps/org.prometheuscs.App.svg`
+   entra na busca de ícones do GTK e, se faltar, o diálogo mostra o ícone genérico (`src/app/icons.rs`).
 9. **`set_scope_hover`/`apply_scope_roles` rodam a cada quadro** (em `refresh_draw_ctx`): são
    baratos, mas não ponha trabalho pesado ali.
 

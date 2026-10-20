@@ -3,6 +3,7 @@
 
 use super::commands::accelerators;
 use super::edit::SliderEntry;
+use super::icons;
 use super::pin_layout::{Geometry, can_move};
 use super::session::Session;
 use super::settings::DEFAULT_COLORS;
@@ -42,11 +43,25 @@ fn padded(child: &impl IsA<gtk::Widget>) -> gtk::Box {
     b
 }
 
+/// The icon name for the About dialog: the program's emblem when the icon theme can find it
+/// under `assets`, the generic glyph otherwise. The assets folder joins the theme's search
+/// path once per run.
+fn about_icon(display: &gtk::gdk::Display, assets: &std::path::Path) -> &'static str {
+    use std::sync::Once;
+    static ADD_PATH: Once = Once::new();
+    let theme = gtk::IconTheme::for_display(display);
+    ADD_PATH.call_once(|| theme.add_search_path(assets.join("icons")));
+    icons::app_icon_choice(
+        icons::app_icon_svg(assets).is_file(),
+        theme.has_icon(icons::APP_ICON_NAME),
+    )
+}
+
 /// The About dialog.
 pub fn about(parent: &impl IsA<gtk::Widget>) {
     let d = adw::AboutDialog::new();
     d.set_application_name(super::consts::APP_NAME);
-    d.set_application_icon("applications-engineering-symbolic");
+    d.set_application_icon(about_icon(&parent.display(), &super::consts::assets_dir()));
     d.set_version(env!("CARGO_PKG_VERSION"));
     d.set_comments(
         "Simulador de circuitos: um porte em Rust do CircuitJS1 com interface GTK4 e libadwaita.",

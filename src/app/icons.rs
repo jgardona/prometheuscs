@@ -81,6 +81,29 @@ pub fn symbolic_name(glyph: &str) -> Option<&'static str> {
     })
 }
 
+/// The icon name of the program's emblem: the application id, as the icon theme and a future
+/// launcher expect.
+pub const APP_ICON_NAME: &str = super::consts::APP_ID;
+
+/// The generic theme glyph shown when the emblem cannot be found.
+pub const FALLBACK_ICON_NAME: &str = "applications-engineering-symbolic";
+
+/// Path of the emblem under `assets`, laid out like an icon theme so GTK finds it by name.
+pub fn app_icon_svg(assets: &Path) -> PathBuf {
+    assets
+        .join("icons")
+        .join("hicolor")
+        .join("scalable")
+        .join("apps")
+        .join(format!("{APP_ICON_NAME}.svg"))
+}
+
+/// The icon the About dialog shows: the emblem when its file exists and the icon theme can
+/// resolve it, the generic glyph otherwise.
+pub fn app_icon_choice(file_present: bool, theme_has_icon: bool) -> &'static str {
+    if file_present && theme_has_icon { APP_ICON_NAME } else { FALLBACK_ICON_NAME }
+}
+
 /// Path of the imported SVG of a glyph under `assets`.
 pub fn glyph_svg(glyph: &str, assets: &Path) -> PathBuf {
     assets.join("icons").join("ui").join(format!("{glyph}.svg"))
@@ -152,6 +175,21 @@ mod tests {
         );
         let light = themed_svg(&src, false).unwrap();
         assert!(std::fs::read_to_string(light).unwrap().contains("#2e3436"));
+    }
+
+    #[test]
+    fn the_emblem_is_used_only_when_found() {
+        assert_eq!(app_icon_choice(true, true), APP_ICON_NAME);
+        for (file, theme) in [(false, true), (true, false), (false, false)] {
+            assert_eq!(app_icon_choice(file, theme), FALLBACK_ICON_NAME);
+        }
+    }
+
+    #[test]
+    fn the_emblem_is_named_after_the_application_id() {
+        assert_eq!(APP_ICON_NAME, crate::app::consts::APP_ID);
+        let path = app_icon_svg(Path::new("assets"));
+        assert!(path.ends_with("icons/hicolor/scalable/apps/org.prometheuscs.App.svg"));
     }
 
     #[test]

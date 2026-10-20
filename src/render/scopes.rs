@@ -3,12 +3,12 @@
 //! Drawing of the time diagrams: grid, curves and readouts of every scope.
 
 use super::painter::{Color, Painter, TextAlign};
-use std::cell::Cell;
 use crate::elements::units::{current_text, unit_text, voltage_text};
 use crate::scope::{
     POINTS, PlotView, ScopeView, UNITS_A, UNITS_C, UNITS_COUNT, UNITS_OHMS, UNITS_V, UNITS_W,
     V_POSITION_STEPS, VAL_CURRENT, VAL_POWER, VAL_VOLTAGE,
 };
+use std::cell::Cell;
 
 /// What a scope remembers between frames about how it fits its data.
 #[derive(Clone, Copy, Debug, Default)]

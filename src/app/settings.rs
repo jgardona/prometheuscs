@@ -144,8 +144,7 @@ mod tests {
 
     #[test]
     fn settings_round_trip_and_tolerate_missing_fields() {
-        let dir =
-            std::env::temp_dir().join(crate::app::consts::temp_name("settings"));
+        let dir = std::env::temp_dir().join(crate::app::consts::temp_name("settings"));
         let path = dir.join("s.json");
         let s = AppSettings { crosshair: true, show_ohm: true, ..AppSettings::default() };
         s.save(&path).unwrap();

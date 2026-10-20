@@ -2516,7 +2516,8 @@ mod tests {
         use crate::render::painter::Color;
         let mut s = session();
         assert_eq!(s.draw_ctx.select_color, Color::CYAN);
-        let neutral_before = s.draw_ctx.color_scale[crate::elements::element::COLOR_SCALE_COUNT / 2];
+        let neutral_before =
+            s.draw_ctx.color_scale[crate::elements::element::COLOR_SCALE_COUNT / 2];
         s.change_settings(|st| {
             st.positive_color = [0, 0, 255];
             st.neutral_color = [10, 20, 30];

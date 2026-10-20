@@ -17,4 +17,5 @@ distributed under the same licence.
 | Asset | Origem |
 |-------|--------|
 | `assets/screenshots/*.png` | Capturas de tela do prometheuscs executando circuitos de exemplo do CircuitJS1 (`circuito-rlc` e `conversor-boost`, `gerador-senoidal-espectro`, `menu-desenhar`) |
-| `assets/thumbnail.png` | Imagem de apresentação do repositório (1280 × 640), montada a partir da captura `conversor-boost.png`; para usá-la como imagem social do GitHub, envie-a em *Settings > Social preview* |
+| `assets/thumbnail.png` | Imagem de apresentação do repositório (1280 × 640), montada com o emblema do programa (`assets/icons/hicolor/scalable/apps/org.prometheuscs.App.svg`) e a captura `conversor-boost.png`; para usá-la como imagem social do GitHub, envie-a em *Settings > Social preview* |
+| `assets/icons/hicolor/scalable/apps/org.prometheuscs.App.svg` | Emblema do programa mostrado no diálogo Sobre: uma chama feita de trilhas de circuito, com nós e uma faísca (a lenda de Prometeu e o simulador). Arte original do prometheuscs, GPL-2.0-or-later |
