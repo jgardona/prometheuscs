@@ -13,7 +13,7 @@ use super::toolbar::{self, Toolbar};
 use super::worker::Worker;
 use crate::elements::element::EditInfo;
 use crate::elements::registry::Registry;
-use crate::elements::units::{short_unit_text, time_text};
+use crate::elements::units::short_unit_text;
 use crate::format::link::make_link;
 use crate::locale;
 use crate::render::cairo::CairoPainter;
@@ -1748,7 +1748,6 @@ impl SimpleComponent for App {
 
         // --- animation: advance the simulation once per display frame
         let tick_session = session.clone();
-        let tick_title = title.clone();
         let (gl_tick, cairo_tick) = (gl_area.clone(), cairo_area.clone());
         let scope_tick = scope_area.clone();
         let tick_bench = bench.clone();
@@ -1767,12 +1766,11 @@ impl SimpleComponent for App {
                 if let Some(b) = tick_bench.borrow_mut().as_mut() {
                     b.on_update(now, began.elapsed());
                 }
-                Some((format!("t = {}", time_text(s.time())), s.scope_area_state()))
+                Some(s.scope_area_state())
             });
             // the widgets are changed once the session is free again: hiding the scope area
             // makes GTK send "leave" to its pointer controller, whose handler needs the session
-            if let Some((subtitle, (height, visible))) = frame {
-                tick_title.set_subtitle(&subtitle);
+            if let Some((height, visible)) = frame {
                 if scope_tick.content_height() != height {
                     scope_tick.set_content_height(height);
                 }

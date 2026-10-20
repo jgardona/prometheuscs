@@ -91,7 +91,6 @@ Os passos abaixo detalham cada uma dessas ações.
   - **Brilho da Potência:** o quanto a cor mostra a potência (ativo com **Mostrar Potência**).
   - **Circuito Atual:** o nome e os sliders do circuito (seção 7).
   - Um botão **▶ Tocar Áudio** para cada elemento de saída de áudio (seção 12).
-- **Barra de título.** Mostra o tempo simulado (`t = …`).
 - **Modo.** No canto direito da barra de ferramentas, o modo atual (por exemplo, *Modo Edição*).
 - **Faixa de aviso.** Mensagens e erros aparecem numa faixa acima do canvas, com um botão
   **Fechar**.
