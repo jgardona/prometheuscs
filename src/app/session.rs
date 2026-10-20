@@ -30,10 +30,6 @@ pub fn try_with_session<T>(
     cell.try_borrow_mut().ok().map(|mut s| f(&mut s))
 }
 
-/// Largest wall-clock gap one update accounts for; longer gaps (window hidden, debugger) are
-/// clipped so the simulation does not try to catch up.
-pub(crate) const MAX_FRAME_GAP: Duration = Duration::from_millis(100);
-
 /// A circuit loaded for simulation.
 pub struct Session {
     /// The running simulation (owns the elements).
@@ -313,6 +309,12 @@ impl Session {
         self.refresh_draw_ctx(Duration::ZERO);
     }
 
+    /// The longest stretch of real time one frame may advance the simulation by: a frame that
+    /// takes longer than the minimum frame rate allows is not made up for.
+    pub(crate) fn max_frame_gap(&self) -> Duration {
+        Duration::from_secs_f64(1.0 / f64::from(self.settings.min_frame_rate.max(1)))
+    }
+
     pub(crate) fn refresh_draw_ctx(&mut self, elapsed: Duration) {
         self.apply_scope_roles();
         let sim_time = self.time();
@@ -333,7 +335,22 @@ impl Session {
         c.printable = st.white_background;
         c.white = if st.white_background { Color::BLACK } else { Color::WHITE };
         c.light_gray = if st.white_background { Color::BLACK } else { Color::LIGHT_GRAY };
-        c.select_color = Color::CYAN;
+        let rgb = |[r, g, b]: [u8; 3]| Color::new(r, g, b);
+        c.select_color = rgb(st.selection_color);
+        c.current_color = rgb(st.current_color);
+        c.value_font_size = st.value_font_size;
+        let anchors = [rgb(st.positive_color), rgb(st.negative_color), rgb(st.neutral_color)];
+        if c.scale_anchors != anchors {
+            c.scale_anchors = anchors;
+            c.set_color_scale(anchors[0], anchors[1], anchors[2]);
+        }
+        crate::render::scopes::set_scope_colors(
+            rgb(st.positive_color),
+            rgb(st.current_color),
+            rgb(st.selection_color),
+        );
+        crate::elements::units::set_decimal_digits(st.decimals_long, false);
+        crate::elements::units::set_decimal_digits(st.decimals_short, true);
         if self.running {
             let ms = elapsed.as_secs_f64() * 1000.0;
             let mult = 1.7 * ms * (f64::from(o.current_bar) / 3.5 - 14.2).exp();
@@ -348,7 +365,7 @@ impl Session {
         if self.worker.is_some() {
             return self.pump(elapsed);
         }
-        let elapsed = elapsed.min(MAX_FRAME_GAP);
+        let elapsed = elapsed.min(self.max_frame_gap());
         if self.running {
             crate::scope::trace::set_fade_steps(self.step_rate() * 0.05);
             self.step_debt += self.step_rate() * elapsed.as_secs_f64();
@@ -557,7 +574,8 @@ mod tests {
         let mut a = session();
         let mut b = session();
         a.update(Duration::from_secs(10)).unwrap();
-        b.update(MAX_FRAME_GAP).unwrap();
+        let gap = b.max_frame_gap();
+        b.update(gap).unwrap();
         assert_eq!(a.sim.time(), b.sim.time());
     }
 

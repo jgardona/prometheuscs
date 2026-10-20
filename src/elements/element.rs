@@ -61,6 +61,8 @@ pub struct DrawCtx {
     pub dragging_row_or_column: bool,
     /// Voltage colour scale, from most negative to most positive.
     pub color_scale: Vec<Color>,
+    /// The positive, negative and neutral colours the scale was built from.
+    pub scale_anchors: [Color; 3],
     /// Colour of selected elements.
     pub select_color: Color,
     /// Colour of ordinary text and posts.
@@ -93,6 +95,7 @@ impl Default for DrawCtx {
             power_mult: 0.0,
             dragging_row_or_column: false,
             color_scale: Vec::new(),
+            scale_anchors: [Color::GREEN, Color::RED, Color::GRAY],
             select_color: Color::CYAN,
             white: Color::WHITE,
             light_gray: Color::LIGHT_GRAY,

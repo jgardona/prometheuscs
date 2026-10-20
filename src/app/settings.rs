@@ -39,7 +39,33 @@ pub struct AppSettings {
     pub small_grid: bool,
     /// Interface language: a code of `locale::LANGUAGES`, or `auto` to follow the system.
     pub language: String,
+    /// Colour of positive voltages, as red, green and blue.
+    pub positive_color: [u8; 3],
+    /// Colour of negative voltages.
+    pub negative_color: [u8; 3],
+    /// Colour of zero voltage.
+    pub neutral_color: [u8; 3],
+    /// Colour of selected elements.
+    pub selection_color: [u8; 3],
+    /// Colour of the moving current dots.
+    pub current_color: [u8; 3],
+    /// Decimals shown in short value text.
+    pub decimals_short: usize,
+    /// Decimals shown in normal value text.
+    pub decimals_long: usize,
+    /// Developer mode of the original. It is stored only: nothing in the program reads it yet.
+    pub developer_mode: bool,
+    /// Frame rate below which the simulation stops keeping up with real time.
+    pub min_frame_rate: u32,
+    /// How much one notch of the mouse wheel changes a value (1 is a tenth).
+    pub wheel_sensitivity: f64,
+    /// Size of the text that shows component values.
+    pub value_font_size: i32,
 }
+
+/// The colours of the dialog before any change: green, red, gray, cyan and yellow.
+pub const DEFAULT_COLORS: [[u8; 3]; 5] =
+    [[0, 255, 0], [255, 0, 0], [128, 128, 128], [0, 255, 255], [255, 255, 0]];
 
 impl Default for AppSettings {
     fn default() -> Self {
@@ -59,6 +85,17 @@ impl Default for AppSettings {
             show_values: true,
             small_grid: false,
             language: "auto".into(),
+            positive_color: DEFAULT_COLORS[0],
+            negative_color: DEFAULT_COLORS[1],
+            neutral_color: DEFAULT_COLORS[2],
+            selection_color: DEFAULT_COLORS[3],
+            current_color: DEFAULT_COLORS[4],
+            decimals_short: 1,
+            decimals_long: 3,
+            developer_mode: false,
+            min_frame_rate: 20,
+            wheel_sensitivity: 1.0,
+            value_font_size: 12,
         }
     }
 }

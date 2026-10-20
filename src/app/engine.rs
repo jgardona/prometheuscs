@@ -103,7 +103,7 @@ impl Session {
         // every frame, with or without a worker: the flag is not part of what the worker sends
         self.mark_placed_scopes();
         self.highlight_stop_element();
-        self.refresh_draw_ctx(elapsed.min(super::session::MAX_FRAME_GAP));
+        self.refresh_draw_ctx(elapsed.min(self.max_frame_gap()));
         Ok(())
     }
 

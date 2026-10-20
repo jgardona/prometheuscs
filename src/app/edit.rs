@@ -989,7 +989,14 @@ impl Session {
                     });
                 match post {
                     Some(n) => lines.push(format!("V = {}", voltage_text(e.get_post_voltage(n)))),
-                    None => e.get_info(&mut lines),
+                    None => {
+                        e.get_info(&mut lines);
+                        if self.settings.developer_mode {
+                            let nodes: Vec<String> =
+                                e.base().nodes.iter().map(|n| n.0.to_string()).collect();
+                            lines.push(format!("nodes: {}", nodes.join(" ")));
+                        }
+                    }
                 }
             }
             None => {
@@ -2102,16 +2109,22 @@ impl Session {
         voltage_range: f64,
         adjust_time_step: bool,
         auto_dc_on_reset: bool,
+        solver: crate::solver::sim::SolverType,
+        min_time_step: f64,
     ) {
         if max_time_step > 0.0 {
             self.options.max_time_step = max_time_step;
             self.options.min_time_step = self.options.min_time_step.min(max_time_step);
+        }
+        if min_time_step > 0.0 {
+            self.options.min_time_step = min_time_step.min(self.options.max_time_step);
         }
         if voltage_range > 0.0 {
             self.options.voltage_range = voltage_range;
         }
         self.options.adjust_time_step = adjust_time_step;
         self.options.auto_dc_on_reset = auto_dc_on_reset;
+        self.options.solver = solver;
         self.sim.set_settings(self.options.sim_settings());
         self.dirty = true;
         self.reanalyze();
@@ -2132,7 +2145,8 @@ impl Session {
         }) else {
             return false;
         };
-        let factor = if up { 1.1 } else { 1.0 / 1.1 };
+        let step = 1.0 + 0.1 * self.settings.wheel_sensitivity.max(0.0);
+        let factor = if up { step } else { 1.0 / step };
         ei.value *= factor;
         let value = ei.value;
         self.sim.apply_edit(i, n, &mut ei);
@@ -2248,6 +2262,15 @@ impl Session {
         self.refresh_draw_ctx_now();
     }
 
+    /// Changes the stored settings, keeps them on disk and draws with them from now on.
+    pub fn change_settings(&mut self, change: impl FnOnce(&mut super::settings::AppSettings)) {
+        change(&mut self.settings);
+        if let Some(path) = &self.settings_path {
+            let _ = self.settings.save(path);
+        }
+        self.refresh_draw_ctx_now();
+    }
+
     /// Chooses the interface language; it is applied the next time the program starts.
     pub fn set_language(&mut self, code: &str) {
         self.settings.language = code.to_string();
@@ -2275,6 +2298,7 @@ mod tests {
     use super::*;
     use crate::app::session::Session;
     use crate::elements::registry::Registry;
+    use crate::solver::sim::SolverType;
 
     const RC: &str = "$ 1 0.000005 10 50 5 50 5e-11\nv 0 64 0 0 0 0 40 5 0 0 0.5\nr 0 0 64 0 0 1000\nc 64 0 64 64 4 0.000001 0 0 0\nw 64 64 0 64 0\n";
 
@@ -2479,10 +2503,56 @@ mod tests {
     #[test]
     fn other_options_change_the_time_step() {
         let mut s = session();
-        s.apply_other_options(1e-6, 10.0, true, false);
+        s.apply_other_options(1e-6, 10.0, true, false, SolverType::Dense, 1e-9);
         assert_eq!(s.sim.settings().max_time_step, 1e-6);
         assert_eq!(s.draw_ctx.voltage_range, 10.0);
         assert!(s.sim.settings().adjust_time_step);
+        assert_eq!(s.sim.settings().solver, SolverType::Dense);
+        assert_eq!(s.sim.settings().min_time_step, 1e-9);
+    }
+
+    #[test]
+    fn display_settings_reach_the_drawing_context() {
+        use crate::render::painter::Color;
+        let mut s = session();
+        assert_eq!(s.draw_ctx.select_color, Color::CYAN);
+        let neutral_before = s.draw_ctx.color_scale[crate::elements::element::COLOR_SCALE_COUNT / 2];
+        s.change_settings(|st| {
+            st.positive_color = [0, 0, 255];
+            st.neutral_color = [10, 20, 30];
+            st.selection_color = [1, 2, 3];
+            st.current_color = [4, 5, 6];
+            st.value_font_size = 16;
+        });
+        let c = &s.draw_ctx;
+        assert_eq!((c.select_color, c.current_color), (Color::new(1, 2, 3), Color::new(4, 5, 6)));
+        assert_eq!(c.value_font_size, 16);
+        assert_eq!(c.scale_anchors[0], Color::new(0, 0, 255));
+        assert_ne!(c.color_scale[crate::elements::element::COLOR_SCALE_COUNT / 2], neutral_before);
+        // the scopes follow: voltage plots take the positive colour, current plots the current one
+        use crate::render::scopes::plot_color;
+        use crate::scope::{UNITS_A, UNITS_V};
+        assert_eq!(plot_color(UNITS_V, 0, 0, false), Color::new(0, 0, 255));
+        assert_eq!(plot_color(UNITS_A, 0, 0, false), Color::new(4, 5, 6));
+        s.change_settings(|st| st.positive_color = crate::app::settings::DEFAULT_COLORS[0]);
+        assert_eq!(plot_color(UNITS_V, 0, 0, false), Color::GREEN);
+        assert_eq!(s.draw_ctx.scale_anchors[0], Color::GREEN);
+    }
+
+    #[test]
+    fn the_minimum_frame_rate_limits_the_time_a_frame_makes_up() {
+        let mut s = session();
+        assert_eq!(s.max_frame_gap(), std::time::Duration::from_millis(50));
+        s.change_settings(|st| st.min_frame_rate = 5);
+        assert_eq!(s.max_frame_gap(), std::time::Duration::from_millis(200));
+    }
+
+    #[test]
+    fn defaults_keep_the_digits_and_wheel_step_of_before() {
+        let st = crate::app::settings::AppSettings::default();
+        assert_eq!((st.decimals_long, st.decimals_short), (3, 1));
+        assert_eq!(st.wheel_sensitivity, 1.0);
+        assert_eq!(st.value_font_size, 12);
     }
 
     #[test]

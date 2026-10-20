@@ -5,6 +5,7 @@ use super::commands::accelerators;
 use super::edit::SliderEntry;
 use super::pin_layout::{Geometry, can_move};
 use super::session::Session;
+use super::settings::DEFAULT_COLORS;
 use super::subcircuits::ModelScope;
 use crate::elements::element::EditInfo;
 use crate::elements::registry::Registry;
@@ -12,6 +13,7 @@ use crate::elements::subcircuit::CompositeModel;
 use crate::elements::units::{edit_value_text, parse_edit_value};
 use crate::locale::ls;
 use crate::render::painter::Color;
+use crate::solver::sim::SolverType;
 use relm4::adw::{self, prelude::*};
 use relm4::gtk::{self, gio, glib};
 use std::cell::RefCell;
@@ -911,7 +913,7 @@ pub fn subcircuit_manager(
 }
 
 /// Values of the Other Options dialog.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct OtherOptions {
     /// Largest time step in seconds.
     pub max_time_step: f64,
@@ -921,49 +923,198 @@ pub struct OtherOptions {
     pub adjust_time_step: bool,
     /// Find the DC operating point on reset.
     pub auto_dc_on_reset: bool,
+    /// Smallest time step in seconds, used when the step adjusts itself.
+    pub min_time_step: f64,
+    /// Linear solver.
+    pub solver: SolverType,
+    /// Positive, negative, neutral, selection and current colours, in this order.
+    pub colors: [[u8; 3]; 5],
+    /// Decimals of short value text.
+    pub decimals_short: usize,
+    /// Decimals of normal value text.
+    pub decimals_long: usize,
+    /// Developer mode.
+    pub developer_mode: bool,
+    /// Frame rate below which the simulation does not keep up with real time.
+    pub min_frame_rate: u32,
+    /// How much a notch of the mouse wheel changes a value.
+    pub wheel_sensitivity: f64,
+    /// Size of the text of component values.
+    pub value_font_size: i32,
+    /// Language chosen in the dialog; `None` leaves it as it is.
+    pub language: Option<String>,
 }
 
-/// The Other Options dialog.
+const SOLVERS: [(SolverType, &str); 3] = [
+    (SolverType::Auto, "Auto"),
+    (SolverType::Dense, "Dense (Crout's LU)"),
+    (SolverType::Sparse, "Sparse (CSC LU)"),
+];
+
+/// A caption above a control.
+fn captioned(text: &str, control: &impl IsA<gtk::Widget>) -> gtk::Box {
+    let b = gtk::Box::new(gtk::Orientation::Vertical, 4);
+    let label = gtk::Label::new(Some(&ls(text)));
+    label.set_xalign(0.0);
+    b.append(&label);
+    b.append(control);
+    b
+}
+
+fn whole_number(min: f64, max: f64, value: f64) -> gtk::SpinButton {
+    let spin = gtk::SpinButton::with_range(min, max, 1.0);
+    spin.set_value(value);
+    spin
+}
+
+fn color_button(rgb: [u8; 3]) -> gtk::ColorDialogButton {
+    let button = gtk::ColorDialogButton::new(Some(gtk::ColorDialog::new()));
+    button.dialog().map(|d| d.set_with_alpha(false));
+    button.set_rgba(&to_rgba(Color::new(rgb[0], rgb[1], rgb[2])));
+    button
+}
+
+fn rgb_of(button: &gtk::ColorDialogButton) -> [u8; 3] {
+    let c = from_rgba(&button.rgba());
+    [c.r, c.g, c.b]
+}
+
+/// The Other Options dialog. Apply keeps it open, OK applies and closes it.
 pub fn other_options(
     parent: &impl IsA<gtk::Widget>,
     now: OtherOptions,
     on_apply: impl Fn(OtherOptions) + 'static,
 ) {
-    let group = adw::PreferencesGroup::new();
-    let step = adw::EntryRow::new();
-    step.set_title("Passo de tempo (s)");
+    let step = gtk::Entry::new();
     step.set_text(&edit_value_text(now.max_time_step, false));
-    let range = adw::EntryRow::new();
-    range.set_title("Faixa de tensão para cores (V)");
+    let range = gtk::Entry::new();
     range.set_text(&edit_value_text(now.voltage_range, false));
-    let adjust = adw::SwitchRow::new();
-    adjust.set_title("Ajustar o passo de tempo automaticamente");
-    adjust.set_active(now.adjust_time_step);
-    let dc = adw::SwitchRow::new();
-    dc.set_title("Encontrar o ponto CC ao reiniciar");
-    dc.set_active(now.auto_dc_on_reset);
-    for w in [&step, &range] {
-        group.add(w);
+    let mut names = vec![ls("(no change)")];
+    names.extend(crate::locale::LANGUAGES.iter().map(|(_, n)| (*n).to_string()));
+    let names: Vec<&str> = names.iter().map(String::as_str).collect();
+    let language = gtk::DropDown::from_strings(&names);
+
+    let min_step = gtk::Entry::new();
+    min_step.set_text(&edit_value_text(now.min_time_step, false));
+    let colors: Vec<gtk::ColorDialogButton> = now.colors.iter().map(|c| color_button(*c)).collect();
+    let reset = gtk::Button::with_label(&ls("Reset Colors to Default"));
+    {
+        let colors = colors.clone();
+        reset.connect_clicked(move |_| {
+            for (b, c) in colors.iter().zip(DEFAULT_COLORS) {
+                b.set_rgba(&to_rgba(Color::new(c[0], c[1], c[2])));
+            }
+        });
     }
-    group.add(&adjust);
-    group.add(&dc);
-    let apply = gtk::Button::with_label("Aplicar");
-    apply.add_css_class("suggested-action");
-    apply.set_halign(gtk::Align::End);
+    let short = whole_number(0.0, 10.0, now.decimals_short as f64);
+    let long = whole_number(0.0, 10.0, now.decimals_long as f64);
+    let developer = gtk::CheckButton::with_label(&ls("Developer Mode"));
+    developer.set_active(now.developer_mode);
+    let frame_rate = whole_number(1.0, 120.0, f64::from(now.min_frame_rate));
+    let wheel = gtk::SpinButton::with_range(0.0, 10.0, 0.5);
+    wheel.set_value(now.wheel_sensitivity);
+    let auto_dc = gtk::CheckButton::with_label(&ls("Auto-Run DC Operating Point on Reset"));
+    auto_dc.set_active(now.auto_dc_on_reset);
+    let adjust = gtk::CheckButton::with_label(&ls("Auto-Adjust Timestep"));
+    adjust.set_active(now.adjust_time_step);
+    let labels: Vec<String> = SOLVERS.iter().map(|(_, n)| ls(n)).collect();
+    let labels: Vec<&str> = labels.iter().map(String::as_str).collect();
+    let solver = gtk::DropDown::from_strings(&labels);
+    solver.set_selected(SOLVERS.iter().position(|(s, _)| *s == now.solver).unwrap_or(0) as u32);
+    let font = whole_number(6.0, 48.0, f64::from(now.value_font_size));
+
+    let column = || gtk::Box::new(gtk::Orientation::Vertical, 10);
+    let (left, middle, right) = (column(), column(), column());
+    left.append(&captioned("Time step size (s)", &step));
+    left.append(&captioned("Range for voltage color (V)", &range));
+    // like the original, the smallest step is only offered while the step adjusts itself
+    let min_step_row = captioned("Minimum time step size (s)", &min_step);
+    min_step_row.set_visible(now.adjust_time_step);
+    {
+        let row = min_step_row.clone();
+        adjust.connect_toggled(move |a| row.set_visible(a.is_active()));
+    }
+    left.append(&min_step_row);
+    left.append(&captioned("Change Language", &language));
+    let color_titles =
+        ["Positive Color", "Negative Color", "Neutral Color", "Selection Color", "Current Color"];
+    for (title, button) in color_titles.iter().zip(&colors) {
+        middle.append(&captioned(title, button));
+    }
+    middle.append(&reset);
+    middle.append(&captioned("# of Decimal Digits (short format)", &short));
+    right.append(&captioned("# of Decimal Digits (long format)", &long));
+    right.append(&developer);
+    right.append(&captioned("Minimum Target Frame Rate", &frame_rate));
+    right.append(&captioned("Mouse Wheel Sensitivity", &wheel));
+    right.append(&auto_dc);
+    right.append(&adjust);
+    right.append(&captioned("Matrix Solver", &solver));
+    right.append(&captioned("Value Label Font Size", &font));
+    let columns = gtk::Box::new(gtk::Orientation::Horizontal, 24);
+    for c in [&left, &middle, &right] {
+        c.set_hexpand(true);
+        c.set_valign(gtk::Align::Start);
+        columns.append(c);
+    }
+
+    let apply = gtk::Button::with_label(&ls("Apply"));
+    let ok = gtk::Button::with_label(&ls("OK"));
+    ok.add_css_class("suggested-action");
+    let cancel = gtk::Button::with_label(&ls("Cancel"));
+    let buttons = gtk::Box::new(gtk::Orientation::Horizontal, 8);
+    buttons.set_halign(gtk::Align::End);
+    for b in [&apply, &ok, &cancel] {
+        buttons.append(b);
+    }
     let body = gtk::Box::new(gtk::Orientation::Vertical, 12);
-    body.append(&group);
-    body.append(&apply);
-    let d = dialog("Outras Opções", 420, 360, &padded(&body));
-    let d2 = d.clone();
-    apply.connect_clicked(move |_| {
-        let out = OtherOptions {
-            max_time_step: parse_edit_value(&step.text()).unwrap_or(now.max_time_step),
-            voltage_range: parse_edit_value(&range.text()).unwrap_or(now.voltage_range),
-            adjust_time_step: adjust.is_active(),
-            auto_dc_on_reset: dc.is_active(),
-        };
-        d2.close();
-        on_apply(out);
+    body.append(&columns);
+    body.append(&buttons);
+    let d = dialog(&ls("Other Options"), 760, 540, &padded(&body));
+
+    let read = {
+        let now = now.clone();
+        move || {
+            let mut out = now.clone();
+            out.max_time_step = parse_edit_value(&step.text()).unwrap_or(now.max_time_step);
+            out.voltage_range = parse_edit_value(&range.text()).unwrap_or(now.voltage_range);
+            out.min_time_step = parse_edit_value(&min_step.text()).unwrap_or(now.min_time_step);
+            out.adjust_time_step = adjust.is_active();
+            out.auto_dc_on_reset = auto_dc.is_active();
+            out.solver = SOLVERS.get(solver.selected() as usize).map_or(now.solver, |(s, _)| *s);
+            for (slot, b) in out.colors.iter_mut().zip(&colors) {
+                *slot = rgb_of(b);
+            }
+            out.decimals_short = short.value_as_int().max(0) as usize;
+            out.decimals_long = long.value_as_int().max(0) as usize;
+            out.developer_mode = developer.is_active();
+            out.min_frame_rate = frame_rate.value_as_int().max(1) as u32;
+            out.wheel_sensitivity = wheel.value();
+            out.value_font_size = font.value_as_int();
+            // entry 0 is "no change"; the others follow the list of languages
+            out.language = (language.selected() as usize)
+                .checked_sub(1)
+                .and_then(|i| crate::locale::LANGUAGES.get(i))
+                .map(|(code, _)| (*code).to_string());
+            out
+        }
+    };
+    let on_apply = Rc::new(on_apply);
+    let read = Rc::new(read);
+    {
+        let (read, on_apply) = (read.clone(), on_apply.clone());
+        apply.connect_clicked(move |_| on_apply(read()));
+    }
+    {
+        let (d2, read, on_apply) = (d.clone(), read.clone(), on_apply.clone());
+        ok.connect_clicked(move |_| {
+            d2.close();
+            on_apply(read());
+        });
+    }
+    let d3 = d.clone();
+    cancel.connect_clicked(move |_| {
+        d3.close();
     });
     d.present(Some(parent));
 }

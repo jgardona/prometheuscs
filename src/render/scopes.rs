@@ -3,6 +3,7 @@
 //! Drawing of the time diagrams: grid, curves and readouts of every scope.
 
 use super::painter::{Color, Painter, TextAlign};
+use std::cell::Cell;
 use crate::elements::units::{current_text, unit_text, voltage_text};
 use crate::scope::{
     POINTS, PlotView, ScopeView, UNITS_A, UNITS_C, UNITS_COUNT, UNITS_OHMS, UNITS_V, UNITS_W,
@@ -56,6 +57,40 @@ pub fn glow_color(light: bool) -> Color {
     if light { GLOW_LIGHT } else { GLOW_DARK }
 }
 
+/// The colours the scopes take from the options: voltage (positive), current and the lit
+/// settings wheel (selection). Scopes are drawn by the interface thread, which sets them.
+#[derive(Clone, Copy)]
+struct ScopeColors {
+    voltage: Color,
+    current: Color,
+    selection: Color,
+}
+
+thread_local! {
+    static SCOPE_COLORS: Cell<ScopeColors> = const {
+        Cell::new(ScopeColors {
+            voltage: Color::new(0, 255, 0),
+            current: Color::new(255, 255, 0),
+            selection: Color::new(0, 255, 255),
+        })
+    };
+}
+
+/// Sets the colours of voltage plots, current plots and the lit settings wheel.
+pub fn set_scope_colors(voltage: Color, current: Color, selection: Color) {
+    SCOPE_COLORS.set(ScopeColors { voltage, current, selection });
+}
+
+fn voltage_color() -> Color {
+    SCOPE_COLORS.get().voltage
+}
+
+fn current_color(light: bool) -> Color {
+    let c = SCOPE_COLORS.get().current;
+    // on a light background the current is drawn darker, as the original's 160 for 255
+    if light { Color::mix(Color::BLACK, c, 0.63) } else { c }
+}
+
 const PLOT_COLORS: [(u8, u8, u8); 8] = [
     (255, 0, 0),
     (255, 128, 0),
@@ -67,20 +102,14 @@ const PLOT_COLORS: [(u8, u8, u8); 8] = [
     (0, 255, 255),
 ];
 
-fn plot_color(units: i32, index: usize, same_units_before: usize, light: bool) -> Color {
+pub(crate) fn plot_color(units: i32, index: usize, same_units_before: usize, light: bool) -> Color {
     if same_units_before > 0 {
         let (r, g, b) = PLOT_COLORS[(index - 1) % 8];
         return Color::new(r, g, b);
     }
     match units {
-        UNITS_V => Color::new(0, 255, 0),
-        UNITS_A => {
-            if light {
-                Color::new(160, 160, 0)
-            } else {
-                Color::new(255, 255, 0)
-            }
-        }
+        UNITS_V => voltage_color(),
+        UNITS_A => current_color(light),
         _ => {
             if light {
                 Color::new(0, 0, 0)
@@ -535,7 +564,7 @@ pub fn draw_wheel(g: &mut dyn Painter, (x, y, w, h): (f64, f64, f64, f64), lit: 
         return;
     }
     g.save();
-    g.set_color(if lit { Color::CYAN } else { Color::new(64, 64, 64) });
+    g.set_color(if lit { SCOPE_COLORS.get().selection } else { Color::new(64, 64, 64) });
     g.set_line_width(3.0);
     let (cx, cy) = (x + 18.0, y + h - 18.0);
     g.begin_path();
@@ -1219,10 +1248,10 @@ fn draw_xy(
     }
     // the axes: a plot of voltage against current has its vertical axis in yellow
     // green axes, the vertical one yellow when it is voltage against current
-    g.set_color(Color::new(0, 255, 0));
+    g.set_color(voltage_color());
     g.draw_line(x as i32, cy as i32, (x + w) as i32, cy as i32);
     if !view.plot_xy {
-        g.set_color(Color::new(255, 255, 0));
+        g.set_color(current_color(false));
     }
     g.draw_line(cx as i32, y as i32, cx as i32, (y + h) as i32);
 

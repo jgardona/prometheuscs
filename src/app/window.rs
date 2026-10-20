@@ -966,12 +966,31 @@ impl App {
                 });
             }
             Cmd::OtherOptions => {
-                let o = self.session.borrow().options.clone();
+                let (o, st) = {
+                    let ses = self.session.borrow();
+                    (ses.options.clone(), ses.settings.clone())
+                };
                 let now = OtherOptions {
                     max_time_step: o.max_time_step,
                     voltage_range: o.voltage_range,
                     adjust_time_step: o.adjust_time_step,
                     auto_dc_on_reset: o.auto_dc_on_reset,
+                    min_time_step: o.min_time_step,
+                    solver: o.solver,
+                    colors: [
+                        st.positive_color,
+                        st.negative_color,
+                        st.neutral_color,
+                        st.selection_color,
+                        st.current_color,
+                    ],
+                    decimals_short: st.decimals_short,
+                    decimals_long: st.decimals_long,
+                    developer_mode: st.developer_mode,
+                    min_frame_rate: st.min_frame_rate,
+                    wheel_sensitivity: st.wheel_sensitivity,
+                    value_font_size: st.value_font_size,
+                    language: None,
                 };
                 let s = sender.input_sender().clone();
                 dialogs::other_options(&w, now, move |v| {
@@ -1341,7 +1360,8 @@ impl SimpleComponent for App {
                 guarded("wheel", (), || {
                     let mut s = ses.borrow_mut();
                     if !s.wheel_at(x, y, dy < 0.0) {
-                        s.zoom_at(x, y, if dy < 0.0 { 1.1 } else { 1.0 / 1.1 });
+                        let step = 1.1_f64.powf(s.settings.wheel_sensitivity);
+                        s.zoom_at(x, y, if dy < 0.0 { step } else { 1.0 / step });
                     }
                 });
                 glib::Propagation::Stop
@@ -1564,7 +1584,8 @@ impl SimpleComponent for App {
                 (session.clone(), scope_area.clone(), scope_pointer.clone());
             let delta = Cell::new(0.0_f64);
             wheel.connect_scroll(move |_, _, dy| {
-                delta.set(delta.get() + dy);
+                let sensitivity = ses.borrow().settings.wheel_sensitivity;
+                delta.set(delta.get() + dy * sensitivity);
                 if delta.get().abs() < 1.0 {
                     return glib::Propagation::Stop;
                 }
@@ -1911,12 +1932,37 @@ impl App {
             }
             Msg::Focus(i) => self.session.borrow_mut().focus_element(i),
             Msg::ApplyEdit(i, fields) => self.session.borrow_mut().apply_edit_fields(i, fields),
-            Msg::ApplyOptions(o) => self.session.borrow_mut().apply_other_options(
-                o.max_time_step,
-                o.voltage_range,
-                o.adjust_time_step,
-                o.auto_dc_on_reset,
-            ),
+            Msg::ApplyOptions(o) => {
+                let mut ses = self.session.borrow_mut();
+                ses.apply_other_options(
+                    o.max_time_step,
+                    o.voltage_range,
+                    o.adjust_time_step,
+                    o.auto_dc_on_reset,
+                    o.solver,
+                    o.min_time_step,
+                );
+                ses.change_settings(|st| {
+                    [
+                        st.positive_color,
+                        st.negative_color,
+                        st.neutral_color,
+                        st.selection_color,
+                        st.current_color,
+                    ] = o.colors;
+                    st.decimals_short = o.decimals_short;
+                    st.decimals_long = o.decimals_long;
+                    st.developer_mode = o.developer_mode;
+                    st.min_frame_rate = o.min_frame_rate;
+                    st.wheel_sensitivity = o.wheel_sensitivity;
+                    st.value_font_size = o.value_font_size;
+                });
+                if let Some(code) = &o.language {
+                    ses.set_language(code);
+                    drop(ses);
+                    self.notice = Some(locale::ls(LANGUAGE_NOTICE));
+                }
+            }
             Msg::Notice(text) => self.notice = Some(text),
             Msg::DismissBanner => {
                 self.notice = None;
