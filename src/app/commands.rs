@@ -114,6 +114,8 @@ pub enum Cmd {
     SubcircuitManager,
     /// Load a bundled example by file name.
     Example(String),
+    /// Place an instance of the subcircuit with this model name.
+    PlaceSubcircuit(String),
     /// Choose the interface language (a code of `locale::LANGUAGES`).
     Language(String),
 }
@@ -197,6 +199,7 @@ impl Cmd {
             Cmd::ConvertWires => "convert-wires",
             Cmd::SubcircuitManager => "subcircuit-manager",
             Cmd::Example(_) => "example",
+            Cmd::PlaceSubcircuit(_) => "place-subcircuit",
             Cmd::Language(_) => "language",
             Cmd::Toggle(t) => TOGGLES.iter().find(|(x, _)| x == t).map_or("toggle", |(_, n)| n),
             Cmd::SetTool(t) => TOOLS.iter().find(|(x, _)| x == t).map_or("tool", |(_, n)| n),
@@ -207,7 +210,9 @@ impl Cmd {
     /// The string parameter of commands that carry one (`Place`, `Example`).
     pub fn target(&self) -> Option<&str> {
         match self {
-            Cmd::Place(id) | Cmd::Example(id) | Cmd::Language(id) => Some(id),
+            Cmd::Place(id) | Cmd::Example(id) | Cmd::Language(id) | Cmd::PlaceSubcircuit(id) => {
+                Some(id)
+            }
             _ => None,
         }
     }
@@ -223,6 +228,7 @@ impl Cmd {
         Some(match name {
             "place" => Cmd::Place(target?.to_string()),
             "example" => Cmd::Example(target?.to_string()),
+            "place-subcircuit" => Cmd::PlaceSubcircuit(target?.to_string()),
             "language" => Cmd::Language(target?.to_string()),
             "new-window" => Cmd::NewWindow,
             "new-circuit" => Cmd::NewCircuit,
@@ -312,7 +318,7 @@ impl Cmd {
             Cmd::MirrorX | Cmd::MirrorY | Cmd::RotateCcw | Cmd::RotateCw => editing && has_elements,
             Cmd::Save => s.dirty,
             Cmd::Recover => autosave_path().is_file(),
-            Cmd::Place(_) => editing,
+            Cmd::Place(_) | Cmd::PlaceSubcircuit(_) => editing,
             _ => true,
         }
     }
@@ -389,6 +395,7 @@ pub fn dispatch(s: &mut Session, cmd: &Cmd) -> Outcome {
             s.transform(Transform::RotateCw);
         }
         Cmd::Place(id) => s.set_tool(Tool::Place(id.clone())),
+        Cmd::PlaceSubcircuit(name) => s.place_subcircuit(name),
         Cmd::SetTool(t) => s.set_tool(t.clone()),
         Cmd::Toggle(t) => {
             let on = !s.toggle_state(*t);
@@ -611,9 +618,15 @@ pub fn examples_menu(list: &super::examples::ExampleList) -> Vec<Node> {
             })
             .collect()
     }
-    vec![
-        Node::Section(convert(&list.items)),
-    ]
+    vec![Node::Section(convert(&list.items))]
+}
+
+/// The entries of the Subcircuits menu that place the subcircuits made so far, one per model.
+pub fn subcircuit_items(names: &[String]) -> Vec<Node> {
+    names
+        .iter()
+        .map(|n| Node::Item(Cmd::PlaceSubcircuit(n.clone()), n.clone(), None, None))
+        .collect()
 }
 
 /// The Draw menu, generated from the registry (contract C2): one entry per registered element
@@ -725,6 +738,25 @@ mod tests {
             let back = Cmd::from_action(&c.action_name(), c.target());
             assert_eq!(back.as_ref(), Some(&c), "{c:?}");
         }
+    }
+
+    #[test]
+    fn subcircuit_items_place_the_named_model() {
+        let items = subcircuit_items(&["Divisor".to_string(), "Filtro".to_string()]);
+        let cmds: Vec<Cmd> = items
+            .into_iter()
+            .filter_map(|n| if let Node::Item(c, ..) = n { Some(c) } else { None })
+            .collect();
+        assert_eq!(
+            cmds,
+            [Cmd::PlaceSubcircuit("Divisor".into()), Cmd::PlaceSubcircuit("Filtro".into())]
+        );
+        for c in &cmds {
+            assert_eq!(Cmd::from_action(&c.action_name(), c.target()).as_ref(), Some(c));
+        }
+        let mut s = Session::load(RC, &Registry::standard()).unwrap();
+        dispatch(&mut s, &Cmd::PlaceSubcircuit("Divisor".into()));
+        assert_eq!(s.tool, Tool::Place("CustomCompositeElm".into()));
     }
 
     #[test]

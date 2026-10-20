@@ -3,6 +3,7 @@
 
 use super::commands::accelerators;
 use super::edit::SliderEntry;
+use super::pin_layout::{Geometry, can_move};
 use super::session::Session;
 use super::subcircuits::ModelScope;
 use crate::elements::element::EditInfo;
@@ -539,6 +540,72 @@ pub fn element_sliders(
     d.present(Some(parent));
 }
 
+/// Size of the pin layout preview.
+const PREVIEW_SIZE: (i32, i32) = (400, 240);
+/// Space around the chip in the preview, for the pins and the name.
+const PREVIEW_MARGIN: f64 = 44.0;
+
+/// Where the body of the preview chip starts, from the corner of the drawing area.
+fn preview_origin(geo: &Geometry, width: f64, height: f64) -> (f64, f64) {
+    let (w, h) = geo.body();
+    ((width - w) / 2.0, (height - h) / 2.0)
+}
+
+/// Draws the chip of the pin layout dialog: the body, the pins with their names, and the name
+/// of the model above it when the chip shows it.
+fn draw_pin_preview(
+    cr: &gtk::cairo::Context,
+    (width, height): (f64, f64),
+    geo: &Geometry,
+    pins: &[(usize, i32)],
+    names: &[String],
+    label: Option<&str>,
+) {
+    use crate::elements::chip::{SIDE_E, SIDE_N, SIDE_S, SIDE_W};
+    cr.set_source_rgb(0.0, 0.0, 0.0);
+    let _ = cr.paint();
+    let (ox, oy) = preview_origin(geo, width, height);
+    let (w, h) = geo.body();
+    cr.set_line_width(2.0);
+    cr.set_source_rgb(0.75, 0.75, 0.75);
+    cr.rectangle(ox, oy, w, h);
+    let _ = cr.stroke();
+    cr.set_font_size(12.0);
+    for (&(side, pos), name) in pins.iter().zip(names) {
+        let (ax, ay) = geo.anchor(side, pos);
+        let (ax, ay) = (ox + ax, oy + ay);
+        let (sx, sy) = match side {
+            SIDE_N => (0.0, -12.0),
+            SIDE_S => (0.0, 12.0),
+            SIDE_W => (-12.0, 0.0),
+            _ => (12.0, 0.0),
+        };
+        cr.set_source_rgb(0.5, 0.5, 0.5);
+        cr.move_to(ax, ay);
+        cr.line_to(ax + sx, ay + sy);
+        let _ = cr.stroke();
+        cr.set_source_rgb(1.0, 1.0, 1.0);
+        cr.arc(ax + sx, ay + sy, 3.5, 0.0, std::f64::consts::TAU);
+        let _ = cr.fill();
+        let text_width = cr.text_extents(name).map_or(0.0, |e| e.width());
+        let (tx, ty) = match side {
+            SIDE_N => (ax - text_width / 2.0, ay + 16.0),
+            SIDE_S => (ax - text_width / 2.0, ay - 6.0),
+            SIDE_W => (ax + 5.0, ay + 4.0),
+            SIDE_E => (ax - 5.0 - text_width, ay + 4.0),
+            _ => (ax, ay),
+        };
+        cr.move_to(tx, ty);
+        let _ = cr.show_text(name);
+    }
+    if let Some(text) = label {
+        let text_width = cr.text_extents(text).map_or(0.0, |e| e.width());
+        cr.set_source_rgb(1.0, 1.0, 1.0);
+        cr.move_to(ox + (w - text_width) / 2.0, oy - 26.0);
+        let _ = cr.show_text(text);
+    }
+}
+
 /// The pin layout dialog of a subcircuit: its name, whether the chip shows it, the size of the
 /// chip, where it is kept, and the side and place of every pin. `on_apply` gets the changed
 /// model and where to keep it.
@@ -594,6 +661,106 @@ pub fn subcircuit_pins(
         pins.add(&row);
         rows.push((i, side, pos));
     }
+    // the preview of the chip: the rows above are what it shows and what dragging a pin sets
+    let names: Vec<String> = rows.iter().map(|(i, ..)| model.ext[*i].name.clone()).collect();
+    let preview = gtk::DrawingArea::new();
+    preview.set_content_width(PREVIEW_SIZE.0);
+    preview.set_content_height(PREVIEW_SIZE.1);
+    preview.add_css_class("card");
+    let state = {
+        let (width, height, rows) = (width.clone(), height.clone(), rows.clone());
+        Rc::new(move || {
+            let geo = (width.value() as i32, height.value() as i32);
+            let pins: Vec<(usize, i32)> = rows
+                .iter()
+                .map(|(_, side, pos)| (side.selected() as usize, pos.value() as i32))
+                .collect();
+            (geo, pins)
+        })
+    };
+    let geometry = {
+        let state = state.clone();
+        Rc::new(move |w: f64, h: f64| {
+            let ((sx, sy), _) = state();
+            Geometry::fitting(sx, sy, w, h, PREVIEW_MARGIN)
+        })
+    };
+    {
+        let (state, geometry, names, label, name) =
+            (state.clone(), geometry.clone(), names.clone(), label.clone(), name.clone());
+        preview.set_draw_func(move |_, cr, w, h| {
+            let (w, h) = (f64::from(w), f64::from(h));
+            let (_, pins) = state();
+            let title = name.text().to_string();
+            let shown = (label.is_active() && !title.is_empty()).then_some(title.as_str());
+            draw_pin_preview(cr, (w, h), &geometry(w, h), &pins, &names, shown);
+        });
+    }
+    let redraw = {
+        let preview = preview.clone();
+        move || preview.queue_draw()
+    };
+    {
+        let r = redraw.clone();
+        width.connect_value_notify(move |_| r());
+        let r = redraw.clone();
+        height.connect_value_notify(move |_| r());
+        let r = redraw.clone();
+        label.connect_active_notify(move |_| r());
+        let r = redraw.clone();
+        name.connect_changed(move |_| r());
+        for (_, side, pos) in &rows {
+            let r = redraw.clone();
+            side.connect_selected_notify(move |_| r());
+            let r = redraw.clone();
+            pos.connect_value_changed(move |_| r());
+        }
+    }
+    // dragging a pin puts it on the nearest free place of the chip
+    let grabbed: Rc<std::cell::Cell<Option<usize>>> = Rc::new(std::cell::Cell::new(None));
+    let drag = gtk::GestureDrag::new();
+    {
+        let (state, geometry, grabbed, preview) =
+            (state.clone(), geometry.clone(), grabbed.clone(), preview.clone());
+        drag.connect_drag_begin(move |_, x, y| {
+            let (w, h) = (f64::from(preview.width()), f64::from(preview.height()));
+            let geo = geometry(w, h);
+            let (ox, oy) = preview_origin(&geo, w, h);
+            let (_, pins) = state();
+            grabbed.set(geo.pin_at(&pins, x - ox, y - oy, 18.0));
+        });
+    }
+    {
+        let (state, geometry, grabbed, preview, rows, drag_ref) = (
+            state.clone(),
+            geometry.clone(),
+            grabbed.clone(),
+            preview.clone(),
+            rows.clone(),
+            drag.clone(),
+        );
+        drag.connect_drag_update(move |_, dx, dy| {
+            let Some(i) = grabbed.get() else { return };
+            let Some((sx, sy)) = drag_ref.start_point() else { return };
+            let (w, h) = (f64::from(preview.width()), f64::from(preview.height()));
+            let geo = geometry(w, h);
+            let (ox, oy) = preview_origin(&geo, w, h);
+            let Some((side, pos)) = geo.nearest_place(sx + dx - ox, sy + dy - oy) else { return };
+            let (_, pins) = state();
+            if pins[i] != (side, pos) && can_move(&geo, &pins, i, side, pos) {
+                rows[i].1.set_selected(side as u32);
+                rows[i].2.set_value(f64::from(pos));
+            }
+        });
+    }
+    {
+        let grabbed = grabbed.clone();
+        drag.connect_drag_end(move |_, _, _| grabbed.set(None));
+    }
+    preview.add_controller(drag);
+    let hint = gtk::Label::new(Some(&ls("Drag the pins to the desired position")));
+    hint.set_xalign(0.0);
+
     let apply = gtk::Button::with_label("Aplicar");
     apply.add_css_class("suggested-action");
     apply.set_halign(gtk::Align::End);
@@ -602,6 +769,8 @@ pub fn subcircuit_pins(
     message.set_xalign(0.0);
     message.set_wrap(true);
     let body = gtk::Box::new(gtk::Orientation::Vertical, 12);
+    body.append(&hint);
+    body.append(&preview);
     body.append(&group);
     body.append(&pins);
     body.append(&message);
@@ -609,7 +778,7 @@ pub fn subcircuit_pins(
     let scroll = gtk::ScrolledWindow::new();
     scroll.set_child(Some(&padded(&body)));
     scroll.set_propagate_natural_height(true);
-    let d = dialog(&ls("Edit Subcircuit Pin Layout"), 460, 560, &scroll);
+    let d = dialog(&ls("Edit Subcircuit Pin Layout"), 460, 760, &scroll);
     let d2 = d.clone();
     let model = model.clone();
     apply.connect_clicked(move |_| {

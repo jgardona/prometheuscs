@@ -771,6 +771,9 @@ impl Session {
                     if idx < self.sim.elements.len() {
                         self.sim.elements.remove(idx);
                     }
+                    // the pointer was over the element that is gone
+                    self.hover = None;
+                    self.held = None;
                     self.undo.pop();
                     return false;
                 }
@@ -846,10 +849,12 @@ impl Session {
         let mut v: Vec<usize> = self
             .selected_indices()
             .into_iter()
-            .filter(|&i| self.sim.elements[i].can_view_in_scope())
+            .filter(|&i| self.sim.elements.get(i).is_some_and(|e| e.can_view_in_scope()))
             .collect();
         if v.is_empty() {
-            v.extend(self.hover.filter(|&i| self.sim.elements[i].can_view_in_scope()));
+            let viewable =
+                |i: usize| self.sim.elements.get(i).is_some_and(|e| e.can_view_in_scope());
+            v.extend(self.hover.filter(|&i| viewable(i)));
         }
         v
     }
@@ -930,7 +935,9 @@ impl Session {
         if let Some(sc) = self.scope_hover.and_then(|i| self.sim.scopes.get(i)) {
             plotted = Self::plot_roles(sc);
         } else {
-            let on = |i: usize| self.sim.elements[i].base().selected || self.hover == Some(i);
+            let on = |i: usize| {
+                self.sim.elements.get(i).is_some_and(|e| e.base().selected) || self.hover == Some(i)
+            };
             for (i, sc) in &self.sim.embedded {
                 if on(*i) {
                     plotted.extend(Self::plot_roles(sc));
@@ -2247,6 +2254,15 @@ mod tests {
         s.canvas_size = (800.0, 600.0);
         s.fit_pending = false;
         s
+    }
+
+    #[test]
+    fn a_stale_hover_index_does_not_panic_the_lookups() {
+        let mut s = session();
+        s.hover = Some(s.sim.elements.len());
+        assert!(s.scope_targets().is_empty());
+        s.apply_scope_roles();
+        assert!(s.glow_set().len() <= s.sim.elements.len() + 1);
     }
 
     fn press(s: &mut Session, x: f64, y: f64) {

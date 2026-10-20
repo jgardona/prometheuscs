@@ -92,6 +92,8 @@ pub fn children_from_xml(elms: &[XmlNode]) -> (Vec<Box<dyn Element>>, Vec<Vec<i3
                 .unwrap_or_default();
             if let [x1, y1, x2, y2] = pos[..] {
                 e.base_mut().set_position(x1, y1, x2, y2);
+                // the element's own geometry (leads and the like) comes from its set_points
+                e.set_points();
             } else {
                 e.set_points();
             }

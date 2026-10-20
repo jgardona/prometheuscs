@@ -412,14 +412,15 @@ Um subcircuito vira um componente (um "chip") a partir de um pedaço do circuito
 2. Selecione o que vai entrar no chip (ou nada, para usar o circuito todo).
 3. **Arquivo > Criar Subcircuito…**
 4. Na janela, dê um nome, escolha o tamanho do chip, o lado e a posição de cada pino, se o nome
-   aparece no chip, e onde ele fica guardado:
+   aparece no chip, e onde ele fica guardado. A janela mostra o chip: arraste um pino para
+   mudá-lo de lugar (ele vai para o lugar livre mais próximo), ou use as linhas abaixo da imagem:
    - **neste circuito** (vai junto no arquivo);
    - **nesta sessão** (some quando o programa fecha);
    - **salvo** (fica disponível em todos os circuitos).
 
 O novo subcircuito já fica escolhido para ser colocado.
 
-**Usar.** Está em **Desenhar > Subcircuits**, ou no **Gerenciador de Subcircuitos**
+**Usar.** Cada subcircuito criado aparece em **Desenhar > Subcircuitos**, ou no **Gerenciador de Subcircuitos**
 (**Ferramentas > Subcircuit Manager**), que lista os existentes com botões para colocar, editar o
 layout dos pinos e apagar.
 

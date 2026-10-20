@@ -297,11 +297,19 @@ impl ChipLogic for SubChip {
     fn voltage_source_count(&self, _c: &ChipCore) -> usize {
         0
     }
-    fn draw_label(&self, g: &mut dyn Painter, _c: &mut ChipCore, ctx: &DrawCtx, x: i32, y: i32) {
+    fn draw_label(&self, g: &mut dyn Painter, c: &mut ChipCore, ctx: &DrawCtx, x: i32, y: i32) {
         if let Some(l) = &self.label {
-            draw_centered_label(g, ctx, l, x, y, 12);
+            // above the body: at the centre it would sit on top of the pin names
+            draw_centered_label(g, ctx, l, x, label_y(c, y), 12);
         }
     }
+}
+
+/// The height at which a chip's name is drawn: above the body and above every pin, so it
+/// never sits on top of the pin names. `y` is used when the chip has no shape yet.
+fn label_y(c: &ChipCore, y: i32) -> i32 {
+    let body = c.rect.iter().map(|p| p.y).min().unwrap_or(y);
+    c.pins.iter().map(|p| p.post().y).fold(body, i32::min) - 10
 }
 
 /// An instance of a subcircuit model.
@@ -680,6 +688,32 @@ mod tests {
         assert_eq!(m.ext[2].bus_z, 2);
         let out = m.to_xml().to_pretty_string();
         assert!(out.contains("bcs=\"1\"") && out.matches("<ext").count() == 1);
+    }
+
+    #[cfg(feature = "passive")]
+    #[test]
+    fn the_name_is_drawn_above_the_chip_and_its_pins() {
+        let text = r#"<ccm nm="lbl" f="1" sx="3" sy="1"><ext nm="In" nd="1" ps="0" sd="1"/><ext nm="Out" nd="2" ps="1" sd="0"/><ext nm="Ref" nd="3" ps="0" sd="3"/><r nn="1 2" x="0 0 16 0" f="0" r="100"/><r nn="2 3" x="16 0 32 0" f="0" r="100"/></ccm>"#;
+        define_from_xml(&crate::format::xml::parse(text).unwrap());
+        set_last_model("lbl");
+        let c = CustomComposite::new(64, 64);
+        let core = &c.chip.core;
+        let y = label_y(core, 0);
+        assert!(core.rect.iter().all(|p| y < p.y), "above the body {y} {:?}", core.rect);
+        assert!(core.pins.iter().all(|p| y < p.post().y), "above the pins");
+        remove("lbl");
+    }
+
+    #[cfg(feature = "passive")]
+    #[test]
+    fn children_get_their_leads_when_built_from_a_model() {
+        let node =
+            crate::format::xml::parse(r#"<r nn="1 2" x="64 32 128 32" f="0" r="100"/>"#).unwrap();
+        let (children, _) = super::super::composite::children_from_xml(&[node]);
+        assert_eq!(children.len(), 1);
+        let b = children[0].base();
+        // the leads sit on the part, not at the origin
+        assert!(b.lead1.x >= 64 && b.lead2.x <= 128 && b.lead1.y == 32, "{:?}", b.lead1);
     }
 
     #[cfg(feature = "passive")]

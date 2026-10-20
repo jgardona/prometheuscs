@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 //! The main window: menu bar, toolbar, circuit canvas and the side panel.
 
-use super::consts;
 use super::commands::{Action, Cmd, Outcome, apply, dispatch};
+use super::consts;
 use super::dialogs::{self, OtherOptions};
 use super::edit::{Mods, ScopeMode, Tool};
 use super::examples::{ExampleItem, ExampleList, parse_setup_list};
@@ -188,6 +188,10 @@ pub struct Widgets {
     circuit_label: gtk::Label,
     toolbar: Toolbar,
     actions: Vec<ActionEntry>,
+    /// The part of the Draw > Subcircuits menu that lists the subcircuits made, and the names
+    /// it shows now.
+    subcircuit_menu: gtk::gio::Menu,
+    shown_models: Vec<String>,
     shown_sliders: SliderKey,
     /// The play buttons of the audio outputs.
     audio: gtk::Box,
@@ -248,7 +252,8 @@ fn slider_key(s: &Session) -> SliderKey {
         )
     });
     // the sliders elements own have no field: `usize::MAX` stands for it
-    let owned = s.element_sliders().into_iter().map(|(i, e)| (i, usize::MAX, e.text, [0; 3], false));
+    let owned =
+        s.element_sliders().into_iter().map(|(i, e)| (i, usize::MAX, e.text, [0; 3], false));
     adjustable.chain(owned).collect()
 }
 
@@ -892,12 +897,20 @@ impl App {
                 let text = self.session.borrow_mut().export_text();
                 dialogs::text_view(&w, "Exportar em Formato Texto", &text);
             }
-            Cmd::ExportImage => {
-                self.export_picture(sender, "Exportar como Imagem", consts::IMAGE_FILE, consts::GLOB_PNG, false)
-            }
-            Cmd::ExportSvg => {
-                self.export_picture(sender, "Exportar como SVG", consts::SVG_FILE, consts::GLOB_SVG, true)
-            }
+            Cmd::ExportImage => self.export_picture(
+                sender,
+                "Exportar como Imagem",
+                consts::IMAGE_FILE,
+                consts::GLOB_PNG,
+                false,
+            ),
+            Cmd::ExportSvg => self.export_picture(
+                sender,
+                "Exportar como SVG",
+                consts::SVG_FILE,
+                consts::GLOB_SVG,
+                true,
+            ),
             Cmd::CopyImage => {
                 let result = export::png_bytes(&mut self.session.borrow_mut())
                     .and_then(|png| dialogs::copy_png(&w, &png));
@@ -1426,7 +1439,7 @@ impl SimpleComponent for App {
         let title = adw::WindowTitle::new(consts::APP_NAME, "");
         let header = adw::HeaderBar::new();
         header.set_title_widget(Some(&title));
-        let model = menus::menu_bar_model(&registry, &examples, &assets, dark);
+        let (model, subcircuit_menu) = menus::menu_bar_model(&registry, &examples, &assets, dark);
         let menu_bar = gtk::PopoverMenuBar::from_model(Some(&model));
         let tb = toolbar::build(&registry, &assets, dark);
         let command_sender = sender.input_sender().clone();
@@ -1810,6 +1823,8 @@ impl SimpleComponent for App {
             circuit_label,
             toolbar: tb,
             actions,
+            subcircuit_menu,
+            shown_models: Vec::new(),
             shown_sliders: Vec::new(),
             audio,
             shown_audio: Vec::new(),
@@ -1907,6 +1922,11 @@ impl App {
     fn update_view_inner(&self, widgets: &mut Widgets, sender: &ComponentSender<Self>) {
         let s = self.session.borrow();
         menus::sync_actions(&widgets.actions, &s);
+        let models = s.subcircuit_names();
+        if models != widgets.shown_models {
+            menus::refresh_subcircuit_menu(&widgets.subcircuit_menu, &models);
+            widgets.shown_models = models;
+        }
         widgets.run_button.set_label(if s.running { "Parar" } else { "Executar" });
         let message = self.notice.clone().or_else(|| s.stop_message.clone());
         widgets.banner.set_title(message.as_deref().unwrap_or(""));

@@ -93,12 +93,41 @@ pub fn build_menu(
 }
 
 /// The model of the whole menu bar.
+/// The submenu of `model` whose label starts with `label`, looking inside its sections.
+fn find_submenu(model: &gio::MenuModel, label: &str) -> Option<gio::Menu> {
+    (0..model.n_items()).find_map(|i| {
+        if let Some(section) = model.item_link(i, "section") {
+            return find_submenu(&section, label);
+        }
+        let text = model.item_attribute_value(i, "label", Some(glib::VariantTy::STRING))?;
+        if !text.str()?.starts_with(label) {
+            return None;
+        }
+        model.item_link(i, "submenu")?.downcast::<gio::Menu>().ok()
+    })
+}
+
+/// Fills the section of the Subcircuits menu that lists the subcircuits made so far.
+pub fn refresh_subcircuit_menu(section: &gio::Menu, names: &[String]) {
+    section.remove_all();
+    for name in names {
+        let entry = gio::MenuItem::new(Some(name), None);
+        entry.set_action_and_target_value(
+            Some(&format!("win.{}", Cmd::PlaceSubcircuit(String::new()).action_name())),
+            Some(&name.to_variant()),
+        );
+        section.append_item(&entry);
+    }
+}
+
+/// The model of the whole menu bar, and the section of the Subcircuits menu that
+/// [`refresh_subcircuit_menu`] fills.
 pub fn menu_bar_model(
     registry: &Registry,
     examples: &super::examples::ExampleList,
     assets: &Path,
     dark: bool,
-) -> gio::Menu {
+) -> (gio::Menu, gio::Menu) {
     use super::commands::{
         draw_menu, edit_menu, examples_menu, file_menu, options_menu, scopes_menu, tools_menu,
     };
@@ -117,7 +146,12 @@ pub fn menu_bar_model(
         let menu = build_menu(&nodes, assets, dark, &mut seen);
         bar.append_submenu(Some(ls(title).trim()), &menu);
     }
-    bar
+    let models = gio::Menu::new();
+    let draw = find_submenu(bar.upcast_ref(), ls("Draw").trim());
+    if let Some(subs) = draw.and_then(|d| find_submenu(d.upcast_ref(), &ls("Subcircuits"))) {
+        subs.append_section(None, &models);
+    }
+    (bar, models)
 }
 
 /// Creates one window action per command and routes activations to `on_command`.
@@ -136,6 +170,7 @@ pub fn install_actions(
         Cmd::AddSliders,
         Cmd::Undo,
         Cmd::Example(String::new()),
+        Cmd::PlaceSubcircuit(String::new()),
         Cmd::Language(String::new()),
     ]);
     for cmd in cmds {
@@ -145,7 +180,7 @@ pub fn install_actions(
         }
         made.push(name.clone());
         let action = match &cmd {
-            Cmd::Place(_) | Cmd::Example(_) | Cmd::Language(_) => {
+            Cmd::Place(_) | Cmd::Example(_) | Cmd::Language(_) | Cmd::PlaceSubcircuit(_) => {
                 gio::SimpleAction::new(&name, Some(glib::VariantTy::STRING))
             }
             Cmd::Toggle(_) | Cmd::SetTool(_) => {
@@ -205,9 +240,33 @@ pub fn sync_actions(entries: &[ActionEntry], s: &Session) {
                 e.action.set_state(&(s.tool == *t).to_variant());
                 e.action.set_enabled(s.editing_allowed());
             }
-            Cmd::Place(_) => e.action.set_enabled(s.editing_allowed()),
+            Cmd::Place(_) | Cmd::PlaceSubcircuit(_) => e.action.set_enabled(s.editing_allowed()),
             Cmd::Example(_) | Cmd::Language(_) => e.action.set_enabled(true),
             cmd => e.action.set_enabled(cmd.enabled(s)),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn created_subcircuits_are_listed_in_the_draw_menu() {
+        let registry = Registry::standard();
+        let examples = super::super::examples::ExampleList::default();
+        let (bar, models) = menu_bar_model(&registry, &examples, Path::new("assets"), false);
+        let draw = find_submenu(bar.upcast_ref(), ls("Draw").trim()).unwrap();
+        let subs = find_submenu(draw.upcast_ref(), &ls("Subcircuits")).unwrap();
+        let before = subs.n_items();
+        assert!(before >= 2, "the section is attached to the Subcircuits menu");
+        assert_eq!(models.n_items(), 0);
+        refresh_subcircuit_menu(&models, &["Divisor".to_string(), "Filtro".to_string()]);
+        assert_eq!(models.n_items(), 2);
+        let label =
+            models.item_attribute_value(0, "label", None).and_then(|v| v.str().map(String::from));
+        assert_eq!(label.as_deref(), Some("Divisor"));
+        refresh_subcircuit_menu(&models, &["Divisor".to_string()]);
+        assert_eq!(models.n_items(), 1);
     }
 }
