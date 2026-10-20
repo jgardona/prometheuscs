@@ -46,7 +46,7 @@ digital, memórias, motores, e assim por diante). Eles são os mesmos do Circuit
 
 Um circuito RC em série, para conhecer o básico:
 
-1. **Arquivo > Novo Circuito em Branco** (ou **Exemplos de Circuitos > Novo Circuito em Branco**).
+1. **Arquivo > Novo Circuito em Branco**.
 2. Abra o menu **Desenhar** e escolha a fonte de tensão; ou use a barra de ferramentas. Clique
    no canvas e arraste: o elemento é desenhado do ponto onde você clicou até onde você soltar.
 3. Faça o mesmo com um resistor (tecla **r**) e um capacitor (tecla **c**), e com o terra

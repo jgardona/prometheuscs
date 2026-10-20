@@ -589,7 +589,7 @@ pub fn tools_menu() -> Vec<Node> {
     ]
 }
 
-/// The Circuit Examples menu: New Blank Circuit, then the catalogue as nested submenus.
+/// The Circuit Examples menu: the catalogue as nested submenus (New Circuit lives in the File menu).
 pub fn examples_menu(list: &super::examples::ExampleList) -> Vec<Node> {
     fn convert(items: &[super::examples::ExampleItem]) -> Vec<Node> {
         use super::examples::ExampleItem;
@@ -604,7 +604,6 @@ pub fn examples_menu(list: &super::examples::ExampleList) -> Vec<Node> {
             .collect()
     }
     vec![
-        Node::Section(vec![item(Cmd::NewCircuit, "New Blank Circuit", Some("doc-new"), None)]),
         Node::Section(convert(&list.items)),
     ]
 }

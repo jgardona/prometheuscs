@@ -20,7 +20,7 @@ Restart, Stop buttons; sliders: simulation speed, current speed, brightness (dis
 | Diagramas de Tempo | Empilhar Todos, Desempilhar Todos, Combinar Todos, Separar Todos |
 | Opções | Toggles: Mostrar Corrente, Mostrar Tensão, Mostrar Potência, Mostrar Valores, Graticula Pequena, Barra de ferramentas, Mostrar Cursor em Cruz, Resistores c/ Símbolo Europeu, Show Ω Unit, Porta Padrão IEC, Fundo de Tela Branco, Sentido Convencional de Corrente, Desativar Edição, Editar Valores com Roda do Mouse; dialogs: Desvios, Outras Opções |
 | Ferramentas | Converter fios em fios enrutados, Gerenciador de subcircuitos |
-| Exemplos de Circuitos | Submenus generated from the example catalog (`setuplist.txt`): Básicos, Circuitos CA, Filtros Passivos, and so on, plus Novo Circuito |
+| Exemplos de Circuitos | Submenus generated from the example catalog (`setuplist.txt`): Básicos, Circuitos CA, Filtros Passivos, and so on (Novo Circuito lives only in Arquivo) |
 
 The "Ferramentas de Desenvolvimento do Navegador" entry from the reference is intentionally omitted (browser-only, see spec assumptions).
 

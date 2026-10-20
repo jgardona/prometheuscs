@@ -99,4 +99,16 @@ mod tests {
         assert_eq!(l.startup.as_deref(), Some("lrc.txt"));
         assert!(l.items.len() > 5);
     }
+
+    #[test]
+    fn bundled_list_has_no_blank_circuit_entry() {
+        let text = std::fs::read_to_string("assets/setuplist.txt").unwrap();
+        fn has_blank(items: &[ExampleItem]) -> bool {
+            items.iter().any(|i| match i {
+                ExampleItem::Circuit { file, .. } => file == "blank.txt",
+                ExampleItem::Group { items, .. } => has_blank(items),
+            })
+        }
+        assert!(!has_blank(&parse_setup_list(&text).items));
+    }
 }

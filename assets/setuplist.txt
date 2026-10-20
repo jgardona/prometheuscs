@@ -479,4 +479,3 @@ plot2d-checker.txt Checkerboard
 plot2d-color.txt Color Checkerboard
 plot2d-smile.txt Smiley
 -
-blank.txt Blank Circuit
