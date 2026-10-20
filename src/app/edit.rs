@@ -544,6 +544,8 @@ impl Session {
 
     fn release_switch(&mut self) {
         if let Some(i) = self.held.take() {
+            // keep the live state (capacitor voltages, ...) across the restart below
+            self.pull_state();
             self.toggle_linked(i);
             self.reanalyze();
         }

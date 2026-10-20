@@ -84,3 +84,33 @@ fn the_running_state_still_reaches_the_saved_text() {
         line.split("vd=\"").nth(1).and_then(|r| r.split('"').next()).unwrap().parse().unwrap();
     assert!(vd > 1.0, "the charge was saved: {line}");
 }
+
+/// The voltage the capacitor holds in the text `s` saves, read from its `vd` attribute.
+#[cfg(feature = "reactive")]
+fn capacitor_voltage(s: &mut Session) -> f64 {
+    let xml = s.circuit_xml();
+    let line = xml.lines().find(|l| l.trim_start().starts_with("<c ")).expect("the capacitor");
+    line.split("vd=\"").nth(1).and_then(|r| r.split('"').next()).unwrap().parse().unwrap()
+}
+
+#[cfg(feature = "passive")]
+#[cfg(feature = "reactive")]
+#[cfg(feature = "sources")]
+#[cfg(feature = "switches")]
+#[test]
+fn releasing_a_push_switch_keeps_the_capacitor_charge() {
+    use prometheuscs::app::edit::Mods;
+    // 5 V -> push switch -> 100 ohm -> 10 uF with 564 ohm across it (the analogue timer)
+    let text = "$ 1 0.000005 10 50 5 50 5e-11\nv 0 64 0 0 0 0 40 5 0 0 0.5\nw 0 0 64 0 0\ns 64 0 64 64 0 1 true\nr 64 64 128 64 0 100\nc 128 64 128 128 4 0.00001 0 0 0\nr 192 64 192 128 0 564\nw 128 64 192 64 0\nw 128 128 192 128 0\nw 0 64 0 128 0\nw 0 128 128 128 0\ng 64 128 64 160 0\n";
+    let mut s = with_worker(text);
+    s.view = prometheuscs::render::scene::View { scale: 1.0, x: 0.0, y: 0.0 };
+    assert!(s.mouse_down(64.0, 32.0, Mods::default(), 1), "the press found the switch");
+    for _ in 0..30 {
+        s.update(Duration::from_millis(16)).unwrap();
+        std::thread::sleep(Duration::from_millis(16));
+    }
+    // nothing may read the state before the release: saving would pull it and hide the bug
+    s.mouse_up();
+    let released = capacitor_voltage(&mut s);
+    assert!(released > 3.0, "the charge survived the release: {released}");
+}
