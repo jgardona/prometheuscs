@@ -302,6 +302,16 @@ impl Element for PotElm {
         }
     }
 
+    fn visual_state(&self) -> Vec<f64> {
+        vec![self.current1, self.current2, self.current3, self.resistance1, self.resistance2]
+    }
+    fn set_visual_state(&mut self, state: &[f64]) {
+        if let [i1, i2, i3, r1, r2] = *state {
+            (self.current1, self.current2, self.current3) = (i1, i2, i3);
+            (self.resistance1, self.resistance2) = (r1, r2);
+        }
+    }
+
     fn reset(&mut self) {
         self.curcount1 = 0.0;
         self.curcount2 = 0.0;
@@ -412,6 +422,17 @@ mod tests {
         let p = PotElm::from_dump(0, 0, 64, 0, 0, &mut st).unwrap();
         assert_eq!(p.slider_text, "X Resistance");
         assert_eq!(p.dump(), "0 0 0 64 0 0 1000 0.5 X Resistance".replacen("0 0 0", "174 0 0", 1));
+    }
+
+    #[test]
+    fn visual_state_carries_currents_and_resistances_to_the_drawing_copy() {
+        let mut p = PotElm::new(0, 0);
+        (p.current1, p.current2, p.current3, p.resistance1, p.resistance2) =
+            (0.01, 0.02, -0.03, 500.0, 600.0);
+        let mut copy = PotElm::new(0, 0);
+        copy.set_visual_state(&p.visual_state());
+        assert_eq!(copy.visual_state(), p.visual_state());
+        assert_eq!(copy.resistance2, 600.0);
     }
 
     #[test]

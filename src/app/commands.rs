@@ -415,6 +415,13 @@ pub enum Action {
         /// Position from 0 to 100.
         position: f64,
     },
+    /// Move the slider an element owns (a potentiometer) to a position from 0 to 100.
+    ElementSlider {
+        /// Index of the element.
+        elm: usize,
+        /// Position from 0 to 100.
+        position: i32,
+    },
     /// Simulation speed slider position.
     Speed(f64),
     /// Current-dot speed slider position.
@@ -435,6 +442,7 @@ pub fn apply(s: &mut Session, action: Action) {
         Action::Slider { index, position } => {
             s.set_slider(index, position);
         }
+        Action::ElementSlider { elm, position } => s.set_element_slider(elm, position),
         Action::Speed(v) => s.set_speed_bar(v),
         Action::CurrentSpeed(v) => s.set_current_bar(v),
         Action::Brightness(v) => s.options.power_bar = v as i32,

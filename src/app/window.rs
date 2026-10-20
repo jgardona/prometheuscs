@@ -129,6 +129,8 @@ pub enum Msg {
     ToggleRun,
     /// A circuit slider moved.
     Slider(usize, f64),
+    /// A slider an element owns moved: element index and position.
+    ElementSlider(usize, i32),
     /// The simulation speed slider moved.
     Speed(f64),
     /// The current speed slider moved.
@@ -236,18 +238,18 @@ fn slider_row(title: &str, value: f64, range: (f64, f64)) -> (gtk::Box, gtk::Sca
 }
 
 fn slider_key(s: &Session) -> SliderKey {
-    s.adjustables
-        .iter()
-        .map(|a| {
-            (
-                a.elm,
-                a.edit_item,
-                a.slider_text.clone(),
-                [a.min_value.to_bits(), a.max_value.to_bits(), a.slider_step.to_bits()],
-                a.logarithmic,
-            )
-        })
-        .collect()
+    let adjustable = s.adjustables.iter().map(|a| {
+        (
+            a.elm,
+            a.edit_item,
+            a.slider_text.clone(),
+            [a.min_value.to_bits(), a.max_value.to_bits(), a.slider_step.to_bits()],
+            a.logarithmic,
+        )
+    });
+    // the sliders elements own have no field: `usize::MAX` stands for it
+    let owned = s.element_sliders().into_iter().map(|(i, e)| (i, usize::MAX, e.text, [0; 3], false));
+    adjustable.chain(owned).collect()
 }
 
 /// Opens the edit dialog of element `i`, with the buttons for its device model. A model
@@ -1855,6 +1857,9 @@ impl App {
             Msg::Slider(index, position) => {
                 apply(&mut self.session.borrow_mut(), Action::Slider { index, position });
             }
+            Msg::ElementSlider(elm, position) => {
+                apply(&mut self.session.borrow_mut(), Action::ElementSlider { elm, position });
+            }
             Msg::Speed(v) => apply(&mut self.session.borrow_mut(), Action::Speed(v)),
             Msg::CurrentSpeed(v) => apply(&mut self.session.borrow_mut(), Action::CurrentSpeed(v)),
             Msg::Brightness(v) => apply(&mut self.session.borrow_mut(), Action::Brightness(v)),
@@ -1968,6 +1973,18 @@ impl App {
             scale.connect_value_changed(move |sc| {
                 label.set_text(&short_unit_text(adj.position_to_value(sc.value()), ""));
                 let _ = tx.send(Msg::Slider(i, sc.value()));
+            });
+            widgets.sliders.append(&row);
+        }
+        for (elm, e) in s.element_sliders() {
+            let (row, scale, label) =
+                slider_row(&slider_title(&e.text), f64::from(e.value), (0.0, 100.0));
+            label.set_text(&format!("{}", e.value));
+            let tx = sender.input_sender().clone();
+            scale.connect_value_changed(move |sc| {
+                let v = sc.value().round() as i32;
+                label.set_text(&format!("{v}"));
+                let _ = tx.send(Msg::ElementSlider(elm, v));
             });
             widgets.sliders.append(&row);
         }

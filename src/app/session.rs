@@ -7,7 +7,7 @@
 use super::edit::{Drag, Tool};
 use super::settings::AppSettings;
 use super::worker::{Command, Worker};
-use crate::elements::element::DrawCtx;
+use crate::elements::element::{DrawCtx, ElementSlider};
 use crate::elements::registry::Registry;
 use crate::error::{AnalysisError, StepError};
 use crate::format::circuit::{Adjustable, Circuit, CircuitOptions};
@@ -467,6 +467,26 @@ impl Session {
         }
     }
 
+    /// The sliders elements own themselves (a potentiometer, a variable rail), with the index of
+    /// each element, in circuit order.
+    pub fn element_sliders(&self) -> Vec<(usize, ElementSlider)> {
+        self.sim.elements.iter().enumerate().filter_map(|(i, e)| Some((i, e.slider()?))).collect()
+    }
+
+    /// Moves the slider element `elm` owns to `pos` (0 to 100), here and in the worker.
+    pub fn set_element_slider(&mut self, elm: usize, pos: i32) {
+        match &self.worker {
+            Some(w) => {
+                w.send(Command::ElementSlider { elm, value: pos });
+                if let Some(e) = self.sim.elements.get_mut(elm) {
+                    e.set_slider_value(pos);
+                    e.set_points();
+                }
+            }
+            None => self.apply_element_slider(elm, pos),
+        }
+    }
+
     /// Moves slider `i` to `pos` (0 to 100) and applies the value to its element. Returns the
     /// new value.
     pub fn set_slider(&mut self, i: usize, pos: f64) -> Option<f64> {
@@ -552,6 +572,22 @@ mod tests {
         assert!((v - 1e-5).abs() < 1e-12);
         let info = s.sim.elements[2].get_edit_info(0).unwrap();
         assert!((info.value - 1e-5).abs() < 1e-12);
+    }
+
+    #[cfg(feature = "passive")]
+    #[test]
+    fn the_potentiometer_slider_is_listed_and_moves_the_wiper() {
+        let text = std::fs::read_to_string("assets/circuits/pot.txt").unwrap();
+        let mut s = Session::load(&text, &Registry::standard()).unwrap();
+        let sliders = s.element_sliders();
+        assert_eq!(sliders.len(), 1);
+        let (elm, slider) = &sliders[0];
+        assert_eq!(slider.text, "Resistance");
+        assert_eq!(slider.value, 50);
+        let elm = *elm;
+        s.set_element_slider(elm, 100);
+        assert_eq!(s.element_sliders()[0].1.value, 100);
+        s.update(Duration::from_millis(30)).unwrap();
     }
 
     fn lrc() -> Session {

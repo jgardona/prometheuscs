@@ -62,6 +62,13 @@ pub enum Command {
         /// New value.
         value: f64,
     },
+    /// Move the slider an element owns itself (for example a potentiometer), 0 to 100.
+    ElementSlider {
+        /// Element index.
+        elm: usize,
+        /// Slider position from 0 to 100.
+        value: i32,
+    },
     /// Find the DC operating point.
     FindDc,
     /// Advance this many time steps now and publish the result (headless runs and tests).
@@ -193,6 +200,7 @@ fn handle(s: &mut Session, command: Command, syncs: &mut Vec<Sender<()>>) -> boo
         Command::Reset => s.reset(),
         Command::SetSpeed(ic) => s.options.iter_count = ic,
         Command::Edit { elm, n, value } => s.edit_value(elm, n, value),
+        Command::ElementSlider { elm, value } => s.apply_element_slider(elm, value),
         Command::FindDc => {
             // a failure is recorded in the session and reported by the next snapshot
             let _ = s.find_dc();

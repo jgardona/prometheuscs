@@ -168,6 +168,16 @@ impl Session {
         self.reanalyze();
     }
 
+    /// Moves the slider element `elm` owns and analyses the circuit again.
+    pub(crate) fn apply_element_slider(&mut self, elm: usize, value: i32) {
+        let Some(e) = self.sim.elements.get_mut(elm) else {
+            return;
+        };
+        e.set_slider_value(value);
+        e.set_points();
+        self.reanalyze();
+    }
+
     /// Tells the worker about a parameter that was just changed in the document: a small
     /// message instead of rebuilding the circuit. Without a worker the circuit is analysed.
     pub(crate) fn param_changed(&mut self, elm: usize, n: usize, value: f64) {
