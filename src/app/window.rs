@@ -1272,13 +1272,21 @@ impl SimpleComponent for App {
                 } else {
                     crate::app::commands::Node::Item(
                         Cmd::ViewInScope,
-                        "View in Scope".to_string(),
+                        "View in New Scope".to_string(),
                         None,
                         None,
                     )
                 };
+                let mut view = vec![first];
+                #[cfg(feature = "outputs")]
+                view.push(crate::app::commands::Node::Item(
+                    Cmd::ViewInUndockedScope,
+                    "View in New Undocked Scope".to_string(),
+                    None,
+                    None,
+                ));
                 let nodes = vec![
-                    crate::app::commands::Node::Section(vec![first]),
+                    crate::app::commands::Node::Section(view),
                     crate::app::commands::Node::Section(vec![crate::app::commands::Node::Item(
                         Cmd::AddSliders,
                         "Add Sliders".to_string(),

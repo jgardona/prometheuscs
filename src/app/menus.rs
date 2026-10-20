@@ -167,6 +167,7 @@ pub fn install_actions(
     cmds.extend([
         Cmd::Fullscreen,
         Cmd::DockScope,
+        Cmd::ViewInUndockedScope,
         Cmd::AddSliders,
         Cmd::Undo,
         Cmd::Example(String::new()),

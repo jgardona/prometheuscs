@@ -1068,25 +1068,10 @@ impl Session {
     /// Turns docked scope `idx` into a scope element placed in the circuit, near the first
     /// element it plots.
     pub fn undock_scope(&mut self, idx: usize) -> bool {
-        use crate::elements::geometry::snap_grid;
         if !self.editing_allowed() || idx >= self.sim.scopes.len() {
             return false;
         }
-        let scope = &self.sim.scopes[idx];
-        let Some(first) = scope.plots.first().and_then(|p| self.sim.elements.get(p.elm)) else {
-            return false;
-        };
-        let (x, y) = (snap_grid(first.base().x + 50), snap_grid(first.base().y + 50));
-        let Ok(node) = crate::format::xml::parse(&scope.to_xml().to_pretty_string()) else {
-            return false;
-        };
-        let Some(mut elm) = self.registry.create("ScopeElm", x, y) else { return false };
-        let holder = crate::format::xml::XmlNode {
-            tag: "ScopeElm".into(),
-            children: vec![node],
-            ..Default::default()
-        };
-        elm.undump_xml(&holder);
+        let Some(elm) = self.scope_element_for(&self.sim.scopes[idx]) else { return false };
         self.push_undo();
         self.sim.scopes.remove(idx);
         self.sim.elements.push(elm);
@@ -1094,6 +1079,48 @@ impl Session {
         self.dirty = true;
         self.reanalyze();
         true
+    }
+
+    /// Opens a new scope placed in the circuit, rather than under it, for every element of
+    /// [`Session::scope_targets`]; returns how many.
+    pub fn view_in_undocked_scope(&mut self) -> usize {
+        if !self.editing_allowed() {
+            return 0;
+        }
+        let elms: Vec<_> = self
+            .scope_targets()
+            .into_iter()
+            .filter_map(|i| {
+                let scope = crate::scope::Scope::for_element(i, &self.sim.elements, 0)?;
+                self.scope_element_for(&scope)
+            })
+            .collect();
+        if elms.is_empty() {
+            return 0;
+        }
+        self.push_undo();
+        let count = elms.len();
+        self.sim.elements.extend(elms);
+        self.store_scopes();
+        self.dirty = true;
+        self.reanalyze();
+        count
+    }
+
+    /// A scope element showing `scope`, placed near the first element the scope plots.
+    fn scope_element_for(&self, scope: &crate::scope::Scope) -> Option<Box<dyn Element>> {
+        use crate::elements::geometry::snap_grid;
+        let first = scope.plots.first().and_then(|p| self.sim.elements.get(p.elm))?;
+        let (x, y) = (snap_grid(first.base().x + 50), snap_grid(first.base().y + 50));
+        let node = crate::format::xml::parse(&scope.to_xml().to_pretty_string()).ok()?;
+        let mut elm = self.registry.create("ScopeElm", x, y)?;
+        let holder = crate::format::xml::XmlNode {
+            tag: "ScopeElm".into(),
+            children: vec![node],
+            ..Default::default()
+        };
+        elm.undump_xml(&holder);
+        Some(elm)
     }
 
     /// Index of the selected element when it is the only one and has a field that can take a

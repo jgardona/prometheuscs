@@ -88,6 +88,8 @@ pub enum Cmd {
     SetTool(Tool),
     /// Open a scope for the selected element.
     ViewInScope,
+    /// Open a scope for the selected element, placed in the circuit.
+    ViewInUndockedScope,
     /// Add sliders for the fields of the selected element.
     AddSliders,
     /// Turn the selected scope element back into a docked scope.
@@ -187,6 +189,7 @@ impl Cmd {
             Cmd::RotateCw => "rotate-cw",
             Cmd::Place(_) => "place",
             Cmd::ViewInScope => "view-in-scope",
+            Cmd::ViewInUndockedScope => "view-in-undocked-scope",
             Cmd::DockScope => "dock-scope",
             Cmd::AddSliders => "add-sliders",
             Cmd::RemoveScopes => "remove-scopes",
@@ -265,6 +268,7 @@ impl Cmd {
             "rotate-ccw" => Cmd::RotateCcw,
             "rotate-cw" => Cmd::RotateCw,
             "view-in-scope" => Cmd::ViewInScope,
+            "view-in-undocked-scope" => Cmd::ViewInUndockedScope,
             "dock-scope" => Cmd::DockScope,
             "add-sliders" => Cmd::AddSliders,
             "remove-scopes" => Cmd::RemoveScopes,
@@ -301,6 +305,7 @@ impl Cmd {
             Cmd::Duplicate => editing && s.has_selection(),
             Cmd::Paste => editing && s.clipboard.is_some(),
             Cmd::ViewInScope => !s.scope_targets().is_empty(),
+            Cmd::ViewInUndockedScope => editing && !s.scope_targets().is_empty(),
             Cmd::DockScope => editing && s.selected_scope_element().is_some(),
             Cmd::AddSliders => editing && s.selected_slider_element().is_some(),
             Cmd::CreateSubcircuit | Cmd::ConvertWires => editing && has_elements,
@@ -364,6 +369,9 @@ pub fn dispatch(s: &mut Session, cmd: &Cmd) -> Outcome {
         Cmd::SelectAll => s.select_all(),
         Cmd::ViewInScope => {
             s.view_in_scope();
+        }
+        Cmd::ViewInUndockedScope => {
+            s.view_in_undocked_scope();
         }
         Cmd::DockScope => {
             if let Some(i) = s.selected_scope_element() {

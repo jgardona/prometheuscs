@@ -368,6 +368,32 @@ fn a_scope_can_be_undocked_into_the_circuit_and_docked_again() {
     assert_eq!(s.sim.embedded.len(), 1, "undo brings the scope element back");
 }
 
+#[cfg(feature = "outputs")]
+#[test]
+fn an_element_can_be_viewed_in_a_new_undocked_scope() {
+    let mut s = Session::load(&lrc(), &Registry::standard()).unwrap();
+    let (scopes, elements) = (s.scope_count(), s.sim.elements.len());
+    let target = (0..elements).find(|&i| s.sim.elements[i].can_view_in_scope()).unwrap();
+    s.sim.elements[target].base_mut().selected = true;
+    assert_eq!(s.scope_targets(), [target]);
+    assert_eq!(s.view_in_undocked_scope(), 1);
+    assert_eq!(s.scope_count(), scopes, "no docked scope is added");
+    assert_eq!(s.sim.elements.len(), elements + 1);
+    assert_eq!(s.sim.embedded.len(), 1, "the circuit has a scope element now");
+    s.undo();
+    assert_eq!(s.sim.elements.len(), elements, "one undo takes it away");
+    assert!(s.sim.embedded.is_empty());
+}
+
+#[test]
+fn nothing_is_undocked_without_a_viewable_target() {
+    let mut s = Session::load(&lrc(), &Registry::standard()).unwrap();
+    for e in s.sim.elements.iter_mut() {
+        e.base_mut().selected = false;
+    }
+    assert_eq!(s.view_in_undocked_scope(), 0);
+}
+
 #[test]
 fn plots_can_be_removed_and_the_data_exported() {
     let mut s = Session::load(&lrc(), &Registry::standard()).unwrap();
