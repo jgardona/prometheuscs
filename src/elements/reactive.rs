@@ -842,7 +842,9 @@ impl Element for InductorElm {
 
     fn validate(&mut self, idx: usize, v: &mut Validator<'_>) -> bool {
         let (n0, n1) = (self.base.nodes[0], self.base.nodes[1]);
-        if !v.find_path(PathKind::Inductor, idx, n1, n0) {
+        // as in the original, the search starts at node 0 and looks for node 1: inductors on
+        // the way count only when their current runs the same way
+        if !v.find_path(PathKind::Inductor, idx, n0, n1) {
             Element::reset(self);
         }
         true

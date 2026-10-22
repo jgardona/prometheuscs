@@ -291,7 +291,7 @@ impl ChipLogic for Controlled {
         if matches!(self.kind, Kind::Vccs | Kind::Cccs) {
             let ic = self.input_count;
             let n = &c.base.nodes;
-            self.broken = !v.find_path(PathKind::Inductor, idx, n[ic], n[ic + 1]);
+            self.broken = !v.find_path(PathKind::Inductor, idx, n[ic + 1], n[ic]);
         } else {
             self.broken = false;
         }

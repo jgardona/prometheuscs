@@ -2050,7 +2050,7 @@ impl Element for CurrentElm {
 
     fn validate(&mut self, idx: usize, v: &mut Validator<'_>) -> bool {
         let (n0, n1) = (self.base.nodes[0], self.base.nodes[1]);
-        let path = v.find_path(PathKind::Inductor, idx, n1, n0);
+        let path = v.find_path(PathKind::Inductor, idx, n0, n1);
         self.broken = !path && !self.is_voltage_limited();
         true
     }
