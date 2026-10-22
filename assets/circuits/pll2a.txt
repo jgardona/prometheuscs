@@ -32,5 +32,5 @@
     <p v="0" sc="2.5"/>
     <p v="3" sc="0.0025"/>
   </o>
-  <adj e="6" ei="3" en="Frequency (Hz)" mn="100" mx="1000" st="Frequency"/>
+  <adj e="6" ei="6" en="Frequency (Hz)" mn="100" mx="1000" st="Frequency"/>
 </cir>

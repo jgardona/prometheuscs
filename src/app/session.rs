@@ -535,6 +535,30 @@ mod tests {
     }
 
     #[test]
+    fn converter_duty_cycle_sliders_change_the_duty_cycle_not_the_frequency() {
+        let examples = [
+            ("buck", include_str!("../../assets/circuits/conv-buck.txt")),
+            ("boost", include_str!("../../assets/circuits/conv-boost.txt")),
+            ("sepic", include_str!("../../assets/circuits/conv-sepic.txt")),
+            ("cuk", include_str!("../../assets/circuits/conv-cuk.txt")),
+        ];
+        for (name, text) in examples {
+            let mut s = Session::load(text, &Registry::standard()).unwrap();
+            let a = s.adjustables[0].clone();
+            let field = |s: &Session, n: usize| s.sim.elements[a.elm].get_edit_info(n).unwrap();
+            assert_eq!(field(&s, a.edit_item).name, "Duty Cycle", "{name}");
+            let freq = field(&s, 6);
+            assert_eq!(freq.name, "Frequency (Hz)", "{name}");
+            for pos in [20.0, 50.0, 80.0] {
+                s.set_slider(0, pos).unwrap();
+                let duty = field(&s, a.edit_item).value;
+                assert!((duty - pos).abs() < 1e-6, "{name}: slider {pos} gave duty {duty}");
+                assert_eq!(field(&s, 6).value, freq.value, "{name}: frequency moved");
+            }
+        }
+    }
+
+    #[test]
     fn speed_bar_covers_the_original_range() {
         let mut s = session();
         // the file's speed lies beyond position 100, so the slider needs the original 0 to 260

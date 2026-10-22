@@ -28,5 +28,5 @@
     <p v="0" sc="20"/>
     <p v="3" sc="0.00625"/>
   </o>
-  <adj e="16" ei="6" en="Duty Cycle" mn="0" mx="100" st="Duty Cycle"/>
+  <adj e="16" ei="8" en="Duty Cycle" mn="0" mx="100" st="Duty Cycle"/>
 </cir>

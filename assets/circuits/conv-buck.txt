@@ -21,5 +21,5 @@
   <o en="12" sp="4" f="x4002" p="1">
     <p v="0" sc="0.15625"/>
   </o>
-  <adj e="2" ei="6" en="Duty Cycle" mn="0" mx="100" st="Duty Cycle"/>
+  <adj e="2" ei="8" en="Duty Cycle" mn="0" mx="100" st="Duty Cycle"/>
 </cir>

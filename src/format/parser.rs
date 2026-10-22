@@ -236,8 +236,33 @@ fn parse_xml(text: &str, registry: &Registry) -> ParseResult {
     for node in root.children.iter().filter(|n| !is_model(&n.tag)) {
         read_xml_child(node, registry, &mut circuit, &mut errors);
     }
+    resolve_slider_fields(&root, &mut circuit);
     ParseResult { circuit, errors }
 }
+
+/// Edit items are stored by index, but the numbering of an element's fields has changed between
+/// versions. A slider that also records the name of its field (`en`) is re-bound by that name
+/// when the index no longer points at it, as long as exactly one field has the name.
+fn resolve_slider_fields(root: &XmlNode, circuit: &mut Circuit) {
+    // one adjustable was pushed per `adj` node with a valid element, in the same order
+    let named = root.children.iter().filter(|n| n.tag == "adj" && n.int_attr("e", -1) >= 0);
+    for (node, adj) in named.zip(circuit.adjustables.iter_mut()) {
+        let name = node.string_attr("en", "");
+        let Some(elm) = circuit.elements.get(adj.elm) else { continue };
+        if name.is_empty() || elm.get_edit_info(adj.edit_item).is_some_and(|ei| ei.name == name) {
+            continue;
+        }
+        let mut found =
+            (0..MAX_EDIT_ITEMS).filter(|&n| elm.get_edit_info(n).is_some_and(|ei| ei.name == name));
+        if let (Some(n), None) = (found.next(), found.next()) {
+            tracing::debug!(elm = adj.elm, from = adj.edit_item, to = n, name, "slider re-bound");
+            adj.edit_item = n;
+        }
+    }
+}
+
+/// Upper bound of the edit items searched when a slider is re-bound by its field name.
+const MAX_EDIT_ITEMS: usize = 32;
 
 fn read_xml_child(
     node: &XmlNode,
@@ -305,6 +330,71 @@ mod tests {
     #[test]
     fn unescapes_text_fields() {
         assert_eq!(unescape_text("a\\sb\\\\c"), "a b\\c");
+    }
+
+    /// The Ćuk converter with its slider pointing at the wrong field (`ei` 6 is the frequency).
+    fn cuk_with_slider_item(ei: &str) -> String {
+        include_str!("../../assets/circuits/conv-cuk.txt")
+            .replace(r#"ei="8" en="Duty Cycle""#, &format!(r#"ei="{ei}" en="Duty Cycle""#))
+    }
+
+    fn slider_field(text: &str) -> (usize, String) {
+        let r = parse(text, &Registry::standard());
+        let a = &r.circuit.adjustables[0];
+        let name = r.circuit.elements[a.elm].get_edit_info(a.edit_item).unwrap().name;
+        (a.edit_item, name)
+    }
+
+    #[test]
+    fn a_slider_with_a_field_name_is_rebound_when_its_index_is_stale() {
+        assert_eq!(slider_field(&cuk_with_slider_item("6")), (8, "Duty Cycle".to_string()));
+        assert_eq!(slider_field(&cuk_with_slider_item("3")), (8, "Duty Cycle".to_string()));
+        // a correct index is left alone
+        assert_eq!(slider_field(&cuk_with_slider_item("8")), (8, "Duty Cycle".to_string()));
+    }
+
+    #[test]
+    fn a_slider_whose_name_matches_no_field_keeps_its_index() {
+        let text = cuk_with_slider_item("6").replace(r#"en="Duty Cycle""#, r#"en="Nothing""#);
+        assert_eq!(slider_field(&text).0, 6);
+    }
+
+    #[test]
+    fn every_bundled_slider_drives_the_field_it_is_named_for() {
+        let registry = Registry::standard();
+        let mut checked = 0;
+        for entry in std::fs::read_dir("assets/circuits").unwrap() {
+            let path = entry.unwrap().path();
+            let text = std::fs::read_to_string(&path).unwrap();
+            let file = path.file_name().unwrap().to_string_lossy().into_owned();
+            let r = parse(&text, &registry);
+            // the index each file records, before any re-binding by name
+            let raw: Vec<usize> = xml::parse(&text)
+                .map(|root| {
+                    root.children
+                        .iter()
+                        .filter(|n| n.tag == "adj")
+                        .map(|n| n.int_attr("ei", 0) as usize)
+                        .collect()
+                })
+                .unwrap_or_default();
+            for (k, a) in r.circuit.adjustables.iter().enumerate() {
+                let field = r.circuit.elements[a.elm].get_edit_info(a.edit_item).unwrap().name;
+                if let Some(raw) = raw.get(k) {
+                    assert_eq!(*raw, a.edit_item, "{file}: the file's own index is stale");
+                }
+                // the converters' duty cycle and the oscillators' frequency are easy to mix up
+                for (slider, wanted) in
+                    [("Duty Cycle", "Duty Cycle"), ("Frequency", "Frequency (Hz)")]
+                {
+                    if a.slider_text == slider {
+                        assert_eq!(field, wanted, "{file}: slider {slider:?} drives {field:?}");
+                        checked += 1;
+                    }
+                }
+            }
+        }
+        assert!(checked >= 8, "only {checked} sliders were checked");
     }
 
     #[test]
