@@ -984,7 +984,9 @@ fn whole_number(min: f64, max: f64, value: f64) -> gtk::SpinButton {
 
 fn color_button(rgb: [u8; 3]) -> gtk::ColorDialogButton {
     let button = gtk::ColorDialogButton::new(Some(gtk::ColorDialog::new()));
-    button.dialog().map(|d| d.set_with_alpha(false));
+    if let Some(d) = button.dialog() {
+        d.set_with_alpha(false);
+    }
     button.set_rgba(&to_rgba(Color::new(rgb[0], rgb[1], rgb[2])));
     button
 }

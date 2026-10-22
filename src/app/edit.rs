@@ -2238,8 +2238,19 @@ impl Session {
         let (o, s) = (&mut self.options, &mut self.settings);
         match t {
             Toggle::ShowCurrent => (o.show_dots, s.show_dots) = (on, on),
-            Toggle::ShowVoltage => (o.show_volts, s.show_volts) = (on, on),
-            Toggle::ShowPower => (o.show_power, s.show_power) = (on, on),
+            // like the original's menu, voltage and power colouring exclude each other
+            Toggle::ShowVoltage => {
+                (o.show_volts, s.show_volts) = (on, on);
+                if on {
+                    (o.show_power, s.show_power) = (false, false);
+                }
+            }
+            Toggle::ShowPower => {
+                (o.show_power, s.show_power) = (on, on);
+                if on {
+                    (o.show_volts, s.show_volts) = (false, false);
+                }
+            }
             Toggle::ShowValues => (o.show_values, s.show_values) = (on, on),
             Toggle::SmallGrid => {
                 (o.small_grid, s.small_grid) = (on, on);
@@ -2509,6 +2520,26 @@ mod tests {
         assert!(s.sim.settings().adjust_time_step);
         assert_eq!(s.sim.settings().solver, SolverType::Dense);
         assert_eq!(s.sim.settings().min_time_step, 1e-9);
+    }
+
+    #[test]
+    fn show_voltage_and_show_power_exclude_each_other() {
+        let mut s = session();
+        assert!(s.toggle_state(Toggle::ShowVoltage) && !s.toggle_state(Toggle::ShowPower));
+        s.set_toggle(Toggle::ShowPower, true);
+        assert!(s.toggle_state(Toggle::ShowPower));
+        assert!(!s.toggle_state(Toggle::ShowVoltage), "power turns voltage off");
+        assert!(!s.settings.show_volts && s.settings.show_power, "and the settings follow");
+        s.set_toggle(Toggle::ShowVoltage, true);
+        assert!(s.toggle_state(Toggle::ShowVoltage));
+        assert!(!s.toggle_state(Toggle::ShowPower), "voltage turns power off");
+        // switching one off leaves the other as it was
+        s.set_toggle(Toggle::ShowVoltage, false);
+        assert!(!s.toggle_state(Toggle::ShowVoltage) && !s.toggle_state(Toggle::ShowPower));
+        s.set_toggle(Toggle::ShowPower, true);
+        s.set_toggle(Toggle::ShowPower, false);
+        assert!(!s.toggle_state(Toggle::ShowPower) && !s.toggle_state(Toggle::ShowVoltage));
+        assert!(!s.draw_ctx.show_volts && !s.draw_ctx.show_power, "the drawing context follows");
     }
 
     #[test]
