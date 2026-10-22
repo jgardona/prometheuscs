@@ -1859,6 +1859,8 @@ impl SimpleComponent for App {
             context_label,
             context_save,
         };
+        // the actions start unchecked and enabled; show the loaded state before the first message
+        menus::sync_actions(&widgets.actions, &model.session.borrow());
         tracing::debug!(ms = super::bench::since_start(), "init done");
         ComponentParts { model, widgets }
     }

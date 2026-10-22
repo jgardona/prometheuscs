@@ -253,6 +253,27 @@ mod tests {
     use super::*;
 
     #[test]
+    fn sync_actions_shows_the_session_state() {
+        use super::super::edit::Toggle;
+        let registry = Registry::standard();
+        let group = gio::SimpleActionGroup::new();
+        let entries = install_actions(&group, &registry, Rc::new(|_| {}));
+        let s = Session::empty_with(&registry, Default::default());
+        sync_actions(&entries, &s);
+        let state_of = |cmd: Cmd| {
+            let e = entries.iter().find(|e| e.cmd == cmd).unwrap();
+            (e.action.state().and_then(|v| v.get::<bool>()), e.action.is_enabled())
+        };
+        for e in entries.iter().filter(|e| matches!(e.cmd, Cmd::Toggle(_))) {
+            let Cmd::Toggle(t) = e.cmd else { unreachable!() };
+            assert_eq!(state_of(e.cmd.clone()).0, Some(s.toggle_state(t)), "{t:?}");
+        }
+        assert!(s.toggle_state(Toggle::ShowCurrent), "a default that must show as checked");
+        assert!(!state_of(Cmd::Undo).1, "nothing to undo on a fresh session");
+        assert!(!state_of(Cmd::Cut).1, "nothing selected on a fresh session");
+    }
+
+    #[test]
     fn created_subcircuits_are_listed_in_the_draw_menu() {
         let registry = Registry::standard();
         let examples = super::super::examples::ExampleList::default();
