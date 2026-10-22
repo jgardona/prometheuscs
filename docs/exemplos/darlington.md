@@ -11,7 +11,7 @@ verificacoes:
 # Par Darlington
 
 <!-- navegacao:inicio -->
-[Índice](README.md) · [Anterior: Current Mirror](mirror.md)
+[Índice](README.md) · [Anterior: Current Mirror](mirror.md) · [Próximo: Gilbert Cell Multiplier](gilbertcell.md)
 <!-- navegacao:fim -->
 
 ## Objetivo

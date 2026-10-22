@@ -294,13 +294,13 @@ pub fn series(
     Ok(Some(out))
 }
 
-/// The position of every terminal of every element of the example: `(index, class, [(x, y)…])`,
-/// so that the author can rebuild the netlist of a circuit whose elements place their terminals
-/// themselves (transistors, chips).
-pub fn posts(
-    example_text: &str,
-    registry: &Registry,
-) -> Option<Vec<(usize, String, Vec<(i32, i32)>)>> {
+/// The terminals of one element: `(index, class, [(x, y)…])`.
+pub type ElementPosts = (usize, String, Vec<(i32, i32)>);
+
+/// The position of every terminal of every element of the example, so that the author can
+/// rebuild the netlist of a circuit whose elements place their terminals themselves
+/// (transistors, chips).
+pub fn posts(example_text: &str, registry: &Registry) -> Option<Vec<ElementPosts>> {
     let parsed = crate::format::parser::parse(example_text, registry);
     if !parsed.errors.is_empty() {
         return None;

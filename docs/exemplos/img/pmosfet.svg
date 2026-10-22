@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="161" height="241" viewBox="0 0 161 241">
+<path d="M0 0 L161 0 L161 241 L0 241 Z" fill="#000000" stroke="none"/>
+<path d="M72 120 L57 120" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="17" y="120" font-size="12" text-anchor="start" dominant-baseline="central" fill="#ffffff">+2.5V</text>
+<path d="M120 136 L120 184" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="126" y="166" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M120 104 L120 56" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="126" y="86" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">0A</text>
+<path d="M120 136 L98 136" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M120 104 L98 104" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M98 136 L98 131" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M98 125 L98 120" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M98 120 L98 115" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M98 109 L98 104" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M98 136 L98 141" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M98 104 L98 99" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M120 104 L120 120" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M120 120 L98 120" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M120 120 L108 115 L108 125 Z" fill="#807f7f" stroke="none"/>
+<path d="M72 120 L92 120" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M92 112 L92 128" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M120 184 L120 187" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="110" y="199" font-size="12" text-anchor="start" dominant-baseline="central" fill="#ffffff">+3V</text>
+<path d="M120 56 L120 53" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="110" y="41" font-size="12" text-anchor="start" dominant-baseline="central" fill="#ffffff">+5V</text>
+</svg>

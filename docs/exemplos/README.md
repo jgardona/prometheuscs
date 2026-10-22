@@ -4,7 +4,7 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 
 > Este índice é gerado por `cargo run --release --bin exdocs -- sync`; não o edite à mão.
 
-**Situação:** 110 de 367 entradas do menu documentadas (110 documentos).
+**Situação:** 146 de 367 entradas do menu documentadas (145 documentos).
 
 | Categoria | Situação |
 |-----------|----------|
@@ -14,11 +14,11 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 | Other Passive Circuits | documentado |
 | Diodes | documentado |
 | Op-Amps | pendente (0 de 39) |
-| Transistors | pendente (14 de 28) |
-| MOSFETs | pendente (0 de 21) |
+| Transistors | documentado |
+| MOSFETs | documentado |
 | 555 Timer Chip | pendente (0 de 10) |
 | Active Filters | pendente (0 de 8) |
-| Logic Families | pendente (0 de 27) |
+| Logic Families | pendente (1 de 27) |
 | Combinational Logic | pendente (0 de 11) |
 | Sequential Logic | pendente (0 de 27) |
 | Analog/Digital | pendente (0 de 8) |
@@ -217,7 +217,7 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 - Chaos 2 — *pendente*
 - Jerk — *pendente*
 
-## Transistors — pendente (14 de 28)
+## Transistors — documentado
 
 - [NPN Transistor](npn.md)
 - [PNP Transistor](pnp.md)
@@ -230,11 +230,11 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 - [Current Source Ramp](currentsrcramp.md)
 - [Current Mirror](mirror.md)
 - [Darlington Pair](darlington.md)
-- Gilbert Cell Multiplier — *pendente*
-- True RMS Converter — *pendente*
-- Joule Thief — *pendente*
-- Full-Wave Rectifier — *pendente*
-- Early Effect — *pendente*
+- [Gilbert Cell Multiplier](gilbertcell.md)
+- [True RMS Converter](rmsconverter.md)
+- [Joule Thief](joule-thief.md)
+- [Full-Wave Rectifier](transrectifier.md)
+- [Early Effect](early.md)
 
 ### Multivibrators — documentado
 
@@ -242,47 +242,47 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 - [Bistable Multivib (Flip-Flop)](multivib-bi.md)
 - [Monostable Multivib (One-Shot)](multivib-mono.md)
 
-### Differential Amplifiers — pendente (0 de 3)
+### Differential Amplifiers — documentado
 
-- Differential Input — *pendente*
-- Common-Mode Input — *pendente*
-- Common-Mode w/Current Source — *pendente*
+- [Differential Input](trans-diffamp.md)
+- [Common-Mode Input](trans-diffamp-common.md)
+- [Common-Mode w/Current Source](trans-diffamp-cursrc.md)
 
-### Push-Pull Follower — pendente (0 de 2)
+### Push-Pull Follower — documentado
 
-- Simple, with distortion — *pendente*
-- Improved — *pendente*
+- [Simple, with distortion](pushpullxover.md)
+- [Improved](pushpull.md)
 
-### Oscillators — pendente (0 de 4)
+### Oscillators — documentado
 
-- Colpitts Oscillator — *pendente*
-- Hartley Oscillator — *pendente*
-- Emitter-Coupled LC Oscillator — *pendente*
-- Crystal Oscillator — *pendente*
+- [Colpitts Oscillator](colpitts.md)
+- [Hartley Oscillator](hartley.md)
+- [Emitter-Coupled LC Oscillator](eclosc.md)
+- [Crystal Oscillator](crystalosc2.md)
 
-## MOSFETs — pendente (0 de 21)
+## MOSFETs — documentado
 
-- n-MOSFET — *pendente*
-- p-MOSFET — *pendente*
-- Switch — *pendente*
-- Source Follower — *pendente*
-- Current Source — *pendente*
-- Current Ramp — *pendente*
-- Current Mirror — *pendente*
-- Common-Source Amplifier — *pendente*
-- CMOS Inverter — *pendente*
-- CMOS Inverter (w/capacitance) — *pendente*
-- CMOS Inverter (slow transition) — *pendente*
-- CMOS Transmission Gate — *pendente*
-- CMOS Multiplexer — *pendente*
-- Sample-and-Hold — *pendente*
-- Delayed Buffer — *pendente*
-- Leading-Edge Detector — *pendente*
-- Switchable Filter — *pendente*
-- Voltage Inverter — *pendente*
-- Inverter Amplifier — *pendente*
-- Inverter Oscillator — *pendente*
-- CMOS Crystal Oscillator — *pendente*
+- [n-MOSFET](nmosfet.md)
+- [p-MOSFET](pmosfet.md)
+- [Switch](mosswitch.md)
+- [Source Follower](mosfollower.md)
+- [Current Source](moscurrentsrc.md)
+- [Current Ramp](moscurrentramp.md)
+- [Current Mirror](mosmirror.md)
+- [Common-Source Amplifier](mosfetamp.md)
+- [CMOS Inverter](cmosinverter.md)
+- [CMOS Inverter (w/capacitance)](cmosinvertercap.md)
+- [CMOS Inverter (slow transition)](cmosinverterslow.md)
+- [CMOS Transmission Gate](cmostransgate.md)
+- [CMOS Multiplexer](mux.md)
+- [Sample-and-Hold](samplenhold.md)
+- [Delayed Buffer](delayrc.md)
+- [Leading-Edge Detector](leadingedge.md)
+- [Switchable Filter](switchfilter.md)
+- [Voltage Inverter](voltinvert.md)
+- [Inverter Amplifier](invertamp.md)
+- [Inverter Oscillator](inv-osc.md)
+- [CMOS Crystal Oscillator](crystalosc.md)
 
 ## 555 Timer Chip — pendente (0 de 10)
 
@@ -308,7 +308,7 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 - Butterworth High-Pass — *pendente*
 - Butterworth Band-Pass — *pendente*
 
-## Logic Families — pendente (0 de 27)
+## Logic Families — pendente (1 de 27)
 
 ### RTL — pendente (0 de 3)
 
@@ -336,9 +336,9 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 - Depletion-load NMOS Inverter — *pendente*
 - NMOS NAND — *pendente*
 
-### CMOS — pendente (0 de 6)
+### CMOS — pendente (1 de 6)
 
-- CMOS Inverter — *pendente*
+- [CMOS Inverter](cmosinverter.md)
 - CMOS NAND — *pendente*
 - CMOS NOR — *pendente*
 - CMOS XOR — *pendente*

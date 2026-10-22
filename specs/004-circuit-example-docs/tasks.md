@@ -76,13 +76,13 @@ other variants; chaotic circuits are described qualitatively.
 ### Wave 3 (48 entries)
 
 - [X] T025 [US1] Diodes (20, with Zener Diodes and Voltage Multipliers): one document per entry
-- [ ] T026 [US1] Transistors (28, with Multivibrators, Differential Amplifiers, Push-Pull Follower, Oscillators): one document per entry
-- [ ] T027 [US1] Wave 3 checkpoint: `exdocs sync`, `exdocs check`, gates
+- [X] T026 [US1] Transistors (28, with Multivibrators, Differential Amplifiers, Push-Pull Follower, Oscillators): one document per entry
+- [X] T027 [US1] Wave 3 checkpoint: `exdocs sync`, `exdocs check`, gates (2026-10-21: `sync` and `check` clean; Transistors `documentado`, 124 of 367 entries; `cargo fmt --check` and `cargo clippy --all-targets [--features gui] -- -D warnings` clean; `cargo test --release --no-fail-fast`: 47 suites pass, the only failure is `the_readme_links_the_index` of Phase 4 (T049), which stays red until T050; the twelve families builds were not re-run, T056 covers them)
 
 ### Wave 4 (21 entries)
 
-- [ ] T028 [US1] MOSFETs (21 entries): one document per entry; `cmosinverter.txt` is listed here and again in *Logic Families > CMOS*: write its document here (its category and navigation are the MOSFETs ones)
-- [ ] T029 [US1] Wave 4 checkpoint: `exdocs sync`, `exdocs check`, gates
+- [X] T028 [US1] MOSFETs (21 entries): one document per entry; `cmosinverter.txt` is listed here and again in *Logic Families > CMOS*: write its document here (its category and navigation are the MOSFETs ones)
+- [X] T029 [US1] Wave 4 checkpoint: `exdocs sync`, `exdocs check`, gates (2026-10-21: `sync` and `check` clean in 46 s; MOSFETs `documentado`, 146 of 367 entries; `cargo fmt --check` clean; `cargo test --release --test example_docs`: 8 of 9 pass, the only failure is `the_readme_links_the_index` (T049), red until T050; no Rust code changed in this wave, so clippy and the other suites were not re-run)
 
 ### Wave 5 (47 entries)
 
