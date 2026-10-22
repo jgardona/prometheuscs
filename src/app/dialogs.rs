@@ -95,7 +95,7 @@ pub fn shortcuts(parent: &impl IsA<gtk::Widget>, registry: &Registry) {
     let scroll = gtk::ScrolledWindow::new();
     scroll.set_child(Some(&padded(&list)));
     scroll.set_vexpand(true);
-    dialog("Atalhos de teclado", 420, 560, &scroll).present(Some(parent));
+    dialog(&ls("Keyboard Shortcuts"), 420, 560, &scroll).present(Some(parent));
 }
 
 /// One line of the list of loading problems, in the interface language.
@@ -103,14 +103,17 @@ fn load_problem_text(e: &crate::error::LoadError) -> (String, String) {
     use crate::error::LoadError;
     match e {
         LoadError::UnknownType { line, type_code } => (
-            format!("Linha {line}: elemento desconhecido"),
-            format!("O tipo `{type_code}` não existe nesta versão; a linha foi ignorada."),
+            ls("Line {line}: unknown element").replace("{line}", &line.to_string()),
+            ls("The type `{type}` does not exist in this version; the line was ignored.")
+                .replace("{type}", type_code),
         ),
         LoadError::Malformed { line, type_code, message } => (
-            format!("Linha {line}: entrada `{type_code}` malformada"),
-            format!("{message}; a linha foi ignorada."),
+            ls("Line {line}: malformed `{type}` entry")
+                .replace("{line}", &line.to_string())
+                .replace("{type}", type_code),
+            ls("{message}; the line was ignored.").replace("{message}", message),
         ),
-        LoadError::Xml(message) => ("O arquivo XML é inválido".into(), message.clone()),
+        LoadError::Xml(message) => (ls("The XML file is invalid"), message.clone()),
     }
 }
 
@@ -127,11 +130,14 @@ pub fn load_problems(parent: &impl IsA<gtk::Widget>, errors: &[crate::error::Loa
         row.set_subtitle_selectable(true);
         list.append(&row);
     }
-    let intro = gtk::Label::new(Some(&format!(
-        "{} {} não puderam ser lidas. O restante do circuito foi carregado.",
-        errors.len(),
-        if errors.len() == 1 { "entrada" } else { "entradas" }
-    )));
+    let intro = gtk::Label::new(Some(
+        &ls(if errors.len() == 1 {
+            "{count} entry could not be read. The rest of the circuit was loaded."
+        } else {
+            "{count} entries could not be read. The rest of the circuit was loaded."
+        })
+        .replace("{count}", &errors.len().to_string()),
+    ));
     intro.set_wrap(true);
     intro.set_xalign(0.0);
     let body = gtk::Box::new(gtk::Orientation::Vertical, 12);
@@ -140,7 +146,7 @@ pub fn load_problems(parent: &impl IsA<gtk::Widget>, errors: &[crate::error::Loa
     let scroll = gtk::ScrolledWindow::new();
     scroll.set_child(Some(&padded(&body)));
     scroll.set_vexpand(true);
-    dialog("Problemas ao carregar o circuito", 520, 420, &scroll).present(Some(parent));
+    dialog(&ls("Problems Loading the Circuit"), 520, 420, &scroll).present(Some(parent));
 }
 
 /// Shows text that can be selected and copied.
@@ -152,7 +158,7 @@ pub fn text_view(parent: &impl IsA<gtk::Widget>, title: &str, text: &str) {
     let scroll = gtk::ScrolledWindow::new();
     scroll.set_child(Some(&view));
     scroll.set_vexpand(true);
-    let copy = gtk::Button::with_label("Copiar");
+    let copy = gtk::Button::with_label(&ls("Copy"));
     let t = text.to_string();
     let p = parent.clone().upcast::<gtk::Widget>();
     copy.connect_clicked(move |_| p.clipboard().set_text(&t));
@@ -172,13 +178,13 @@ pub fn link(parent: &impl IsA<gtk::Widget>, url: &str) {
     entry.set_text(url);
     entry.set_editable(false);
     entry.set_hexpand(true);
-    let copy = gtk::Button::with_label("Copiar link");
+    let copy = gtk::Button::with_label(&ls("Copy Link"));
     let (u, p) = (url.to_string(), parent.clone().upcast::<gtk::Widget>());
     copy.connect_clicked(move |_| p.clipboard().set_text(&u));
     let body = gtk::Box::new(gtk::Orientation::Vertical, 12);
     body.append(&entry);
     body.append(&copy);
-    dialog("Exportar como Link", 520, 160, &padded(&body)).present(Some(parent));
+    dialog(&ls("Export As Link"), 520, 160, &padded(&body)).present(Some(parent));
 }
 
 /// Import from text: paste circuit text or choose a file.
@@ -193,8 +199,8 @@ pub fn import_text(
     scroll.set_child(Some(&view));
     scroll.set_vexpand(true);
     let buttons = gtk::Box::new(gtk::Orientation::Horizontal, 6);
-    let file = gtk::Button::with_label("Abrir arquivo...");
-    let go = gtk::Button::with_label("Importar");
+    let file = gtk::Button::with_label(&ls("Open File..."));
+    let go = gtk::Button::with_label(&ls("Import"));
     go.add_css_class("suggested-action");
     buttons.append(&file);
     buttons.append(&go);
@@ -206,7 +212,7 @@ pub fn import_text(
     body.set_margin_end(6);
     body.append(&scroll);
     body.append(&buttons);
-    let d = dialog("Importar de Arquivo Texto", 640, 480, &body);
+    let d = dialog(&ls("Import From Text"), 640, 480, &body);
     let (d1, d2) = (d.clone(), d.clone());
     go.connect_clicked(move |_| {
         let b = view.buffer();
@@ -261,7 +267,7 @@ pub fn find(
     body.set_margin_end(6);
     body.append(&entry);
     body.append(&scroll);
-    let d = dialog("Encontrar Componente", 420, 480, &body);
+    let d = dialog(&ls("Find Component"), 420, 480, &body);
     let d2 = d.clone();
     list.connect_row_activated(move |_, row| {
         if let Some(&i) = indices.get(row.index() as usize) {
@@ -394,7 +400,7 @@ pub fn edit_element_with(
             widgets.push(Field::Entry(row));
         }
     }
-    let apply = gtk::Button::with_label("Aplicar");
+    let apply = gtk::Button::with_label(&ls("Apply"));
     apply.add_css_class("suggested-action");
     apply.set_halign(gtk::Align::End);
     let message = gtk::Label::new(error);
@@ -437,7 +443,9 @@ pub fn edit_element_with(
                         match parse_edit_value(&text) {
                             Some(v) => ei.value = v,
                             None => {
-                                message.set_text(&format!("{}: valor inválido", ls(&ei.name)));
+                                message.set_text(
+                                    &ls("{name}: invalid value").replace("{name}", &ls(&ei.name)),
+                                );
                                 return;
                             }
                         }
@@ -513,7 +521,7 @@ pub fn element_sliders(
         group.add(&expander);
         rows.push(Row { expander, min, max, step, label, log });
     }
-    let apply = gtk::Button::with_label("Aplicar");
+    let apply = gtk::Button::with_label(&ls("Apply"));
     apply.add_css_class("suggested-action");
     apply.set_halign(gtk::Align::End);
     let message = gtk::Label::new(error);
@@ -544,7 +552,7 @@ pub fn element_sliders(
                     e.step = step;
                 }
                 _ => {
-                    message.set_text(&format!("{}: valor inválido", e.name));
+                    message.set_text(&ls("{name}: invalid value").replace("{name}", &ls(&e.name)));
                     return;
                 }
             }
@@ -778,7 +786,7 @@ pub fn subcircuit_pins(
     let hint = gtk::Label::new(Some(&ls("Drag the pins to the desired position")));
     hint.set_xalign(0.0);
 
-    let apply = gtk::Button::with_label("Aplicar");
+    let apply = gtk::Button::with_label(&ls("Apply"));
     apply.add_css_class("suggested-action");
     apply.set_halign(gtk::Align::End);
     let message = gtk::Label::new(error.map(ls).as_deref());
@@ -1163,11 +1171,11 @@ fn choose_path(
     }
     match choice {
         FileChoice::Open(patterns) => {
-            d.set_title("Escolher arquivo");
+            d.set_title(&ls("Choose File"));
             let refs: Vec<&str> = patterns.iter().map(String::as_str).collect();
-            let store = filter("Arquivos de dados", &refs);
+            let store = filter(&ls("Data Files"), &refs);
             let all = gtk::FileFilter::new();
-            all.set_name(Some("Todos os arquivos"));
+            all.set_name(Some(&ls("All Files")));
             all.add_pattern("*");
             store.append(&all);
             d.set_filters(Some(&store));
@@ -1178,7 +1186,7 @@ fn choose_path(
             });
         }
         FileChoice::Save(name) => {
-            d.set_title("Salvar como");
+            d.set_title(&ls("Save As"));
             let suggested = start.file_name().and_then(|n| n.to_str()).unwrap_or(name);
             d.set_initial_name(Some(suggested));
             d.save(Some(parent), gio::Cancellable::NONE, move |r| {
@@ -1193,8 +1201,8 @@ fn choose_path(
 /// Asks for a circuit file to open.
 pub fn choose_open(parent: &impl IsA<gtk::Window>, on_path: impl Fn(PathBuf) + 'static) {
     let d = gtk::FileDialog::new();
-    d.set_title("Abrir circuito");
-    d.set_filters(Some(&filter("Circuitos", &super::consts::CIRCUIT_GLOBS)));
+    d.set_title(&ls("Open Circuit"));
+    d.set_filters(Some(&filter(&ls("Circuit Files"), &super::consts::CIRCUIT_GLOBS)));
     d.open(Some(parent), gio::Cancellable::NONE, move |r| {
         if let Some(path) = r.ok().and_then(|f| f.path()) {
             on_path(path);

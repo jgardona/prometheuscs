@@ -176,6 +176,133 @@ mod tests {
         assert_eq!(m["a\\qb"], "c\"d");
     }
 
+    /// The source files of the program, but for this one.
+    fn source_files() -> Vec<std::path::PathBuf> {
+        fn walk(dir: &std::path::Path, out: &mut Vec<std::path::PathBuf>) {
+            for e in std::fs::read_dir(dir).unwrap() {
+                let path = e.unwrap().path();
+                if path.is_dir() {
+                    walk(&path, out);
+                } else if path.extension().is_some_and(|x| x == "rs")
+                    && !path.ends_with("locale.rs")
+                {
+                    out.push(path);
+                }
+            }
+        }
+        let mut files = Vec::new();
+        walk(&std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src"), &mut files);
+        files
+    }
+
+    /// The string literals of the program's source (without its tests): `(file, literal)`.
+    fn source_literals() -> Vec<(String, String)> {
+        let files = source_files();
+        let mut out = Vec::new();
+        for f in &files {
+            let text = std::fs::read_to_string(f).unwrap();
+            let text = text.split("#[cfg(test)]").next().unwrap_or("");
+            for line in text.lines().filter(|l| !l.trim_start().starts_with("//")) {
+                let mut chars = line.chars();
+                while let Some(c) = chars.next() {
+                    match c {
+                        '\\' => {
+                            chars.next();
+                        }
+                        '"' => {
+                            let mut lit = String::new();
+                            while let Some(c) = chars.next() {
+                                match c {
+                                    '\\' => {
+                                        lit.push(c);
+                                        lit.extend(chars.next());
+                                    }
+                                    '"' => break,
+                                    c => lit.push(c),
+                                }
+                            }
+                            out.push((f.display().to_string(), lit));
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        }
+        out
+    }
+
+    fn portuguese_translations() -> HashMap<String, String> {
+        let assets = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("assets");
+        load_language("pt", &assets)
+    }
+
+    #[test]
+    fn every_literal_looked_up_with_ls_has_a_portuguese_entry() {
+        let pt = portuguese_translations();
+        // keys of the original that have no Portuguese text in its locale file either
+        let upstream_gaps = ["export", " average"];
+        // looked up with a computed argument, so the scan cannot see them
+        let mut keys: Vec<String> = [
+            "Stop",
+            "Run",
+            "{count} entry could not be read. The rest of the circuit was loaded.",
+            "{count} entries could not be read. The rest of the circuit was loaded.",
+        ]
+        .iter()
+        .map(|k| (*k).to_string())
+        .collect();
+        let text_of = |lit: &str| lit.replace("\\u{3a9}", "\u{3a9}");
+        for f in source_files() {
+            let text = std::fs::read_to_string(f).unwrap();
+            let text = text.split("#[cfg(test)]").next().unwrap_or("");
+            for part in text.split("ls(\"").skip(1) {
+                if let Some(end) = part.find('"') {
+                    keys.push(text_of(&part[..end]));
+                }
+            }
+        }
+        let missing: Vec<&String> = keys
+            .iter()
+            .filter(|k| !upstream_gaps.contains(&k.as_str()))
+            .filter(|k| !pt.contains_key(k.as_str()) && !pt.contains_key(k.trim_end_matches('~')))
+            .collect();
+        assert!(missing.is_empty(), "no Portuguese entry for: {missing:?}");
+        assert!(keys.len() > 40, "the scan found only {} keys", keys.len());
+    }
+
+    #[test]
+    fn the_portuguese_file_covers_what_the_program_once_added_in_code() {
+        let pt = portuguese_translations();
+        assert_eq!(pt["Mode~"], "Modo");
+        assert_eq!(pt["Language"], "Idioma");
+        assert_eq!(pt["Show \u{3a9} Unit"], "Mostrar Unidade \u{3a9}");
+        assert_eq!(pt["Reset"], "Reiniciar");
+    }
+
+    #[test]
+    fn no_portuguese_text_is_hard_coded_in_the_source() {
+        const WORDS: [&str; 10] = [
+            "Reiniciar",
+            "Parar",
+            "Executar",
+            "Fechar",
+            "Aplicar",
+            "Copiar",
+            "Importar",
+            "Salvar",
+            "Abrir",
+            "Circuito",
+        ];
+        let found: Vec<(String, String)> = source_literals()
+            .into_iter()
+            .filter(|(_, lit)| {
+                lit.chars().any(|c| "ãõçáéíóúâêôàÃÕÇ".contains(c))
+                    || lit.split(|c: char| !c.is_alphabetic()).any(|w| WORDS.contains(&w))
+            })
+            .collect();
+        assert!(found.is_empty(), "Portuguese text must live in locale_pt.txt: {found:?}");
+    }
+
     #[test]
     fn untranslated_text_is_returned_unchanged() {
         assert_eq!(ls("resistor"), "resistor");

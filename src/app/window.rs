@@ -42,23 +42,10 @@ fn assets_dir() -> PathBuf {
 const SOFTWARE_GL_NOTICE: &str = "No graphics hardware acceleration was found: drawing is done by the CPU and large circuits may be slow.";
 const LANGUAGE_NOTICE: &str = "The language will change the next time the program starts.";
 
-/// Loads the Portuguese translations and the few strings the original does not translate.
+/// Loads the translations of the language in use.
 fn load_translations(assets: &std::path::Path, setting: &str) {
     let code = if setting == "auto" { locale::detect_language() } else { setting };
-    let mut map = locale::load_language(code, assets);
-    if code == "pt" {
-        for (k, v) in [
-            ("Mode~", "Modo"),
-            ("Show \u{3a9} Unit", "Mostrar Unidade \u{3a9}"),
-            ("Drag", "Arrastar"),
-            ("Delete", "Excluir"),
-            (LANGUAGE_NOTICE, "O idioma será aplicado na próxima vez que o programa for aberto."),
-            ("Language", "Idioma"),
-        ] {
-            map.entry(k.to_string()).or_insert_with(|| v.to_string());
-        }
-    }
-    locale::set_translations(map);
+    locale::set_translations(locale::load_language(code, assets));
     locale::set_current_language(code);
 }
 
@@ -105,17 +92,9 @@ fn paint_frame(s: &mut Session, g: &mut dyn Painter, w: f64, h: f64) {
     }
 }
 
-/// Translates the slider names used by the bundled circuits.
+/// Translates the name a circuit gives to one of its sliders.
 fn slider_title(name: &str) -> String {
-    match name {
-        "Capacitance" => "Capacitância",
-        "Inductance" => "Indutância",
-        "Resistance" => "Resistência",
-        "Voltage" => "Tensão",
-        "Frequency" => "Frequência",
-        other => other,
-    }
-    .to_string()
+    locale::ls(name)
 }
 
 /// Messages handled by the window.
@@ -627,7 +606,7 @@ fn show_scope_menu(
                 let Some(csv) = csv else { return };
                 dialogs::choose_save(
                     &win,
-                    "Exportar dados do osciloscópio",
+                    &locale::ls("Export Scope Data"),
                     consts::SCOPE_DATA_FILE,
                     consts::GLOB_CSV,
                     move |path| {
@@ -753,7 +732,7 @@ fn audio_row(
                 )));
                 return;
             };
-            dialogs::choose_save(&win, "Salvar áudio", consts::AUDIO_FILE, consts::GLOB_WAV, move |path| {
+            dialogs::choose_save(&win, &locale::ls("Save Audio"), consts::AUDIO_FILE, consts::GLOB_WAV, move |path| {
                 if let Err(e) = std::fs::write(&path, &bytes) {
                     tracing::warn!("cannot write {}: {e}", path.display());
                 }
@@ -856,7 +835,8 @@ impl App {
                 let started =
                     std::env::current_exe().and_then(|exe| std::process::Command::new(exe).spawn());
                 if let Err(e) = started {
-                    self.notice = Some(format!("Não foi possível abrir outra janela: {e}"));
+                    self.notice =
+                        Some(format!("{}: {e}", locale::ls("Could not open another window")));
                 }
             }
             Cmd::Open => {
@@ -887,9 +867,15 @@ impl App {
             Cmd::SaveAs => {
                 let name = format!("{}.xml", self.session.borrow().title);
                 let s = sender.input_sender().clone();
-                dialogs::choose_save(&w, "Salvar circuito", &name, consts::GLOB_XML, move |p| {
-                    let _ = s.send(Msg::SavePath(p));
-                });
+                dialogs::choose_save(
+                    &w,
+                    &locale::ls("Save Circuit"),
+                    &name,
+                    consts::GLOB_XML,
+                    move |p| {
+                        let _ = s.send(Msg::SavePath(p));
+                    },
+                );
             }
             Cmd::ExportLink => {
                 let text = self.session.borrow_mut().export_text();
@@ -897,7 +883,7 @@ impl App {
             }
             Cmd::ExportText => {
                 let text = self.session.borrow_mut().export_text();
-                dialogs::text_view(&w, "Exportar em Formato Texto", &text);
+                dialogs::text_view(&w, &locale::ls("Export As Text"), &text);
             }
             Cmd::ExportImage => self.export_picture(
                 sender,
@@ -1004,7 +990,10 @@ impl App {
                 self.session.borrow_mut().set_language(&code);
                 self.notice = Some(locale::ls(LANGUAGE_NOTICE));
             }
-            other => self.notice = Some(format!("Recurso ainda não disponível: {other:?}")),
+            other => {
+                self.notice =
+                    Some(format!("{}: {other:?}", locale::ls("Feature not available yet")))
+            }
         }
     }
 
@@ -1413,8 +1402,8 @@ impl SimpleComponent for App {
         panel.set_margin_bottom(12);
         panel.set_margin_start(12);
         panel.set_margin_end(12);
-        let reset = gtk::Button::with_label("Reiniciar");
-        let run_button = gtk::Button::with_label("Parar");
+        let reset = gtk::Button::with_label(&locale::ls("Reset"));
+        let run_button = gtk::Button::with_label(&locale::ls("Stop"));
         {
             let s = sender.clone();
             reset.connect_clicked(move |_| s.input(Msg::Reset));
@@ -1424,17 +1413,17 @@ impl SimpleComponent for App {
         panel.append(&reset);
         panel.append(&run_button);
         let (speed_row, speed, speed_val) = slider_row(
-            "Velocidade da Simulação",
+            &locale::ls("Simulation Speed"),
             f64::from(session.borrow().options.speed_bar()),
             SPEED_RANGE,
         );
         let (current_row, current, current_val) = slider_row(
-            "Velocidade da Corrente",
+            &locale::ls("Current Speed"),
             f64::from(session.borrow().options.current_bar),
             BAR_RANGE,
         );
         let (bright_row, brightness, bright_val) = slider_row(
-            "Brilho da Potência",
+            &locale::ls("Power Brightness"),
             f64::from(session.borrow().options.power_bar),
             BAR_RANGE,
         );
@@ -1485,7 +1474,7 @@ impl SimpleComponent for App {
 
         // --- layout
         let banner = adw::Banner::new("");
-        banner.set_button_label(Some("Fechar"));
+        banner.set_button_label(Some(&locale::ls("Close")));
         {
             let s = sender.clone();
             banner.connect_button_clicked(move |_| s.input(Msg::DismissBanner));
@@ -1873,7 +1862,7 @@ impl SimpleComponent for App {
         }));
         if panicked.is_err() {
             tracing::error!("panic while handling a message");
-            self.notice = Some("Erro interno ao tratar o comando".into());
+            self.notice = Some(locale::ls("Internal error while handling the command"));
         }
     }
 
@@ -1983,14 +1972,14 @@ impl App {
             menus::refresh_subcircuit_menu(&widgets.subcircuit_menu, &models);
             widgets.shown_models = models;
         }
-        widgets.run_button.set_label(if s.running { "Parar" } else { "Executar" });
+        widgets.run_button.set_label(&locale::ls(if s.running { "Stop" } else { "Run" }));
         let message = self.notice.clone().or_else(|| s.stop_message.clone());
         widgets.banner.set_title(message.as_deref().unwrap_or(""));
         widgets.banner.set_revealed(message.is_some());
         widgets.toolbar.widget.set_visible(s.settings.show_toolbar);
         widgets.toolbar.mode.set_text(&s.mode_text());
         widgets.brightness.set_sensitive(s.options.show_power);
-        widgets.circuit_label.set_text(&format!("Circuito Atual: {}", s.title));
+        widgets.circuit_label.set_text(&format!("{} {}", locale::ls("Current Circuit:"), s.title));
         let inside = s.inspecting();
         match s.editing_model() {
             _ if inside => {

@@ -10,7 +10,7 @@ use std::path::{Path, PathBuf};
 
 impl Session {
     /// Title of a circuit that has no name yet.
-    pub const UNTITLED: &'static str = "Circuito sem título";
+    pub const UNTITLED: &'static str = "Untitled Circuit";
 
     /// Replaces the circuit with an empty one that uses the saved display settings.
     pub fn new_circuit(&mut self) {
@@ -20,7 +20,7 @@ impl Session {
             Circuit { options: Self::default_options(&self.settings), ..Circuit::default() };
         // an empty circuit always analyses
         let _ = self.install(ParseResult { circuit, errors: Vec::new() });
-        self.title = Self::UNTITLED.to_string();
+        self.title = crate::locale::ls(Self::UNTITLED);
         self.path = None;
         self.running = true;
     }
@@ -54,9 +54,10 @@ impl Session {
         self.contexts.clear();
         self.load_errors.clear();
         let text = std::fs::read_to_string(path).map_err(|e| format!("{}: {e}", path.display()))?;
-        let title = path
-            .file_stem()
-            .map_or_else(|| Self::UNTITLED.to_string(), |s| s.to_string_lossy().into_owned());
+        let title = path.file_stem().map_or_else(
+            || crate::locale::ls(Self::UNTITLED),
+            |s| s.to_string_lossy().into_owned(),
+        );
         self.open_text(&text, &title, Some(path.to_path_buf())).map_err(|e| e.to_string())
     }
 
@@ -97,9 +98,9 @@ impl Session {
     pub fn recover_autosave(&mut self) -> Result<(), String> {
         self.load_errors.clear();
         let path = autosave_path();
-        let text = std::fs::read_to_string(&path)
-            .map_err(|_| "Nenhum salvamento automático".to_string())?;
-        self.open_text(&text, "Recuperado", None).map_err(|e| e.to_string())?;
+        let text =
+            std::fs::read_to_string(&path).map_err(|_| crate::locale::ls("No auto-save found"))?;
+        self.open_text(&text, &crate::locale::ls("Recovered"), None).map_err(|e| e.to_string())?;
         self.dirty = true;
         Ok(())
     }

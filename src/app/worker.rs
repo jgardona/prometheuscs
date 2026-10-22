@@ -231,7 +231,10 @@ fn guarded<T>(s: &mut Session, f: impl FnOnce(&mut Session) -> T) -> Option<T> {
                 .or_else(|| payload.downcast_ref::<String>().cloned())
                 .unwrap_or_else(|| "unknown".to_string());
             tracing::error!("simulation worker panicked: {what}");
-            s.record_stop(&format!("Erro interno do simulador: {what}"), None);
+            s.record_stop(
+                &format!("{}: {what}", crate::locale::ls("Internal simulator error")),
+                None,
+            );
             None
         }
     }

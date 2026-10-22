@@ -52,7 +52,7 @@ fn draw(cr: &Context, s: &mut Session, f: &Frame) {
 
 /// Draws the circuit on a new image surface sized to fit it.
 pub fn render_image(s: &mut Session) -> Result<ImageSurface, String> {
-    let f = frame(s).ok_or("O circuito está vazio")?;
+    let f = frame(s).ok_or_else(|| crate::locale::ls("The circuit is empty"))?;
     let surface = ImageSurface::create(Format::ARgb32, f.width as i32, f.height as i32)
         .map_err(|e| e.to_string())?;
     {
@@ -78,7 +78,7 @@ pub fn save_png(s: &mut Session, path: &Path) -> Result<(), String> {
 
 /// Writes the circuit picture as an SVG file.
 pub fn save_svg(s: &mut Session, path: &Path) -> Result<(), String> {
-    let f = frame(s).ok_or("O circuito está vazio")?;
+    let f = frame(s).ok_or_else(|| crate::locale::ls("The circuit is empty"))?;
     let surface = SvgSurface::new(f.width, f.height, Some(path)).map_err(|e| e.to_string())?;
     {
         let cr = Context::new(&surface).map_err(|e| e.to_string())?;
