@@ -228,6 +228,8 @@ fn slider_row(title: &str, value: f64, range: (f64, f64)) -> (gtk::Box, gtk::Sca
     for b in [&minus, &plus] {
         b.add_css_class("flat");
         b.add_css_class("circular");
+        // the buttons are enabled and disabled together with their slider
+        scale.bind_property("sensitive", b, "sensitive").sync_create().build();
     }
     let (s1, s2) = (scale.clone(), scale.clone());
     minus.connect_clicked(move |_| s1.set_value(s1.value() - 1.0));
@@ -2062,5 +2064,27 @@ impl App {
             });
             widgets.sliders.append(&row);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn slider_buttons_follow_the_slider_state() {
+        // needs a display; without one there is nothing to check
+        if gtk::init().is_err() {
+            return;
+        }
+        let (row, scale, _) = slider_row("t", 5.0, BAR_RANGE);
+        let line = row.last_child().unwrap();
+        let minus = line.first_child().unwrap();
+        let plus = line.last_child().unwrap();
+        assert!(minus.is_sensitive() && plus.is_sensitive());
+        scale.set_sensitive(false);
+        assert!(!minus.is_sensitive() && !plus.is_sensitive());
+        scale.set_sensitive(true);
+        assert!(minus.is_sensitive() && plus.is_sensitive());
     }
 }
