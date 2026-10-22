@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="337" height="273" viewBox="0 0 337 273">
+<defs>
+<linearGradient id="g0" gradientUnits="userSpaceOnUse" x1="104" y1="40" x2="136" y2="40"><stop offset="0" stop-color="#807f7f"/><stop offset="1" stop-color="#807f7f"/></linearGradient>
+</defs>
+<path d="M0 0 L337 0 L337 273 L0 273 Z" fill="#000000" stroke="none"/>
+<path d="M40 232 L40 153" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 119 L40 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M56.66 136 L56.09 140.31 L54.43 144.33 L51.78 147.78 L48.33 150.43 L44.31 152.09 L40 152.66 L35.69 152.09 L31.67 150.43 L28.22 147.78 L25.57 144.33 L23.91 140.31 L23.34 136 L23.91 131.69 L25.57 127.67 L28.22 124.22 L31.67 121.57 L35.69 119.91 L40 119.34 L44.31 119.91 L48.33 121.57 L51.78 124.22 L54.43 127.67 L56.09 131.69 L56.66 136" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<path d="M32 128 L32 136" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<path d="M32 128 L40 128" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 128 L40 144" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<path d="M48 144 L40 144" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<path d="M48 136 L48 144" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<text x="47" y="119" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">*</text>
+<text x="-7" y="142" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">10Hz</text>
+<path d="M40 40 L104 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M136 40 L200 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M104 40 L106 46 L110 34 L114 46 L118 34 L122 46 L126 34 L130 46 L134 34 L136 40" fill="none" stroke="url(#g0)" stroke-width="3" stroke-linecap="round"/>
+<text x="110" y="30" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">180</text>
+<path d="M40 232 L200 232" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="120" y="226" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M200 104 L216 104" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="221" y="110" font-size="20" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">A+</text>
+<path d="M200 136 L216 136" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="221" y="142" font-size="20" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">A-</text>
+<path d="M200 168 L216 168" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="221" y="174" font-size="20" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">B+</text>
+<path d="M200 200 L216 200" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="221" y="206" font-size="20" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">B-</text>
+<path d="M296 104 L280 104" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="251" y="110" font-size="20" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">V+</text>
+<path d="M296 136 L280 136" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="251" y="142" font-size="20" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">V-</text>
+<path d="M216 88 L280 88 L280 216 L216 216 Z" fill="none" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+<path d="M200 40 L200 104" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="206" y="78" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M296 136 L296 232" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="302" y="190" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M296 232 L200 232" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="248" y="226" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M200 136 L168 136" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="184" y="130" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M168 136 L168 72" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="174" y="110" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M168 72 L296 72" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="232" y="66" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M296 72 L296 104" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="302" y="94" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M152 168 L163 168" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M189 168 L200 168" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M187.76 168 L187.36 171.04 L186.18 173.88 L184.32 176.32 L181.88 178.18 L179.04 179.36 L176 179.76 L172.96 179.36 L170.12 178.18 L167.68 176.32 L165.82 173.88 L164.64 171.04 L164.24 168 L164.64 164.96 L165.82 162.12 L167.68 159.68 L170.12 157.82 L172.96 156.64 L176 156.24 L179.04 156.64 L181.88 157.82 L184.32 159.68 L186.18 162.12 L187.36 164.96 L187.76 168" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M169 168 L179 168" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M182 168 L178 164 L178 172 Z" fill="#807f7f" stroke="none"/>
+<path d="M152 168 L152 200" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="158" y="190" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M152 200 L200 200" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="176" y="194" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+</svg>

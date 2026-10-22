@@ -4,7 +4,7 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 
 > Este índice é gerado por `cargo run --release --bin exdocs -- sync`; não o edite à mão.
 
-**Situação:** 146 de 367 entradas do menu documentadas (145 documentos).
+**Situação:** 227 de 367 entradas do menu documentadas (226 documentos).
 
 | Categoria | Situação |
 |-----------|----------|
@@ -13,19 +13,19 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 | Passive Filters | documentado |
 | Other Passive Circuits | documentado |
 | Diodes | documentado |
-| Op-Amps | pendente (0 de 39) |
+| Op-Amps | documentado |
 | Transistors | documentado |
 | MOSFETs | documentado |
-| 555 Timer Chip | pendente (0 de 10) |
-| Active Filters | pendente (0 de 8) |
+| 555 Timer Chip | documentado |
+| Active Filters | documentado |
 | Logic Families | pendente (1 de 27) |
 | Combinational Logic | pendente (0 de 11) |
 | Sequential Logic | pendente (0 de 27) |
 | Analog/Digital | pendente (0 de 8) |
-| Power Converters | pendente (0 de 5) |
-| Phase-Locked Loops | pendente (0 de 7) |
+| Power Converters | documentado |
+| Phase-Locked Loops | documentado |
 | Transmission Lines | pendente (0 de 10) |
-| Controlled Sources | pendente (0 de 12) |
+| Controlled Sources | documentado |
 | Subcircuits | pendente (0 de 2) |
 | Misc Devices | pendente (0 de 51) |
 | 2-D Scope | pendente (0 de 4) |
@@ -166,56 +166,56 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 - [Voltage Tripler](volttriple.md)
 - [Voltage Quadrupler](voltquad.md)
 
-## Op-Amps — pendente (0 de 39)
+## Op-Amps — documentado
 
-- Op-Amp — *pendente*
-- Op-Amp Feedback — *pendente*
-- Half-Wave Rectifier (inverting) — *pendente*
-- Full-Wave Rectifier — *pendente*
-- Peak Detector — *pendente*
-- Integrator — *pendente*
-- Differentiator (inverting) — *pendente*
-- Schmitt Trigger — *pendente*
-- Negative Impedance Converter — *pendente*
-- Gyrator — *pendente*
-- Capacitance Multiplier — *pendente*
-- Howland Current Source — *pendente*
-- I-to-V Converter — *pendente*
-- Delta PWM Encoder — *pendente*
-- Voltage Regulator — *pendente*
-- 741 Internals — *pendente*
-- 741 (inverting amplifier) — *pendente*
-- 741 Slew Rate — *pendente*
-- 741 Current Limits — *pendente*
+- [Op-Amp](opamp.md)
+- [Op-Amp Feedback](opampfeedback.md)
+- [Half-Wave Rectifier (inverting)](amp-rect.md)
+- [Full-Wave Rectifier](amp-fullrect.md)
+- [Peak Detector](peak-detect.md)
+- [Integrator](amp-integ.md)
+- [Differentiator (inverting)](amp-dfdx.md)
+- [Schmitt Trigger](amp-schmitt.md)
+- [Negative Impedance Converter](nic-r.md)
+- [Gyrator](gyrator.md)
+- [Capacitance Multiplier](capmult.md)
+- [Howland Current Source](howland.md)
+- [I-to-V Converter](itov.md)
+- [Delta PWM Encoder](delta-pwm.md)
+- [Voltage Regulator](opamp-regulator.md)
+- [741 Internals](opint.md)
+- [741 (inverting amplifier)](opint-invert-amp.md)
+- [741 Slew Rate](opint-slew.md)
+- [741 Current Limits](opint-current.md)
 
-### Amplifiers — pendente (0 de 7)
+### Amplifiers — documentado
 
-- Inverting Amplifier — *pendente*
-- Noninverting Amplifier — *pendente*
-- Follower — *pendente*
-- Differential Amplifier — *pendente*
-- Summing Amplifier — *pendente*
-- Log Amplifier — *pendente*
-- Class-D Amplifier — *pendente*
+- [Inverting Amplifier](amp-invert.md)
+- [Noninverting Amplifier](amp-noninvert.md)
+- [Follower](amp-follower.md)
+- [Differential Amplifier](amp-diff.md)
+- [Summing Amplifier](amp-sum.md)
+- [Log Amplifier](logconvert.md)
+- [Class-D Amplifier](classd.md)
 
-### Oscillators — pendente (0 de 7)
+### Oscillators — documentado
 
-- Relaxation Oscillator — *pendente*
-- Phase-Shift Oscillator — *pendente*
-- Triangle Wave Generator — *pendente*
-- Sine Wave Generator — *pendente*
-- Sawtooth Wave Generator — *pendente*
-- Voltage-Controlled Oscillator — *pendente*
-- Triangle VCO — *pendente*
+- [Relaxation Oscillator](relaxosc.md)
+- [Phase-Shift Oscillator](phaseshiftosc.md)
+- [Triangle Wave Generator](triangle.md)
+- [Sine Wave Generator](sine.md)
+- [Sawtooth Wave Generator](sawtooth.md)
+- [Voltage-Controlled Oscillator](vco.md)
+- [Triangle VCO](trianglevco.md)
 
-### Chaotic Circuits — pendente (0 de 6)
+### Chaotic Circuits — documentado
 
-- Rossler — *pendente*
-- Vilnius — *pendente*
-- Chua — *pendente*
-- Chaos 1 — *pendente*
-- Chaos 2 — *pendente*
-- Jerk — *pendente*
+- [Rossler](rossler.md)
+- [Vilnius](vilnius.md)
+- [Chua](chua.md)
+- [Chaos 1](chaos1.md)
+- [Chaos 2](chaos2.md)
+- [Jerk](jerk.md)
 
 ## Transistors — documentado
 
@@ -284,29 +284,29 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 - [Inverter Oscillator](inv-osc.md)
 - [CMOS Crystal Oscillator](crystalosc.md)
 
-## 555 Timer Chip — pendente (0 de 10)
+## 555 Timer Chip — documentado
 
-- Square Wave Generator — *pendente*
-- Internals — *pendente*
-- Sawtooth Oscillator — *pendente*
-- Low-duty-cycle Oscillator — *pendente*
-- Monostable Multivibrator — *pendente*
-- Pulse Width Modulator — *pendente*
-- Pulse Sequencer — *pendente*
-- Schmitt Trigger (inverting) — *pendente*
-- Missing Pulse Detector — *pendente*
-- Adjustable Duty Cycle Oscillator — *pendente*
+- [Square Wave Generator](555square.md)
+- [Internals](555int.md)
+- [Sawtooth Oscillator](555saw.md)
+- [Low-duty-cycle Oscillator](555lowduty.md)
+- [Monostable Multivibrator](555monostable.md)
+- [Pulse Width Modulator](555pulsemod.md)
+- [Pulse Sequencer](555sequencer.md)
+- [Schmitt Trigger (inverting)](555schmitt.md)
+- [Missing Pulse Detector](555missing.md)
+- [Adjustable Duty Cycle Oscillator](555dutycycle.md)
 
-## Active Filters — pendente (0 de 8)
+## Active Filters — documentado
 
-- VCVS Low-Pass Filter — *pendente*
-- VCVS High-Pass Filter — *pendente*
-- Switched-Capacitor Filter — *pendente*
-- Allpass — *pendente*
-- Allpass w/ Square — *pendente*
-- Butterworth Low-Pass — *pendente*
-- Butterworth High-Pass — *pendente*
-- Butterworth Band-Pass — *pendente*
+- [VCVS Low-Pass Filter](filt-vcvs-lopass.md)
+- [VCVS High-Pass Filter](filt-vcvs-hipass.md)
+- [Switched-Capacitor Filter](switchedcap.md)
+- [Allpass](allpass1.md)
+- [Allpass w/ Square](allpass2.md)
+- [Butterworth Low-Pass](actbutterlo.md)
+- [Butterworth High-Pass](actbutterhi.md)
+- [Butterworth Band-Pass](actbutterband.md)
 
 ## Logic Families — pendente (1 de 27)
 
@@ -425,23 +425,23 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 - Digital Sine Wave — *pendente*
 - QAM-256 Modulator/Demodulator — *pendente*
 
-## Power Converters — pendente (0 de 5)
+## Power Converters — documentado
 
-- Boost Converter — *pendente*
-- Buck Converter — *pendente*
-- Buck-Boost Converter — *pendente*
-- Ćuk Converter — *pendente*
-- SEPIC Converter — *pendente*
+- [Boost Converter](conv-boost.md)
+- [Buck Converter](conv-buck.md)
+- [Buck-Boost Converter](conv-buckboost.md)
+- [Ćuk Converter](conv-cuk.md)
+- [SEPIC Converter](conv-sepic.md)
 
-## Phase-Locked Loops — pendente (0 de 7)
+## Phase-Locked Loops — documentado
 
-- XOR Phase Detector — *pendente*
-- Type I PLL — *pendente*
-- Phase Comparator (Type II) — *pendente*
-- Phase Comparator Internals — *pendente*
-- Type II PLL — *pendente*
-- Type II PLL (fast) — *pendente*
-- Frequency Doubler — *pendente*
+- [XOR Phase Detector](xorphasedet.md)
+- [Type I PLL](pll.md)
+- [Phase Comparator (Type II)](phasecomp.md)
+- [Phase Comparator Internals](phasecompint.md)
+- [Type II PLL](pll2.md)
+- [Type II PLL (fast)](pll2a.md)
+- [Frequency Doubler](freqdouble.md)
 
 ## Transmission Lines — pendente (0 de 10)
 
@@ -456,20 +456,20 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 - Low-Pass Filter — *pendente*
 - Light Switch — *pendente*
 
-## Controlled Sources — pendente (0 de 12)
+## Controlled Sources — documentado
 
-- VCCS Resistor — *pendente*
-- VCCS Varying Resistor — *pendente*
-- VCVS Op-Amp — *pendente*
-- VCVS Op-Amp With Rails — *pendente*
-- VCVS Multiplier — *pendente*
-- VCVS Full Rectifier — *pendente*
-- VCVS Voltage Ramp — *pendente*
-- Current Adder — *pendente*
-- VCVS Integrator — *pendente*
-- VCVS Differentiator — *pendente*
-- CCVS Variable Inductor — *pendente*
-- VCCS Variable Capacitor — *pendente*
+- [VCCS Resistor](cs-resistor.md)
+- [VCCS Varying Resistor](cs-varyresistor.md)
+- [VCVS Op-Amp](cs-opamp.md)
+- [VCVS Op-Amp With Rails](cs-opamprail.md)
+- [VCVS Multiplier](cs-multiplier.md)
+- [VCVS Full Rectifier](cs-fullrectifier.md)
+- [VCVS Voltage Ramp](cs-ramp.md)
+- [Current Adder](cs-currentadder.md)
+- [VCVS Integrator](cs-integrator.md)
+- [VCVS Differentiator](cs-diff.md)
+- [CCVS Variable Inductor](cs-varinduct.md)
+- [VCCS Variable Capacitor](cs-varicap.md)
 
 ## Subcircuits — pendente (0 de 2)
 

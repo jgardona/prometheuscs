@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="273" height="305" viewBox="0 0 273 305">
+<path d="M0 0 L273 0 L273 305 L0 305 Z" fill="#000000" stroke="none"/>
+<path d="M40 216 L40 153" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 119 L40 56" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M56.66 136 L56.09 140.31 L54.43 144.33 L51.78 147.78 L48.33 150.43 L44.31 152.09 L40 152.66 L35.69 152.09 L31.67 150.43 L28.22 147.78 L25.57 144.33 L23.91 140.31 L23.34 136 L23.91 131.69 L25.57 127.67 L28.22 124.22 L31.67 121.57 L35.69 119.91 L40 119.34 L44.31 119.91 L48.33 121.57 L51.78 124.22 L54.43 127.67 L56.09 131.69 L56.66 136" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<path d="M30 136 L35 128" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<path d="M35 128 L40 136" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 136 L45 144" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<path d="M45 144 L50 136" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<text x="47" y="119" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">*</text>
+<text x="-7" y="142" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">40Hz</text>
+<path d="M40 216 L40 264" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M50 264 L30 264" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M46 269 L34 269" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M42 274 L38 274" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M88 56 L104 56" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="109" y="62" font-size="20" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">A</text>
+<path d="M184 56 L168 56" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="139" y="62" font-size="20" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">V+</text>
+<path d="M184 88 L168 88" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="139" y="94" font-size="20" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">V-</text>
+<path d="M104 40 L168 40 L168 104 L104 104 Z" fill="none" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 56 L88 56" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="64" y="50" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M184 88 L184 120" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M194 120 L174 120" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M190 125 L178 125" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M186 130 L182 130" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="232" y="56" font-size="14" text-anchor="middle" dominant-baseline="central" fill="#c0c0c0">out</text>
+<path d="M184 56 L212 56" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+</svg>

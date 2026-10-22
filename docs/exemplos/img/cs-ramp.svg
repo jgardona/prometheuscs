@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="241" height="161" viewBox="0 0 241 161">
+<defs>
+<linearGradient id="g0" gradientUnits="userSpaceOnUse" x1="144" y1="56" x2="176" y2="56"><stop offset="0" stop-color="#807f7f"/><stop offset="1" stop-color="#807f7f"/></linearGradient>
+</defs>
+<path d="M0 0 L241 0 L241 161 L0 161 Z" fill="#000000" stroke="none"/>
+<path d="M120 56 L104 56" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="75" y="62" font-size="20" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">V+</text>
+<path d="M120 88 L104 88" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="75" y="94" font-size="20" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">V-</text>
+<path d="M40 40 L104 40 L104 104 L40 104 Z" fill="none" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+<path d="M120 88 L120 120" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M130 120 L110 120" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M126 125 L114 125" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M122 130 L118 130" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M120 56 L144 56" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M176 56 L200 56" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M144 56 L146 62 L150 50 L154 62 L158 50 L162 62 L166 50 L170 62 L174 50 L176 56" fill="none" stroke="url(#g0)" stroke-width="3" stroke-linecap="round"/>
+<text x="153" y="46" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">1k</text>
+<path d="M200 56 L200 88" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M210 88 L190 88" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M206 93 L194 93" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M202 98 L198 98" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+</svg>

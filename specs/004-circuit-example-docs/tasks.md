@@ -86,17 +86,17 @@ other variants; chaotic circuits are described qualitatively.
 
 ### Wave 5 (47 entries)
 
-- [ ] T030 [US1] Op-Amps (39, with Amplifiers, Oscillators, Chaotic Circuits): one document per entry (chaotic circuits qualitatively)
-- [ ] T031 [US1] Active Filters (8): one document per entry
-- [ ] T032 [US1] Wave 5 checkpoint: `exdocs sync`, `exdocs check`, gates
+- [X] T030 [US1] Op-Amps (39, with Amplifiers, Oscillators, Chaotic Circuits): one document per entry (chaotic circuits qualitatively)
+- [X] T031 [US1] Active Filters (8): one document per entry
+- [X] T032 [US1] Wave 5 checkpoint: `exdocs sync`, `exdocs check`, gates (2026-10-22: `sync` and `check` clean; Op-Amps and Active Filters `documentado`, 193 of 367 entries (192 documents); `cargo test --release --test example_docs`: 8 of 9 pass, the only failure is `the_readme_links_the_index` (T049), red until T050; no Rust code changed in this wave, so fmt, clippy and the other suites were not re-run; the six chaotic circuits carry `sem-verificacao` with the reason, and the three Butterworth noise-driven filters are checked by RMS against the noise-bandwidth theory)
 
 ### Wave 6 (34 entries)
 
-- [ ] T033 [US1] 555 Timer Chip (10): one document per entry
-- [ ] T034 [US1] Power Converters (5): one document per entry
-- [ ] T035 [US1] Phase-Locked Loops (7): one document per entry
-- [ ] T036 [US1] Controlled Sources (12): one document per entry
-- [ ] T037 [US1] Wave 6 checkpoint: `exdocs sync`, `exdocs check`, gates
+- [X] T033 [US1] 555 Timer Chip (10): one document per entry
+- [X] T034 [US1] Power Converters (5): one document per entry
+- [X] T035 [US1] Phase-Locked Loops (7): one document per entry
+- [X] T036 [US1] Controlled Sources (12): one document per entry
+- [X] T037 [US1] Wave 6 checkpoint: `exdocs sync`, `exdocs check`, gates (2026-10-22: `sync` and `check` clean; 555 Timer Chip, Power Converters, Phase-Locked Loops and Controlled Sources `documentado`, 227 of 367 entries (226 documents); `cargo test --release --test example_docs`: 8 of 9 pass, the only failure is `the_readme_links_the_index` (T049), red until T050; no Rust code changed in this wave, so fmt, clippy and the other suites were not re-run; the converter, `pll2`, `pll2a` and `freqdouble` documents state that the example's *slider* is bound to the wrong source field on this branch)
 
 ### Wave 7 (38 entries)
 
