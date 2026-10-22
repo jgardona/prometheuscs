@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="241" height="305" viewBox="0 0 241 305">
+<defs>
+<linearGradient id="g0" gradientUnits="userSpaceOnUse" x1="200" y1="104" x2="200" y2="136"><stop offset="0" stop-color="#807f7f"/><stop offset="1" stop-color="#807f7f"/></linearGradient>
+</defs>
+<path d="M0 0 L241 0 L241 305 L0 305 Z" fill="#000000" stroke="none"/>
+<path d="M88 136 L88 160" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M88 192 L88 216" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M88 160 L104 192" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+<path d="M88 40 L200 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="144" y="34" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M200 40 L200 104" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M200 136 L200 200" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M200 104 L194 106 L206 110 L194 114 L206 118 L194 122 L206 126 L194 130 L206 134 L200 136" fill="none" stroke="url(#g0)" stroke-width="3" stroke-linecap="round"/>
+<text x="210" y="126" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">300</text>
+<path d="M200 232 L200 248" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="206" y="246" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M200 232 L178 232" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M200 200 L178 200" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M178 232 L178 227" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M178 221 L178 216" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M178 216 L178 211" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M178 205 L178 200" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M178 232 L178 237" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M178 200 L178 195" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M200 232 L200 216" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M200 216 L178 216" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M178 216 L190 221 L190 211 Z" fill="#807f7f" stroke="none"/>
+<path d="M88 216 L172 216" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M172 208 L172 224" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M88 40 L88 136" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="94" y="94" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M88 40 L57 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="32" y="40" font-size="12" text-anchor="start" dominant-baseline="central" fill="#ffffff">+5V</text>
+<path d="M200 248 L200 264" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M210 264 L190 264" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M206 269 L194 269" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M202 274 L198 274" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M91 40 L90.9 40.78 L90.6 41.5 L90.12 42.12 L89.5 42.6 L88.78 42.9 L88 43 L87.22 42.9 L86.5 42.6 L85.88 42.12 L85.4 41.5 L85.1 40.78 L85 40 L85.1 39.22 L85.4 38.5 L85.88 37.88 L86.5 37.4 L87.22 37.1 L88 37 L88.78 37.1 L89.5 37.4 L90.12 37.88 L90.6 38.5 L90.9 39.22 L91 40 Z" fill="#ffffff" stroke="none"/>
+</svg>

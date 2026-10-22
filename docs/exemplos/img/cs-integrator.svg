@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="305" height="289" viewBox="0 0 305 289">
+<path d="M0 0 L305 0 L305 289 L0 289 Z" fill="#000000" stroke="none"/>
+<path d="M40 200 L40 248" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M50 248 L30 248" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M46 253 L34 253" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M42 258 L38 258" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 200 L40 177" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 143 L40 120" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M56.66 160 L56.09 164.31 L54.43 168.33 L51.78 171.78 L48.33 174.43 L44.31 176.09 L40 176.66 L35.69 176.09 L31.67 174.43 L28.22 171.78 L25.57 168.33 L23.91 164.31 L23.34 160 L23.91 155.69 L25.57 151.67 L28.22 148.22 L31.67 145.57 L35.69 143.91 L40 143.34 L44.31 143.91 L48.33 145.57 L51.78 148.22 L54.43 151.67 L56.09 155.69 L56.66 160" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<path d="M32 152 L32 160" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<path d="M32 152 L40 152" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 152 L40 168" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<path d="M48 168 L40 168" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<path d="M48 160 L48 168" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<text x="47" y="143" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">*</text>
+<text x="-7" y="166" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">40Hz</text>
+<path d="M40 120 L40 105" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 71 L40 56" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M56.66 88 L56.09 92.31 L54.43 96.33 L51.78 99.78 L48.33 102.43 L44.31 104.09 L40 104.66 L35.69 104.09 L31.67 102.43 L28.22 99.78 L25.57 96.33 L23.91 92.31 L23.34 88 L23.91 83.69 L25.57 79.67 L28.22 76.22 L31.67 73.57 L35.69 71.91 L40 71.34 L44.31 71.91 L48.33 73.57 L51.78 76.22 L54.43 79.67 L56.09 83.69 L56.66 88" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<path d="M32 80 L32 88" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<path d="M32 80 L40 80" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 80 L40 96" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<path d="M48 96 L40 96" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<path d="M48 88 L48 96" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<text x="47" y="71" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">*</text>
+<text x="-7" y="94" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">80Hz</text>
+<path d="M72 56 L72 72" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M72 184 L72 200" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="59" y="72" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">+</text>
+<path d="M40 200 L72 200" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="56" y="194" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M40 56 L72 56" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="56" y="50" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M72 56 L120 56" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="96" y="50" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M120 56 L136 56" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="141" y="62" font-size="20" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">A</text>
+<path d="M216 56 L200 56" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="171" y="62" font-size="20" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">V+</text>
+<path d="M216 88 L200 88" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="171" y="94" font-size="20" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">V-</text>
+<path d="M136 40 L200 40 L200 104 L136 104 Z" fill="none" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+<path d="M216 88 L216 120" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M226 120 L206 120" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M222 125 L210 125" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M218 130 L214 130" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="264" y="56" font-size="14" text-anchor="middle" dominant-baseline="central" fill="#c0c0c0">out</text>
+<path d="M216 56 L244 56" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M43 200 L42.9 200.78 L42.6 201.5 L42.12 202.12 L41.5 202.6 L40.78 202.9 L40 203 L39.22 202.9 L38.5 202.6 L37.88 202.12 L37.4 201.5 L37.1 200.78 L37 200 L37.1 199.22 L37.4 198.5 L37.88 197.88 L38.5 197.4 L39.22 197.1 L40 197 L40.78 197.1 L41.5 197.4 L42.12 197.88 L42.6 198.5 L42.9 199.22 L43 200 Z" fill="#ffffff" stroke="none"/>
+<path d="M75 56 L74.9 56.78 L74.6 57.5 L74.12 58.12 L73.5 58.6 L72.78 58.9 L72 59 L71.22 58.9 L70.5 58.6 L69.88 58.12 L69.4 57.5 L69.1 56.78 L69 56 L69.1 55.22 L69.4 54.5 L69.88 53.88 L70.5 53.4 L71.22 53.1 L72 53 L72.78 53.1 L73.5 53.4 L74.12 53.88 L74.6 54.5 L74.9 55.22 L75 56 Z" fill="#ffffff" stroke="none"/>
+</svg>

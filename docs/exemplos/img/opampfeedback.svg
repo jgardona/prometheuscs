@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="305" height="161" viewBox="0 0 305 161">
+<path d="M0 0 L305 0 L305 161 L0 161 Z" fill="#000000" stroke="none"/>
+<path d="M88 88 L126 88" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M88 120 L126 120" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M178 104 L216 104" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M126 72 L126 136 L178 104 Z" fill="none" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+<text x="136" y="86" font-size="14" text-anchor="middle" dominant-baseline="central" fill="#c0c0c0">-</text>
+<text x="136" y="120" font-size="14" text-anchor="middle" dominant-baseline="central" fill="#c0c0c0">+</text>
+<path d="M88 120 L57 120" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="17" y="120" font-size="12" text-anchor="start" dominant-baseline="central" fill="#ffffff">+3.3V</text>
+<text x="264" y="104" font-size="14" text-anchor="middle" dominant-baseline="central" fill="#c0c0c0">0 V</text>
+<path d="M216 104 L244 104" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M216 104 L216 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="222" y="78" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M88 40 L88 88" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="94" y="70" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M88 40 L216 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="152" y="34" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M219 104 L218.9 104.78 L218.6 105.5 L218.12 106.12 L217.5 106.6 L216.78 106.9 L216 107 L215.22 106.9 L214.5 106.6 L213.88 106.12 L213.4 105.5 L213.1 104.78 L213 104 L213.1 103.22 L213.4 102.5 L213.88 101.88 L214.5 101.4 L215.22 101.1 L216 101 L216.78 101.1 L217.5 101.4 L218.12 101.88 L218.6 102.5 L218.9 103.22 L219 104 Z" fill="#ffffff" stroke="none"/>
+</svg>

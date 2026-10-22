@@ -36,6 +36,7 @@
 pub mod app;
 pub mod elements;
 pub mod error;
+pub mod exdocs;
 pub mod expr;
 pub mod format;
 pub mod locale;
