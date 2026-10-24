@@ -988,7 +988,9 @@ fn draw_scope_inside(
         draw_label(g, &label, at, (text, bg), (x, x + w));
     }
     if let Some(cx) = cursor {
-        draw_cursor(g, view, (x, y, w, h), (cx, start, n), slot, (bg, text, light));
+        if slot == 0 {
+            draw_cursor(g, (x, y, w, h), (cx, n), text);
+        }
         if slot == 0 {
             if let Some(t0) = measure_from {
                 draw_measure(g, view, (x, y, w, h), (cx, start, n), (t0, selected), (text, bg));
@@ -1456,7 +1458,6 @@ fn draw_trigger(
     g.draw_string(status, x + w - g.measure_text(status) - 5.0, y + h - 15.0);
 }
 
-/// The vertical line under the pointer and the values of every plot at that time.
 /// Draws a label of the cursor on a plate: a rectangle in the panel colour `plate`, 75% opaque,
 /// so the grid and the curves behind the text do not get in the way of reading it. `at` is the
 /// left end and the baseline of the text, `color` its colour, and `bounds` the left and right edge
@@ -1480,48 +1481,89 @@ fn draw_label(
     g.draw_string(text, tx, at.1);
 }
 
+/// The vertical line under the pointer; the values at that time are written above the scope by
+/// [`draw_readout`].
 fn draw_cursor(
     g: &mut dyn Painter,
-    view: &ScopeView,
     (x, y, w, h): (f64, f64, f64, f64),
-    (cx, start, n): (f64, isize, usize),
-    slot: usize,
-    (bg, text, light): (Color, Color, bool),
+    (cx, n): (f64, usize),
+    text: Color,
 ) {
     let j = (((cx - x) / w * n as f64) as usize).min(n - 1);
     let gx = x + (j as f64 + 0.5) * (w / n as f64);
-    let len = view.plots.first().map_or(0, |p| p.min.len());
-    // the sample under the pointer, in the buffer
-    let at = (start + j as isize).clamp(0, len as isize - 1) as usize;
     g.set_line_width(1.0);
     g.set_color(text);
-    if slot == 0 {
-        g.draw_line(gx as i32, y as i32, gx as i32, (y + h) as i32);
+    g.draw_line(gx as i32, y as i32, gx as i32, (y + h) as i32);
+}
+
+/// Height of a line of the readout.
+const READOUT_LINE: f64 = 15.0;
+
+/// The readout of the pointer over the scopes of the area (`w` by `h`): the value of every plot
+/// of the scope under it at the time under it, each in the colour of its plot, and that time.
+/// As in the original, it is written in a box above the scope, centred on the cursor line, so
+/// nothing covers the curves; the box of the top row is above the area, so the painter must
+/// reach there (the caller draws it on a layer over the canvas too). Spectrum and X/Y scopes
+/// keep their own readouts.
+pub fn draw_readout(
+    g: &mut dyn Painter,
+    views: &[ScopeView],
+    w: f64,
+    h: f64,
+    light: bool,
+    cursor: Option<(f64, f64)>,
+) {
+    let Some((cx, cy)) = cursor else { return };
+    if views.is_empty() || w < 8.0 || h < 8.0 {
+        return;
     }
-    // time of the sample, counted back from the newest
-    let when = view.time - (len - 1 - at) as f64 * view.time_per_sample;
-    g.set_font_size(11);
-    g.set_text_align(TextAlign::Left);
-    let mut ty = y + 14.0 + 26.0 * slot as f64;
-    let on_right = gx < x + w / 2.0;
-    for (i, p) in view.plots.iter().enumerate() {
-        let before = view.plots[..i].iter().filter(|q| q.units == p.units).count();
+    let Some(i) = scope_at(views, w, h, cx, cy) else { return };
+    let (x, y, rw, _) = layout(views, w, h)[i];
+    let view = &views[i];
+    if view.fft || view.xy || view.plots.is_empty() || rw < 8.0 {
+        return;
+    }
+    let win = window(view, rw);
+    if win.len == 0 {
+        return;
+    }
+    let j = (((cx - x) / rw * win.n as f64).max(0.0) as usize).min(win.n - 1);
+    let gx = x + (j as f64 + 0.5) * (rw / win.n as f64);
+    // the sample under the pointer, in the buffer, and its time counted back from the newest
+    let at = (win.start + j as isize).clamp(0, win.len as isize - 1) as usize;
+    let when = view.time - (win.len - 1 - at) as f64 * view.time_per_sample;
+    let (bg, text) = if light {
+        (Color::new(255, 255, 255), Color::new(0, 0, 0))
+    } else {
+        (Color::new(0, 0, 0), Color::new(192, 192, 192))
+    };
+    let mut lines: Vec<(String, Color)> = Vec::new();
+    for (k, p) in view.plots.iter().enumerate() {
+        let before = view.plots[..k].iter().filter(|q| q.units == p.units).count();
         let v = (p.min[at] + p.max[at]) / 2.0;
         let line = format!("{} = {}", value_name(p.value, p.units), units_text(p.units, v));
-        let tx = if on_right { gx + 6.0 } else { gx - 6.0 - g.measure_text(&line) };
-        ty += 13.0;
-        let color = plot_color(p.units, i, before, light);
-        draw_label(g, &line, (tx, ty + 26.0), (color, bg), (x, x + w));
+        lines.push((line, plot_color(p.units, k, before, light)));
     }
-    if slot == 0 {
-        g.set_color(text);
-        let label = if when < 0.0 {
-            "t < 0".to_string()
-        } else {
-            format!("t = {}", crate::elements::units::time_text(when))
-        };
-        let tx = if on_right { gx + 6.0 } else { gx - 6.0 - g.measure_text(&label) };
-        draw_label(g, &label, (tx, y + h - 18.0), (text, bg), (x, x + w));
+    let time = if when < 0.0 {
+        "t < 0".to_string()
+    } else {
+        format!("t = {}", crate::elements::units::time_text(when))
+    };
+    lines.push((time, text));
+    g.set_font_size(12);
+    g.set_text_align(TextAlign::Left);
+    const MARGIN: f64 = 3.0;
+    let width = lines.iter().map(|(l, _)| g.measure_text(l)).fold(0.0, f64::max) + 2.0 * MARGIN;
+    let height = READOUT_LINE * lines.len() as f64;
+    // centred on the cursor line, moved to stay inside the area
+    let bx = (gx - width / 2.0).min(w - width).max(0.0);
+    g.set_color(bg);
+    g.fill_rect(bx, y - height, width, height);
+    let count = lines.len();
+    for (k, (line, color)) in lines.iter().enumerate() {
+        g.set_color(*color);
+        let tx = bx + (width - g.measure_text(line)) / 2.0;
+        g.draw_string(line, tx, y - 3.0 - (count - 1 - k) as f64 * READOUT_LINE);
     }
 }
 

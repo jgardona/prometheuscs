@@ -1736,9 +1736,46 @@ impl SimpleComponent for App {
         canvas_column.append(&area);
         canvas_column.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
         canvas_column.append(&scope_area);
+        // the readout of the pointer over the diagrams goes above the diagram, over the canvas
+        // for the top row: a layer over the whole column that lets the pointer through
+        let readout = gtk::DrawingArea::new();
+        readout.set_can_target(false);
+        readout.set_can_focus(false);
+        {
+            let (ses, area_r, pointer) =
+                (session.clone(), scope_area.clone(), scope_pointer.clone());
+            readout.set_draw_func(move |layer, cr, _, _| {
+                if !area_r.is_visible() {
+                    return;
+                }
+                let Some(cursor) = pointer.get() else { return };
+                let Some(origin) =
+                    area_r.compute_point(layer, &gtk::graphene::Point::new(0.0, 0.0))
+                else {
+                    return;
+                };
+                guarded("scope readout", (), || {
+                    let s = ses.borrow();
+                    let mut g = CairoPainter::new(cr);
+                    g.translate(f64::from(origin.x()), f64::from(origin.y()));
+                    crate::render::scopes::draw_readout(
+                        &mut g,
+                        &s.scope_views(),
+                        f64::from(area_r.width()),
+                        f64::from(area_r.height()),
+                        s.settings.white_background,
+                        Some(cursor),
+                    );
+                });
+            });
+        }
+        let canvas_stack = gtk::Overlay::new();
+        canvas_stack.set_hexpand(true);
+        canvas_stack.set_child(Some(&canvas_column));
+        canvas_stack.add_overlay(&readout);
         // the panel starts 350 px wide and can be resized by dragging the divider
         let body = gtk::Paned::new(gtk::Orientation::Horizontal);
-        body.set_start_child(Some(&canvas_column));
+        body.set_start_child(Some(&canvas_stack));
         body.set_end_child(Some(&panel_scroll));
         body.set_resize_start_child(true);
         body.set_resize_end_child(false);
@@ -1770,6 +1807,7 @@ impl SimpleComponent for App {
         let tick_session = session.clone();
         let (gl_tick, cairo_tick) = (gl_area.clone(), cairo_area.clone());
         let scope_tick = scope_area.clone();
+        let readout_tick = readout.clone();
         let tick_bench = bench.clone();
         let last = Cell::new(None::<i64>);
         area.add_tick_callback(move |a, clock| {
@@ -1808,6 +1846,7 @@ impl SimpleComponent for App {
                 }
             }
             scope_tick.queue_draw();
+            readout_tick.queue_draw();
             if a.visible_child_name().as_deref() == Some("gl") {
                 gl_tick.queue_render();
             } else {

@@ -1,6 +1,6 @@
 [package]
 name = "prometheuscs"
-version = "1.0.5"
+version = "1.0.6"
 edition = "2024"
 description = "Circuit simulator: a Rust port of CircuitJS1 with a GTK4/libadwaita interface"
 license = "GPL-2.0-or-later"
