@@ -484,7 +484,7 @@ impl Session {
 
     // ---- switches --------------------------------------------------------------------------
 
-    fn toggle_linked(&mut self, i: usize) {
+    pub(crate) fn toggle_linked(&mut self, i: usize) {
         let label = self.sim.elements.get(i).and_then(|e| e.link_label().map(str::to_string));
         if let Some(e) = self.sim.elements.get_mut(i) {
             e.simple_toggle();
@@ -526,13 +526,12 @@ impl Session {
         if !hit {
             return false;
         }
-        // keep the live state (capacitor voltages, ...) across the restart below
+        // the document gets the live state (capacitor voltages, ...) for saving and undo
         self.pull_state();
-        self.toggle_linked(i);
+        self.toggle_everywhere(vec![i]);
         if self.sim.elements[i].is_momentary() {
             self.held = Some(i);
         }
-        self.reanalyze();
         true
     }
 
@@ -544,10 +543,9 @@ impl Session {
 
     fn release_switch(&mut self) {
         if let Some(i) = self.held.take() {
-            // keep the live state (capacitor voltages, ...) across the restart below
+            // the document gets the live state (capacitor voltages, ...) for saving and undo
             self.pull_state();
-            self.toggle_linked(i);
-            self.reanalyze();
+            self.toggle_everywhere(vec![i]);
         }
     }
 
@@ -2093,13 +2091,11 @@ impl Session {
             .filter(|(_, e)| e.toggle_key() == Some(key))
             .map(|(i, _)| i)
             .collect();
-        for &i in &hits {
-            self.toggle_linked(i);
+        let hit = !hits.is_empty();
+        if hit {
+            self.toggle_everywhere(hits);
         }
-        if !hits.is_empty() {
-            self.reanalyze();
-        }
-        !hits.is_empty()
+        hit
     }
 
     /// Applies the settings of the Other Options dialog and analyses the circuit again.

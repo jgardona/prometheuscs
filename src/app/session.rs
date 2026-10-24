@@ -439,6 +439,33 @@ impl Session {
         }
     }
 
+    /// Operates the toggling elements `elms` (with the switches linked to them) and analyses the
+    /// circuit again in place: unlike a reload, the elements keep their running state.
+    pub(crate) fn toggle_now(&mut self, elms: &[usize]) {
+        for &i in elms {
+            self.toggle_linked(i);
+        }
+        match self.sim.analyze() {
+            Ok(()) => self.clear_stop(),
+            Err(AnalysisError::Invalid { message, element }) => self.record_stop(&message, element),
+        }
+    }
+
+    /// Operates `elms` here and, with a worker, there too, where the circuit is analysed again
+    /// in place instead of being reloaded (which would lose the state the document does not
+    /// keep, such as the waves on a transmission line).
+    pub(crate) fn toggle_everywhere(&mut self, elms: Vec<usize>) {
+        match &self.worker {
+            Some(w) => {
+                w.send(super::worker::Command::Toggle(elms.clone()));
+                for &i in &elms {
+                    self.toggle_linked(i);
+                }
+            }
+            None => self.toggle_now(&elms),
+        }
+    }
+
     /// Stops the simulation because of `message`, naming and highlighting the element at
     /// index `element` when it is known (contract C5).
     pub fn record_stop(&mut self, message: &str, element: Option<usize>) {

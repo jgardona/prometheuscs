@@ -69,6 +69,10 @@ pub enum Command {
         /// Slider position from 0 to 100.
         value: i32,
     },
+    /// Operate these toggling elements (switches, logic inputs) as a click does, and analyse
+    /// the circuit again without rebuilding it, so the running state of every element (the
+    /// waves on a transmission line, for one) carries on.
+    Toggle(Vec<usize>),
     /// Find the DC operating point.
     FindDc,
     /// Advance this many time steps now and publish the result (headless runs and tests).
@@ -201,6 +205,7 @@ fn handle(s: &mut Session, command: Command, syncs: &mut Vec<Sender<()>>) -> boo
         Command::SetSpeed(ic) => s.options.iter_count = ic,
         Command::Edit { elm, n, value } => s.edit_value(elm, n, value),
         Command::ElementSlider { elm, value } => s.apply_element_slider(elm, value),
+        Command::Toggle(elms) => s.toggle_now(&elms),
         Command::FindDc => {
             // a failure is recorded in the session and reported by the next snapshot
             let _ = s.find_dc();

@@ -177,14 +177,20 @@ mod tests {
     }
 
     /// The source files of the program, but for this one.
+    /// The program's source files. The example documentation tool (`src/exdocs`, `src/bin/exdocs.rs`)
+    /// is left out: it writes the documents of `docs/exemplos`, which are in Portuguese by design
+    /// (FR-010 of `specs/004-circuit-example-docs`), and is not part of the interface.
     fn source_files() -> Vec<std::path::PathBuf> {
         fn walk(dir: &std::path::Path, out: &mut Vec<std::path::PathBuf>) {
             for e in std::fs::read_dir(dir).unwrap() {
                 let path = e.unwrap().path();
                 if path.is_dir() {
-                    walk(&path, out);
+                    if !path.ends_with("exdocs") {
+                        walk(&path, out);
+                    }
                 } else if path.extension().is_some_and(|x| x == "rs")
                     && !path.ends_with("locale.rs")
+                    && !path.ends_with("bin/exdocs.rs")
                 {
                     out.push(path);
                 }
