@@ -57,6 +57,35 @@ pub fn short_unit_text(v: f64, unit: &str) -> String {
     unit_text_impl(v, unit, true)
 }
 
+/// The E12 preferred values of one decade.
+const E12: [f64; 12] = [1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2];
+
+/// Moves `value` `steps` places along the E12 series from `10^minpow` to `10^maxpow`, the value
+/// table the mouse wheel steps through in the original (ScrollValuePopup). A value off the
+/// series is placed between its neighbours, so the first step lands on one; the ends hold.
+pub fn e12_step(value: f64, minpow: i32, maxpow: i32, steps: i32) -> f64 {
+    // built from text so the values are exact decimals (1200, not 1200.0000000000002)
+    let decimal = |m: f64, p: i32| format!("{m}e{p}").parse().unwrap_or(m * 10f64.powi(p));
+    let mut values: Vec<f64> =
+        (minpow..maxpow).flat_map(|p| E12.iter().map(move |&m| decimal(m, p))).collect();
+    values.push(decimal(1.0, maxpow));
+    // the original matches by short text, so a value a hair off a series value counts as it
+    let text = short_unit_text(value, "");
+    let idx = match values.iter().position(|&v| short_unit_text(v, "") == text) {
+        Some(i) => {
+            values[i] = value;
+            i
+        }
+        None => {
+            let i = values.iter().position(|&v| value < v).unwrap_or(values.len());
+            values.insert(i, value);
+            i
+        }
+    };
+    let last = values.len() as i64 - 1;
+    values[(idx as i64 + i64::from(steps)).clamp(0, last) as usize]
+}
+
 fn unit_text_impl(v: f64, unit: &str, short: bool) -> String {
     let sp = if short { "" } else { " " };
     let va = v.abs();
@@ -334,5 +363,29 @@ mod edit_value_tests {
             let back = parse_edit_value(&t).unwrap();
             assert!((back - v).abs() <= v * 1e-9, "{t}");
         }
+    }
+
+    #[test]
+    fn e12_steps_through_commercial_values_and_holds_at_the_ends() {
+        // resistor range of the original: 0.1 ohm .. 10 Mohm
+        assert_eq!(e12_step(1000.0, -1, 7, 1), 1200.0);
+        assert_eq!(e12_step(1000.0, -1, 7, -1), 820.0);
+        assert_eq!(e12_step(1000.0, -1, 7, 3), 1800.0);
+        assert_eq!(e12_step(8200.0, -1, 7, 1), 10000.0);
+        assert_eq!(e12_step(1000.0, -1, 7, 0), 1000.0);
+        // off the series: the first step lands on a neighbour
+        assert_eq!(e12_step(1100.0, -1, 7, 1), 1200.0);
+        assert_eq!(e12_step(1100.0, -1, 7, -1), 1000.0);
+        // the ends hold, also for a value beyond them
+        assert_eq!(e12_step(1e7, -1, 7, 1), 1e7);
+        assert_eq!(e12_step(0.1, -1, 7, -1), 0.1);
+        assert_eq!(e12_step(1e8, -1, 7, 1), 1e8);
+        assert_eq!(e12_step(1e8, -1, 7, -1), 1e7);
+        // capacitor 10 pF .. 1 mF, inductor 1 uH .. 1 H
+        assert_eq!(e12_step(1e-5, -11, -3, 1), 1.2e-5);
+        assert_eq!(e12_step(1e-11, -11, -3, -1), 1e-11);
+        assert_eq!(e12_step(4.7e-9, -11, -3, 1), 5.6e-9);
+        assert_eq!(e12_step(1.0, -6, 0, 1), 1.0);
+        assert_eq!(e12_step(1.0, -6, 0, -1), 0.82);
     }
 }

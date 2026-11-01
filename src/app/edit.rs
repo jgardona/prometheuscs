@@ -2141,9 +2141,22 @@ impl Session {
         }) else {
             return false;
         };
-        let step = 1.0 + 0.1 * self.settings.wheel_sensitivity.max(0.0);
-        let factor = if up { step } else { 1.0 / step };
-        ei.value *= factor;
+        // resistors, capacitors and inductors step through commercial E12 values over the
+        // decades of the original's scroll popup; other values are nudged by a factor
+        let e12_decades = match self.sim.elements[i].class_name() {
+            "ResistorElm" => Some((-1, 7)),
+            "CapacitorElm" | "PolarCapacitorElm" => Some((-11, -3)),
+            "InductorElm" => Some((-6, 0)),
+            _ => None,
+        };
+        if let Some((minpow, maxpow)) = e12_decades {
+            let steps = (self.settings.wheel_sensitivity.round() as i32).max(1);
+            let steps = if up { steps } else { -steps };
+            ei.value = crate::elements::units::e12_step(ei.value, minpow, maxpow, steps);
+        } else {
+            let step = 1.0 + 0.1 * self.settings.wheel_sensitivity.max(0.0);
+            ei.value *= if up { step } else { 1.0 / step };
+        }
         let value = ei.value;
         self.sim.apply_edit(i, n, &mut ei);
         self.sim.elements[i].set_points();
@@ -2323,6 +2336,60 @@ mod tests {
         assert!(s.scope_targets().is_empty());
         s.apply_scope_roles();
         assert!(s.glow_set().len() <= s.sim.elements.len() + 1);
+    }
+
+    #[cfg(feature = "passive")]
+    #[cfg(feature = "reactive")]
+    #[test]
+    fn mouse_wheel_steps_resistors_capacitors_and_inductors_through_e12_values() {
+        let mut s = session();
+        s.settings.mouse_wheel_edit = true;
+        // resistor 1k from (0,0) to (64,0)
+        assert!(s.wheel_at(32.0, 0.0, true));
+        assert_eq!(s.edit_fields(1)[0].value, 1200.0);
+        assert!(s.wheel_at(32.0, 0.0, true));
+        assert_eq!(s.edit_fields(1)[0].value, 1500.0);
+        assert!(s.wheel_at(32.0, 0.0, false));
+        assert!(s.wheel_at(32.0, 0.0, false));
+        assert!(s.wheel_at(32.0, 0.0, false));
+        assert_eq!(s.edit_fields(1)[0].value, 820.0);
+        // capacitor 1 uF from (64,0) to (64,64)
+        assert!(s.wheel_at(64.0, 32.0, true));
+        assert_eq!(s.edit_fields(2)[0].value, 1.2e-6);
+        // a sensitivity of 2 takes two steps a notch
+        s.settings.wheel_sensitivity = 2.0;
+        assert!(s.wheel_at(64.0, 32.0, true));
+        assert_eq!(s.edit_fields(2)[0].value, 1.8e-6);
+
+        let text = "$ 1 0.000005 10 50 5 50 5e-11\nl 0 0 64 0 0 1 0\n";
+        let mut s = Session::load(text, &Registry::standard()).unwrap();
+        s.settings.mouse_wheel_edit = true;
+        assert!(s.wheel_at(32.0, 0.0, false));
+        assert_eq!(s.edit_fields(0)[0].value, 0.82);
+        assert!(s.wheel_at(32.0, 0.0, true));
+        assert!(s.wheel_at(32.0, 0.0, true));
+        // 1 H is the top of the inductor range
+        assert_eq!(s.edit_fields(0)[0].value, 1.0);
+    }
+
+    #[cfg(feature = "sources")]
+    #[test]
+    fn mouse_wheel_still_nudges_other_values_by_a_factor() {
+        let mut s = session();
+        s.settings.mouse_wheel_edit = true;
+        let i = 0;
+        let field = s
+            .edit_fields(i)
+            .into_iter()
+            .find(|f| {
+                f.text.is_none() && f.choice.is_none() && f.checkbox.is_none() && f.button.is_none()
+            })
+            .unwrap();
+        let (b, before) = (s.sim.elements[i].base().clone(), field.value);
+        assert!(before != 0.0, "{} is zero, so a factor would not show", field.name);
+        assert!(s.wheel_at(f64::from(b.x + b.x2) / 2.0, f64::from(b.y + b.y2) / 2.0, true));
+        let after = s.edit_fields(i).into_iter().find(|f| f.name == field.name).unwrap().value;
+        assert!((after - before * 1.1).abs() <= before.abs() * 1e-9, "{before} -> {after}");
     }
 
     fn press(s: &mut Session, x: f64, y: f64) {
