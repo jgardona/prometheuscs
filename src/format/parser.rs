@@ -132,12 +132,20 @@ fn parse_text(text: &str, registry: &Registry) -> ParseResult {
     ParseResult { circuit, errors }
 }
 
+/// Puts the grid of the file in force before its elements are laid out, as the original does
+/// when it reads the options: elements that place a post on the grid (the control of an analog
+/// switch, for one) must agree with the wires drawn for that grid.
+fn apply_grid(o: &super::circuit::CircuitOptions) {
+    crate::elements::geometry::set_grid_size(if o.small_grid { 8 } else { 16 });
+}
+
 fn read_options(
     st: &mut Tokenizer<'_>,
     circuit: &mut Circuit,
 ) -> Result<(), super::tokenizer::TokenError> {
     let o = &mut circuit.options;
     o.set_flag_bits(st.next_i32()?);
+    apply_grid(o);
     o.max_time_step = st.next_f64()?;
     o.iter_count = st.next_f64()?;
     o.current_bar = st.next_i32()?;
@@ -217,6 +225,7 @@ fn parse_xml(text: &str, registry: &Registry) -> ParseResult {
     };
     let o = &mut circuit.options;
     o.set_flag_bits(root.int_attr("f", 0));
+    apply_grid(o);
     o.max_time_step = root.double_attr("ts", o.max_time_step);
     o.iter_count = root.double_attr("ic", o.iter_count);
     o.current_bar = root.int_attr("cb", o.current_bar);
@@ -319,5 +328,30 @@ mod tests {
         assert_eq!(r.errors.len(), 1);
         assert!(matches!(&r.errors[0], LoadError::UnknownType { line: 2, .. }));
         assert!(r.circuit.options.show_dots);
+    }
+
+    // The control post of an analog switch is placed on the grid, so the grid of the file
+    // (bit 2 of the header flags) must be in force while its elements are laid out; the
+    // examples `dram.txt` and `swtreedac.txt` wire their controls to the small-grid position.
+    fn switch_control(text: &str) -> Option<crate::elements::geometry::Point> {
+        let r = parse(text, &Registry::standard());
+        assert!(r.errors.is_empty(), "{:?}", r.errors);
+        r.circuit.elements.first().and_then(|e| e.get_post(2))
+    }
+
+    #[test]
+    fn the_small_grid_of_the_header_lays_out_the_elements_that_follow() {
+        let small = switch_control("$ 3 5e-6 10 50 5 50 5e-11\n159 280 352 344 352 0\n");
+        assert_eq!(small.map(|p| (p.x, p.y)), Some((312, 368)));
+        let large = switch_control("$ 1 5e-6 10 50 5 50 5e-11\n159 280 352 344 352 0\n");
+        assert_eq!(large.map(|p| (p.x, p.y)), Some((304, 368)));
+    }
+
+    #[test]
+    fn the_small_grid_of_an_xml_file_lays_out_its_elements() {
+        let small = switch_control("<cir f=\"3\"><as x=\"280 352 344 352\" f=\"0\"/></cir>");
+        assert_eq!(small.map(|p| (p.x, p.y)), Some((312, 368)));
+        let large = switch_control("<cir f=\"1\"><as x=\"280 352 344 352\" f=\"0\"/></cir>");
+        assert_eq!(large.map(|p| (p.x, p.y)), Some((304, 368)));
     }
 }

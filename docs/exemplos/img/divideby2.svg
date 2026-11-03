@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="321" height="193" viewBox="0 0 321 193">
+<path d="M0 0 L321 0 L321 193 L0 193 Z" fill="#000000" stroke="none"/>
+<path d="M104 72 L120 72" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="125" y="78" font-size="20" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">D</text>
+<path d="M200 72 L184 72" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="167" y="78" font-size="20" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">Q</text>
+<path d="M200 136 L184 136" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="167" y="142" font-size="20" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">Q</text>
+<path d="M167 122 L179 122" fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="round"/>
+<path d="M104 104 L120 104" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M120 96 L136 104 L120 112" fill="none" stroke="#c0c0c0" stroke-width="1" stroke-linecap="round"/>
+<text x="125" y="110" font-size="20" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M120 56 L184 56 L184 152 L120 152 Z" fill="none" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+<path d="M104 104 L57 104" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="32" y="104" font-size="12" text-anchor="start" dominant-baseline="central" fill="#ffffff">CLK</text>
+<path d="M200 136 L200 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="206" y="94" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M200 40 L104 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="152" y="34" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M104 40 L104 72" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="110" y="62" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<text x="280" y="72" font-size="20" text-anchor="middle" dominant-baseline="central" fill="#c0c0c0">L</text>
+<path d="M200 72 L268 72" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+</svg>
