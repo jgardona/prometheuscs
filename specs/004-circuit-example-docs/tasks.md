@@ -100,9 +100,9 @@ other variants; chaotic circuits are described qualitatively.
 
 ### Wave 7 (38 entries)
 
-- [ ] T038 [US1] Logic Families (27 entries, RTL, DTL, TTL, NMOS, CMOS, ECL, Ternary): one document per entry; `cmosinverter.txt` already has its document from wave 4 and is only linked here (26 new documents)
-- [ ] T039 [US1] Combinational Logic (11): one document per entry
-- [ ] T040 [US1] Wave 7 checkpoint: `exdocs sync`, `exdocs check`, gates
+- [X] T038 [US1] Logic Families (27 entries, RTL, DTL, TTL, NMOS, CMOS, ECL, Ternary): one document per entry; `cmosinverter.txt` already has its document from wave 4 and is only linked here (26 new documents)
+- [X] T039 [US1] Combinational Logic (11): one document per entry
+- [X] T040 [US1] Wave 7 checkpoint: `exdocs sync`, `exdocs check`, gates (2026-11-03: `sync` and `check` clean, a second `sync` changes nothing; Logic Families and Combinational Logic `documentado`, 264 of 367 entries (263 documents); `cargo test --release --test example_docs`: 8 of 9 pass, the only failure is `the_readme_links_the_index` (T049), red until T050; no Rust code changed in this wave, so fmt, clippy and the other suites were not re-run; every logic document checks its truth table with `alterna`, the ternary documents step the inputs 0→1→2 with repeated toggles, and `cmosmsff`, `brentkung` and `alu74181` check sequences, sum bits and the 74181 function table)
 
 ### Wave 8 (35 entries)
 

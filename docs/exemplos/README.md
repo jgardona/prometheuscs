@@ -4,7 +4,7 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 
 > Este índice é gerado por `cargo run --release --bin exdocs -- sync`; não o edite à mão.
 
-**Situação:** 227 de 367 entradas do menu documentadas (226 documentos).
+**Situação:** 264 de 367 entradas do menu documentadas (263 documentos).
 
 | Categoria | Situação |
 |-----------|----------|
@@ -18,8 +18,8 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 | MOSFETs | documentado |
 | 555 Timer Chip | documentado |
 | Active Filters | documentado |
-| Logic Families | pendente (1 de 27) |
-| Combinational Logic | pendente (0 de 11) |
+| Logic Families | documentado |
+| Combinational Logic | documentado |
 | Sequential Logic | pendente (0 de 27) |
 | Analog/Digital | pendente (0 de 8) |
 | Power Converters | documentado |
@@ -308,69 +308,69 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 - [Butterworth High-Pass](actbutterhi.md)
 - [Butterworth Band-Pass](actbutterband.md)
 
-## Logic Families — pendente (1 de 27)
+## Logic Families — documentado
 
-### RTL — pendente (0 de 3)
+### RTL — documentado
 
-- RTL Inverter — *pendente*
-- RTL NOR — *pendente*
-- RTL NAND — *pendente*
+- [RTL Inverter](rtlinverter.md)
+- [RTL NOR](rtlnor.md)
+- [RTL NAND](rtlnand.md)
 
-### DTL — pendente (0 de 3)
+### DTL — documentado
 
-- DTL Inverter — *pendente*
-- DTL NAND — *pendente*
-- DTL NOR — *pendente*
+- [DTL Inverter](dtlinverter.md)
+- [DTL NAND](dtlnand.md)
+- [DTL NOR](dtlnor.md)
 
-### TTL — pendente (0 de 4)
+### TTL — documentado
 
-- TTL Inverter — *pendente*
-- TTL NAND — *pendente*
-- TTL NOR — *pendente*
-- Fan-Out — *pendente*
+- [TTL Inverter](ttlinverter.md)
+- [TTL NAND](ttlnand.md)
+- [TTL NOR](ttlnor.md)
+- [Fan-Out](fanout.md)
 
-### NMOS — pendente (0 de 4)
+### NMOS — documentado
 
-- NMOS Inverter — *pendente*
-- Inverter with only MOSFETs — *pendente*
-- Depletion-load NMOS Inverter — *pendente*
-- NMOS NAND — *pendente*
+- [NMOS Inverter](nmosinverter.md)
+- [Inverter with only MOSFETs](nmosinverter2.md)
+- [Depletion-load NMOS Inverter](nmosinverter3.md)
+- [NMOS NAND](nmosnand.md)
 
-### CMOS — pendente (1 de 6)
+### CMOS — documentado
 
 - [CMOS Inverter](cmosinverter.md)
-- CMOS NAND — *pendente*
-- CMOS NOR — *pendente*
-- CMOS XOR — *pendente*
-- CMOS Flip-Flop — *pendente*
-- CMOS Master-Slave Flip-Flop — *pendente*
+- [CMOS NAND](cmosnand.md)
+- [CMOS NOR](cmosnor.md)
+- [CMOS XOR](cmosxor.md)
+- [CMOS Flip-Flop](cmosff.md)
+- [CMOS Master-Slave Flip-Flop](cmosmsff.md)
 
-### ECL — pendente (0 de 1)
+### ECL — documentado
 
-- ECL NOR/OR — *pendente*
+- [ECL NOR/OR](eclnor.md)
 
-### Ternary — pendente (0 de 6)
+### Ternary — documentado
 
-- CGAND — *pendente*
-- CGOR — *pendente*
-- Complement (F210) — *pendente*
-- F211 — *pendente*
-- F220 — *pendente*
-- F221 — *pendente*
+- [CGAND](3-cgand.md)
+- [CGOR](3-cgor.md)
+- [Complement (F210)](3-invert.md)
+- [F211](3-f211.md)
+- [F220](3-f220.md)
+- [F221](3-f221.md)
 
-## Combinational Logic — pendente (0 de 11)
+## Combinational Logic — documentado
 
-- Exclusive OR — *pendente*
-- Half Adder — *pendente*
-- Full Adder — *pendente*
-- 1-of-4 Decoder — *pendente*
-- Priority Encoder — *pendente*
-- 2-to-1 Mux — *pendente*
-- Majority Logic — *pendente*
-- 2-Bit Comparator — *pendente*
-- 7-Segment LED Decoder — *pendente*
-- Brent-Kung Adder — *pendente*
-- 74181 ALU — *pendente*
+- [Exclusive OR](xor.md)
+- [Half Adder](halfadd.md)
+- [Full Adder](fulladd.md)
+- [1-of-4 Decoder](decoder.md)
+- [Priority Encoder](priencoder.md)
+- [2-to-1 Mux](mux3state.md)
+- [Majority Logic](majority.md)
+- [2-Bit Comparator](digcompare.md)
+- [7-Segment LED Decoder](7segdecoder.md)
+- [Brent-Kung Adder](brentkung.md)
+- [74181 ALU](alu74181.md)
 
 ## Sequential Logic — pendente (0 de 27)
 
