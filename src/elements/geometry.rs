@@ -164,16 +164,20 @@ pub fn calc_arrow(a: Point, b: Point, al: f64, aw: f64) -> Polygon {
     Polygon::from_points(&[b, p1, p2])
 }
 
-static GRID_SIZE: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(16);
-
-/// Grid spacing in circuit pixels (16, or 8 with the small grid).
-pub fn grid_size() -> i32 {
-    GRID_SIZE.load(std::sync::atomic::Ordering::Relaxed)
+// Per thread: the interface and the simulation worker each lay out their own copy of the
+// circuit, and each takes the grid from the circuit it read (the parser sets it from the file).
+thread_local! {
+    static GRID_SIZE: std::cell::Cell<i32> = const { std::cell::Cell::new(16) };
 }
 
-/// Sets the grid spacing used by elements that lay themselves out on the grid.
+/// Grid spacing in circuit pixels (16, or 8 with the small grid) on this thread.
+pub fn grid_size() -> i32 {
+    GRID_SIZE.with(std::cell::Cell::get)
+}
+
+/// Sets the grid spacing used by elements that lay themselves out on the grid, on this thread.
 pub fn set_grid_size(size: i32) {
-    GRID_SIZE.store(size, std::sync::atomic::Ordering::Relaxed);
+    GRID_SIZE.with(|g| g.set(size));
 }
 
 /// Rounds `v` to the grid the way the original does.

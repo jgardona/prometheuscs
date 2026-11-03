@@ -100,15 +100,15 @@ other variants; chaotic circuits are described qualitatively.
 
 ### Wave 7 (38 entries)
 
-- [ ] T038 [US1] Logic Families (27 entries, RTL, DTL, TTL, NMOS, CMOS, ECL, Ternary): one document per entry; `cmosinverter.txt` already has its document from wave 4 and is only linked here (26 new documents)
-- [ ] T039 [US1] Combinational Logic (11): one document per entry
-- [ ] T040 [US1] Wave 7 checkpoint: `exdocs sync`, `exdocs check`, gates
+- [X] T038 [US1] Logic Families (27 entries, RTL, DTL, TTL, NMOS, CMOS, ECL, Ternary): one document per entry; `cmosinverter.txt` already has its document from wave 4 and is only linked here (26 new documents)
+- [X] T039 [US1] Combinational Logic (11): one document per entry
+- [X] T040 [US1] Wave 7 checkpoint: `exdocs sync`, `exdocs check`, gates (2026-11-03: `sync` and `check` clean, a second `sync` changes nothing; Logic Families and Combinational Logic `documentado`, 264 of 367 entries (263 documents); `cargo test --release --test example_docs`: 8 of 9 pass, the only failure is `the_readme_links_the_index` (T049), red until T050; no Rust code changed in this wave, so fmt, clippy and the other suites were not re-run; every logic document checks its truth table with `alterna`, the ternary documents step the inputs 0→1→2 with repeated toggles, and `cmosmsff`, `brentkung` and `alu74181` check sequences, sum bits and the 74181 function table)
 
 ### Wave 8 (35 entries)
 
-- [ ] T041 [US1] Sequential Logic (27, Flip-Flops, Counters, Shift Registers, TD4 CPU): one document per entry
-- [ ] T042 [US1] Analog/Digital (8): one document per entry
-- [ ] T043 [US1] Wave 8 checkpoint: `exdocs sync`, `exdocs check`, gates
+- [X] T041 [US1] Sequential Logic (27, Flip-Flops, Counters, Shift Registers, TD4 CPU): one document per entry
+- [X] T042 [US1] Analog/Digital (8): one document per entry
+- [X] T043 [US1] Wave 8 checkpoint: `exdocs sync`, `exdocs check`, gates (2026-11-03: `sync` and `check` clean, a second `sync` changes nothing; Sequential Logic and Analog/Digital `documentado`, 299 of 367 entries (298 documents); Rust code changed in this wave: the parser now puts the file's grid (small-grid bit of the header, text and XML) in force before laying out the elements, as the original's readOptions does, and the grid size is per thread (`src/format/parser.rs`, `src/elements/geometry.rs`, two new parser tests); without it the analog-switch control posts of `swtreedac.txt` and `dram.txt` (both `$ 3`) missed their wires, so the switch-tree DAC gave 0 V for every code and the DRAM write did nothing; no earlier document or figure changed; `cargo fmt --check` and `cargo clippy --all-targets [--features gui] -- -D warnings` clean; `cargo test --release --no-fail-fast`: all suites pass except `the_readme_links_the_index` (T049), red until T050; the twelve families builds were not re-run, T056 covers them; `dram.md` states that a write of 1 charges the cell to 4.99 V instead of the ~3.5 V an NMOS pass transistor would allow, not investigated)
 
 ### Wave 9 (17 entries)
 

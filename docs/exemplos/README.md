@@ -4,7 +4,7 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 
 > Este índice é gerado por `cargo run --release --bin exdocs -- sync`; não o edite à mão.
 
-**Situação:** 227 de 366 entradas do menu documentadas (226 documentos).
+**Situação:** 299 de 367 entradas do menu documentadas (298 documentos).
 
 | Categoria | Situação |
 |-----------|----------|
@@ -18,10 +18,10 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 | MOSFETs | documentado |
 | 555 Timer Chip | documentado |
 | Active Filters | documentado |
-| Logic Families | pendente (1 de 27) |
-| Combinational Logic | pendente (0 de 11) |
-| Sequential Logic | pendente (0 de 27) |
-| Analog/Digital | pendente (0 de 8) |
+| Logic Families | documentado |
+| Combinational Logic | documentado |
+| Sequential Logic | documentado |
+| Analog/Digital | documentado |
 | Power Converters | documentado |
 | Phase-Locked Loops | documentado |
 | Transmission Lines | pendente (0 de 10) |
@@ -304,122 +304,122 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 - [Butterworth High-Pass](actbutterhi.md)
 - [Butterworth Band-Pass](actbutterband.md)
 
-## Logic Families — pendente (1 de 27)
+## Logic Families — documentado
 
-### RTL — pendente (0 de 3)
+### RTL — documentado
 
-- RTL Inverter — *pendente*
-- RTL NOR — *pendente*
-- RTL NAND — *pendente*
+- [RTL Inverter](rtlinverter.md)
+- [RTL NOR](rtlnor.md)
+- [RTL NAND](rtlnand.md)
 
-### DTL — pendente (0 de 3)
+### DTL — documentado
 
-- DTL Inverter — *pendente*
-- DTL NAND — *pendente*
-- DTL NOR — *pendente*
+- [DTL Inverter](dtlinverter.md)
+- [DTL NAND](dtlnand.md)
+- [DTL NOR](dtlnor.md)
 
-### TTL — pendente (0 de 4)
+### TTL — documentado
 
-- TTL Inverter — *pendente*
-- TTL NAND — *pendente*
-- TTL NOR — *pendente*
-- Fan-Out — *pendente*
+- [TTL Inverter](ttlinverter.md)
+- [TTL NAND](ttlnand.md)
+- [TTL NOR](ttlnor.md)
+- [Fan-Out](fanout.md)
 
-### NMOS — pendente (0 de 4)
+### NMOS — documentado
 
-- NMOS Inverter — *pendente*
-- Inverter with only MOSFETs — *pendente*
-- Depletion-load NMOS Inverter — *pendente*
-- NMOS NAND — *pendente*
+- [NMOS Inverter](nmosinverter.md)
+- [Inverter with only MOSFETs](nmosinverter2.md)
+- [Depletion-load NMOS Inverter](nmosinverter3.md)
+- [NMOS NAND](nmosnand.md)
 
-### CMOS — pendente (1 de 6)
+### CMOS — documentado
 
 - [CMOS Inverter](cmosinverter.md)
-- CMOS NAND — *pendente*
-- CMOS NOR — *pendente*
-- CMOS XOR — *pendente*
-- CMOS Flip-Flop — *pendente*
-- CMOS Master-Slave Flip-Flop — *pendente*
+- [CMOS NAND](cmosnand.md)
+- [CMOS NOR](cmosnor.md)
+- [CMOS XOR](cmosxor.md)
+- [CMOS Flip-Flop](cmosff.md)
+- [CMOS Master-Slave Flip-Flop](cmosmsff.md)
 
-### ECL — pendente (0 de 1)
+### ECL — documentado
 
-- ECL NOR/OR — *pendente*
+- [ECL NOR/OR](eclnor.md)
 
-### Ternary — pendente (0 de 6)
+### Ternary — documentado
 
-- CGAND — *pendente*
-- CGOR — *pendente*
-- Complement (F210) — *pendente*
-- F211 — *pendente*
-- F220 — *pendente*
-- F221 — *pendente*
+- [CGAND](3-cgand.md)
+- [CGOR](3-cgor.md)
+- [Complement (F210)](3-invert.md)
+- [F211](3-f211.md)
+- [F220](3-f220.md)
+- [F221](3-f221.md)
 
-## Combinational Logic — pendente (0 de 11)
+## Combinational Logic — documentado
 
-- Exclusive OR — *pendente*
-- Half Adder — *pendente*
-- Full Adder — *pendente*
-- 1-of-4 Decoder — *pendente*
-- Priority Encoder — *pendente*
-- 2-to-1 Mux — *pendente*
-- Majority Logic — *pendente*
-- 2-Bit Comparator — *pendente*
-- 7-Segment LED Decoder — *pendente*
-- Brent-Kung Adder — *pendente*
-- 74181 ALU — *pendente*
+- [Exclusive OR](xor.md)
+- [Half Adder](halfadd.md)
+- [Full Adder](fulladd.md)
+- [1-of-4 Decoder](decoder.md)
+- [Priority Encoder](priencoder.md)
+- [2-to-1 Mux](mux3state.md)
+- [Majority Logic](majority.md)
+- [2-Bit Comparator](digcompare.md)
+- [7-Segment LED Decoder](7segdecoder.md)
+- [Brent-Kung Adder](brentkung.md)
+- [74181 ALU](alu74181.md)
 
-## Sequential Logic — pendente (0 de 27)
+## Sequential Logic — documentado
 
-- Divide-by-2 — *pendente*
-- Divide-by-3 — *pendente*
-- LED Flasher — *pendente*
-- Traffic Light — *pendente*
-- Static RAM — *pendente*
-- Dynamic RAM — *pendente*
+- [Divide-by-2](divideby2.md)
+- [Divide-by-3](divideby3.md)
+- [LED Flasher](ledflasher.md)
+- [Traffic Light](traffic.md)
+- [Static RAM](sram.md)
+- [Dynamic RAM](dram.md)
 
-### Flip-Flops — pendente (0 de 5)
+### Flip-Flops — documentado
 
-- SR Flip-Flop — *pendente*
-- Clocked SR Flip-Flop — *pendente*
-- Master-Slave Flip-Flop — *pendente*
-- Edge-Triggered D Flip-Flop — *pendente*
-- JK Flip-Flop — *pendente*
+- [SR Flip-Flop](nandff.md)
+- [Clocked SR Flip-Flop](clockedsrff.md)
+- [Master-Slave Flip-Flop](masterslaveff.md)
+- [Edge-Triggered D Flip-Flop](edgedff.md)
+- [JK Flip-Flop](jkff.md)
 
-### Counters — pendente (0 de 8)
+### Counters — documentado
 
-- 4-Bit Ripple Counter — *pendente*
-- 8-Bit Ripple Counter — *pendente*
-- Synchronous Counter — *pendente*
-- Up/Down Counter — *pendente*
-- Decimal Counter — *pendente*
-- Gray Code Counter — *pendente*
-- Johnson Counter — *pendente*
-- Cascading Ring Counters — *pendente*
+- [4-Bit Ripple Counter](counter.md)
+- [8-Bit Ripple Counter](counter8.md)
+- [Synchronous Counter](synccounter.md)
+- [Up/Down Counter](updownctr.md)
+- [Decimal Counter](deccounter.md)
+- [Gray Code Counter](graycode.md)
+- [Johnson Counter](johnsonctr.md)
+- [Cascading Ring Counters](ringcascade.md)
 
-### Shift Registers — pendente (0 de 3)
+### Shift Registers — documentado
 
-- Serial-In Parallel-Out — *pendente*
-- Parallel-In Serial-Out — *pendente*
-- Universal — *pendente*
+- [Serial-In Parallel-Out](sipo-sr.md)
+- [Parallel-In Serial-Out](piso-sr.md)
+- [Universal](unishiftreg.md)
 
-### TD4 CPU — pendente (0 de 5)
+### TD4 CPU — documentado
 
-- TD4 LED Strobe — *pendente*
-- TD4 Counter — *pendente*
-- TD4 Down Counter — *pendente*
-- TD4 Up-Down Counter — *pendente*
-- TD4 Add 2 — *pendente*
+- [TD4 LED Strobe](td4.md)
+- [TD4 Counter](td4-ctr.md)
+- [TD4 Down Counter](td4-ctr-dn.md)
+- [TD4 Up-Down Counter](td4-ctr-up-dn.md)
+- [TD4 Add 2](td4-add2.md)
 
-## Analog/Digital — pendente (0 de 8)
+## Analog/Digital — documentado
 
-- Flash ADC — *pendente*
-- Delta-Sigma ADC — *pendente*
-- Half-Flash (Subranging) ADC — *pendente*
-- Binary-Weighted DAC — *pendente*
-- R-2R Ladder DAC — *pendente*
-- Switch-Tree DAC — *pendente*
-- Digital Sine Wave — *pendente*
-- QAM-256 Modulator/Demodulator — *pendente*
+- [Flash ADC](flashadc.md)
+- [Delta-Sigma ADC](deltasigma.md)
+- [Half-Flash (Subranging) ADC](hfadc.md)
+- [Binary-Weighted DAC](dac.md)
+- [R-2R Ladder DAC](r2rladder.md)
+- [Switch-Tree DAC](swtreedac.md)
+- [Digital Sine Wave](digsine.md)
+- [QAM-256 Modulator/Demodulator](qam-256.md)
 
 ## Power Converters — documentado
 
