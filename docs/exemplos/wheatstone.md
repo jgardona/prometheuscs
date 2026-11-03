@@ -36,7 +36,7 @@ Uma fonte de $5\ \text{V}$ alimenta dois ramos em paralelo; cada ramo é um divi
 | 5 | `ResistorElm` | resistor | Resistance (ohms) = 400 |
 | 6 | `ResistorElm` | resistor | Resistance (ohms) = 100 |
 | 7 | `ResistorElm` | resistor | Resistance (ohms) = 200 |
-| 9 | `AmmeterElm` | Ammeter | Value = Current; Scale = Auto; Circular Symbol = não |
+| 9 | `AmmeterElm` | Ammeter | Value = Current; Scale = Auto; Circular Symbol = não; Label =  |
 <!-- componentes:fim -->
 
 ## Teoria

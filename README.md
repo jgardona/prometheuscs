@@ -26,6 +26,12 @@ O prometheuscs é um **porte** dessa obra, não uma criação independente:
   [assets/ATTRIBUTION.md](assets/ATTRIBUTION.md));
 - os resultados são conferidos contra gravações feitas no próprio CircuitJS1.
 
+A referência é o **CircuitJS 5.0.4**, a versão atual do original, reescrita em TypeScript. O
+porte começou da versão Java (4.1.5.1js) e depois recebeu as novidades da 5.x: as fontes
+controladas de dois terminais, as expressões que leem o circuito pelo nome (`v(nome)`,
+`i(nome)`), os rótulos de voltímetros e amperímetros e as demais listadas em
+[specs/006-circuitjs5-feature-sync/](specs/006-circuitjs5-feature-sync/spec.md).
+
 Se você gosta deste programa, o crédito é de Paul Falstad e Iain Sharp. O original está em
 <https://github.com/pfalstad/circuitjs1> e a versão online em <https://www.falstad.com/circuit/>.
 
@@ -33,8 +39,9 @@ Se você gosta deste programa, o crédito é de Paul Falstad e Iain Sharp. O ori
 
 - **Nativo.** Roda como um programa comum, sem navegador. A simulação fica numa thread própria,
   então a janela não trava mesmo com circuitos grandes.
-- **Compatível com os arquivos do original.** Abre e salva o mesmo formato (texto e XML), e os
-  os links de compartilhamento são gerados no formato do CircuitJS1.
+- **Compatível com os arquivos do original.** Abre e salva o mesmo formato (texto e XML) do
+  CircuitJS 5.0.4, inclusive os circuitos feitos com as novidades da versão 5, e os links de
+  compartilhamento são gerados no formato do CircuitJS1.
 - **Rápido.** O solver usa fatoração LU esparsa. Em medições feitas aqui, um circuito de 500
   elementos é desenhado com folga para mais de 150 quadros por segundo, e a janela abre em cerca
   de um segundo (números e método em [tests/bench/README.md](tests/bench/README.md)).
@@ -92,9 +99,11 @@ elementos, o solver e os osciloscópios não dependem do GTK.
 | [docs/guia-do-usuario.md](docs/guia-do-usuario.md) | Todas as funções do simulador e como usá-las |
 | [docs/arquitetura.md](docs/arquitetura.md) | Como o programa é organizado, para quem vai mantê-lo |
 | [docs/adding-a-component.md](docs/adding-a-component.md) | Como acrescentar um componente novo (em inglês) |
+| [docs/exemplos/README.md](docs/exemplos/README.md) | O que cada circuito de exemplo mostra |
 | [tests/compat/README.md](tests/compat/README.md) | Como a compatibilidade com o original é conferida |
 | [tests/bench/README.md](tests/bench/README.md) | Medidas de desempenho |
 | [specs/001-circuit-simulator-migration/](specs/001-circuit-simulator-migration/) | Especificação, plano e lista de tarefas da migração |
+| [specs/006-circuitjs5-feature-sync/](specs/006-circuitjs5-feature-sync/) | As novidades do CircuitJS 5.x trazidas para cá |
 
 ## Qualidade
 

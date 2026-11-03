@@ -1,6 +1,6 @@
 ---
 exemplo: cs-integrator.txt
-titulo: VCVS Integrator
+titulo: CVS Integrator
 categoria: Controlled Sources
 verificacoes:
   - t=0.01 elemento=9:OutputElm grandeza=vd esperado=-4.493 tol=0.005
@@ -11,7 +11,7 @@ verificacoes:
 # Integrador (VCVS com realimentação interna)
 
 <!-- navegacao:inicio -->
-[Índice](README.md) · [Anterior: Current Adder](cs-currentadder.md) · [Próximo: VCVS Differentiator](cs-diff.md)
+[Índice](README.md) · [Anterior: CCS Current Adder](cs-currentadder.md) · [Próximo: CVS Differentiator](cs-diff.md)
 <!-- navegacao:fim -->
 
 ## Objetivo
@@ -32,7 +32,7 @@ A entrada é a soma de duas fontes de onda quadrada em série: uma de $40\ \text
 | 0 | `GroundElm` | ground | Symbol = Earth |
 | 1 | `DCVoltageElm` | square wave gen | Max Voltage = 5; Waveform = Square Wave; DC Offset (V) = 0; Internal Resistance (ohms) = 0; Show Voltage = não; Specify As = Frequency/Duty Cycle; Frequency (Hz) = 40; Phase Offset (degrees) = 180; Duty Cycle = 50; Rise/Fall Time (s) = 0 |
 | 2 | `DCVoltageElm` | square wave gen | Max Voltage = 2; Waveform = Square Wave; DC Offset (V) = 0; Internal Resistance (ohms) = 0; Show Voltage = não; Specify As = Frequency/Duty Cycle; Frequency (Hz) = 80; Phase Offset (degrees) = 0; Duty Cycle = 50; Rise/Fall Time (s) = 0 |
-| 3 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0 |
+| 3 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0; Label =  |
 | 7 | `VCVSElm` | VCVS | Output Function = lastoutput+timestep*100*a; # of Inputs = 1 |
 | 8 | `GroundElm` | ground | Symbol = Earth |
 | 9 | `OutputElm` | output | Show Voltage = não |

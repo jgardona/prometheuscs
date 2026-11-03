@@ -158,11 +158,12 @@ impl Session {
     }
 
     /// Sets field `n` of element `elm` to `value` and analyses the circuit again.
-    pub(crate) fn edit_value(&mut self, elm: usize, n: usize, value: f64) {
+    pub(crate) fn edit_value(&mut self, elm: usize, n: usize, value: f64, continuous: bool) {
         let Some(mut ei) = self.sim.elements.get(elm).and_then(|e| e.get_edit_info(n)) else {
             return;
         };
         ei.value = value;
+        ei.continuous = continuous;
         self.sim.apply_edit(elm, n, &mut ei);
         self.sim.elements[elm].set_points();
         self.reanalyze();
@@ -180,9 +181,9 @@ impl Session {
 
     /// Tells the worker about a parameter that was just changed in the document: a small
     /// message instead of rebuilding the circuit. Without a worker the circuit is analysed.
-    pub(crate) fn param_changed(&mut self, elm: usize, n: usize, value: f64) {
+    pub(crate) fn param_changed(&mut self, elm: usize, n: usize, value: f64, continuous: bool) {
         match &self.worker {
-            Some(w) => w.send(Command::Edit { elm, n, value }),
+            Some(w) => w.send(Command::Edit { elm, n, value, continuous }),
             None => self.reanalyze(),
         }
     }

@@ -44,7 +44,7 @@ Uma fonte senoidal de $40\ \text{Hz}$, com $3\ \text{V}$ de amplitude sobre $3\ 
 | 19 | `ResistorElm` | resistor | Resistance (ohms) = 1k |
 | 22 | `GroundElm` | ground | Symbol = Earth |
 | 23 | `OutputElm` | output | Show Voltage = não |
-| 24 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0 |
+| 24 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0; Label =  |
 | 25 | `GroundElm` | ground | Symbol = Earth |
 | 26 | `NTransistorElm` | transistor | Beta/hFE = 100; Swap E/C = sim; Draw Circle = não; Model = default |
 | 31 | `GroundElm` | ground | Symbol = Earth |

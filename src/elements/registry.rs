@@ -36,6 +36,8 @@ pub struct ElementDescriptor {
     pub quick_insert: bool,
     /// Whether the element appears in the Draw menu.
     pub in_menu: bool,
+    /// The element is rarely edited when placed: "Show Properties on Create" skips it.
+    pub quiet_on_create: bool,
     /// Owning family (also the Cargo feature name).
     pub family: &'static str,
     /// Placement constructor.
@@ -62,6 +64,7 @@ impl ElementDescriptor {
             shortcut: None,
             quick_insert: false,
             in_menu: true,
+            quiet_on_create: false,
             family,
             create,
             from_dump: None,
@@ -93,6 +96,12 @@ impl ElementDescriptor {
         self
     }
 
+    /// Marks the element as rarely edited when placed: its properties do not open on create.
+    pub fn quiet_on_create(mut self) -> Self {
+        self.quiet_on_create = true;
+        self
+    }
+
     /// Hides the element from the Draw menu (it can still be loaded and placed by code).
     pub fn hidden(mut self) -> Self {
         self.in_menu = false;
@@ -120,6 +129,98 @@ pub struct MenuGroup {
     pub items: Vec<&'static str>,
 }
 
+/// Elements rarely edited when placed, as CircuitJS 5.x lists them (see
+/// [`ElementDescriptor::quiet_on_create`]); a new component sets the flag in its own entry.
+const QUIET_ON_CREATE: &[&str] = &[
+    "ADCElm",
+    "AmmeterElm",
+    "AnalogMuxElm",
+    "AnalogSwitch2Elm",
+    "AnalogSwitchElm",
+    "AndGateElm",
+    "AudioOutputElm",
+    "BoxElm",
+    "CC2Elm",
+    "CC2NegElm",
+    "Counter2Elm",
+    "CounterElm",
+    "CrossSwitchElm",
+    "CrystalElm",
+    "CustomCompositeElm",
+    "DACElm",
+    "DCMotorElm",
+    "DFlipFlopElm",
+    "DPDTSwitchElm",
+    "DataRecorderElm",
+    "DeMultiplexerElm",
+    "DecimalDisplayElm",
+    "DiacElm",
+    "DiodeElm",
+    "FullAdderElm",
+    "GroundElm",
+    "HalfAdderElm",
+    "InverterElm",
+    "InvertingSchmittElm",
+    "JKFlipFlopElm",
+    "JfetElm",
+    "LDRElm",
+    "LEDElm",
+    "LatchElm",
+    "LineElm",
+    "LogicInputElm",
+    "LogicOutputElm",
+    "MBBSwitchElm",
+    "MemristorElm",
+    "MosfetElm",
+    "MultiplexerElm",
+    "NJfetElm",
+    "NMosfetElm",
+    "NTransistorElm",
+    "NandGateElm",
+    "NorGateElm",
+    "OTAElm",
+    "OhmMeterElm",
+    "OpAmpElm",
+    "OpAmpRealElm",
+    "OpAmpSwapElm",
+    "OptocouplerElm",
+    "OrGateElm",
+    "OutputElm",
+    "PJfetElm",
+    "PMosfetElm",
+    "PTransistorElm",
+    "PhaseCompElm",
+    "PisoShiftElm",
+    "ProbeElm",
+    "PushSwitchElm",
+    "RelayElm",
+    "RingCounterElm",
+    "RoutedWireElm",
+    "SCRElm",
+    "SchmittElm",
+    "SevenSegDecoderElm",
+    "SevenSegElm",
+    "SipoShiftElm",
+    "SparkGapElm",
+    "SubcircuitElm",
+    "Switch2Elm",
+    "SwitchElm",
+    "TFlipFlopElm",
+    "ThermistorNTCElm",
+    "ThreePhaseMotorElm",
+    "TimerElm",
+    "TransistorElm",
+    "TriStateElm",
+    "TriacElm",
+    "TriodeElm",
+    "VCOElm",
+    "WattmeterElm",
+    "WattmeterTrueElm",
+    "WireElm",
+    "XnorGateElm",
+    "XorGateElm",
+];
+
 /// All known element types.
 #[derive(Default, Clone)]
 pub struct Registry {
@@ -140,6 +241,13 @@ impl Registry {
     pub fn standard() -> Self {
         let mut r = Registry::new();
         super::register_all(&mut r);
+        // the elements CircuitJS 5.x does not open the properties of when they are placed
+        // (its `showPropertiesOnCreate()` returns false for them or for a parent class)
+        for d in &mut r.descriptors {
+            if QUIET_ON_CREATE.contains(&d.id) {
+                d.quiet_on_create = true;
+            }
+        }
         r
     }
 

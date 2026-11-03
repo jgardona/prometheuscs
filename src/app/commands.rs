@@ -82,6 +82,8 @@ pub enum Cmd {
     RotateCcw,
     /// Rotate clockwise.
     RotateCw,
+    /// Exchange the two posts of the selected two-terminal elements.
+    SwapTerminals,
     /// Drag out a new element of this registry id.
     Place(String),
     /// Choose a non-placing tool.
@@ -114,6 +116,8 @@ pub enum Cmd {
     ConvertWires,
     /// Open the subcircuit manager.
     SubcircuitManager,
+    /// Read the subcircuit models of a file, leaving the circuit as it is.
+    LoadSubcircuitsOnly,
     /// Load a bundled example by file name.
     Example(String),
     /// Place an instance of the subcircuit with this model name.
@@ -184,6 +188,7 @@ impl Cmd {
             Cmd::ZoomIn => "zoom-in",
             Cmd::ZoomOut => "zoom-out",
             Cmd::MirrorX => "mirror-x",
+            Cmd::SwapTerminals => "swap-terminals",
             Cmd::MirrorY => "mirror-y",
             Cmd::RotateCcw => "rotate-ccw",
             Cmd::RotateCw => "rotate-cw",
@@ -201,6 +206,7 @@ impl Cmd {
             Cmd::OtherOptions => "other-options",
             Cmd::ConvertWires => "convert-wires",
             Cmd::SubcircuitManager => "subcircuit-manager",
+            Cmd::LoadSubcircuitsOnly => "subcircuits-load-only",
             Cmd::Example(_) => "example",
             Cmd::PlaceSubcircuit(_) => "place-subcircuit",
             Cmd::Language(_) => "language",
@@ -264,6 +270,7 @@ impl Cmd {
             "zoom-in" => Cmd::ZoomIn,
             "zoom-out" => Cmd::ZoomOut,
             "mirror-x" => Cmd::MirrorX,
+            "swap-terminals" => Cmd::SwapTerminals,
             "mirror-y" => Cmd::MirrorY,
             "rotate-ccw" => Cmd::RotateCcw,
             "rotate-cw" => Cmd::RotateCw,
@@ -280,6 +287,7 @@ impl Cmd {
             "other-options" => Cmd::OtherOptions,
             "convert-wires" => Cmd::ConvertWires,
             "subcircuit-manager" => Cmd::SubcircuitManager,
+            "subcircuits-load-only" => Cmd::LoadSubcircuitsOnly,
             _ => return None,
         })
     }
@@ -313,14 +321,15 @@ impl Cmd {
                 s.scope_count() > 0
             }
             Cmd::CombineAll => s.scope_count() > 1,
+            // Find stays enabled on an empty circuit: it also places components and runs commands
             Cmd::SelectAll
-            | Cmd::Find
             | Cmd::Center
             | Cmd::Print
             | Cmd::ExportImage
             | Cmd::CopyImage
             | Cmd::ExportSvg => has_elements,
             Cmd::MirrorX | Cmd::MirrorY | Cmd::RotateCcw | Cmd::RotateCw => editing && has_elements,
+            Cmd::SwapTerminals => editing && s.can_swap_terminals(),
             Cmd::Save => s.dirty,
             Cmd::Recover => autosave_path().is_file(),
             Cmd::Place(_) | Cmd::PlaceSubcircuit(_) => editing,
@@ -392,6 +401,9 @@ pub fn dispatch(s: &mut Session, cmd: &Cmd) -> Outcome {
         Cmd::ZoomOut => s.zoom_by(0.8),
         Cmd::MirrorX => {
             s.transform(Transform::MirrorX);
+        }
+        Cmd::SwapTerminals => {
+            s.swap_terminals();
         }
         Cmd::MirrorY => {
             s.transform(Transform::MirrorY);
@@ -489,6 +501,7 @@ pub fn file_menu() -> Vec<Node> {
             item(Cmd::NewCircuit, "New Blank Circuit", Some("doc-new"), None),
             item(Cmd::Open, "Open File...", Some("folder"), Some("<Control>o")),
             item(Cmd::ImportText, "Import From Text...", Some("doc-text"), None),
+            item(Cmd::LoadSubcircuitsOnly, "Load Subcircuits Only...", Some("microchip"), None),
         ]),
         Node::Section(vec![
             item(Cmd::Save, "Save", Some("floppy"), Some("<Control>s")),
@@ -544,6 +557,7 @@ pub fn edit_menu() -> Vec<Node> {
             item(Cmd::MirrorY, "Mirror Y", Some("flip-y"), None),
             item(Cmd::RotateCcw, "Rotate CCW", Some("ccw"), None),
             item(Cmd::RotateCw, "Rotate CW", Some("cw"), None),
+            item(Cmd::SwapTerminals, "Swap Terminals", None, None),
         ]),
     ]
 }

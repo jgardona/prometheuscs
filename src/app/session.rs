@@ -104,6 +104,13 @@ pub struct Session {
     pub(crate) inspect_views: Vec<View>,
     pub(crate) held: Option<usize>,
     pub(crate) hover: Option<usize>,
+    /// The element placed by the last placement gesture, until the window asks whether its
+    /// properties should open (see [`Session::take_properties_after_place`]).
+    pub(crate) just_placed: Option<usize>,
+    /// The models the last subcircuit library read defined, until the window asks (see
+    /// [`Session::take_loaded_library`]).
+    #[cfg(feature = "subcircuits")]
+    pub(crate) loaded_library: Option<Vec<String>>,
     step_debt: f64,
 }
 
@@ -191,6 +198,9 @@ impl Session {
             inspect_views: Vec::new(),
             held: None,
             hover: None,
+            just_placed: None,
+            #[cfg(feature = "subcircuits")]
+            loaded_library: None,
             step_debt: 0.0,
         };
         session.refresh_draw_ctx(Duration::ZERO);
@@ -538,9 +548,10 @@ impl Session {
         let value = a.position_to_value(pos);
         let mut ei = self.sim.elements.get(a.elm)?.get_edit_info(a.edit_item)?;
         ei.value = value;
+        ei.continuous = true;
         self.sim.apply_edit(a.elm, a.edit_item, &mut ei);
         self.sim.elements[a.elm].set_points();
-        self.param_changed(a.elm, a.edit_item, value);
+        self.param_changed(a.elm, a.edit_item, value, true);
         if self.stop_element.is_some() && self.worker.is_none() {
             return None;
         }

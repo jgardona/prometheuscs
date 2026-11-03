@@ -65,7 +65,7 @@ fn a_parameter_message_changes_the_next_snapshot_without_a_reload() {
     let w2 = worker();
     w2.send(Command::Load { xml: xml_of(RC), keep_time: false });
     w2.send(Command::SetRunning(false));
-    w2.send(Command::Edit { elm: 2, n: 0, value: 1e-5 });
+    w2.send(Command::Edit { elm: 2, n: 0, value: 1e-5, continuous: true });
     w2.send(Command::RunSteps(200));
     assert!(w2.sync());
     let snap_b = w2.latest().unwrap();
@@ -105,7 +105,7 @@ fn sending_commands_does_not_wait_for_the_solver() {
     assert!(w.sync());
     let start = Instant::now();
     for i in 0..1000 {
-        w.send(Command::Edit { elm: 0, n: 0, value: 1.0 + f64::from(i) });
+        w.send(Command::Edit { elm: 0, n: 0, value: 1.0 + f64::from(i), continuous: true });
     }
     assert!(start.elapsed() < Duration::from_millis(50), "{:?}", start.elapsed());
     w.send(Command::SetRunning(false));

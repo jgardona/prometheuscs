@@ -4,7 +4,7 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 
 > Este índice é gerado por `cargo run --release --bin exdocs -- sync`; não o edite à mão.
 
-**Situação:** 227 de 367 entradas do menu documentadas (226 documentos).
+**Situação:** 227 de 366 entradas do menu documentadas (226 documentos).
 
 | Categoria | Situação |
 |-----------|----------|
@@ -29,10 +29,6 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 | Subcircuits | pendente (0 de 2) |
 | Misc Devices | pendente (0 de 51) |
 | 2-D Scope | pendente (0 de 4) |
-
-## Sem categoria — pendente (0 de 1)
-
-- Blank Circuit — *pendente*
 
 ## Basics — documentado
 
@@ -458,18 +454,18 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 
 ## Controlled Sources — documentado
 
-- [VCCS Resistor](cs-resistor.md)
-- [VCCS Varying Resistor](cs-varyresistor.md)
-- [VCVS Op-Amp](cs-opamp.md)
+- [CCS Resistor](cs-resistor.md)
+- [CCS Varying Resistor](cs-varyresistor.md)
+- [CVS Op-Amp](cs-opamp.md)
 - [VCVS Op-Amp With Rails](cs-opamprail.md)
 - [VCVS Multiplier](cs-multiplier.md)
-- [VCVS Full Rectifier](cs-fullrectifier.md)
-- [VCVS Voltage Ramp](cs-ramp.md)
-- [Current Adder](cs-currentadder.md)
-- [VCVS Integrator](cs-integrator.md)
-- [VCVS Differentiator](cs-diff.md)
-- [CCVS Variable Inductor](cs-varinduct.md)
-- [VCCS Variable Capacitor](cs-varicap.md)
+- [CVS Full Rectifier](cs-fullrectifier.md)
+- [CVS Voltage Ramp](cs-ramp.md)
+- [CCS Current Adder](cs-currentadder.md)
+- [CVS Integrator](cs-integrator.md)
+- [CVS Differentiator](cs-diff.md)
+- [CCS Variable Inductor](cs-varinduct.md)
+- [CCS Variable Capacitor](cs-varicap.md)
 
 ## Subcircuits — pendente (0 de 2)
 

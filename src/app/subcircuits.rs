@@ -27,6 +27,18 @@ pub enum ModelScope {
     Saved,
 }
 
+/// True when `text` is a subcircuit library: an XML circuit whose root has `sublib="1"`
+/// (upstream `CircuitLoader.isSubcircuitLibrary`).
+pub fn is_subcircuit_library(text: &str) -> bool {
+    let t = text.trim_start();
+    let Some(rest) = t.strip_prefix("<cir") else { return false };
+    if !rest.starts_with(|c: char| c.is_whitespace() || c == '>' || c == '/') {
+        return false;
+    }
+    let root = &rest[..rest.find('>').unwrap_or(rest.len())];
+    root.split_whitespace().any(|a| a == r#"sublib="1""# || a == "sublib='1'")
+}
+
 /// North, south, west and east, as the pins number the sides.
 const SIDE_N: i32 = 0;
 const SIDE_S: i32 = 1;
@@ -83,8 +95,9 @@ impl Session {
         // closed switches would merge their nodes; the model has to see them open
         let closed = self.open_closed_switches();
         let numbers = self.sim.model_node_numbers();
+        let ref_numbers = self.sim.model_ref_numbers();
         self.restore_switches(&closed);
-        let model = self.model_from_numbers(selected, &numbers);
+        let model = self.model_from_numbers(selected, &numbers, &ref_numbers);
         // the numbering above replaced the analysis of the circuit
         self.reanalyze();
         model
@@ -127,6 +140,7 @@ impl Session {
         &self,
         selected: bool,
         numbers: &[Vec<usize>],
+        ref_numbers: &[Vec<usize>],
     ) -> Result<CompositeModel, String> {
         let included = |i: usize| !selected || self.sim.elements[i].base().selected;
         // the pins: labeled nodes that are not internal, by side
@@ -201,6 +215,11 @@ impl Session {
             e.dump_xml(&mut tag);
             let nn: Vec<String> = numbers[i].iter().map(ToString::to_string).collect();
             tag.str_attr("nn", &nn.join(" "));
+            // the nodes the part's expression refers to by name, as model node numbers
+            if let Some(rn) = ref_numbers.get(i).filter(|r| !r.is_empty()) {
+                let rn: Vec<String> = rn.iter().map(ToString::to_string).collect();
+                tag.str_attr("rn", &rn.join(" "));
+            }
             used.extend(numbers[i].iter().copied());
             let node = out_to_node(&tag);
             if is_plumbing(e.as_ref()) {
@@ -347,17 +366,123 @@ impl Session {
         subcircuit::lookup(name)
     }
 
-    /// Forgets subcircuit `name` everywhere; instances of it fall back to the default model.
-    pub fn delete_subcircuit(&mut self, name: &str) {
+    /// The subcircuit models the circuit uses: those of its instances and, inside them, of the
+    /// instances their models contain.
+    pub fn models_in_use(&self) -> Vec<String> {
+        let mut used: Vec<String> =
+            self.sim.elements.iter().filter_map(|e| e.subcircuit_model_name()).collect();
+        let mut k = 0;
+        while k < used.len() {
+            if let Some(m) = subcircuit::lookup(&used[k]) {
+                for el in m.elms.iter().filter(|e| e.tag == "cc") {
+                    let inner = el.string_attr("mo", "");
+                    if !inner.is_empty() && inner != "default" && !used.contains(&inner) {
+                        used.push(inner);
+                    }
+                }
+            }
+            k += 1;
+        }
+        used.sort();
+        used.dedup();
+        used
+    }
+
+    /// Where subcircuit `name` is kept: this circuit, this session or the user library.
+    pub fn subcircuit_scope(&self, name: &str) -> Option<ModelScope> {
+        subcircuit::lookup(name).map(|_| self.model_scope_of(name))
+    }
+
+    /// Moves subcircuit `name` to `scope` without changing the model (data-model "Subcircuit
+    /// model": Local, Global and Persistent are `Circuit`, `Session` and `Saved` here).
+    pub fn set_subcircuit_scope(&mut self, name: &str, scope: ModelScope) -> Result<(), String> {
+        let model =
+            subcircuit::lookup(name).ok_or_else(|| format!("No such subcircuit: {name}"))?;
+        if self.model_scope_of(name) == scope {
+            return Ok(());
+        }
         self.push_undo();
-        self.extras.model_xml.retain(|n| !(n.tag == "ccm" && n.string_attr("nm", "") == name));
-        let _ = std::fs::remove_file(saved_path(name));
-        subcircuit::remove(name);
+        self.store_model(model, scope)
+    }
+
+    /// The text of a subcircuit library holding the models `names` (and the models they use),
+    /// which CircuitJS 5.x and Load Subcircuits Only read back.
+    pub fn library_text(&self, names: &[String]) -> Result<String, String> {
+        let mut root = XmlOut::new("cir");
+        root.int_attr("sublib", 1);
+        for name in names {
+            let m =
+                subcircuit::lookup(name).ok_or_else(|| format!("No such subcircuit: {name}"))?;
+            root.child(m.to_xml());
+        }
+        Ok(root.to_pretty_string())
+    }
+
+    /// Reads the subcircuit models of `text`, a library or any circuit, and keeps them for
+    /// this session; the circuit is left as it is. Returns the names of the models read.
+    pub fn load_subcircuits_only(&mut self, text: &str) -> Result<Vec<String>, String> {
+        let names = if text.trim_start().starts_with('<') {
+            let root = parse(text).map_err(|e| e.to_string())?;
+            let mut names = Vec::new();
+            for node in root.children.iter().filter(|n| n.tag == "ccm") {
+                if subcircuit::define_from_xml(node) {
+                    names.push(node.string_attr("nm", ""));
+                }
+            }
+            names
+        } else {
+            // the text format: reading it defines its models on the way
+            let before = subcircuit::model_names();
+            let _ = crate::format::parser::parse(text, &self.registry);
+            subcircuit::model_names().into_iter().filter(|n| !before.contains(n)).collect()
+        };
+        for e in &mut self.sim.elements {
+            e.update_models();
+        }
+        if !names.is_empty() {
+            self.reanalyze();
+        }
+        self.loaded_library = Some(names.clone());
+        Ok(names)
+    }
+
+    /// The models read by the last Load Subcircuits Only (or by opening a library), once.
+    pub fn take_loaded_library(&mut self) -> Option<Vec<String>> {
+        self.loaded_library.take()
+    }
+
+    /// Forgets subcircuit `name` everywhere. It is refused while the circuit uses it.
+    pub fn delete_subcircuit(&mut self, name: &str) -> Result<(), String> {
+        self.delete_subcircuits(&[name.to_string()])
+    }
+
+    /// Forgets the subcircuits `names` everywhere, in one undo step. Nothing is deleted when
+    /// the circuit uses any of them; the error names those (upstream `SubcircuitDialog`).
+    pub fn delete_subcircuits(&mut self, names: &[String]) -> Result<(), String> {
+        let in_use = self.models_in_use();
+        let used: Vec<&str> =
+            names.iter().filter(|n| in_use.contains(n)).map(String::as_str).collect();
+        if !used.is_empty() {
+            return Err(format!(
+                "{}{}",
+                crate::locale::ls("Can't delete subcircuits in use in the current circuit: "),
+                used.join(", ")
+            ));
+        }
+        self.push_undo();
+        for name in names {
+            self.extras
+                .model_xml
+                .retain(|n| !(n.tag == "ccm" && n.string_attr("nm", "") == name.as_str()));
+            let _ = std::fs::remove_file(saved_path(name));
+            subcircuit::remove(name);
+        }
         for e in &mut self.sim.elements {
             e.update_models();
         }
         self.dirty = true;
         self.reanalyze();
+        Ok(())
     }
 
     /// Makes the next element placed an instance of subcircuit `name`.

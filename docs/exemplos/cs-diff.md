@@ -1,22 +1,22 @@
 ---
 exemplo: cs-diff.txt
-titulo: VCVS Differentiator
+titulo: CVS Differentiator
 categoria: Controlled Sources
 verificacoes:
-  - t=0.01 elemento=5:OutputElm grandeza=vd esperado=-8 tol=0.005
-  - t=0.05 de=0.025 elemento=5:OutputElm grandeza=vd fn=max esperado=8 tol=0.01
-  - t=0.05 de=0.025 elemento=5:OutputElm grandeza=vd fn=min esperado=-8 tol=0.01
+  - t=0.01 elemento=3:OutputElm grandeza=vd esperado=-8 tol=0.005
+  - t=0.05 de=0.025 elemento=3:OutputElm grandeza=vd fn=max esperado=8 tol=0.01
+  - t=0.05 de=0.025 elemento=3:OutputElm grandeza=vd fn=min esperado=-8 tol=0.01
 ---
 
-# Derivador (VCVS com derivada da entrada)
+# Derivador (fonte de tensão controlada com a derivada de um nó)
 
 <!-- navegacao:inicio -->
-[Índice](README.md) · [Anterior: VCVS Integrator](cs-integrator.md) · [Próximo: CCVS Variable Inductor](cs-varinduct.md)
+[Índice](README.md) · [Anterior: CVS Integrator](cs-integrator.md) · [Próximo: CCS Variable Inductor](cs-varinduct.md)
 <!-- navegacao:fim -->
 
 ## Objetivo
 
-Mostrar como uma fonte controlada calcula a derivada da entrada: a função $\text{dadt}$ devolve a taxa de variação da entrada $a$, e a expressão $\text{clamp}(\text{dadt}\cdot 0{,}01, -15, 15)$ faz um derivador de ganho $10\ \text{ms}$ com saída limitada a $\pm 15\ \text{V}$.
+Mostrar como uma fonte controlada calcula a derivada de uma tensão: a função $\text{dvdt}(\text{in})$ devolve a taxa de variação da tensão do nó rotulado `in`, e a expressão $\text{clamp}(\text{dvdt}(\text{in})\cdot 0{,}01, -15, 15)$ faz um derivador de ganho $10\ \text{ms}$ com saída limitada a $\pm 15\ \text{V}$.
 
 ## O circuito
 
@@ -24,21 +24,22 @@ Mostrar como uma fonte controlada calcula a derivada da entrada: a função $\te
 ![Esquema do circuito](img/cs-diff.svg)
 <!-- esquema:fim -->
 
-Uma fonte de onda triangular de $40\ \text{Hz}$ e $5\ \text{V}$ de pico (com fase de $90^\circ$) alimenta a entrada de uma VCVS com a expressão $\text{clamp}(\text{dadt}\cdot 0{,}01,\ -15,\ 15)$. Um elemento de saída mostra o resultado.
+Uma fonte de onda triangular de $40\ \text{Hz}$ e $5\ \text{V}$ de pico (com fase de $90^\circ$) está ligada ao nó rotulado `in`. Uma fonte de tensão controlada com a expressão $\text{clamp}(\text{dvdt}(\text{in})\cdot 0{,}01,\ -15,\ 15)$ gera a saída, que um elemento de saída mostra.
 
 <!-- componentes:inicio -->
 | N.º | Tipo | Elemento | Valores |
 |----:|------|----------|---------|
 | 0 | `DCVoltageElm` | triangle gen | Max Voltage = 5; Waveform = Triangle; DC Offset (V) = 0; Internal Resistance (ohms) = 0; Show Voltage = não; Frequency (Hz) = 40; Phase Offset (degrees) = 90 |
 | 1 | `GroundElm` | ground | Symbol = Earth |
-| 2 | `VCVSElm` | VCVS | Output Function = clamp(dadt*.01, -15, 15); # of Inputs = 1 |
-| 4 | `GroundElm` | ground | Symbol = Earth |
-| 5 | `OutputElm` | output | Show Voltage = não |
+| 2 | `GroundElm` | ground | Symbol = Earth |
+| 3 | `OutputElm` | output | Show Voltage = não |
+| 4 | `ControlledVoltageElm` | Controlled Voltage Source | Output Voltage = clamp(dvdt(in)*.01, -15, 15) |
+| 5 | `LabeledNodeElm` | Labeled Node | Text = in; Internal Node = não; Rotate Text When Vertical = não |
 <!-- componentes:fim -->
 
 ## Teoria
 
-As fontes controladas deste simulador são definidas por uma **expressão** sobre as entradas, que se chamam $a$, $b$, $c$, ... (as tensões ou correntes nos terminais de controle). O resultado é a tensão (VCVS, CCVS) ou a corrente (VCCS, CCCS) que a fonte impõe na saída. A saída é $V_\text{out} = 0{,}01\ \text{s}\cdot \dfrac{da}{dt}$, limitada a $\pm 15\ \text{V}$. Uma triangular de pico $V_p = 5\ \text{V}$ e frequência $f = 40\ \text{Hz}$ tem inclinação constante de módulo $4V_pf = 800\ \text{V/s}$ em cada meio ciclo, e portanto a saída é uma onda quadrada de amplitude
+As fontes controladas de dois terminais (o losango) são definidas por uma **expressão** que lê o resto do circuito **pelo nome**: $v(\text{nome})$ é a tensão de um nó rotulado ou sobre um voltímetro com rótulo, $i(\text{nome})$ a corrente de um amperímetro com rótulo, e $\text{dvdt}$ / $\text{didt}$ as suas taxas de variação. O resultado é a tensão (fonte de tensão controlada, com o $+$ no segundo terminal) ou a corrente (fonte de corrente controlada, no sentido da seta) que a fonte impõe. A saída é $V_\text{out} = 0{,}01\ \text{s}\cdot \dfrac{dv_\text{in}}{dt}$, limitada a $\pm 15\ \text{V}$. Uma triangular de pico $V_p = 5\ \text{V}$ e frequência $f = 40\ \text{Hz}$ tem inclinação constante de módulo $4V_pf = 800\ \text{V/s}$ em cada meio ciclo, e portanto a saída é uma onda quadrada de amplitude
 
 $$|V_\text{out}| = 0{,}01\cdot 800 = 8\ \text{V},$$
 

@@ -38,6 +38,11 @@ pub struct ScopeScales {
 }
 
 impl ScopeScales {
+    /// The full-scale values scope `i` is drawn with now, if it has been drawn.
+    pub fn state(&self, i: usize) -> Option<ScaleState> {
+        self.scales.get(i).copied()
+    }
+
     fn sync(&mut self, views: &[ScopeView]) {
         if self.scales.len() != views.len() {
             self.scales =
@@ -288,6 +293,9 @@ pub struct Measures {
     pub top: Vec<String>,
     /// The line for the bottom left corner (the smallest value).
     pub bottom: Option<String>,
+    /// Where among `top` the legend of combined plots goes (before the line at this index),
+    /// when the scope has several plots and no label of its own (upstream `324b217f`).
+    pub legend_at: Option<usize>,
 }
 
 /// The cycles of a signal as the original finds them: the span, in samples, from the first
@@ -447,9 +455,14 @@ fn measures(view: &ScopeView, win: &Window, step_x: f64, step_y: f64) -> Measure
             ));
         }
     }
-    // the label of the scope comes among the measurements, as in the original
+    // the label of the scope comes among the measurements, as in the original; without one,
+    // combined plots get a legend there that tells the curves apart
     if let Some(t) = view.text.as_ref().filter(|t| !t.is_empty()) {
         m.top.push(t.clone());
+    } else if view.plots.iter().any(|p| p.elm != first.elm) {
+        // plots of one element (its voltage and current) need no legend: the information
+        // area names the element, as upstream names it in the label
+        m.legend_at = Some(m.top.len());
     }
     if flags & crate::scope::FLAG_FREQ != 0 {
         let f = frequency(&samples, view.time_per_sample);
@@ -648,6 +661,7 @@ pub fn draw_scopes(
         }
     }
     let hover = scales.hover;
+    let repeated = repeated_labels(views);
     for (i, &(rx, ry, rw, rh)) in rects.iter().enumerate() {
         let measure = scales.drag_from.filter(|d| d.0 == i).map(|d| d.1);
         let Some(scale) = scales.scales.get_mut(i) else { continue };
@@ -655,9 +669,17 @@ pub fn draw_scopes(
         let wheel_lit = cursor
             .filter(|_| under == Some(i))
             .is_some_and(|(cx, cy)| on_wheel(rects[i], cx - rx, cy - ry));
+        // a label the scope stacked above already shows is not written again
+        let unlabelled;
+        let view = if repeated[i] {
+            unlabelled = ScopeView { text: None, ..views[i].clone() };
+            &unlabelled
+        } else {
+            &views[i]
+        };
         draw_scope(
             g,
-            &views[i],
+            view,
             scale,
             &ScopeSpot {
                 x: rx,
@@ -670,6 +692,7 @@ pub fn draw_scopes(
                 selected,
                 measure_from: measure,
                 glow: scales.glow.get(i).copied().unwrap_or(false),
+                transparent: false,
             },
             light_background,
         );
@@ -690,6 +713,20 @@ pub fn draw_scopes(
             ty += 15.0;
         }
     }
+}
+
+/// For each scope, whether its label is the same as the one of the scope stacked just above
+/// it (in the same place), so it need not be written again (upstream `31814a1b`).
+pub fn repeated_labels(views: &[ScopeView]) -> Vec<bool> {
+    let mut out = vec![false; views.len()];
+    for band in bands(views) {
+        for pair in band.windows(2) {
+            let (above, this) = (&views[pair[0]], &views[pair[1]]);
+            out[pair[1]] =
+                this.text.as_ref().is_some_and(|t| !t.is_empty()) && this.text == above.text;
+        }
+    }
+    out
 }
 
 /// The simulated time at pixel `x` of a scope of width `w`, for a scope that draws its plots
@@ -729,6 +766,8 @@ pub struct ScopeSpot {
     pub measure_from: Option<f64>,
     /// The scope plots a selected element: its background is tinted.
     pub glow: bool,
+    /// Leave the background unpainted (an exported picture with a transparent background).
+    pub transparent: bool,
 }
 
 /// Draws one scope in the rectangle (`x`, `y`, `w`, `h`); `scale` is its full-scale values,
@@ -754,13 +793,14 @@ fn draw_scope_inside(
     spot: &ScopeSpot,
     light: bool,
 ) {
-    let ScopeSpot { x, y, w, h, slot, cursor, cursor_y, selected, measure_from, glow } = *spot;
+    let ScopeSpot { x, y, w, h, slot, cursor, cursor_y, selected, measure_from, glow, transparent } =
+        *spot;
     let (bg, grid, text) = if light {
         (Color::new(255, 255, 255), Color::new(200, 200, 200), Color::new(0, 0, 0))
     } else {
         (Color::new(0, 0, 0), Color::new(64, 64, 64), Color::new(192, 192, 192))
     };
-    if slot == 0 {
+    if slot == 0 && !transparent {
         g.set_color(if glow { glow_color(light) } else { bg });
         g.fill_rect(x, y, w, h);
     }
@@ -963,12 +1003,18 @@ fn draw_scope_inside(
             g.set_font_size(10);
             g.set_text_align(TextAlign::Left);
         }
-        for line in &m.top {
+        for (k, line) in m.top.iter().enumerate() {
+            if m.legend_at == Some(k) {
+                ty = draw_legend(g, view, (x, y, w, h), ty, (text, bg, light));
+            }
             if ty + 5.0 >= y + h {
                 break;
             }
             draw_label(g, line, (x + 3.0, ty), (text, bg), (x, x + w));
             ty += 15.0;
+        }
+        if m.legend_at == Some(m.top.len()) {
+            draw_legend(g, view, (x, y, w, h), ty, (text, bg, light));
         }
         if let Some(b) = &m.bottom {
             // the lowest value of the full scale is written in the bottom corner, when the
@@ -1458,6 +1504,44 @@ fn draw_trigger(
     g.draw_string(status, x + w - g.measure_text(status) - 5.0, y + h - 15.0);
 }
 
+/// The order the legend names the plots in: as they are, or, in manual mode, where the plots
+/// may be moved up and down, top to bottom on the screen (upstream `8ee04b18`).
+pub fn legend_order(view: &ScopeView) -> Vec<usize> {
+    let mut order: Vec<usize> = (0..view.plots.len()).collect();
+    if view.manual {
+        // a stable sort keeps the plots at the same height in their order
+        order.sort_by_key(|&i| std::cmp::Reverse(view.plots[i].man_pos));
+    }
+    order
+}
+
+/// Draws the legend of combined plots from baseline `ty`: a square in each plot's colour and
+/// its name, one line each. It is drawn only when every line fits in the top three quarters of
+/// the scope (upstream `7ec858d6`). Returns the baseline after it.
+fn draw_legend(
+    g: &mut dyn Painter,
+    view: &ScopeView,
+    (x, y, w, h): (f64, f64, f64, f64),
+    ty: f64,
+    (text, bg, light): (Color, Color, bool),
+) -> f64 {
+    let n = view.plots.len();
+    if ty + 15.0 * (n as f64 - 1.0) > y + h * 3.0 / 4.0 {
+        return ty;
+    }
+    let mut ty = ty;
+    for i in legend_order(view) {
+        let p = &view.plots[i];
+        let before = view.plots[..i].iter().filter(|q| q.units == p.units).count();
+        g.set_color(plot_color(p.units, i, before, light));
+        g.fill_rect(x + 3.0, ty - 9.0, 10.0, 10.0);
+        let name = format!("{} {}", p.title, plot_label(p));
+        draw_label(g, &name, (x + 19.0, ty), (text, bg), (x, x + w));
+        ty += 15.0;
+    }
+    ty
+}
+
 /// Draws a label of the cursor on a plate: a rectangle in the panel colour `plate`, 75% opaque,
 /// so the grid and the curves behind the text do not get in the way of reading it. `at` is the
 /// left end and the baseline of the text, `color` its colour, and `bounds` the left and right edge
@@ -1585,6 +1669,7 @@ mod tests {
             time_per_sample: 1e-4,
             time: 0.05,
             plots: vec![PlotView {
+                elm: 0,
                 units: UNITS_V,
                 value: 0,
                 title: "R1".into(),
@@ -1623,6 +1708,88 @@ mod tests {
         // information area
         let svg = g.finish();
         assert!(!svg.contains("R1 V ="), "{svg}");
+    }
+
+    /// `view` with a second plot, `title`, combined into it.
+    fn combined(mut v: ScopeView, title: &str) -> ScopeView {
+        let mut p = v.plots[0].clone();
+        p.title = title.into();
+        p.elm = v.plots.len();
+        p.units = crate::scope::UNITS_A;
+        v.plots.push(p);
+        v
+    }
+
+    fn svg_of(views: &[ScopeView], w: f64, h: f64) -> String {
+        let mut g = SvgPainter::new(w, h);
+        draw_scopes(&mut g, views, &mut ScopeScales::default(), w, h, false, None);
+        g.finish()
+    }
+
+    #[test]
+    fn stacked_scopes_show_their_label_and_legend_when_there_is_room() {
+        // three scopes stacked in one place, 130 pixels each, as in a 390-pixel scope area
+        let mut a = view(&[1.0; 40]);
+        a.text = Some("input".into());
+        let b = combined(view(&[2.0; 40]), "C1");
+        let mut c = view(&[3.0; 40]);
+        c.text = Some("output".into());
+        let svg = svg_of(&[a, b, c], 600.0, 390.0);
+        assert!(svg.contains(">input<") && svg.contains(">output<"), "{svg}");
+        // the combined scope names each plot: its element and the quantity plotted
+        assert!(svg.contains(">R1 V<") && svg.contains(">C1 I<"), "{svg}");
+    }
+
+    #[test]
+    fn a_legend_that_does_not_fit_is_left_out() {
+        let mut v = combined(view(&[2.0; 40]), "C1");
+        for t in ["C2", "C3", "C4", "C5", "C6"] {
+            v = combined(v, t);
+        }
+        // seven plots need more than the top three quarters of a 120-pixel scope
+        let svg = svg_of(&[v], 600.0, 120.0);
+        assert!(!svg.contains(">C6 I<"), "{svg}");
+    }
+
+    #[test]
+    fn a_label_equal_to_the_scope_above_is_not_repeated() {
+        let mut a = view(&[1.0; 40]);
+        let mut b = view(&[2.0; 40]);
+        let mut c = view(&[3.0; 40]);
+        a.text = Some("logic out".into());
+        b.text = Some("logic out".into());
+        c.text = Some("logic out".into());
+        c.position = 1;
+        assert_eq!(repeated_labels(&[a.clone(), b.clone(), c.clone()]), [false, true, false]);
+        let svg = svg_of(&[a, b, c], 600.0, 390.0);
+        // once for the stacked pair, once for the scope in its own place
+        assert_eq!(svg.matches(">logic out<").count(), 2, "{svg}");
+    }
+
+    #[test]
+    fn combined_plots_are_named_in_on_screen_order() {
+        let mut v = combined(view(&[2.0; 40]), "C1");
+        v = combined(v, "L1");
+        assert_eq!(legend_order(&v), [0, 1, 2]);
+        // in manual mode the plot moved highest comes first; equal heights keep their order
+        v.manual = true;
+        v.plots[0].man_pos = -2;
+        v.plots[1].man_pos = 3;
+        v.plots[2].man_pos = 0;
+        assert_eq!(legend_order(&v), [1, 2, 0]);
+        let svg = svg_of(&[v], 600.0, 300.0);
+        let at = |name: &str| svg.find(name).unwrap_or_else(|| panic!("{name}: {svg}"));
+        assert!(at(">C1 I<") < at(">L1 I<") && at(">L1 I<") < at(">R1 V<"));
+    }
+
+    #[test]
+    fn a_scope_with_a_label_or_one_plot_has_no_legend() {
+        let mut v = combined(view(&[2.0; 40]), "C1");
+        v.text = Some("mine".into());
+        let svg = svg_of(&[v], 600.0, 300.0);
+        assert!(svg.contains(">mine<") && !svg.contains(">C1 I<"), "{svg}");
+        let svg = svg_of(&[view(&[2.0; 40])], 600.0, 300.0);
+        assert!(!svg.contains(">R1 V<"), "{svg}");
     }
 
     #[test]

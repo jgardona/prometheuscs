@@ -203,6 +203,9 @@ pub struct EditInfo {
     pub error: Option<String>,
     /// Set by the element when the edit changes which fields exist, so the dialog rebuilds.
     pub new_dialog: bool,
+    /// The value comes from a slider moving continuously, not from the edit dialog: a
+    /// waveform keeps its phase instead of restarting in step with the other sources.
+    pub continuous: bool,
     /// The text is a file path and the dialog offers a file chooser for it.
     pub file_chooser: Option<FileChoice>,
 }
@@ -879,10 +882,39 @@ pub trait Element: Any {
     fn internal_node_count(&self) -> usize {
         0
     }
-    /// Total node count.
+    /// Total node count: posts, internal nodes, then the reference nodes.
     fn node_count(&self) -> usize {
+        self.post_count() + self.internal_node_count() + self.ref_node_count()
+    }
+
+    /// The name by which an expression's `v(name)` or `i(name)` can refer to this element
+    /// (a labeled voltmeter or ammeter), if it has one.
+    fn expr_ref_name(&self) -> Option<&str> {
+        None
+    }
+    /// For a labeled node: the label `v(label)` resolves to.
+    fn expr_node_label(&self) -> Option<&str> {
+        None
+    }
+    /// The quantities this element's expression refers to by name.
+    fn expr_refs(&self) -> &[crate::expr::ExprRef] {
+        &[]
+    }
+    /// Number of reference nodes: two per entry of [`Element::expr_refs`], the positive and
+    /// negative end of each referenced quantity. They come after the posts and internal
+    /// nodes, carry no current and are not connections.
+    fn ref_node_count(&self) -> usize {
+        2 * self.expr_refs().len()
+    }
+    /// Index of the first reference node.
+    fn ref_node_base(&self) -> usize {
         self.post_count() + self.internal_node_count()
     }
+    /// Tells the element what reference `k` was resolved to (on every analysis).
+    fn set_ref_resolution(&mut self, _k: usize, _r: crate::expr::refs::RefResolution) {}
+    /// Gives current reference `k` the present current of its ammeter (before every
+    /// iteration).
+    fn set_ref_current(&mut self, _k: usize, _current: f64) {}
     /// True if the matrix must be restamped every iteration.
     fn non_linear(&self) -> bool {
         false
@@ -1122,6 +1154,11 @@ pub trait Element: Any {
     }
     /// Moves the element's slider (0 to 100).
     fn set_slider_value(&mut self, _v: i32) {}
+    /// Swaps the polarity of a transistor (NPN/PNP) or the channel of a MOSFET or JFET (N/P),
+    /// for the mouse wheel. Returns the new type's name, or `None` for other elements.
+    fn toggle_polarity(&mut self) -> Option<&'static str> {
+        None
+    }
 
     /// Key that inserts this element, or 0.
     fn shortcut(&self) -> i32 {

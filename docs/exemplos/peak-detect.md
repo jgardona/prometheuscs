@@ -40,7 +40,7 @@ A entrada é a soma de duas fontes senoidais em série: $5\ \text{V}$ de pico a 
 | 14 | `VoltageElm` | A/C source | Max Voltage = 3; Waveform = A/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0; Show Voltage = não; Frequency (Hz) = 110; Phase Offset (degrees) = 0 |
 | 17 | `SwitchElm` | switch (SPST) | Momentary Switch = sim; IEC Symbol = não; Label (for linking) = ; Keyboard Shortcut = ; On Resistance (ohms) = 0 |
 | 18 | `ResistorElm` | resistor | Resistance (ohms) = 10 |
-| 21 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0 |
+| 21 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0; Label =  |
 | 23 | `OutputElm` | output | Show Voltage = não |
 | 24 | `TextElm` | text | Text = reset; Size = 20; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->

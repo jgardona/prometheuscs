@@ -36,9 +36,9 @@ Uma antena simulada (amplificada) entrega a soma de três estações AM, de $300
 | 7 | `ResistorElm` | resistor | Resistance (ohms) = 47k |
 | 10 | `AntennaElm` | Antenna (amplified) |  |
 | 11 | `GroundElm` | ground | Symbol = Earth |
-| 12 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0 |
+| 12 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0; Label =  |
 | 13 | `DiodeElm` | diode | Model = default |
-| 17 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0 |
+| 17 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0; Label =  |
 | 18 | `TextElm` | text | Text = C1; Size = 20; Draw Bar On Top = não; Color = #c0c0c0 |
 | 19 | `TextElm` | text | Text = C2; Size = 20; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->

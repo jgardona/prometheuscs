@@ -35,7 +35,7 @@ A fonte é um gerador de varredura logarítmica (*sweep*) de $5\ \text{V}$ de pi
 | 4 | `GroundElm` | ground | Symbol = Earth |
 | 6 | `OpAmpElm` | op-amp | Max Output (V) = 15; Min Output (V) = -15; Gain = 100k |
 | 11 | `OutputElm` | output | Show Voltage = não |
-| 12 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0 |
+| 12 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0; Label =  |
 | 13 | `GroundElm` | ground | Symbol = Earth |
 | 14 | `CapacitorElm` | capacitor | Capacitance (F) = 53n; Trapezoidal Approximation = sim; Initial Voltage (on Reset) = 1m; Series Resistance = 0 |
 | 15 | `CapacitorElm` | capacitor | Capacitance (F) = 53n; Trapezoidal Approximation = sim; Initial Voltage (on Reset) = 1m; Series Resistance = 0 |

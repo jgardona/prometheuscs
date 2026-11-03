@@ -10,7 +10,7 @@ verificacoes:
 # Multiplicador de tensões (VCVS)
 
 <!-- navegacao:inicio -->
-[Índice](README.md) · [Anterior: VCVS Op-Amp With Rails](cs-opamprail.md) · [Próximo: VCVS Full Rectifier](cs-fullrectifier.md)
+[Índice](README.md) · [Anterior: VCVS Op-Amp With Rails](cs-opamprail.md) · [Próximo: CVS Full Rectifier](cs-fullrectifier.md)
 <!-- navegacao:fim -->
 
 ## Objetivo

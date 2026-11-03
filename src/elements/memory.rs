@@ -48,7 +48,28 @@ pub struct Memory {
     address: i32,
 }
 
+/// Files this size or larger are refused by Load Contents From File (as in the original).
+const MAX_LOAD_BYTES: usize = 128_000;
+
 impl Memory {
+    /// Replaces the contents with the raw bytes of a file, from address 0: one value per byte,
+    /// or per big-endian pair of bytes when the data is wider than 8 bits (as the original's
+    /// Load Contents From File). A file too large is refused and the contents are kept.
+    fn load_bytes(&mut self, bytes: &[u8]) -> Result<(), String> {
+        if bytes.len() >= MAX_LOAD_BYTES {
+            return Err("Cannot load: That file is too large!".into());
+        }
+        let per_value = if self.data_bits > 8 { 2 } else { 1 };
+        self.map.clear();
+        for (addr, chunk) in bytes.chunks_exact(per_value).enumerate() {
+            let value = chunk.iter().fold(0i32, |v, b| (v << 8) | i32::from(*b));
+            if value != 0 {
+                self.map.insert(addr as i32, value);
+            }
+        }
+        Ok(())
+    }
+
     fn new(rom: bool) -> Self {
         Memory {
             rom,
@@ -318,7 +339,8 @@ impl ChipLogic for Memory {
     }
 
     fn chip_edit_info(&self, c: &ChipCore, n: usize) -> Option<EditInfo> {
-        let reload = 4;
+        // as the original: the file chooser at 4 (RAM only), then the reload option
+        let reload = if self.rom { 4 } else { 5 };
         match n {
             0 => Some(
                 EditInfo::new("# of Address Bits", f64::from(self.address_bits), 1.0, 1.0)
@@ -333,6 +355,9 @@ impl ChipLogic for Memory {
                 &self.contents_to_string(c.base.flags & FLAG_HEX_DISPLAY != 0),
             )),
             3 => Some(EditInfo::checkbox("Hex Display", c.base.flags & FLAG_HEX_DISPLAY != 0)),
+            4 if !self.rom => Some(
+                EditInfo::text("Load Contents From File", "").open_file(&[]).disallow_sliders(),
+            ),
             n if n == reload => Some(EditInfo::checkbox(
                 "Restore Contents on Reset",
                 c.base.flags & FLAG_RELOAD_ON_RESET != 0,
@@ -370,7 +395,26 @@ impl ChipLogic for Memory {
                     c.base.flags &= !FLAG_HEX_DISPLAY;
                 }
             }
-            4 => {
+            4 if !self.rom => {
+                let path = ei.text.as_deref().map(str::trim).unwrap_or_default();
+                if path.is_empty() {
+                    return;
+                }
+                match std::fs::read(path) {
+                    Ok(bytes) => match self.load_bytes(&bytes) {
+                        Ok(()) => {
+                            if c.base.flags & FLAG_RELOAD_ON_RESET != 0 {
+                                self.initial = Some(self.map.clone());
+                            }
+                            // the Contents field shows the new contents
+                            ei.new_dialog = true;
+                        }
+                        Err(e) => ei.error = Some(e),
+                    },
+                    Err(e) => ei.error = Some(format!("{path}: {e}")),
+                }
+            }
+            n if n == 4 || n == 5 => {
                 if ei.checkbox.unwrap_or(false) {
                     c.base.flags |= FLAG_RELOAD_ON_RESET;
                     self.initial = Some(self.map.clone());
@@ -387,6 +431,23 @@ impl ChipLogic for Memory {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_file_is_loaded_as_raw_bytes() {
+        let mut m = Memory::new(false);
+        m.load_bytes(&[1, 2, 0, 0xff]).unwrap();
+        assert_eq!(m.contents_to_string(false), "0: 1 2\n3: 255\n");
+        // wider than 8 bits: big-endian pairs, an odd last byte is dropped
+        m.data_bits = 12;
+        m.load_bytes(&[0x01, 0x02, 0x0a, 0xbc, 0x07]).unwrap();
+        assert_eq!(m.map.get(&0), Some(&0x0102));
+        assert_eq!(m.map.get(&1), Some(&0x0abc));
+        assert_eq!(m.map.len(), 2);
+        // too large: refused, contents kept
+        let err = m.load_bytes(&vec![1; MAX_LOAD_BYTES]).unwrap_err();
+        assert_eq!(err, "Cannot load: That file is too large!");
+        assert_eq!(m.map.len(), 2);
+    }
 
     #[test]
     fn contents_round_trip_through_text() {

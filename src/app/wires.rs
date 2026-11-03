@@ -98,7 +98,100 @@ pub fn chains(wires: &[Segment], others: &[(i32, i32)]) -> Vec<Chain> {
     out
 }
 
+/// True when (`px`, `py`) lies on the segment from `a` to `b`, strictly between its ends.
+fn on_segment_interior(a: Point, b: Point, px: i32, py: i32) -> bool {
+    let (ax, ay, bx, by) = (i64::from(a.x), i64::from(a.y), i64::from(b.x), i64::from(b.y));
+    let (px, py) = (i64::from(px), i64::from(py));
+    let cross = (bx - ax) * (py - ay) - (by - ay) * (px - ax);
+    if cross != 0 || (px, py) == (ax, ay) || (px, py) == (bx, by) {
+        return false;
+    }
+    px >= ax.min(bx) && px <= ax.max(bx) && py >= ay.min(by) && py <= ay.max(by)
+}
+
 impl Session {
+    /// Splits, at (`px`, `py`), every plain wire whose interior passes there and every lead stub
+    /// of another element that does, so that a post dropped there connects (as CircuitJS 5.x
+    /// does when an element is placed or moved). Elements in `exclude` (the ones that moved) are
+    /// left alone. Returns true when something was split; the caller owns the undo step.
+    pub fn split_at(&mut self, px: i32, py: i32, exclude: &[usize]) -> bool {
+        let mut added: Vec<Box<dyn crate::elements::element::Element>> = Vec::new();
+        for i in 0..self.sim.elements.len() {
+            if exclude.contains(&i) {
+                continue;
+            }
+            let e = &mut self.sim.elements[i];
+            if let Some(w) = e.as_any().downcast_ref::<WireElm>() {
+                if !w.is_plain() {
+                    continue;
+                }
+                let b = e.base();
+                if !on_segment_interior(b.point1, b.point2, px, py) {
+                    continue;
+                }
+                // the old wire keeps its first end, a new one takes the rest
+                let (x2, y2) = (b.x2, b.y2);
+                let mut rest = WireElm::new(px, py);
+                rest.base_mut().set_position(px, py, x2, y2);
+                use crate::elements::element::Element;
+                rest.set_points();
+                added.push(Box::new(rest));
+                let (x, y) = (e.base().x, e.base().y);
+                e.base_mut().set_position(x, y, px, py);
+                e.set_points();
+                continue;
+            }
+            // the lead stub between a post and the body of the element
+            let b = e.base();
+            let post = if b.lead1 != b.point1 && on_segment_interior(b.point1, b.lead1, px, py) {
+                Some(0)
+            } else if b.lead2 != b.point2 && on_segment_interior(b.lead2, b.point2, px, py) {
+                Some(1)
+            } else {
+                None
+            };
+            let Some(post) = post else { continue };
+            if e.post_count() != 2 {
+                continue;
+            }
+            let (x, y, x2, y2) = (b.x, b.y, b.x2, b.y2);
+            let (ox, oy) = if post == 0 { (x, y) } else { (x2, y2) };
+            if post == 0 {
+                e.base_mut().set_position(px, py, x2, y2);
+            } else {
+                e.base_mut().set_position(x, y, px, py);
+            }
+            e.set_points();
+            let mut w = WireElm::new(px, py);
+            w.base_mut().set_position(px, py, ox, oy);
+            use crate::elements::element::Element;
+            w.set_points();
+            added.push(Box::new(w));
+        }
+        let split = !added.is_empty();
+        self.sim.elements.extend(added);
+        split
+    }
+
+    /// Splits wires and leads at the posts of elements `idx` (just placed or moved), leaving
+    /// those elements themselves alone. Returns true when something was split.
+    pub fn split_at_posts(&mut self, idx: &[usize]) -> bool {
+        let mut points = Vec::new();
+        for &i in idx {
+            let Some(e) = self.sim.elements.get(i) else { continue };
+            for n in 0..e.post_count() {
+                if let Some(p) = e.get_post(n) {
+                    points.push((p.x, p.y));
+                }
+            }
+        }
+        let mut split = false;
+        for (x, y) in points {
+            split |= self.split_at(x, y, idx);
+        }
+        split
+    }
+
     /// Turns the plain wires (the selected ones, when any wire is selected) into routed wires.
     /// Returns how many routed wires were made.
     pub fn convert_wires(&mut self) -> usize {
@@ -147,6 +240,57 @@ impl Session {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+    use crate::elements::registry::Registry;
+
+    fn session(text: &str) -> Session {
+        Session::load(text, &Registry::standard()).unwrap()
+    }
+
+    fn wires(s: &Session) -> Vec<((i32, i32), (i32, i32))> {
+        let mut v: Vec<_> = s
+            .sim
+            .elements
+            .iter()
+            .filter(|e| e.class_name() == "WireElm")
+            .map(|e| ((e.base().x, e.base().y), (e.base().x2, e.base().y2)))
+            .collect();
+        v.sort();
+        v
+    }
+
+    #[test]
+    fn a_post_on_the_middle_of_a_wire_splits_it() {
+        let mut s = session("$ 1 0.000005 10 50 5 50 5e-11\nw 0 0 128 0 0\nr 64 0 64 64 0 1000\n");
+        assert!(s.split_at_posts(&[1]));
+        assert_eq!(wires(&s), vec![((0, 0), (64, 0)), ((64, 0), (128, 0))]);
+        // a post at a wire's end does not split it (no zero-length wire)
+        let mut s =
+            session("$ 1 0.000005 10 50 5 50 5e-11\nw 0 0 128 0 0\nr 128 0 128 64 0 1000\n");
+        assert!(!s.split_at_posts(&[1]));
+        assert_eq!(wires(&s), vec![((0, 0), (128, 0))]);
+    }
+
+    #[test]
+    fn a_post_on_a_lead_shortens_it_and_adds_a_wire() {
+        // a resistor from 0 to 128: its body is in the middle, its leads at both ends
+        let mut s = session("$ 1 0.000005 10 50 5 50 5e-11\nr 0 0 128 0 0 1000\nw 16 0 16 64 0\n");
+        assert!(s.split_at_posts(&[1]));
+        let r = &s.sim.elements[0].base();
+        assert_eq!((r.x, r.y, r.x2, r.y2), (16, 0, 128, 0));
+        assert_eq!(wires(&s), vec![((16, 0), (0, 0)), ((16, 0), (16, 64))]);
+    }
+
+    #[test]
+    fn moved_elements_are_not_split_themselves() {
+        let mut s = session("$ 1 0.000005 10 50 5 50 5e-11\nw 0 0 128 0 0\nw 64 0 64 64 0\n");
+        // the second wire's post sits on the first one, but both are "moved"
+        assert!(!s.split_at_posts(&[0, 1]));
+    }
+}
+
+#[cfg(test)]
+mod chain_tests {
     use super::*;
 
     fn w(a: (i32, i32), b: (i32, i32)) -> Segment {

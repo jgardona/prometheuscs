@@ -156,6 +156,7 @@ impl Element for ScopeElm {
                 selected: None,
                 measure_from: None,
                 glow: self.glow,
+                transparent: false,
             };
             crate::render::scopes::draw_scope(g, view, scale, &spot, c.printable);
             crate::render::scopes::draw_wheel(g, (f64::from(x), f64::from(y), w, h), false);

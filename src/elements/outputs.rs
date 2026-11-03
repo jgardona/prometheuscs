@@ -545,6 +545,11 @@ impl LabeledNodeElm {
 impl Element for LabeledNodeElm {
     impl_element_base!("LabeledNodeElm");
 
+    fn expr_node_label(&self) -> Option<&str> {
+        // a bus label names several nodes; only a plain one is a voltage `v(label)` can read
+        (self.bus_width <= 1).then_some(self.text.as_str())
+    }
+
     fn dump_type(&self) -> i32 {
         207
     }
@@ -742,6 +747,8 @@ pub struct ProbeElm {
     period_length: f64,
     pulse_start: f64,
     center: Point,
+    /// Optional name, drawn next to the reading and usable as `v(label)` in an expression.
+    label: String,
 }
 
 impl ProbeElm {
@@ -774,6 +781,7 @@ impl ProbeElm {
             period_length: 0.0,
             pulse_start: 0.0,
             center: Point::default(),
+            label: String::new(),
         }
     }
 
@@ -862,12 +870,19 @@ impl Element for ProbeElm {
         self.meter = xml.int_attr("me", self.meter);
         self.scale = xml.int_attr("sc", self.scale);
         self.resistance = xml.double_attr("re", 0.0);
+        self.label = xml.string_attr("lb", "");
     }
     fn dump_xml(&self, out: &mut XmlOut) {
         default_dump_xml(&self.base, out);
         out.int_attr("me", self.meter);
         out.int_attr("sc", self.scale);
         out.double_attr("re", self.resistance);
+        if !self.label.is_empty() {
+            out.str_attr("lb", &self.label);
+        }
+    }
+    fn expr_ref_name(&self) -> Option<&str> {
+        (!self.label.is_empty()).then_some(self.label.as_str())
     }
 
     fn reset(&mut self) {
@@ -931,7 +946,7 @@ impl Element for ProbeElm {
         g.set_font_size(14);
         if self.must_show_voltage() {
             let sc = Scale::from_index(self.scale);
-            let s = match self.meter {
+            let mut s = match self.meter {
                 TP_VOL => unit_text_with_scale(self.get_voltage_diff(), "V", sc, false),
                 TP_RMS => unit_text_with_scale(self.rms_v, "V(rms)", sc, false),
                 TP_AVG => unit_text_with_scale(self.avg_v, "V(avg)", sc, false),
@@ -946,8 +961,14 @@ impl Element for ProbeElm {
                 TP_DUT => format(self.duty_cycle, false),
                 _ => String::new(),
             };
+            if !self.label.is_empty() {
+                s = format!("{} {s}", self.label);
+            }
             let hs = if show_circle { f64::from(PROBE_CIRCLE_SIZE + 3) } else { 4.0 };
             draw_values(g, &self.base, c, Some(&s), hs, false, false);
+        } else if !self.label.is_empty() {
+            let hs = if show_circle { f64::from(PROBE_CIRCLE_SIZE + 3) } else { 4.0 };
+            draw_values(g, &self.base, c, Some(&self.label), hs, false, false);
         }
         g.set_color(c.white);
         g.set_font_size(c.value_font_size);
@@ -1095,6 +1116,7 @@ impl Element for ProbeElm {
             )),
             3 => Some(EditInfo::checkbox("Use Circle Symbol", self.draw_as_circle())),
             4 => Some(EditInfo::new("Series Resistance (0 = infinite)", self.resistance, 0.0, 0.0)),
+            5 => Some(EditInfo::text("Label", &self.label)),
             _ => None,
         }
     }
@@ -1111,6 +1133,7 @@ impl Element for ProbeElm {
             2 => self.scale = ei.choice_index as i32,
             3 => self.base.flags = ei.change_flag(self.base.flags, PROBE_FLAG_CIRCLE),
             4 => self.resistance = ei.value,
+            5 => self.label = ei.text.clone().unwrap_or_default(),
             _ => {}
         }
     }

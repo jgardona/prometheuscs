@@ -39,8 +39,8 @@ Duas malhas LC, cada uma com um indutor de $1\ \text{H}$ e um capacitor de $1\ \
 | 5 | `ResistorElm` | resistor | Resistance (ohms) = 1 |
 | 6 | `ResistorElm` | resistor | Resistance (ohms) = 1 |
 | 7 | `GroundElm` | ground | Symbol = Earth |
-| 10 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0 |
-| 13 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0 |
+| 10 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0; Label =  |
+| 13 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0; Label =  |
 <!-- componentes:fim -->
 
 ## Teoria

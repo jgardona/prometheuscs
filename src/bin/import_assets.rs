@@ -3,16 +3,49 @@
 //! checkout into `assets/`.
 //!
 //! Usage: `cargo run --bin import_assets [path-to-circuitjs1]`
-//! (default `/home/jgardona/Workspace/Rust/circuitjs1`).
+//! (default `/home/jgardona/Workspace/circuitjs1`).
+//!
+//! Both layouts of the original are understood: the TypeScript one of release 5.x (sources in
+//! `ts/`, assets in `ts/public/`) and the older Java/GWT one (`src/com/lushprojects/...`).
 
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
-const DEFAULT_SOURCE: &str = "/home/jgardona/Workspace/Rust/circuitjs1";
-const PUBLIC: &str = "src/com/lushprojects/circuitjs1/public";
-const TOOLBAR: &str = "src/com/lushprojects/circuitjs1/client/Toolbar.java";
-const FONTELLO: &str = "war/font/fontello.svg";
+const DEFAULT_SOURCE: &str = "/home/jgardona/Workspace/circuitjs1";
+
+/// Where the files this tool copies live in one layout of the original.
+struct Layout {
+    /// Folder holding `circuits/` and `setuplist.txt`.
+    public: &'static str,
+    /// Folder holding the `locale_*.txt` files.
+    locale: &'static str,
+    /// Source file defining the toolbar icons.
+    toolbar: &'static str,
+    /// The icon font.
+    fontello: &'static str,
+}
+
+/// Release 5.x (TypeScript).
+const TS_LAYOUT: Layout = Layout {
+    public: "ts/public",
+    locale: "ts/public/locale",
+    toolbar: "ts/Toolbar.ts",
+    fontello: "ts/public/circuitjs/font/fontello.svg",
+};
+
+/// Release 4.x and earlier (Java/GWT).
+const JAVA_LAYOUT: Layout = Layout {
+    public: "src/com/lushprojects/circuitjs1/public",
+    locale: "src/com/lushprojects/circuitjs1/public",
+    toolbar: "src/com/lushprojects/circuitjs1/client/Toolbar.java",
+    fontello: "war/font/fontello.svg",
+};
+
+/// The layout of the checkout at `source`: TypeScript when it has a `ts/` folder.
+fn layout_of(source: &Path) -> &'static Layout {
+    if source.join("ts").is_dir() { &TS_LAYOUT } else { &JAVA_LAYOUT }
+}
 
 fn main() -> ExitCode {
     let source = PathBuf::from(std::env::args().nth(1).unwrap_or_else(|| DEFAULT_SOURCE.into()));
@@ -29,17 +62,18 @@ fn main() -> ExitCode {
 }
 
 fn run(source: &Path, dest: &Path) -> Result<String, String> {
-    let public = source.join(PUBLIC);
+    let layout = layout_of(source);
+    let public = source.join(layout.public);
     let circuits = copy_matching(&public.join("circuits"), &dest.join("circuits"), |_| true)?;
     fs::copy(public.join("setuplist.txt"), dest.join("setuplist.txt"))
         .map_err(|e| format!("copying setuplist.txt: {e}"))?;
-    let locales = copy_matching(&public, &dest.join("locale"), |name| {
+    let locales = copy_matching(&source.join(layout.locale), &dest.join("locale"), |name| {
         name.starts_with("locale_") && name.ends_with(".txt")
     })?;
-    let toolbar = fs::read_to_string(source.join(TOOLBAR))
-        .map_err(|e| format!("reading Toolbar.java: {e}"))?;
+    let toolbar = fs::read_to_string(source.join(layout.toolbar))
+        .map_err(|e| format!("reading {}: {e}", layout.toolbar))?;
     let component_icons = write_component_icons(&toolbar, &dest.join("icons/components"))?;
-    let fontello = fs::read_to_string(source.join(FONTELLO))
+    let fontello = fs::read_to_string(source.join(layout.fontello))
         .map_err(|e| format!("reading fontello.svg: {e}"))?;
     let ui_icons = write_ui_icons(&fontello, &dest.join("icons/ui"))?;
     Ok(format!(
@@ -63,13 +97,16 @@ fn copy_matching(from: &Path, to: &Path, accept: impl Fn(&str) -> bool) -> Resul
     Ok(count)
 }
 
-/// Extracts every `final String <name>Icon = "..." + "...";` definition from `Toolbar.java`.
+/// Extracts every `<name>Icon = "..." + "...";` definition from the toolbar source: the Java
+/// form `final String wireIcon = ...` and the TypeScript form `readonly wireIcon = ...`.
 fn extract_icon_definitions(java: &str) -> Vec<(String, String)> {
     let mut result = Vec::new();
     let mut lines = java.lines();
     while let Some(line) = lines.next() {
         let trimmed = line.trim_start();
-        let Some(rest) = trimmed.strip_prefix("final String ") else {
+        let Some(rest) =
+            trimmed.strip_prefix("final String ").or_else(|| trimmed.strip_prefix("readonly "))
+        else {
             continue;
         };
         let Some((name, value)) = rest.split_once('=') else {
@@ -191,6 +228,23 @@ mod tests {
             "    final String wireIcon = \"<svg>\" +\n      \"<g/></svg>\";\n    int x = 1;\n";
         let defs = extract_icon_definitions(java);
         assert_eq!(defs, vec![("wire".to_string(), "<svg><g/></svg>".to_string())]);
+    }
+
+    #[test]
+    fn extracts_typescript_icon_definitions() {
+        let ts =
+            "    readonly wireIcon = \"<svg>\" +\n      \"<g/></svg>\";\n    readonly x = 1;\n";
+        let defs = extract_icon_definitions(ts);
+        assert_eq!(defs, vec![("wire".to_string(), "<svg><g/></svg>".to_string())]);
+    }
+
+    #[test]
+    fn picks_the_layout_from_the_checkout() {
+        let dir = std::env::temp_dir().join(format!("import-assets-layout-{}", std::process::id()));
+        fs::create_dir_all(dir.join("ts")).unwrap();
+        assert_eq!(layout_of(&dir).toolbar, TS_LAYOUT.toolbar);
+        assert_eq!(layout_of(&dir.join("missing")).toolbar, JAVA_LAYOUT.toolbar);
+        fs::remove_dir_all(&dir).unwrap();
     }
 
     #[test]

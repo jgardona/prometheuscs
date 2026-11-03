@@ -1,20 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="305" height="145" viewBox="0 0 305 145">
-<path d="M0 0 L305 0 L305 145 L0 145 Z" fill="#000000" stroke="none"/>
-<path d="M88 56 L104 56" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
-<text x="109" y="62" font-size="20" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">A</text>
-<path d="M184 56 L168 56" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
-<text x="139" y="62" font-size="20" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">V+</text>
-<path d="M184 88 L168 88" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
-<text x="139" y="94" font-size="20" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">V-</text>
-<path d="M104 40 L168 40 L168 104 L104 104 Z" fill="none" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
-<path d="M88 56 L57 56" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
-<path d="M56.66 56 L56.09 60.31 L54.43 64.33 L51.78 67.78 L48.33 70.43 L44.31 72.09 L40 72.66 L35.69 72.09 L31.67 70.43 L28.22 67.78 L25.57 64.33 L23.91 60.31 L23.34 56 L23.91 51.69 L25.57 47.67 L28.22 44.22 L31.67 41.57 L35.69 39.91 L40 39.34 L44.31 39.91 L48.33 41.57 L51.78 44.22 L54.43 47.67 L56.09 51.69 L56.66 56" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
-<path d="M30 56 L31 54 L32 52 L33 50 L34 49 L35 49 L36 49 L37 50 L38 52 L39 54 L40 56 L41 58 L42 60 L43 62 L44 63 L45 63 L46 63 L47 62 L48 60 L49 58 L50 56" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
-<text x="26" y="37" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">40Hz</text>
-<path d="M184 88 L184 104" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
-<path d="M194 104 L174 104" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
-<path d="M190 109 L178 109" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
-<path d="M186 114 L182 114" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
-<text x="264" y="56" font-size="14" text-anchor="middle" dominant-baseline="central" fill="#c0c0c0">out</text>
-<path d="M184 56 L244 56" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="337" height="177" viewBox="0 0 337 177">
+<path d="M0 0 L337 0 L337 177 L0 177 Z" fill="#000000" stroke="none"/>
+<path d="M88 40 L57 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M56.66 40 L56.09 44.31 L54.43 48.33 L51.78 51.78 L48.33 54.43 L44.31 56.09 L40 56.66 L35.69 56.09 L31.67 54.43 L28.22 51.78 L25.57 48.33 L23.91 44.31 L23.34 40 L23.91 35.69 L25.57 31.67 L28.22 28.22 L31.67 25.57 L35.69 23.91 L40 23.34 L44.31 23.91 L48.33 25.57 L51.78 28.22 L54.43 31.67 L56.09 35.69 L56.66 40" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<path d="M30 40 L31 38 L32 36 L33 34 L34 33 L35 33 L36 33 L37 34 L38 36 L39 38 L40 40 L41 42 L42 44 L43 46 L44 47 L45 47 L46 47 L47 46 L48 44 L49 42 L50 40" fill="none" stroke="#808080" stroke-width="3" stroke-linecap="round"/>
+<text x="26" y="21" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">40Hz</text>
+<path d="M216 120 L216 136" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M226 136 L206 136" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M222 141 L210 141" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M218 146 L214 146" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="296" y="40" font-size="14" text-anchor="middle" dominant-baseline="central" fill="#c0c0c0">out</text>
+<path d="M216 40 L276 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M88 40 L119 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="123" y="40" font-size="12" text-anchor="start" dominant-baseline="central" fill="#ffffff">in</text>
+<path d="M216 120 L216 98" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M216 62 L216 40" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M216 98 L198 80" fill="none" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+<path d="M198 80 L216 62" fill="none" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+<path d="M216 62 L234 80" fill="none" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+<path d="M234 80 L216 98" fill="none" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+<text x="216" y="87" font-size="12" text-anchor="middle" dominant-baseline="central" fill="#c0c0c0">−</text>
+<text x="216" y="73" font-size="12" text-anchor="middle" dominant-baseline="central" fill="#c0c0c0">+</text>
 </svg>

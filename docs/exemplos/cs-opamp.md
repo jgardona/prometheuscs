@@ -1,21 +1,21 @@
 ---
 exemplo: cs-opamp.txt
-titulo: VCVS Op-Amp
+titulo: CVS Op-Amp
 categoria: Controlled Sources
 verificacoes:
-  - t=0.01 elemento=8:OutputElm grandeza=vd esperado=8.8056 tol=0.001
-  - t=0.05 de=0.025 elemento=8:OutputElm grandeza=vd fn=max esperado=14.9 tol=0.01
+  - t=0.01 elemento=6:OutputElm grandeza=vd esperado=8.8056 tol=0.001
+  - t=0.05 de=0.025 elemento=6:OutputElm grandeza=vd fn=max esperado=14.9 tol=0.01
 ---
 
-# Amplificador operacional feito com uma VCVS
+# Amplificador operacional feito com uma fonte de tensão controlada
 
 <!-- navegacao:inicio -->
-[Índice](README.md) · [Anterior: VCCS Varying Resistor](cs-varyresistor.md) · [Próximo: VCVS Op-Amp With Rails](cs-opamprail.md)
+[Índice](README.md) · [Anterior: CCS Varying Resistor](cs-varyresistor.md) · [Próximo: VCVS Op-Amp With Rails](cs-opamprail.md)
 <!-- navegacao:fim -->
 
 ## Objetivo
 
-Mostrar que um amplificador operacional é, no modelo mais simples, uma fonte de tensão controlada por tensão (VCVS) com ganho alto: a expressão $(a-b)\cdot 1000$ implementa um operacional de ganho $1000$.
+Mostrar que um amplificador operacional é, no modelo mais simples, uma fonte de tensão controlada com ganho alto: a expressão $v(\text{ab})\cdot 1000$, em que `ab` é um voltímetro entre as duas \"entradas\", implementa um operacional de ganho $1000$.
 
 ## O circuito
 
@@ -23,23 +23,24 @@ Mostrar que um amplificador operacional é, no modelo mais simples, uma fonte de
 ![Esquema do circuito](img/cs-opamp.svg)
 <!-- esquema:fim -->
 
-Uma fonte senoidal de $40\ \text{Hz}$ e $5\ \text{V}$ de pico liga-se à entrada $a$ (não inversora) da VCVS. A saída está ligada à entrada $b$ (inversora) por um divisor: um resistor de $2\ \text{k}\Omega$ da saída à entrada inversora e um de $1\ \text{k}\Omega$ da entrada inversora à terra. É um amplificador não inversor. Um elemento de saída e dois osciloscópios mostram a entrada e a saída.
+Uma fonte senoidal de $40\ \text{Hz}$ e $5\ \text{V}$ de pico é a entrada não inversora. Um voltímetro com o rótulo `ab` mede a diferença entre essa entrada e o ponto inversor, e a fonte de tensão controlada, com a expressão $v(\text{ab})\cdot 1000$, gera a saída. A saída volta ao ponto inversor por um divisor: um resistor de $2\ \text{k}\Omega$ da saída ao ponto inversor e um de $1\ \text{k}\Omega$ do ponto inversor à terra. É um amplificador não inversor. Um elemento de saída e osciloscópios mostram a entrada e a saída.
 
 <!-- componentes:inicio -->
 | N.º | Tipo | Elemento | Valores |
 |----:|------|----------|---------|
 | 0 | `DCVoltageElm` | A/C source | Max Voltage = 5; Waveform = A/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0; Show Voltage = não; Frequency (Hz) = 40; Phase Offset (degrees) = 0 |
 | 1 | `GroundElm` | ground | Symbol = Earth |
-| 4 | `ResistorElm` | resistor | Resistance (ohms) = 2k |
-| 5 | `ResistorElm` | resistor | Resistance (ohms) = 1k |
-| 8 | `OutputElm` | output | Show Voltage = não |
-| 9 | `VCVSElm` | VCVS | Output Function = (a-b)*1000; # of Inputs = 2 |
-| 10 | `GroundElm` | ground | Symbol = Earth |
+| 3 | `ResistorElm` | resistor | Resistance (ohms) = 2k |
+| 4 | `ResistorElm` | resistor | Resistance (ohms) = 1k |
+| 6 | `OutputElm` | output | Show Voltage = não |
+| 7 | `GroundElm` | ground | Symbol = Earth |
+| 9 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = sim; Series Resistance (0 = infinite) = 10M; Label = ab |
+| 10 | `ControlledVoltageElm` | Controlled Voltage Source | Output Voltage = (v(ab))*1000 |
 <!-- componentes:fim -->
 
 ## Teoria
 
-As fontes controladas deste simulador são definidas por uma **expressão** sobre as entradas, que se chamam $a$, $b$, $c$, ... (as tensões ou correntes nos terminais de controle). O resultado é a tensão (VCVS, CCVS) ou a corrente (VCCS, CCCS) que a fonte impõe na saída. A VCVS produz $V_\text{out} = A\,(V_+ - V_-)$ com $A = 1000$. Com a realimentação $\beta = R_1/(R_1 + R_2) = 1/3$ ($V_- = \beta V_\text{out}$):
+As fontes controladas de dois terminais (o losango) são definidas por uma **expressão** que lê o resto do circuito **pelo nome**: $v(\text{nome})$ é a tensão de um nó rotulado ou sobre um voltímetro com rótulo, $i(\text{nome})$ a corrente de um amperímetro com rótulo, e $\text{dvdt}$ / $\text{didt}$ as suas taxas de variação. O resultado é a tensão (fonte de tensão controlada, com o $+$ no segundo terminal) ou a corrente (fonte de corrente controlada, no sentido da seta) que a fonte impõe. A fonte produz $V_\text{out} = A\,v(\text{ab}) = A\,(V_+ - V_-)$ com $A = 1000$. Com a realimentação $\beta = R_1/(R_1 + R_2) = 1/3$ ($V_- = \beta V_\text{out}$):
 
 $$V_\text{out} = \frac{A}{1 + A\beta}\,V_+ = \frac{1000}{1 + 333{,}3}\,V_+ = 2{,}991\,V_+.$$
 
@@ -57,7 +58,7 @@ Em $t = 10\ \text{ms}$ a entrada vale $2{,}944\ \text{V}$ e a saída, $2{,}991\c
 
 ## Limites do modelo
 
-A VCVS não tem saturação, resistência de saída, banda finita nem *offset*: é um operacional de ganho constante em todas as frequências e sem limite de tensão (a tensão de saída pode passar de qualquer alimentação). O ganho de $1000$ é bem menor que o de um operacional real, de $10^5$ ou mais.
+A fonte controlada não tem saturação, resistência de saída, banda finita nem *offset*: é um operacional de ganho constante em todas as frequências e sem limite de tensão (a tensão de saída pode passar de qualquer alimentação; compare com o exemplo seguinte, que limita a saída).
 
 ## Referências
 

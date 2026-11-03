@@ -40,14 +40,14 @@ Um gerador de onda quadrada de $10\ \text{Hz}$ ($0$ a $5\ \text{V}$, ciclo de $5
 | 2 | `RailElm` | voltage source | Voltage = 6; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |
 | 7 | `GroundElm` | ground | Symbol = Earth |
 | 14 | `GroundElm` | ground | Symbol = Earth |
-| 25 | `LEDElm` | LED | Red Value (0-1) = 1; Green Value (0-1) = 0; Blue Value (0-1) = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
+| 25 | `LEDElm` | LED | Color = #ff0000;  = 0;  = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
 | 26 | `GroundElm` | ground | Symbol = Earth |
 | 27 | `RailElm` | voltage source | Voltage = 6; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |
 | 29 | `ResistorElm` | resistor | Resistance (ohms) = 100 |
 | 30 | `ResistorElm` | resistor | Resistance (ohms) = 100 |
 | 32 | `RailElm` | voltage source | Voltage = 6; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |
 | 33 | `GroundElm` | ground | Symbol = Earth |
-| 34 | `LEDElm` | LED | Red Value (0-1) = 1; Green Value (0-1) = 0; Blue Value (0-1) = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
+| 34 | `LEDElm` | LED | Color = #ff0000;  = 0;  = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
 | 46 | `GroundElm` | ground | Symbol = Earth |
 | 53 | `GroundElm` | ground | Symbol = Earth |
 | 58 | `RailElm` | voltage source | Voltage = 6; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |
@@ -56,7 +56,7 @@ Um gerador de onda quadrada de $10\ \text{Hz}$ ($0$ a $5\ \text{V}$, ciclo de $5
 | 63 | `ResistorElm` | resistor | Resistance (ohms) = 100 |
 | 65 | `RailElm` | voltage source | Voltage = 6; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |
 | 66 | `GroundElm` | ground | Symbol = Earth |
-| 67 | `LEDElm` | LED | Red Value (0-1) = 1; Green Value (0-1) = 0; Blue Value (0-1) = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
+| 67 | `LEDElm` | LED | Color = #ff0000;  = 0;  = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
 | 73 | `GroundElm` | ground | Symbol = Earth |
 | 80 | `GroundElm` | ground | Symbol = Earth |
 | 85 | `RailElm` | voltage source | Voltage = 6; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |

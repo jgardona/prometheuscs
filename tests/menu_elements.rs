@@ -278,3 +278,32 @@ fn the_new_elements_survive_save_and_load() {
         assert_eq!(write_xml(&again.circuit), first, "{id}");
     }
 }
+
+#[cfg(feature = "analog")]
+#[test]
+fn the_two_terminal_controlled_sources_are_in_the_draw_menu() {
+    let reg = Registry::standard();
+    let group =
+        reg.menu().into_iter().find(|g| g.category == "Active Building Blocks").expect("the group");
+    for (id, name, tag, field, default) in [
+        ("ControlledVoltageElm", "Add Controlled Voltage Source", "cv", "Output Voltage", "v(in)"),
+        (
+            "ControlledCurrentElm",
+            "Add Controlled Current Source",
+            "ci",
+            "Output Current",
+            ".001*v(in)",
+        ),
+    ] {
+        assert!(group.items.contains(&id), "{id} in the menu");
+        assert_eq!(reg.get(id).unwrap().display_name, name);
+        let e = reg.create(id, 0, 0).unwrap();
+        assert_eq!(e.xml_dump_type(), tag);
+        assert_eq!(e.post_count(), 2);
+        let ei = e.get_edit_info(0).unwrap();
+        assert_eq!(ei.name, field);
+        assert_eq!(ei.text.as_deref(), Some(default));
+        assert!(ei.no_sliders, "an expression cannot have a slider");
+        assert!(e.get_edit_info(1).is_none());
+    }
+}

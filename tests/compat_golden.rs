@@ -193,6 +193,11 @@ fn examples_agree_with_the_original() {
         if skip.contains(&g.name) || g.timeout || g.error.is_some() || g.checkpoints.is_empty() {
             continue;
         }
+        // examples CircuitJS 5.x redrew (the controlled-source ones) were recorded in their old
+        // form; `tests/compat_5x.rs` compares the new form with these recordings
+        if Path::new(&format!("tests/compat/circuits-5x/old/{}.txt", g.name)).exists() {
+            continue;
+        }
         let tol = tolerances.get(&g.name).copied().unwrap_or(DEFAULT);
         let text = std::fs::read_to_string(format!("assets/circuits/{}.txt", g.name)).unwrap();
         let result = load(&text).and_then(|mut sim| {

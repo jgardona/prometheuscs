@@ -48,3 +48,24 @@ fn lrc_renders_something_other_than_the_background() {
     let lit = data.chunks(4).filter(|p| p[0] != 0 || p[1] != 0 || p[2] != 0).count();
     assert!(lit > 500, "only {lit} non-background pixels");
 }
+
+#[test]
+fn one_scope_exports_as_png_at_the_size_asked_and_transparent_when_asked() {
+    use prometheuscs::render::export::{ScopeImage, scope_png};
+    let text = std::fs::read_to_string("tests/compat/circuits-5x/scope-ac.txt").unwrap();
+    let mut s = prometheuscs::app::session::Session::load(&text, &Registry::standard()).unwrap();
+    while s.sim.st.t < 0.005 {
+        s.sim.step().unwrap();
+    }
+    let corner_alpha = |transparent: bool| {
+        let o = ScopeImage { width: 640, height: 240, transparent };
+        let png = scope_png(&s, 0, o).unwrap();
+        let mut img = ImageSurface::create_from_png(&mut png.as_slice()).unwrap();
+        assert_eq!((img.width(), img.height()), (640, 240));
+        let data = img.data().unwrap();
+        // ARGB32 in native byte order: alpha is the high byte of the first pixel's word
+        u32::from_ne_bytes([data[0], data[1], data[2], data[3]]) >> 24
+    };
+    assert_eq!(corner_alpha(false), 255);
+    assert_eq!(corner_alpha(true), 0);
+}

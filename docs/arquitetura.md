@@ -105,6 +105,9 @@ desenho e não depende de nenhum backend.)
    - `calculate_wire_closure`: une pontos ligados por fios (uma estrutura de classes de
      equivalência, `PointClasses`);
    - `set_ground_node`, `make_node_list`: numera os nós, com o nó 0 como terra;
+   - `resolve_expr_refs`: dá a cada referência por nome de uma expressão (`v(nome)`,
+     `i(medidor)`) os nós que ela lê e liga esses nós ao componente que a usa (veja a
+     [seção 4.6](#46-referências-por-nome-em-expressões));
    - `calc_wire_info`, `find_unconnected_nodes`, `calculate_closures`: informação de fios e de
      quais nós se ligam por dentro de cada componente;
    - `pre_stamp_circuit` e `assign_matrix`: pede a cada componente o número de nós internos e de
@@ -243,6 +246,39 @@ Diodos, transistores, MOSFETs e relés têm modelos nomeados (`elements/models.r
 registro por thread e gravados no arquivo (tags `dm`, `tm`, `mm`, `rlm`). O diálogo de edição de
 modelo é descrito em `model_edit.rs` (campos) e aplicado pela sessão.
 
+### 4.6 Referências por nome em expressões
+
+As fontes controladas (`elements/controlled.rs`: as de dois terminais, `cv` e `ci`, e também
+VCVS, VCCS, CCVS e CCCS) aceitam expressões que leem o resto do circuito pelo nome:
+`v(nome)` é a tensão de um nó rotulado ou sobre um voltímetro rotulado, `v(a, b)` a diferença
+de duas delas, `i(nome)` a corrente de um amperímetro rotulado, e `dvdt(nome)` / `didt(nome)` as
+taxas de variação. O contrato completo está em
+`specs/006-circuitjs5-feature-sync/contracts/expression-references.md`.
+
+- **Análise sintática** (`expr/mod.rs`): `Expr::parse_with_refs` devolve a expressão e a lista de
+  quantidades referenciadas (`ExprRef`: nome e se é corrente). Cada quantidade distinta ocupa um
+  *slot*; `v(x)` e `dvdt(x)` dividem o mesmo. Os valores ficam em `ExprState::ref_values`.
+- **O motor** (`expr/refs.rs`, `ExprEngine`): guarda a expressão, os slots e o histórico das
+  entradas, e faz a linearização numérica que carimba a expressão na matriz (derivada por
+  diferença finita, passo mínimo 1e-6, os mesmos limites de convergência do original). É o
+  mesmo código para os seis componentes.
+- **Dois nós por referência**: cada referência acrescenta dois nós ao componente dono, depois dos
+  terminais e dos nós internos (`Element::ref_node_count`, `ref_node_base`): a ponta positiva e
+  a negativa da grandeza lida. `Simulation::resolve_expr_refs` os preenche a cada análise (um nó
+  rotulado ganha de um medidor de mesmo nome; o que não se resolve fica no terra) e os acrescenta
+  às ligações (`links`) do nó lido. Assim `calculate_closures` põe o nó lido **na mesma matriz**
+  do componente, o que permite carimbar a derivada contra ele. Esses nós **não são conexões**:
+  `find_unconnected_nodes` não propaga o terra por eles e nenhuma corrente entra neles.
+- **Corrente** (`i(nome)`): depois que as fontes de tensão são numeradas, a referência recebe a
+  fonte do amperímetro (`RefResolution::Current`), e a cada iteração `feed_ref_currents` entrega a
+  corrente medida (`Element::set_ref_current`). A derivada é carimbada na linha dessa fonte.
+- **Subcircuitos**: ao criar o modelo, os nós lidos viram números de nó do modelo, gravados no
+  atributo `rn` de cada parte (`Simulation::model_ref_numbers`). Cada instância liga esses nós aos
+  seus próprios (`ChildNet::build_links`), então cada cópia lê os seus nós; um `i()` encontra o
+  amperímetro irmão cuja fonte liga os mesmos dois nós (`ChildNet::resolve_refs`).
+- **Quem pode ser lido**: um componente expõe um nome com `Element::expr_ref_name` (voltímetro e
+  amperímetro com rótulo, atributo `lb`); um nó rotulado, com `Element::expr_node_label`.
+
 ## 5. Osciloscópios
 
 `scope/mod.rs`:
@@ -289,7 +325,8 @@ O código está espalhado em arquivos por tema, todos `impl Session`:
 | `edit.rs` | Seleção, arrasto, copiar/colar, desfazer, zoom, osciloscópios, propriedades |
 | `file.rs` | Abrir, salvar, autosave, ponto CC |
 | `engine.rs` | A conversa com o trabalhador |
-| `subcircuits.rs`, `contexts.rs`, `inspect.rs` | Criar subcircuitos, editar modelos, olhar dentro |
+| `subcircuits.rs`, `contexts.rs`, `inspect.rs` | Criar subcircuitos, onde cada modelo fica guardado (`ModelScope`), bibliotecas `sublib`, editar modelos, olhar dentro |
+| `palette.rs` | O modelo da paleta Procurar Componente: grupos, filtro, recentes, Shift duplo |
 | `wires.rs` | Converter fios em fios roteados |
 | `settings.rs` | As opções gravadas |
 
@@ -334,6 +371,27 @@ tem regra de negócio**, só o encaminhamento. Diálogos ficam em `dialogs.rs`.
 O laço de quadros (`add_tick_callback`) chama `Session::update(dt)`, atualiza a altura da área
 dos osciloscópios, e pede o redesenho.
 
+Algumas peças da janela que vieram com a sincronização com o CircuitJS 5.x:
+
+- **Editor de propriedades.** `dialogs::PropertyEditor` gera os campos a partir dos `EditInfo`
+  de um componente. A janela de edição é um hospedeiro dele (aplica tudo com um botão); o painel
+  da direita é outro (`App::sync_properties`), que aplica cada campo ao ser confirmado
+  (`apply_on_commit`, um passo de desfazer por campo) e se refaz só quando o componente ou os
+  campos dele mudam por outro caminho (desfazer, roda do mouse). O alvo do painel
+  (`App::properties`) segue a seleção: vem de `Session::properties_on_click` ou de
+  `take_properties_after_place`, e some quando o componente deixa de estar selecionado.
+- **Paleta.** `dialogs::find` só desenha o que `palette::Palette::filter` devolve; escolher uma
+  linha vira um `Cmd` (colocar componente, comando de menu) ou um foco em componente, e grava a
+  escolha em `AppSettings::palette_recent`.
+- **Arrastar da barra.** Cada botão de peça tem um `DragSource` que leva o id do registro; o
+  canvas tem um `DropTarget` que chama `Session::drop_element`, que passa pelo mesmo caminho da
+  colocação com o mouse (por isso a divisão de fios e as propriedades ao criar valem também).
+- **Roda do mouse.** `Session::wheel_at` devolve o texto do valor novo, que um `Popover` sem
+  foco mostra perto do ponteiro por cerca de um segundo.
+- **Aviso de erro.** `Session::stop_message` é desenhado no canvas por
+  `render::scene::draw_stop_message` até a sessão limpá-lo (edição, reiniciar, executar); a
+  faixa (`adw::Banner`) fica para avisos passageiros (`App::notice`).
+
 ### 6.5 Medição (`app/bench.rs`)
 
 `--bench-render ARQUIVO` roda fases (animar, mover, ampliar, clicar) e mede quadros por segundo,
@@ -359,7 +417,11 @@ criou, e avisa quando o renderizador é de software.
 `render/scene.rs` desenha o circuito (`draw_scene`: fundo, componentes, terminais, sobreposições)
 e calcula o enquadramento (`View`). `render/scopes.rs` desenha os osciloscópios: o layout em
 colunas (`layout`, `scope_at`), a grade, as curvas, as medidas, o espectro, o X/Y, a engrenagem, a
-área de informação. `render/export.rs` faz PNG/SVG.
+área de informação. `render/export.rs` faz PNG/SVG do circuito e, com `scope_png`/`scope_svg`,
+de um osciloscópio sozinho no tamanho pedido (até 8192 pixels), com o fundo transparente se
+pedido (`ScopeSpot::transparent` pula o preenchimento do fundo). A varredura de um
+osciloscópio com gatilho é guardada em `Trigger::sweep` quando termina de ser capturada, e
+`Scope::view` a devolve no lugar do buffer ao vivo até a próxima ficar completa.
 
 ## 8. Como as peças trabalham juntas: três percursos
 

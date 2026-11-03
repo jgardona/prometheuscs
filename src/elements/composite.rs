@@ -10,6 +10,7 @@ use super::element::*;
 use super::geometry::*;
 use super::registry::{ElementDescriptor, Registry};
 use super::units::current_text;
+use crate::expr::refs::RefResolution;
 use crate::format::tokenizer::{Tokenizer, escape, unescape};
 use crate::format::xml::{XmlNode, XmlOut};
 use crate::impl_element_base;
@@ -66,9 +67,10 @@ fn is_model_tag(tag: &str) -> bool {
 /// Creates the elements described by XML tags with an `nn` attribute (their node numbers).
 /// Wires, labels and other display-only elements are left out: the node numbers already say
 /// how everything connects.
-pub fn children_from_xml(elms: &[XmlNode]) -> (Vec<Box<dyn Element>>, Vec<Vec<i32>>) {
+pub fn children_from_xml(elms: &[XmlNode]) -> ModelChildren {
     let mut children: Vec<Box<dyn Element>> = Vec::new();
     let mut nodes = Vec::new();
+    let mut refs = Vec::new();
     with_registry(|reg| {
         for node in elms {
             if is_model_tag(&node.tag) {
@@ -99,10 +101,22 @@ pub fn children_from_xml(elms: &[XmlNode]) -> (Vec<Box<dyn Element>>, Vec<Vec<i3
             }
             e.alloc_nodes();
             nodes.push(node.attr("nn").map(parse_nodes).unwrap_or_default());
+            refs.push(node.attr("rn").map(parse_nodes).unwrap_or_default());
             children.push(e);
         }
     });
-    (children, nodes)
+    ModelChildren { children, nodes, refs }
+}
+
+/// The parts of a model, read by [`children_from_xml`].
+pub struct ModelChildren {
+    /// The parts.
+    pub children: Vec<Box<dyn Element>>,
+    /// Model node number of each post of each part (`nn`).
+    pub nodes: Vec<Vec<i32>>,
+    /// Model node number of each reference node of each part (`rn`): the nodes its
+    /// expression refers to by name, two per reference, 0 when unresolved.
+    pub refs: Vec<Vec<i32>>,
 }
 
 /// Union-find over the nodes of a composite.
@@ -150,6 +164,11 @@ pub struct ChildNet {
     grounded: Vec<bool>,
     /// Children that sense currents of siblings, with the sibling for each input pair.
     spice_links: Vec<(usize, Vec<Option<usize>>)>,
+    /// For each child, the model node number of each of its reference nodes (see
+    /// [`ModelChildren::refs`]).
+    pub child_refs: Vec<Vec<i32>>,
+    /// Current references of children: child, reference, the sibling ammeter it reads.
+    ref_links: Vec<(usize, usize, usize)>,
 }
 
 impl ChildNet {
@@ -222,9 +241,10 @@ impl ChildNet {
     pub fn from_xml(xml: &str, ext_nodes: &[i32]) -> ChildNet {
         let mut net = ChildNet { ext_nodes: ext_nodes.to_vec(), ..ChildNet::default() };
         if let Ok(root) = crate::format::xml::parse(xml) {
-            let (children, nodes) = children_from_xml(&root.children);
-            net.children = children;
-            net.child_nodes = nodes;
+            let m = children_from_xml(&root.children);
+            net.children = m.children;
+            net.child_nodes = m.nodes;
+            net.child_refs = m.refs;
         }
         net.build_links();
         net
@@ -297,7 +317,7 @@ impl ChildNet {
             .filter_map(|(_, n)| n.first().copied())
             .filter(|n| *n != 0)
             .collect();
-        for nodes in &mut self.child_nodes {
+        for nodes in self.child_nodes.iter_mut().chain(self.child_refs.iter_mut()) {
             for n in nodes.iter_mut() {
                 if grounds.contains(n) {
                     *n = 0;
@@ -317,6 +337,20 @@ impl ChildNet {
                     grounded_posts.push((i, post));
                 } else {
                     by_node.entry(n).or_default().push((i, post));
+                }
+            }
+            // reference nodes read the model node their name was resolved to
+            let base = child.ref_node_base();
+            for (j, &n) in self.child_refs.get(i).map_or(&[][..], Vec::as_slice).iter().enumerate()
+            {
+                let slot = base + j;
+                if slot >= child.node_count() {
+                    break;
+                }
+                if n == 0 {
+                    child.set_node(slot, NodeId::GROUND);
+                } else {
+                    by_node.entry(n).or_default().push((i, slot));
                 }
             }
         }
@@ -523,9 +557,49 @@ impl ChildNet {
         }
     }
 
+    /// Tells every child with `v(name)`/`i(name)` references what they read. Inside a
+    /// subcircuit the names were turned into node numbers when the model was made; an `i()`
+    /// also needs its ammeter, the sibling whose voltage source spans the two nodes.
+    fn resolve_refs(&mut self) {
+        self.ref_links.clear();
+        for i in 0..self.children.len() {
+            let refs = self.children[i].expr_refs().to_vec();
+            let base = self.children[i].ref_node_base();
+            for (k, r) in refs.iter().enumerate() {
+                let nodes = &self.children[i].base().nodes;
+                let n0 = nodes.get(base + 2 * k).copied().unwrap_or(NodeId::GROUND);
+                let n1 = nodes.get(base + 2 * k + 1).copied().unwrap_or(NodeId::GROUND);
+                let res = if n0 == n1 {
+                    RefResolution::Unresolved
+                } else if !r.current {
+                    RefResolution::Voltage
+                } else {
+                    let meter = (0..self.children.len()).find(|&j| {
+                        let o = &self.children[j];
+                        let on = &o.base().nodes;
+                        j != i
+                            && o.voltage_source_count() > 0
+                            && o.post_count() >= 2
+                            && on.len() >= 2
+                            && ((on[0] == n0 && on[1] == n1) || (on[0] == n1 && on[1] == n0))
+                    });
+                    match meter.and_then(|j| self.children[j].base().volt_source.map(|v| (j, v))) {
+                        Some((j, vs)) => {
+                            self.ref_links.push((i, k, j));
+                            RefResolution::Current(vs)
+                        }
+                        None => RefResolution::NotCurrentMeter,
+                    }
+                };
+                self.children[i].set_ref_resolution(k, res);
+            }
+        }
+    }
+
     /// Stamps every child.
     pub fn stamp(&mut self, s: &mut Stamper) {
         self.resolve_spice();
+        self.resolve_refs();
         for c in &mut self.children {
             c.stamp(s);
         }
@@ -538,6 +612,10 @@ impl ChildNet {
     }
     /// Runs one nonlinear step in every child.
     pub fn do_step(&mut self, s: &mut Stamper) {
+        for &(i, k, j) in &self.ref_links {
+            let cur = self.children[j].get_current();
+            self.children[i].set_ref_current(k, cur);
+        }
         for (i, links) in &self.spice_links {
             for (k, f) in links.iter().enumerate() {
                 if let Some(j) = f {

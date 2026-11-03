@@ -14,6 +14,7 @@ use super::stamper::{CircuitMatrix, Node, NodeId, Stamper, StopRequest, VoltageS
 use crate::elements::element::{Element, Endpoint, LabelRegistry};
 use crate::elements::geometry::Point;
 use crate::error::{AnalysisError, StepError};
+use crate::expr::refs::RefResolution;
 use std::cell::Cell;
 use std::collections::HashMap;
 
@@ -118,8 +119,19 @@ pub struct Simulation {
     path_graph: PathGraph,
     delay_wire_processing: bool,
     analyzed: bool,
+    /// Current references (`i(name)`) found by the last analysis.
+    ref_links: Vec<RefLink>,
     /// How many times an element has asked for time to stop (a stop trigger).
     pub pause_count: u64,
+}
+
+/// An expression's current reference (`i(name)`): element `owner`'s reference `k` reads the
+/// current of element `meter`.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+struct RefLink {
+    owner: usize,
+    k: usize,
+    meter: usize,
 }
 
 /// Union-find over grid points, used to merge points joined by wires into one node.
@@ -202,6 +214,7 @@ impl Simulation {
             path_graph: PathGraph::default(),
             delay_wire_processing: false,
             analyzed: false,
+            ref_links: Vec::new(),
             pause_count: 0,
         }
     }
@@ -705,6 +718,11 @@ impl Simulation {
                 head += 1;
                 for &(ei, post1) in &self.st.nodes[n].links {
                     let ce = &self.elements[ei];
+                    // a node an element only refers to by name is not a connection: ground
+                    // must not flood through it
+                    if ce.ref_node_count() > 0 && post1 >= ce.ref_node_base() {
+                        continue;
+                    }
                     for k in 0..ce.post_count() {
                         if k == post1 {
                             continue;
@@ -733,6 +751,69 @@ impl Simulation {
                     break;
                 }
             }
+        }
+    }
+
+    /// Gives every reference of an expression (`v(name)`, `i(name)`) the nodes it reads. A
+    /// voltage reference takes a labeled node of that name, or else the two nodes of the first
+    /// element with that reference name (a labeled meter); a current reference takes the
+    /// meter. Unresolved references stay on ground. The reference nodes are linked to the
+    /// nodes they read, so the closures put both in one matrix; they are not connections.
+    fn resolve_expr_refs(&mut self) {
+        self.ref_links.clear();
+        if self.elements.iter().all(|e| e.expr_refs().is_empty()) {
+            return;
+        }
+        let mut labels: HashMap<String, NodeId> = HashMap::new();
+        for e in &self.elements {
+            if let (Some(name), Some(n)) = (e.expr_node_label(), e.base().nodes.first()) {
+                labels.entry(name.to_string()).or_insert(*n);
+            }
+        }
+        let named: Vec<(String, usize)> = (0..self.elements.len())
+            .filter_map(|i| self.elements[i].expr_ref_name().map(|n| (n.to_string(), i)))
+            .collect();
+        for i in 0..self.elements.len() {
+            let refs = self.elements[i].expr_refs().to_vec();
+            let base = self.elements[i].ref_node_base();
+            for (k, r) in refs.iter().enumerate() {
+                let mut ends = (NodeId::GROUND, NodeId::GROUND);
+                let mut res = RefResolution::Unresolved;
+                // a labeled node wins over an element with the same name
+                if let Some(&n) = labels.get(&r.name).filter(|_| !r.current) {
+                    ends.0 = n;
+                    res = RefResolution::Voltage;
+                } else if let Some(&(_, j)) = named.iter().find(|(name, _)| *name == r.name) {
+                    let nodes = &self.elements[j].base().nodes;
+                    if self.elements[j].post_count() >= 2 && nodes.len() >= 2 {
+                        ends = (nodes[0], nodes[1]);
+                        if r.current {
+                            // resolved to Current once voltage sources are numbered
+                            res = RefResolution::NotCurrentMeter;
+                            self.ref_links.push(RefLink { owner: i, k, meter: j });
+                        } else {
+                            res = RefResolution::Voltage;
+                        }
+                    }
+                }
+                let (pos, neg) = (base + 2 * k, base + 2 * k + 1);
+                self.elements[i].set_node(pos, ends.0);
+                self.elements[i].set_node(neg, ends.1);
+                self.elements[i].set_ref_resolution(k, res);
+                for (slot, n) in [(pos, ends.0), (neg, ends.1)] {
+                    if n != NodeId::GROUND {
+                        self.st.nodes[n.0].links.push((i, slot));
+                    }
+                }
+            }
+        }
+    }
+
+    /// Hands every current reference the present current of its ammeter.
+    fn feed_ref_currents(&mut self) {
+        for l in &self.ref_links {
+            let current = self.elements[l.meter].get_current();
+            self.elements[l.owner].set_ref_current(l.k, current);
         }
     }
 
@@ -793,11 +874,26 @@ impl Simulation {
         let mut classes = self.calculate_wire_closure();
         self.set_ground_node(&mut classes, true);
         self.make_node_list(&mut classes);
+        self.resolve_expr_refs();
         self.elements
             .iter()
             .map(|e| {
                 let n = e.post_count().min(e.base().nodes.len());
                 e.base().nodes[..n].iter().map(|n| n.0).collect()
+            })
+            .collect()
+    }
+
+    /// After [`Simulation::model_node_numbers`]: the node number each reference node of each
+    /// element reads (two per `v(name)`/`i(name)`, 0 when unresolved), so a subcircuit made of
+    /// these elements keeps its references to its own nodes.
+    pub fn model_ref_numbers(&self) -> Vec<Vec<usize>> {
+        self.elements
+            .iter()
+            .map(|e| {
+                let base = e.ref_node_base();
+                let nodes = &e.base().nodes;
+                (base..base + e.ref_node_count()).map(|k| nodes.get(k).map_or(0, |n| n.0)).collect()
             })
             .collect()
     }
@@ -808,6 +904,7 @@ impl Simulation {
         let mut classes = self.calculate_wire_closure();
         self.set_ground_node(&mut classes, false);
         let vscount = self.make_node_list(&mut classes);
+        self.resolve_expr_refs();
         if !self.calc_wire_info() {
             return false;
         }
@@ -830,6 +927,16 @@ impl Simulation {
             }
         }
         debug_assert_eq!(count, vscount);
+        // a current reference stamps against its ammeter's voltage source, known only now
+        for l in &self.ref_links {
+            let r = match self.elements[l.meter].base().volt_source {
+                Some(vs) if self.elements[l.meter].voltage_source_count() > 0 => {
+                    RefResolution::Current(vs)
+                }
+                _ => RefResolution::NotCurrentMeter,
+            };
+            self.elements[l.owner].set_ref_resolution(l.k, r);
+        }
         self.find_unconnected_nodes();
         self.calculate_closures();
         // validate with a snapshot of the connectivity
@@ -1041,6 +1148,7 @@ impl Simulation {
                         m.matrix.clone_from(&m.orig_matrix);
                     }
                 }
+                self.feed_ref_currents();
                 for i in 0..self.elements.len() {
                     self.elements[i].do_step(&mut self.st);
                 }

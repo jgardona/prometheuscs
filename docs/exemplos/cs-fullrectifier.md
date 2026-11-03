@@ -1,22 +1,22 @@
 ---
 exemplo: cs-fullrectifier.txt
-titulo: VCVS Full Rectifier
+titulo: CVS Full Rectifier
 categoria: Controlled Sources
 verificacoes:
-  - t=0.1 de=0.05 elemento=3:OutputElm grandeza=vd fn=media esperado=3.183 tol=0.01
-  - t=0.1 de=0.05 elemento=3:OutputElm grandeza=vd fn=rms esperado=3.5355 tol=0.01
-  - t=0.1 de=0.05 elemento=3:OutputElm grandeza=vd fn=min esperado=0 abs=0.01
+  - t=0.1 de=0.05 elemento=2:OutputElm grandeza=vd fn=media esperado=3.183 tol=0.01
+  - t=0.1 de=0.05 elemento=2:OutputElm grandeza=vd fn=rms esperado=3.5355 tol=0.01
+  - t=0.1 de=0.05 elemento=2:OutputElm grandeza=vd fn=min esperado=0 abs=0.01
 ---
 
-# Retificador de onda completa (VCVS)
+# Retificador de onda completa (fonte de tensão controlada)
 
 <!-- navegacao:inicio -->
-[Índice](README.md) · [Anterior: VCVS Multiplier](cs-multiplier.md) · [Próximo: VCVS Voltage Ramp](cs-ramp.md)
+[Índice](README.md) · [Anterior: VCVS Multiplier](cs-multiplier.md) · [Próximo: CVS Voltage Ramp](cs-ramp.md)
 <!-- navegacao:fim -->
 
 ## Objetivo
 
-Mostrar que, com uma fonte controlada, um retificador de onda completa ideal é uma única expressão, $\text{abs}(a)$, sem diodos nem quedas de tensão.
+Mostrar que, com uma fonte controlada, um retificador de onda completa ideal é uma única expressão, $\text{abs}(v(\text{in}))$, sem diodos nem quedas de tensão.
 
 ## O circuito
 
@@ -24,20 +24,21 @@ Mostrar que, com uma fonte controlada, um retificador de onda completa ideal é 
 ![Esquema do circuito](img/cs-fullrectifier.svg)
 <!-- esquema:fim -->
 
-Uma fonte senoidal de $40\ \text{Hz}$ e $5\ \text{V}$ de pico liga-se à entrada de uma VCVS cuja expressão é $\text{abs}(a)$. Um elemento de saída e um osciloscópio mostram a saída.
+Uma fonte senoidal de $40\ \text{Hz}$ e $5\ \text{V}$ de pico está ligada ao nó rotulado `in`. Uma fonte de tensão controlada com a expressão $\text{abs}(v(\text{in}))$ gera a saída, que um elemento de saída e um osciloscópio mostram.
 
 <!-- componentes:inicio -->
 | N.º | Tipo | Elemento | Valores |
 |----:|------|----------|---------|
-| 0 | `VCVSElm` | VCVS | Output Function = abs(a); # of Inputs = 1 |
-| 1 | `RailElm` | A/C source | Max Voltage = 5; Waveform = A/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0; Show Voltage = não; Frequency (Hz) = 40; Phase Offset (degrees) = 0 |
-| 2 | `GroundElm` | ground | Symbol = Earth |
-| 3 | `OutputElm` | output | Show Voltage = não |
+| 0 | `RailElm` | A/C source | Max Voltage = 5; Waveform = A/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0; Show Voltage = não; Frequency (Hz) = 40; Phase Offset (degrees) = 0 |
+| 1 | `GroundElm` | ground | Symbol = Earth |
+| 2 | `OutputElm` | output | Show Voltage = não |
+| 3 | `LabeledNodeElm` | Labeled Node | Text = in; Internal Node = não; Rotate Text When Vertical = não |
+| 4 | `ControlledVoltageElm` | Controlled Voltage Source | Output Voltage = abs(v(in)) |
 <!-- componentes:fim -->
 
 ## Teoria
 
-As fontes controladas deste simulador são definidas por uma **expressão** sobre as entradas, que se chamam $a$, $b$, $c$, ... (as tensões ou correntes nos terminais de controle). O resultado é a tensão (VCVS, CCVS) ou a corrente (VCCS, CCCS) que a fonte impõe na saída. A saída é o valor absoluto da entrada: $V_\text{out} = |5\sin(2\pi\cdot 40\,t)|$. Para um senoide de pico $V_p$, o valor médio da retificação de onda completa e o valor eficaz são
+As fontes controladas de dois terminais (o losango) são definidas por uma **expressão** que lê o resto do circuito **pelo nome**: $v(\text{nome})$ é a tensão de um nó rotulado ou sobre um voltímetro com rótulo, $i(\text{nome})$ a corrente de um amperímetro com rótulo, e $\text{dvdt}$ / $\text{didt}$ as suas taxas de variação. O resultado é a tensão (fonte de tensão controlada, com o $+$ no segundo terminal) ou a corrente (fonte de corrente controlada, no sentido da seta) que a fonte impõe. A saída é o valor absoluto da entrada: $V_\text{out} = |5\sin(2\pi\cdot 40\,t)|$. Para um senoide de pico $V_p$, o valor médio da retificação de onda completa e o valor eficaz são
 
 $$\overline{V} = \frac{2}{\pi}\,V_p = 3{,}183\ \text{V}, \qquad V_\text{rms} = \frac{V_p}{\sqrt 2} = 3{,}536\ \text{V},$$
 

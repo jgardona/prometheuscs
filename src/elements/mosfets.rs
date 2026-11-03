@@ -777,6 +777,17 @@ impl Element for MosfetElm {
             (true, true) => "PJfetElm",
         }
     }
+    fn toggle_polarity(&mut self) -> Option<&'static str> {
+        self.pnp = -self.pnp;
+        self.base.flags ^= FLAG_PNP;
+        self.set_points();
+        Some(match (self.jfet, self.pnp == -1) {
+            (false, false) => "N-Channel",
+            (false, true) => "P-Channel",
+            (true, false) => "N-Channel JFET",
+            (true, true) => "P-Channel JFET",
+        })
+    }
     fn dump_type(&self) -> i32 {
         i32::from(if self.jfet { b'j' } else { b'f' })
     }

@@ -16,6 +16,7 @@ pub mod icons;
 pub mod inspect;
 #[cfg(feature = "gui")]
 pub mod menus;
+pub mod palette;
 pub mod pin_layout;
 pub mod playback;
 pub mod session;

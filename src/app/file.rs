@@ -50,10 +50,16 @@ impl Session {
 
     /// Loads a circuit file; its name becomes the title.
     pub fn open_file(&mut self, path: &Path) -> Result<(), String> {
+        let text = std::fs::read_to_string(path).map_err(|e| format!("{}: {e}", path.display()))?;
+        // a subcircuit library adds its models and leaves the circuit alone, as in CircuitJS 5.x
+        #[cfg(feature = "subcircuits")]
+        if super::subcircuits::is_subcircuit_library(&text) {
+            self.load_errors.clear();
+            return self.load_subcircuits_only(&text).map(|_| ());
+        }
         #[cfg(feature = "subcircuits")]
         self.contexts.clear();
         self.load_errors.clear();
-        let text = std::fs::read_to_string(path).map_err(|e| format!("{}: {e}", path.display()))?;
         let title = path.file_stem().map_or_else(
             || crate::locale::ls(Self::UNTITLED),
             |s| s.to_string_lossy().into_owned(),

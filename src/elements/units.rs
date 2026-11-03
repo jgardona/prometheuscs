@@ -86,6 +86,38 @@ pub fn e12_step(value: f64, minpow: i32, maxpow: i32, steps: i32) -> f64 {
     values[(idx as i64 + i64::from(steps)).clamp(0, last) as usize]
 }
 
+/// Moves `value` by `steps` along the 1-2-5 sequence (…, 0.5, 1, 2, 5, 10, …), keeping its
+/// sign; zero moves to 1 or -1 times the smallest step. A value between two members first
+/// goes to the neighbour in the direction of the move.
+pub fn step_125(value: f64, steps: i32) -> f64 {
+    if steps == 0 {
+        return value;
+    }
+    let sign = if value < 0.0 { -1.0 } else { 1.0 };
+    let mag = value.abs();
+    // the index of a member: 3 per decade, 0 is 1, 1 is 2, 2 is 5, 3 is 10, -1 is 0.5
+    let member = |k: i32| {
+        let mant = [1.0, 2.0, 5.0][k.rem_euclid(3) as usize];
+        let text = format!("{mant}e{}", k.div_euclid(3));
+        text.parse::<f64>().unwrap_or(mant * 10f64.powi(k.div_euclid(3)))
+    };
+    if mag == 0.0 {
+        return if steps > 0 { member(-36) } else { -member(-36) };
+    }
+    // the member at or just below the value
+    let mut k = (mag.log10() * 3.0).floor() as i32 - 1;
+    while member(k + 1) <= mag * (1.0 + 1e-9) {
+        k += 1;
+    }
+    while member(k) > mag * (1.0 + 1e-9) {
+        k -= 1;
+    }
+    let on_member = (member(k) - mag).abs() <= mag * 1e-9;
+    // going down from a value between two members, the member below is the first step
+    let k = if steps < 0 && !on_member { k + steps + 1 } else { k + steps };
+    sign * member(k)
+}
+
 fn unit_text_impl(v: f64, unit: &str, short: bool) -> String {
     let sp = if short { "" } else { " " };
     let va = v.abs();
@@ -206,6 +238,20 @@ impl Scale {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn the_125_sequence_steps_one_member_at_a_time() {
+        assert_eq!(step_125(1.0, 1), 2.0);
+        assert_eq!(step_125(2.0, 1), 5.0);
+        assert_eq!(step_125(5.0, 1), 10.0);
+        assert_eq!(step_125(10.0, -1), 5.0);
+        assert_eq!(step_125(0.001, -1), 0.0005);
+        // between members: to the next one in the direction of the move
+        assert_eq!(step_125(3.0, 1), 5.0);
+        assert_eq!(step_125(3.0, -1), 2.0);
+        assert_eq!(step_125(-2.0, 1), -5.0);
+        assert!(step_125(0.0, 1) > 0.0 && step_125(0.0, -1) < 0.0);
+    }
 
     #[test]
     fn picks_si_prefixes() {

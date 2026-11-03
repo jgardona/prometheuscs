@@ -11,7 +11,7 @@ verificacoes:
 # Amplificador operacional com limites de saída
 
 <!-- navegacao:inicio -->
-[Índice](README.md) · [Anterior: VCVS Op-Amp](cs-opamp.md) · [Próximo: VCVS Multiplier](cs-multiplier.md)
+[Índice](README.md) · [Anterior: CVS Op-Amp](cs-opamp.md) · [Próximo: VCVS Multiplier](cs-multiplier.md)
 <!-- navegacao:fim -->
 
 ## Objetivo

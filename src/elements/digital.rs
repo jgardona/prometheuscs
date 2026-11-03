@@ -920,6 +920,11 @@ impl Default for Monostable {
     }
 }
 
+impl Monostable {
+    /// The trigger fires on the falling edge of the input (flag of the original).
+    const FLAG_INVERT_TRIGGER: i32 = 2;
+}
+
 impl ChipLogic for Monostable {
     fn class_name(&self) -> &'static str {
         "MonostableElm"
@@ -936,6 +941,7 @@ impl ChipLogic for Monostable {
         fill(c, 3);
         c.pins[0] = Pin::new(0, SIDE_W, "");
         c.pins[0].clock = true;
+        c.pins[0].bubble = has(c, Self::FLAG_INVERT_TRIGGER);
         c.pins[1] = Pin::output(0, SIDE_E, "Q");
         c.pins[2] = Pin::output(1, SIDE_E, "Q");
         c.pins[2].line_over = true;
@@ -972,7 +978,8 @@ impl ChipLogic for Monostable {
         self.prev_input = false;
     }
     fn execute(&mut self, c: &mut ChipCore, s: &Stamper) {
-        let input = value(c, 0);
+        // with Invert Trigger the falling edge of the input fires
+        let input = value(c, 0) != has(c, Self::FLAG_INVERT_TRIGGER);
         if input && !self.prev_input && (self.retriggerable || !self.triggered) {
             self.last_rising_edge = s.t;
             c.pins[1].value = true;
@@ -989,17 +996,22 @@ impl ChipLogic for Monostable {
     fn voltage_source_count(&self, _c: &ChipCore) -> usize {
         2
     }
-    fn chip_edit_info(&self, _c: &ChipCore, n: usize) -> Option<EditInfo> {
+    fn chip_edit_info(&self, c: &ChipCore, n: usize) -> Option<EditInfo> {
         match n {
             0 => check("Retriggerable", self.retriggerable),
             1 => Some(EditInfo::new("Period (s)", self.delay, 0.001, 0.1)),
+            2 => check("Invert Trigger", has(c, Self::FLAG_INVERT_TRIGGER)),
             _ => None,
         }
     }
-    fn set_chip_edit_value(&mut self, _c: &mut ChipCore, n: usize, ei: &mut EditInfo) {
+    fn set_chip_edit_value(&mut self, c: &mut ChipCore, n: usize, ei: &mut EditInfo) {
         match n {
             0 => self.retriggerable = ei.checkbox.unwrap_or(false),
             1 => self.delay = ei.value,
+            2 => {
+                c.base.flags = ei.change_flag(c.base.flags, Self::FLAG_INVERT_TRIGGER);
+                c.pins[0].bubble = has(c, Self::FLAG_INVERT_TRIGGER);
+            }
             _ => {}
         }
     }

@@ -185,6 +185,23 @@ mod tests {
 /// Width of the information box.
 pub const INFO_BOX_WIDTH: f64 = 160.0;
 
+/// Draws why the simulation stopped across the top of a `w` by `h` canvas: red text on a
+/// plate, so it stays readable over the circuit (spec FR-024). The session keeps the message
+/// until the circuit changes or is reset, so it stays on screen until then.
+pub fn draw_stop_message(g: &mut dyn Painter, text: &str, (w, _h): (f64, f64), light: bool) {
+    g.set_font_size(14);
+    g.set_text_align(TextAlign::Left);
+    let tw = g.measure_text(text);
+    let (x, y) = (10.0, 10.0);
+    g.save();
+    g.set_alpha(0.85);
+    g.set_color(if light { Color::new(255, 235, 235) } else { Color::new(40, 0, 0) });
+    g.fill_rect(x, y, (tw + 16.0).min(w - 2.0 * x).max(0.0), 26.0);
+    g.restore();
+    g.set_color(if light { Color::new(192, 0, 0) } else { Color::new(255, 96, 96) });
+    g.draw_string(text, x + 8.0, y + 18.0);
+}
+
 /// The information box of the original, for a canvas with no scopes under it: a dark panel in
 /// the bottom right corner with the lines of text. It is a fifth of the height when it
 /// describes an element (`tall`) and a small strip otherwise.

@@ -35,7 +35,7 @@ Um 555 alimentado com $5\ \text{V}$ tem *tr* e *th* ligados juntos à entrada. A
 | 3 | `OutputElm` | output | Show Voltage = não |
 | 7 | `VoltageElm` | A/C source | Max Voltage = 1; Waveform = A/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0; Show Voltage = não; Frequency (Hz) = 400; Phase Offset (degrees) = 0 |
 | 8 | `RailElm` | A/C source | Max Voltage = 2.5; Waveform = A/C; DC Offset (V) = 2.5; Internal Resistance (ohms) = 0; Show Voltage = não; Frequency (Hz) = 40; Phase Offset (degrees) = 0 |
-| 9 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0 |
+| 9 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0; Label =  |
 | 10 | `GroundElm` | ground | Symbol = Earth |
 | 11 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->

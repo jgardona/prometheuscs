@@ -4,6 +4,7 @@
 use super::commands::accelerators;
 use super::edit::SliderEntry;
 use super::icons;
+use super::palette::{Entry as PaletteEntry, Palette, Pick};
 use super::pin_layout::{Geometry, can_move};
 use super::session::Session;
 use super::settings::DEFAULT_COLORS;
@@ -227,39 +228,91 @@ pub fn import_text(
     d.present(Some(parent));
 }
 
-/// Find Component: a filterable list of the circuit's elements.
+/// The Find Component palette: a search entry over the components to place, the menu
+/// commands and the elements of the circuit, in the groups of [`Palette::filter`]. Enter runs
+/// the highlighted line (the first one until the arrow keys move it); `on_pick` gets the choice
+/// after the dialog has closed.
 pub fn find(
     parent: &impl IsA<gtk::Widget>,
-    labels: Vec<(usize, String)>,
-    on_pick: impl Fn(usize) + 'static,
+    palette: Palette,
+    recent: Vec<String>,
+    on_pick: impl Fn(Pick) + 'static,
 ) {
     let entry = gtk::SearchEntry::new();
     let list = gtk::ListBox::new();
-    list.add_css_class("boxed-list");
-    let indices: Vec<usize> = labels.iter().map(|(i, _)| *i).collect();
-    let texts: Rc<Vec<String>> = Rc::new(labels.iter().map(|(_, t)| t.to_lowercase()).collect());
-    for (_, text) in &labels {
-        let row = adw::ActionRow::new();
-        row.set_title(text);
-        row.set_activatable(true);
-        list.append(&row);
-    }
-    let query = Rc::new(RefCell::new(String::new()));
+    list.set_selection_mode(gtk::SelectionMode::Browse);
+    let shown: Rc<RefCell<Vec<PaletteEntry>>> = Rc::new(RefCell::new(Vec::new()));
     {
-        let (q, t) = (query.clone(), texts.clone());
-        list.set_filter_func(move |row| {
-            let i = row.index() as usize;
-            t.get(i).is_some_and(|s| s.contains(q.borrow().as_str()))
-        });
-        let l = list.clone();
-        entry.connect_search_changed(move |e| {
-            *query.borrow_mut() = e.text().to_lowercase();
-            l.invalidate_filter();
+        // a header over the first line of each group
+        let shown = shown.clone();
+        list.set_header_func(move |row, before| {
+            let s = shown.borrow();
+            let group = |r: &gtk::ListBoxRow| s.get(r.index() as usize).map(|e| e.group);
+            let this = group(row);
+            let Some(first) = this.filter(|_| before.and_then(group) != this) else {
+                row.set_header(None::<&gtk::Widget>);
+                return;
+            };
+            let label = gtk::Label::new(Some(&ls(first.title())));
+            label.set_xalign(0.0);
+            label.add_css_class("heading");
+            label.set_margin_top(8);
+            label.set_margin_bottom(4);
+            label.set_margin_start(6);
+            row.set_header(Some(&label));
         });
     }
+    let rebuild = {
+        let (list, shown) = (list.clone(), shown.clone());
+        move |query: &str| {
+            list.remove_all();
+            let found = palette.filter(query, &recent);
+            for e in &found {
+                let label = gtk::Label::new(Some(&e.label));
+                label.set_xalign(0.0);
+                label.set_margin_top(6);
+                label.set_margin_bottom(6);
+                label.set_margin_start(12);
+                label.set_margin_end(12);
+                list.append(&label);
+            }
+            *shown.borrow_mut() = found;
+            list.select_row(list.row_at_index(0).as_ref());
+        }
+    };
+    rebuild("");
+    entry.connect_search_changed(move |e| rebuild(e.text().as_str()));
     let scroll = gtk::ScrolledWindow::new();
     scroll.set_child(Some(&list));
     scroll.set_vexpand(true);
+    {
+        // the arrow keys move the highlight while the typing stays in the entry
+        let keys = gtk::EventControllerKey::new();
+        let (l, sc) = (list.clone(), scroll.clone());
+        keys.connect_key_pressed(move |_, key, _, _| {
+            let step = match key {
+                gtk::gdk::Key::Down => 1,
+                gtk::gdk::Key::Up => -1,
+                _ => return glib::Propagation::Proceed,
+            };
+            let at = l.selected_row().map_or(-1, |r| r.index());
+            if let Some(row) = l.row_at_index((at + step).max(0)) {
+                l.select_row(Some(&row));
+                // keep the highlighted line in view
+                if let Some(b) = row.compute_bounds(&l) {
+                    let adj = sc.vadjustment();
+                    let (top, bottom) = (f64::from(b.y()), f64::from(b.y() + b.height()));
+                    if top < adj.value() {
+                        adj.set_value(top);
+                    } else if bottom > adj.value() + adj.page_size() {
+                        adj.set_value(bottom - adj.page_size());
+                    }
+                }
+            }
+            glib::Propagation::Stop
+        });
+        entry.add_controller(keys);
+    }
     let body = gtk::Box::new(gtk::Orientation::Vertical, 6);
     body.set_margin_top(6);
     body.set_margin_bottom(6);
@@ -267,17 +320,31 @@ pub fn find(
     body.set_margin_end(6);
     body.append(&entry);
     body.append(&scroll);
-    let d = dialog(&ls("Find Component"), 420, 480, &body);
-    let d2 = d.clone();
-    list.connect_row_activated(move |_, row| {
-        if let Some(&i) = indices.get(row.index() as usize) {
-            d2.close();
-            on_pick(i);
+    let d = dialog(&ls("Find Component"), 420, 520, &body);
+    let on_pick = Rc::new(on_pick);
+    let choose = {
+        let (d, shown) = (d.clone(), shown.clone());
+        move |index: i32| {
+            let pick = shown.borrow().get(index as usize).map(|e| e.pick.clone());
+            if let Some(pick) = pick {
+                d.close();
+                on_pick(pick);
+            }
         }
-    });
+    };
+    {
+        let choose = choose.clone();
+        list.connect_row_activated(move |_, row| choose(row.index()));
+    }
+    {
+        let l = list.clone();
+        entry.connect_activate(move |_| choose(l.selected_row().map_or(0, |r| r.index())));
+    }
     d.present(Some(parent));
+    entry.grab_focus();
 }
 
+#[derive(Clone)]
 enum Field {
     Entry(adw::EntryRow),
     Area(gtk::TextView),
@@ -296,6 +363,228 @@ fn to_rgba(c: Color) -> gtk::gdk::RGBA {
 /// The colour a chooser shows (alpha is not offered).
 fn from_rgba(c: &gtk::gdk::RGBA) -> Color {
     Color::from_unit([f64::from(c.red()), f64::from(c.green()), f64::from(c.blue())])
+}
+
+/// The editor of an element's fields, generated from its [`EditInfo`]s (research R-7). It is
+/// hosted by the edit dialog, which applies everything with one button, and by the side panel,
+/// which applies each field as it is committed ([`PropertyEditor::apply_on_commit`]).
+#[derive(Clone)]
+pub struct PropertyEditor {
+    inner: Rc<EditorInner>,
+}
+
+struct EditorInner {
+    body: gtk::Box,
+    extras: gtk::Box,
+    message: gtk::Label,
+    fields: Vec<EditInfo>,
+    widgets: Vec<Field>,
+}
+
+impl PropertyEditor {
+    /// An editor showing `fields`, with `error` (if any) under them.
+    pub fn new(fields: Vec<EditInfo>, error: Option<&str>) -> PropertyEditor {
+        let group = adw::PreferencesGroup::new();
+        let widgets: Vec<Field> = fields.iter().map(|ei| field_row(&group, ei)).collect();
+        let message = gtk::Label::new(error);
+        message.add_css_class("error");
+        message.set_xalign(0.0);
+        message.set_wrap(true);
+        let extras = gtk::Box::new(gtk::Orientation::Vertical, 12);
+        let body = gtk::Box::new(gtk::Orientation::Vertical, 12);
+        body.append(&group);
+        body.append(&extras);
+        body.append(&message);
+        PropertyEditor { inner: Rc::new(EditorInner { body, extras, message, fields, widgets }) }
+    }
+
+    /// The widget to place in a host.
+    pub fn widget(&self) -> &gtk::Box {
+        &self.inner.body
+    }
+
+    /// The fields as they were when the editor was made.
+    pub fn fields(&self) -> &[EditInfo] {
+        &self.inner.fields
+    }
+
+    /// Adds a button under the fields; the host decides what it does.
+    pub fn add_button(&self, label: &str) -> gtk::Button {
+        let b = gtk::Button::with_label(&ls(label));
+        self.inner.extras.append(&b);
+        b
+    }
+
+    /// Shows `text` as the editor's error message (empty hides it).
+    pub fn set_message(&self, text: &str) {
+        self.inner.message.set_text(text);
+    }
+
+    /// The fields with what is typed in the editor now, or `None` (with the reason shown) when
+    /// a value cannot be read.
+    pub fn read(&self) -> Option<Vec<EditInfo>> {
+        let inner = &self.inner;
+        let mut out = inner.fields.clone();
+        for (ei, w) in out.iter_mut().zip(&inner.widgets) {
+            match w {
+                Field::Entry(row) => {
+                    let text = row.text().to_string();
+                    if ei.text.is_some() {
+                        ei.text = Some(text);
+                        continue;
+                    }
+                    let error = match parse_edit_value(&text) {
+                        None => Some(ls("{name}: invalid value").replace("{name}", &ls(&ei.name))),
+                        Some(v) if ei.positive && v <= 0.0 => {
+                            Some(format!("{}: deve ser > 0", ls(&ei.name)))
+                        }
+                        Some(v) if ei.non_negative && v < 0.0 => {
+                            Some(format!("{}: deve ser >= 0", ls(&ei.name)))
+                        }
+                        Some(v) => {
+                            ei.value = v;
+                            None
+                        }
+                    };
+                    if let Some(e) = error {
+                        inner.message.set_text(&e);
+                        return None;
+                    }
+                }
+                Field::Area(view) => {
+                    let b = view.buffer();
+                    ei.text = Some(b.text(&b.start_iter(), &b.end_iter(), false).to_string());
+                }
+                Field::Switch(row) => ei.checkbox = Some(row.is_active()),
+                Field::Combo(row) => ei.choice_index = row.selected() as usize,
+                Field::Color(button) => ei.text = Some(from_rgba(&button.rgba()).hex()),
+                Field::Fixed => {}
+            }
+        }
+        inner.message.set_text("");
+        Some(out)
+    }
+
+    /// Calls `on_apply` with all the fields each time one is committed: Enter (or the apply
+    /// button) in a text row, a switch or choice changed, a colour chosen, or a text area left.
+    /// Each call is one change for the host to apply (one undo step).
+    pub fn apply_on_commit(&self, on_apply: impl Fn(Vec<EditInfo>) + 'static) {
+        let on_apply: Rc<dyn Fn(Vec<EditInfo>)> = Rc::new(on_apply);
+        let commit = {
+            // a weak link: the editor's widgets hold this closure, which must not keep them alive
+            let weak = Rc::downgrade(&self.inner);
+            move || {
+                let Some(inner) = weak.upgrade() else { return };
+                if let Some(fields) = (PropertyEditor { inner }).read() {
+                    on_apply(fields);
+                }
+            }
+        };
+        for w in &self.inner.widgets {
+            let c = commit.clone();
+            match w {
+                Field::Entry(row) => {
+                    row.set_show_apply_button(true);
+                    row.connect_apply(move |_| c());
+                }
+                Field::Area(view) => {
+                    let focus = gtk::EventControllerFocus::new();
+                    focus.connect_leave(move |_| c());
+                    view.add_controller(focus);
+                }
+                Field::Switch(row) => {
+                    row.connect_active_notify(move |_| c());
+                }
+                Field::Combo(row) => {
+                    row.connect_selected_notify(move |_| c());
+                }
+                Field::Color(button) => {
+                    button.connect_rgba_notify(move |_| c());
+                }
+                Field::Fixed => {}
+            }
+        }
+    }
+}
+
+/// Adds the row of one field to `group` and returns how to read it back.
+fn field_row(group: &adw::PreferencesGroup, ei: &EditInfo) -> Field {
+    let name = ls(&ei.name);
+    if let Some(options) = &ei.choice {
+        let row = adw::ComboRow::new();
+        row.set_title(&name);
+        let items: Vec<String> = options.iter().map(|o| ls(o)).collect();
+        let refs: Vec<&str> = items.iter().map(String::as_str).collect();
+        row.set_model(Some(&gtk::StringList::new(&refs)));
+        row.set_selected(ei.choice_index as u32);
+        group.add(&row);
+        Field::Combo(row)
+    } else if let Some(state) = ei.checkbox {
+        let row = adw::SwitchRow::new();
+        // the label of a checkbox field is kept in its text
+        let label = if name.is_empty() { ls(ei.text.as_deref().unwrap_or("")) } else { name };
+        row.set_title(&label);
+        row.set_active(state);
+        group.add(&row);
+        Field::Switch(row)
+    } else if ei.button.is_some() || ei.hidden {
+        Field::Fixed
+    } else if ei.is_color {
+        let dialog = gtk::ColorDialog::new();
+        dialog.set_with_alpha(false);
+        dialog.set_title(&name);
+        let button = gtk::ColorDialogButton::new(Some(dialog));
+        button.set_valign(gtk::Align::Center);
+        let current = ei.text.as_deref().and_then(Color::parse_hex).unwrap_or(Color::LIGHT_GRAY);
+        button.set_rgba(&to_rgba(current));
+        let row = adw::ActionRow::new();
+        row.set_title(&name);
+        row.add_suffix(&button);
+        group.add(&row);
+        Field::Color(button)
+    } else if ei.multiline {
+        let view = gtk::TextView::new();
+        view.set_monospace(true);
+        view.buffer().set_text(ei.text.as_deref().unwrap_or(""));
+        let scroll = gtk::ScrolledWindow::new();
+        scroll.set_min_content_height(160);
+        scroll.set_child(Some(&view));
+        let label = gtk::Label::new(Some(&name));
+        label.set_xalign(0.0);
+        let col = gtk::Box::new(gtk::Orientation::Vertical, 6);
+        col.append(&label);
+        col.append(&scroll);
+        let row = adw::PreferencesRow::new();
+        row.set_child(Some(&padded(&col)));
+        group.add(&row);
+        Field::Area(view)
+    } else {
+        let row = adw::EntryRow::new();
+        row.set_title(&name);
+        match &ei.text {
+            Some(t) => row.set_text(t),
+            None => row.set_text(&edit_value_text(ei.value, ei.dimensionless)),
+        }
+        if let Some(choice) = ei.file_chooser.clone() {
+            let button = gtk::Button::from_icon_name("document-open-symbolic");
+            button.set_valign(gtk::Align::Center);
+            button.add_css_class("flat");
+            button.set_tooltip_text(Some(&ls("Choose File...")));
+            let entry = row.clone();
+            button.connect_clicked(move |b| {
+                let Some(window) = b.root().and_downcast::<gtk::Window>() else { return };
+                let entry = entry.clone();
+                choose_path(&window, &choice, entry.text().as_str(), move |path| {
+                    entry.set_text(&path.to_string_lossy());
+                    // a chosen file is committed like Enter in the row
+                    entry.emit_by_name::<()>("apply", &[]);
+                });
+            });
+            row.add_suffix(&button);
+        }
+        group.add(&row);
+        Field::Entry(row)
+    }
 }
 
 /// The element edit dialog, generated from the element's edit fields.
@@ -321,103 +610,14 @@ pub fn edit_element_with(
     error: Option<&str>,
     on_apply: impl Fn(Vec<EditInfo>) + 'static,
 ) {
-    let group = adw::PreferencesGroup::new();
-    let mut widgets: Vec<Field> = Vec::new();
-    for ei in &fields {
-        let name = ls(&ei.name);
-        if let Some(options) = &ei.choice {
-            let row = adw::ComboRow::new();
-            row.set_title(&name);
-            let items: Vec<String> = options.iter().map(|o| ls(o)).collect();
-            let refs: Vec<&str> = items.iter().map(String::as_str).collect();
-            row.set_model(Some(&gtk::StringList::new(&refs)));
-            row.set_selected(ei.choice_index as u32);
-            group.add(&row);
-            widgets.push(Field::Combo(row));
-        } else if let Some(state) = ei.checkbox {
-            let row = adw::SwitchRow::new();
-            // the label of a checkbox field is kept in its text
-            let label = if name.is_empty() { ls(ei.text.as_deref().unwrap_or("")) } else { name };
-            row.set_title(&label);
-            row.set_active(state);
-            group.add(&row);
-            widgets.push(Field::Switch(row));
-        } else if ei.button.is_some() || ei.hidden {
-            widgets.push(Field::Fixed);
-        } else if ei.is_color {
-            let dialog = gtk::ColorDialog::new();
-            dialog.set_with_alpha(false);
-            dialog.set_title(&name);
-            let button = gtk::ColorDialogButton::new(Some(dialog));
-            button.set_valign(gtk::Align::Center);
-            let current =
-                ei.text.as_deref().and_then(Color::parse_hex).unwrap_or(Color::LIGHT_GRAY);
-            button.set_rgba(&to_rgba(current));
-            let row = adw::ActionRow::new();
-            row.set_title(&name);
-            row.add_suffix(&button);
-            group.add(&row);
-            widgets.push(Field::Color(button));
-        } else if ei.multiline {
-            let view = gtk::TextView::new();
-            view.set_monospace(true);
-            view.buffer().set_text(ei.text.as_deref().unwrap_or(""));
-            let scroll = gtk::ScrolledWindow::new();
-            scroll.set_min_content_height(160);
-            scroll.set_child(Some(&view));
-            let label = gtk::Label::new(Some(&name));
-            label.set_xalign(0.0);
-            let col = gtk::Box::new(gtk::Orientation::Vertical, 6);
-            col.append(&label);
-            col.append(&scroll);
-            let row = adw::PreferencesRow::new();
-            row.set_child(Some(&padded(&col)));
-            group.add(&row);
-            widgets.push(Field::Area(view));
-        } else {
-            let row = adw::EntryRow::new();
-            row.set_title(&name);
-            match &ei.text {
-                Some(t) => row.set_text(t),
-                None => row.set_text(&edit_value_text(ei.value, ei.dimensionless)),
-            }
-            if let Some(choice) = ei.file_chooser.clone() {
-                let button = gtk::Button::from_icon_name("document-open-symbolic");
-                button.set_valign(gtk::Align::Center);
-                button.add_css_class("flat");
-                button.set_tooltip_text(Some(&ls("Choose File...")));
-                let (entry, anchor) = (row.clone(), parent.clone().upcast::<gtk::Widget>());
-                button.connect_clicked(move |_| {
-                    let Some(window) = anchor.root().and_downcast::<gtk::Window>() else { return };
-                    let entry = entry.clone();
-                    choose_path(&window, &choice, entry.text().as_str(), move |path| {
-                        entry.set_text(&path.to_string_lossy());
-                    });
-                });
-                row.add_suffix(&button);
-            }
-            group.add(&row);
-            widgets.push(Field::Entry(row));
-        }
-    }
+    let editor = PropertyEditor::new(fields, error);
+    let extra: Vec<(gtk::Button, Box<dyn Fn()>)> =
+        buttons.into_iter().map(|(label, action)| (editor.add_button(&label), action)).collect();
     let apply = gtk::Button::with_label(&ls("Apply"));
     apply.add_css_class("suggested-action");
     apply.set_halign(gtk::Align::End);
-    let message = gtk::Label::new(error);
-    message.add_css_class("error");
-    message.set_xalign(0.0);
-    message.set_wrap(true);
     let body = gtk::Box::new(gtk::Orientation::Vertical, 12);
-    body.append(&group);
-    let extra: Vec<(gtk::Button, Box<dyn Fn()>)> = buttons
-        .into_iter()
-        .map(|(label, action)| {
-            let b = gtk::Button::with_label(&ls(&label));
-            body.append(&b);
-            (b, action)
-        })
-        .collect();
-    body.append(&message);
+    body.append(editor.widget());
     body.append(&apply);
     let scroll = gtk::ScrolledWindow::new();
     scroll.set_child(Some(&padded(&body)));
@@ -432,45 +632,10 @@ pub fn edit_element_with(
     }
     let d2 = d.clone();
     apply.connect_clicked(move |_| {
-        let mut out = fields.clone();
-        for (ei, w) in out.iter_mut().zip(&widgets) {
-            match w {
-                Field::Entry(row) => {
-                    let text = row.text().to_string();
-                    if ei.text.is_some() {
-                        ei.text = Some(text);
-                    } else {
-                        match parse_edit_value(&text) {
-                            Some(v) => ei.value = v,
-                            None => {
-                                message.set_text(
-                                    &ls("{name}: invalid value").replace("{name}", &ls(&ei.name)),
-                                );
-                                return;
-                            }
-                        }
-                        if ei.positive && ei.value <= 0.0 {
-                            message.set_text(&format!("{}: deve ser > 0", ls(&ei.name)));
-                            return;
-                        }
-                        if ei.non_negative && ei.value < 0.0 {
-                            message.set_text(&format!("{}: deve ser >= 0", ls(&ei.name)));
-                            return;
-                        }
-                    }
-                }
-                Field::Area(view) => {
-                    let b = view.buffer();
-                    ei.text = Some(b.text(&b.start_iter(), &b.end_iter(), false).to_string());
-                }
-                Field::Switch(row) => ei.checkbox = Some(row.is_active()),
-                Field::Combo(row) => ei.choice_index = row.selected() as usize,
-                Field::Color(button) => ei.text = Some(from_rgba(&button.rgba()).hex()),
-                Field::Fixed => {}
-            }
+        if let Some(out) = editor.read() {
+            d2.close();
+            on_apply(out);
         }
-        d2.close();
-        on_apply(out);
     });
     d.present(Some(parent));
 }
@@ -838,96 +1003,216 @@ pub fn subcircuit_pins(
     d.present(Some(parent));
 }
 
-/// The subcircuit manager: the subcircuits there are, with buttons to place one, change its pin
-/// layout or delete it.
+/// One subcircuit as the manager lists it.
+#[derive(Clone, Debug)]
+pub struct ManagedModel {
+    /// The model's name.
+    pub name: String,
+    /// Where it is kept.
+    pub scope: ModelScope,
+}
+
+/// What the subcircuit manager's buttons do. Each gets the names selected; the dialog has
+/// closed (and the window reopens it when the list changed) before it runs.
+pub struct ManagerActions {
+    /// Place an instance of one model.
+    pub place: Box<dyn Fn(String)>,
+    /// Change the pin layout of one model.
+    pub edit: Box<dyn Fn(String)>,
+    /// Keep the models in another place.
+    pub set_scope: Box<dyn Fn(Vec<String>, ModelScope)>,
+    /// Save the models as a library file.
+    pub save_library: Box<dyn Fn(Vec<String>)>,
+    /// Delete the models; the error says why when the circuit uses some of them.
+    pub delete: Box<dyn Fn(Vec<String>) -> Result<(), String>>,
+    /// Draws the chip of a model on a surface of the given width and height.
+    pub preview: Box<ModelPreview>,
+}
+
+/// Draws the chip of model `name` on a cairo surface `width` by `height`.
+pub type ModelPreview = dyn Fn(&str, &gtk::cairo::Context, f64, f64);
+
+/// The English name of where a model is kept (translated with `ls`).
+pub fn scope_label(scope: ModelScope) -> &'static str {
+    match scope {
+        ModelScope::Circuit => "This Circuit",
+        ModelScope::Session => "This Session",
+        ModelScope::Saved => "Save Across Sessions",
+    }
+}
+
+/// The subcircuit manager (upstream `SubcircuitDialog`, with a preview): the models there are,
+/// with where each is kept; several can be selected to move them to another place, save them
+/// as a library or delete them, and one to place it or change its pin layout. `error` is shown
+/// when it opens.
 pub fn subcircuit_manager(
     parent: &impl IsA<gtk::Widget>,
-    names: &[String],
-    on_place: impl Fn(String) + 'static,
-    on_edit: impl Fn(String) + 'static,
-    on_delete: impl Fn(String) + 'static,
+    models: &[ManagedModel],
+    error: Option<&str>,
+    actions: ManagerActions,
 ) {
     let list = gtk::ListBox::new();
     list.add_css_class("boxed-list");
-    list.set_selection_mode(gtk::SelectionMode::Single);
-    for n in names {
+    list.set_selection_mode(gtk::SelectionMode::Multiple);
+    for m in models {
         let row = adw::ActionRow::new();
-        row.set_title(n);
+        row.set_title(&m.name);
+        row.set_subtitle(&ls(scope_label(m.scope)));
         list.append(&row);
     }
     let empty = gtk::Label::new(Some(&ls("No subcircuits yet. Use File > Create Subcircuit.")));
     empty.set_wrap(true);
     empty.set_xalign(0.0);
     empty.set_halign(gtk::Align::Start);
-    empty.set_visible(names.is_empty());
-    let (place, edit, delete) = (
-        gtk::Button::with_label(&ls("Place")),
-        gtk::Button::with_label(&ls("Edit Subcircuit Pin Layout")),
-        gtk::Button::with_label(&ls("Delete")),
-    );
-    delete.add_css_class("destructive-action");
-    // the labels are long once translated, so the buttons wrap instead of widening the dialog
-    let buttons = gtk::FlowBox::new();
-    buttons.set_selection_mode(gtk::SelectionMode::None);
-    buttons.set_homogeneous(true);
-    buttons.set_column_spacing(6);
-    buttons.set_row_spacing(6);
-    buttons.set_max_children_per_line(3);
-    buttons.insert(&place, -1);
-    buttons.insert(&edit, -1);
-    buttons.insert(&delete, -1);
-    buttons.set_halign(gtk::Align::Fill);
-    let body = gtk::Box::new(gtk::Orientation::Vertical, 12);
-    body.append(&list);
-    body.append(&empty);
-    body.append(&buttons);
-    let scroll = gtk::ScrolledWindow::new();
-    scroll.set_child(Some(&padded(&body)));
-    scroll.set_hscrollbar_policy(gtk::PolicyType::Never);
-    let d = dialog(&ls("Subcircuit Manager"), 560, 420, &scroll);
-    let names: Vec<String> = names.to_vec();
-    let chosen = {
+    empty.set_visible(models.is_empty());
+    let message = gtk::Label::new(error);
+    message.add_css_class("error");
+    message.set_xalign(0.0);
+    message.set_wrap(true);
+    let names: Rc<Vec<String>> = Rc::new(models.iter().map(|m| m.name.clone()).collect());
+    let selected = {
         let (list, names) = (list.clone(), names.clone());
-        move || list.selected_row().and_then(|r| names.get(r.index() as usize).cloned())
+        move || -> Vec<String> {
+            let mut rows: Vec<i32> = list.selected_rows().iter().map(|r| r.index()).collect();
+            rows.sort_unstable();
+            rows.iter().filter_map(|&i| names.get(i as usize).cloned()).collect()
+        }
     };
-    let on_place = Rc::new(on_place);
-    let on_edit = Rc::new(on_edit);
-    let on_delete = Rc::new(on_delete);
+    // the chip of the first model selected
+    let preview = gtk::DrawingArea::new();
+    preview.set_content_width(PREVIEW_SIZE.0);
+    preview.set_content_height(PREVIEW_SIZE.1 * 3 / 4);
+    preview.add_css_class("card");
+    let actions = Rc::new(actions);
     {
-        let (d2, ch) = (d.clone(), chosen.clone());
-        place.connect_clicked(move |_| {
-            if let Some(n) = ch() {
-                d2.close();
-                on_place(n);
+        let (actions, sel) = (actions.clone(), selected.clone());
+        preview.set_draw_func(move |_, cr, w, h| {
+            if let Some(name) = sel().first() {
+                (actions.preview)(name, cr, f64::from(w), f64::from(h));
             }
         });
     }
     {
-        let (d2, ch) = (d.clone(), chosen.clone());
-        edit.connect_clicked(move |_| {
-            if let Some(n) = ch() {
+        let p = preview.clone();
+        list.connect_selected_rows_changed(move |_| p.queue_draw());
+    }
+    list.select_row(list.row_at_index(0).as_ref());
+    let button = |label: &str| gtk::Button::with_label(&ls(label));
+    let (place, edit, save, delete) = (
+        button("Place"),
+        button("Edit Subcircuit Pin Layout"),
+        button("Save Library..."),
+        button("Delete"),
+    );
+    delete.add_css_class("destructive-action");
+    let scopes = [ModelScope::Circuit, ModelScope::Session, ModelScope::Saved];
+    let scope_buttons: Vec<(gtk::Button, ModelScope)> =
+        scopes.iter().map(|&sc| (button(scope_label(sc)), sc)).collect();
+    // the labels are long once translated, so the buttons wrap instead of widening the dialog
+    let flow = |items: &[&gtk::Button]| {
+        let f = gtk::FlowBox::new();
+        f.set_selection_mode(gtk::SelectionMode::None);
+        f.set_homogeneous(true);
+        f.set_column_spacing(6);
+        f.set_row_spacing(6);
+        f.set_max_children_per_line(3);
+        for b in items {
+            f.insert(*b, -1);
+        }
+        f
+    };
+    let keep = gtk::Label::new(Some(&ls("Keep the selected subcircuits in:")));
+    keep.set_xalign(0.0);
+    let body = gtk::Box::new(gtk::Orientation::Vertical, 12);
+    body.append(&list);
+    body.append(&empty);
+    body.append(&preview);
+    body.append(&flow(&[&place, &edit, &save]));
+    body.append(&keep);
+    let scope_refs: Vec<&gtk::Button> = scope_buttons.iter().map(|(b, _)| b).collect();
+    body.append(&flow(&scope_refs));
+    body.append(&flow(&[&delete]));
+    body.append(&message);
+    let scroll = gtk::ScrolledWindow::new();
+    scroll.set_child(Some(&padded(&body)));
+    scroll.set_hscrollbar_policy(gtk::PolicyType::Never);
+    let d = dialog(&ls("Subcircuit Manager"), 560, 640, &scroll);
+    // the selection a button needs, or a message saying what to select
+    let need = {
+        let (sel, message) = (selected.clone(), message.clone());
+        move |one: bool| -> Option<Vec<String>> {
+            let s = sel();
+            if s.is_empty() || (one && s.len() != 1) {
+                message.set_text(&ls(if one {
+                    "Please select one subcircuit."
+                } else {
+                    "Please select one or more subcircuits."
+                }));
+                return None;
+            }
+            Some(s)
+        }
+    };
+    {
+        let (d2, need, actions) = (d.clone(), need.clone(), actions.clone());
+        place.connect_clicked(move |_| {
+            if let Some(mut s) = need(true) {
                 d2.close();
-                on_edit(n);
+                (actions.place)(s.remove(0));
+            }
+        });
+    }
+    {
+        let (d2, need, actions) = (d.clone(), need.clone(), actions.clone());
+        edit.connect_clicked(move |_| {
+            if let Some(mut s) = need(true) {
+                d2.close();
+                (actions.edit)(s.remove(0));
+            }
+        });
+    }
+    {
+        let (d2, need, actions) = (d.clone(), need.clone(), actions.clone());
+        save.connect_clicked(move |_| {
+            if let Some(s) = need(false) {
+                d2.close();
+                (actions.save_library)(s);
+            }
+        });
+    }
+    for (b, scope) in scope_buttons {
+        let (d2, need, actions) = (d.clone(), need.clone(), actions.clone());
+        b.connect_clicked(move |_| {
+            if let Some(s) = need(false) {
+                d2.close();
+                (actions.set_scope)(s, scope);
             }
         });
     }
     {
         let (d2, parent2) = (d.clone(), parent.clone().upcast::<gtk::Widget>());
+        let message = message.clone();
         delete.connect_clicked(move |_| {
-            let Some(n) = chosen() else { return };
+            let Some(s) = need(false) else { return };
             // asks first; a deleted subcircuit cannot be brought back
             let alert = gtk::AlertDialog::builder()
-                .message(format!("{} {n}?", ls("Are you sure you want to delete")))
+                .message(format!("{} {}?", ls("Are you sure you want to delete"), s.join(", ")))
                 .buttons([ls("Cancel"), ls("Delete")])
                 .cancel_button(0)
                 .default_button(0)
                 .build();
-            let (d3, on_delete) = (d2.clone(), on_delete.clone());
+            let (d3, actions, message) = (d2.clone(), actions.clone(), message.clone());
             let window = parent2.root().and_downcast::<gtk::Window>();
             alert.choose(window.as_ref(), gio::Cancellable::NONE, move |r| {
-                if r == Ok(1) {
-                    d3.close();
-                    on_delete(n.clone());
+                if r != Ok(1) {
+                    return;
+                }
+                // a refused delete leaves the dialog open with the reason
+                match (actions.delete)(s.clone()) {
+                    Ok(()) => {
+                        d3.close();
+                    }
+                    Err(e) => message.set_text(&e),
                 }
             });
         });
@@ -960,10 +1245,14 @@ pub struct OtherOptions {
     pub developer_mode: bool,
     /// Frame rate below which the simulation does not keep up with real time.
     pub min_frame_rate: u32,
-    /// How much a notch of the mouse wheel changes a value.
+    /// How fast the mouse wheel zooms.
     pub wheel_sensitivity: f64,
     /// Size of the text of component values.
     pub value_font_size: i32,
+    /// Open the properties of an element just placed.
+    pub show_properties_on_create: bool,
+    /// Show the properties of an element clicked.
+    pub show_properties_on_click: bool,
     /// Language chosen in the dialog; `None` leaves it as it is.
     pub language: Option<String>,
 }
@@ -1047,6 +1336,10 @@ pub fn other_options(
     let solver = gtk::DropDown::from_strings(&labels);
     solver.set_selected(SOLVERS.iter().position(|(s, _)| *s == now.solver).unwrap_or(0) as u32);
     let font = whole_number(6.0, 48.0, f64::from(now.value_font_size));
+    let on_create = gtk::CheckButton::with_label(&ls("Show Properties on Create"));
+    on_create.set_active(now.show_properties_on_create);
+    let on_click = gtk::CheckButton::with_label(&ls("Show Properties on Click"));
+    on_click.set_active(now.show_properties_on_click);
 
     let column = || gtk::Box::new(gtk::Orientation::Vertical, 10);
     let (left, middle, right) = (column(), column(), column());
@@ -1071,11 +1364,13 @@ pub fn other_options(
     right.append(&captioned("# of Decimal Digits (long format)", &long));
     right.append(&developer);
     right.append(&captioned("Minimum Target Frame Rate", &frame_rate));
-    right.append(&captioned("Mouse Wheel Sensitivity", &wheel));
+    right.append(&captioned("Mouse Wheel Zoom Sensitivity", &wheel));
     right.append(&auto_dc);
     right.append(&adjust);
     right.append(&captioned("Matrix Solver", &solver));
     right.append(&captioned("Value Label Font Size", &font));
+    right.append(&on_create);
+    right.append(&on_click);
     let columns = gtk::Box::new(gtk::Orientation::Horizontal, 24);
     for c in [&left, &middle, &right] {
         c.set_hexpand(true);
@@ -1116,6 +1411,8 @@ pub fn other_options(
             out.min_frame_rate = frame_rate.value_as_int().max(1) as u32;
             out.wheel_sensitivity = wheel.value();
             out.value_font_size = font.value_as_int();
+            out.show_properties_on_create = on_create.is_active();
+            out.show_properties_on_click = on_click.is_active();
             // entry 0 is "no change"; the others follow the list of languages
             out.language = (language.selected() as usize)
                 .checked_sub(1)

@@ -3,6 +3,14 @@
 //! Expression evaluator used by custom elements (controlled sources, custom logic, lookup
 //! tables): arithmetic, comparisons, a ternary operator and a set of functions over the
 //! variables `a` to `i`, the time `t` and the previous values `lasta` to `lasti`.
+//!
+//! Expressions may also refer to the rest of the circuit by name: `v(name)` is the voltage of
+//! a labeled node or across a labeled voltmeter, `v(a, b)` the difference of two such
+//! voltages, `i(name)` the current through a labeled ammeter, and `dvdt(name)` / `didt(name)`
+//! their rates of change. Each distinct quantity gets one slot ([`ExprRef`]); the element that
+//! owns the expression fills [`ExprState::ref_values`] before evaluating (see [`refs`]).
+
+pub mod refs;
 
 /// Number of variables (`a` to `i`).
 pub const VARIABLES: usize = 9;
@@ -20,6 +28,10 @@ pub struct ExprState {
     pub t: f64,
     /// Simulation time step (`timestep`).
     pub time_step: f64,
+    /// Current value of each referenced quantity, in the order of [`Expr::parse_with_refs`].
+    pub ref_values: Vec<f64>,
+    /// The same quantities one time step ago, for `dvdt()` and `didt()`.
+    pub last_ref_values: Vec<f64>,
 }
 
 impl Default for ExprState {
@@ -32,6 +44,8 @@ impl Default for ExprState {
             last_output: 0.0,
             t: 0.0,
             time_step: 0.0,
+            ref_values: Vec::new(),
+            last_ref_values: Vec::new(),
         }
     }
 }
@@ -46,12 +60,20 @@ impl ExprState {
     pub fn update_last_values(&mut self, last_output: f64) {
         self.last_output = last_output;
         self.last_values = self.values;
+        self.last_ref_values.clone_from(&self.ref_values);
     }
 
     /// Forgets the previous values.
     pub fn reset(&mut self) {
         self.last_values = [0.0; VARIABLES];
+        self.last_ref_values.iter_mut().for_each(|v| *v = 0.0);
         self.last_output = 0.0;
+    }
+
+    /// Sizes the reference slots for `n` referenced quantities, all zero.
+    pub fn alloc_refs(&mut self, n: usize) {
+        self.ref_values = vec![0.0; n];
+        self.last_ref_values = vec![0.0; n];
     }
 }
 
@@ -109,6 +131,19 @@ enum Kind {
     Var(usize),
     LastVar(usize),
     Dadt(usize),
+    /// The value of reference slot `k` (`v(name)` or `i(name)`).
+    Ref(usize),
+    /// The rate of change of reference slot `k` (`dvdt(name)` or `didt(name)`).
+    RefDt(usize),
+}
+
+/// A quantity an expression refers to by name.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ExprRef {
+    /// The name inside the parentheses, case preserved (labels are case-sensitive).
+    pub name: String,
+    /// True for `i()` and `didt()` (a current), false for `v()` and `dvdt()` (a voltage).
+    pub current: bool,
 }
 
 /// A parsed expression.
@@ -139,11 +174,18 @@ impl Expr {
 
     /// Parses `text`; the error is the first problem found.
     pub fn parse(text: &str) -> Result<Expr, String> {
+        Self::parse_with_refs(text).map(|(e, _)| e)
+    }
+
+    /// Parses `text` and lists the quantities it refers to by name, one entry per distinct
+    /// quantity (`v(x)` and `dvdt(x)` share one, `v(x)` and `i(x)` do not), in order of first
+    /// use. The error is the first problem found.
+    pub fn parse_with_refs(text: &str) -> Result<(Expr, Vec<ExprRef>), String> {
         let mut p = Parser::new(text);
         let e = p.parse_expression();
         match p.err {
             Some(err) => Err(err),
-            None => Ok(e),
+            None => Ok((e, p.refs)),
         }
     }
 
@@ -220,6 +262,12 @@ impl Expr {
             Kind::Var(i) => es.values[i],
             Kind::LastVar(i) => es.last_values[i],
             Kind::Dadt(i) => (es.values[i] - es.last_values[i]) / es.time_step,
+            Kind::Ref(k) => es.ref_values.get(k).copied().unwrap_or(0.0),
+            Kind::RefDt(k) => {
+                let now = es.ref_values.get(k).copied().unwrap_or(0.0);
+                let last = es.last_ref_values.get(k).copied().unwrap_or(0.0);
+                (now - last) / es.time_step
+            }
         }
     }
 
@@ -255,24 +303,124 @@ impl Expr {
 const MAX_DEPTH: usize = 128;
 
 struct Parser {
+    /// The text in lower case, one entry per character of `orig`.
     text: Vec<char>,
+    /// The text as typed: names in `v(name)` keep their case.
+    orig: Vec<char>,
     token: String,
     pos: usize,
     err: Option<String>,
     depth: usize,
+    refs: Vec<ExprRef>,
 }
 
 impl Parser {
     fn new(s: &str) -> Parser {
+        let orig: Vec<char> = s.chars().collect();
+        // lower-case character by character so `text` and `orig` stay aligned
+        let text = orig.iter().map(|c| c.to_lowercase().next().unwrap_or(*c)).collect();
         let mut p = Parser {
-            text: s.to_lowercase().chars().collect(),
+            text,
+            orig,
             token: String::new(),
             pos: 0,
             err: None,
             depth: 0,
+            refs: Vec::new(),
         };
         p.get_token();
         p
+    }
+
+    /// True when the next non-space character of the text is `(`; tells the input letter `i`
+    /// (and the pin derivative `didt`) apart from the functions `i(` and `didt(`.
+    fn next_char_is_open_paren(&self) -> bool {
+        let mut i = self.pos;
+        while i < self.orig.len() && self.orig[i] == ' ' {
+            i += 1;
+        }
+        i < self.orig.len() && self.orig[i] == '('
+    }
+
+    /// Reads a name out of the original text, up to `,` or `)`; a double-quoted name may
+    /// contain those characters.
+    fn scan_name(&mut self) -> String {
+        let n = self.orig.len();
+        while self.pos < n && self.orig[self.pos] == ' ' {
+            self.pos += 1;
+        }
+        let name: String = if self.pos < n && self.orig[self.pos] == '"' {
+            self.pos += 1;
+            let start = self.pos;
+            while self.pos < n && self.orig[self.pos] != '"' {
+                self.pos += 1;
+            }
+            let s = self.orig[start..self.pos].iter().collect();
+            if self.pos < n {
+                self.pos += 1; // the closing quote
+            }
+            while self.pos < n && self.orig[self.pos] == ' ' {
+                self.pos += 1;
+            }
+            s
+        } else {
+            let start = self.pos;
+            while self.pos < n && self.orig[self.pos] != ',' && self.orig[self.pos] != ')' {
+                self.pos += 1;
+            }
+            self.orig[start..self.pos].iter().collect::<String>().trim().to_string()
+        };
+        if name.is_empty() {
+            self.set_error("missing name in a v()/i() reference".into());
+        }
+        name
+    }
+
+    /// The node reading reference slot `name`/`current`, allocating the slot on first use.
+    fn make_ref(&mut self, name: String, current: bool, deriv: bool) -> Expr {
+        let k = match self.refs.iter().position(|r| r.name == name && r.current == current) {
+            Some(k) => k,
+            None => {
+                self.refs.push(ExprRef { name, current });
+                self.refs.len() - 1
+            }
+        };
+        Expr::leaf(if deriv { Kind::RefDt(k) } else { Kind::Ref(k) })
+    }
+
+    /// Parses `v(name)`, `v(name1, name2)` or `i(name)` (and the `dvdt`/`didt` forms). Called
+    /// with the function name skipped: the token is `(` and `pos` is just after it.
+    fn parse_ref(&mut self, current: bool, deriv: bool) -> Expr {
+        let func = format!(
+            "{}{}{}",
+            if deriv { "d" } else { "" },
+            if current { "i" } else { "v" },
+            if deriv { "dt" } else { "" }
+        );
+        if self.token != "(" {
+            let got = self.token.clone();
+            self.set_error(format!("expected ( after {func}, got {got}"));
+            return Expr::val(0.0);
+        }
+        let first = self.scan_name();
+        let mut e = self.make_ref(first, current, deriv);
+        if self.pos < self.orig.len() && self.orig[self.pos] == ',' {
+            self.pos += 1;
+            let second = self.scan_name();
+            let e2 = self.make_ref(second, current, deriv);
+            if current {
+                self.set_error(format!("{func}() takes one name"));
+            } else {
+                e = Expr::node(Kind::Sub, vec![e, e2]);
+            }
+        }
+        if self.pos < self.orig.len() && self.orig[self.pos] == ')' {
+            self.pos += 1;
+        } else {
+            self.set_error(format!("expected ) in {func}()"));
+        }
+        self.get_token();
+        e
     }
 
     fn get_token(&mut self) {
@@ -546,6 +694,18 @@ impl Parser {
         if self.skip("t") {
             return Expr::leaf(Kind::T);
         }
+        // i(name) before the input letters: only an `i` directly followed by `(` is a
+        // reference, any other `i` is still the 9th input
+        if self.token == "i" && self.next_char_is_open_paren() {
+            self.get_token();
+            return self.parse_ref(true, false);
+        }
+        // dvdt(name)/didt(name); `didt` without `(` keeps its old meaning (d/dt of input i)
+        if (self.token == "dvdt" || self.token == "didt") && self.next_char_is_open_paren() {
+            let current = self.token == "didt";
+            self.get_token();
+            return self.parse_ref(current, true);
+        }
         let tok: Vec<char> = self.token.chars().collect();
         let letter = |c: char| ('a'..='i').contains(&c).then(|| c as usize - 'a' as usize);
         if tok.len() == 1 {
@@ -574,6 +734,9 @@ impl Parser {
         }
         if self.skip("pi") {
             return Expr::val(std::f64::consts::PI);
+        }
+        if self.skip("v") {
+            return self.parse_ref(false, false);
         }
         const FUNCS: [(&str, Kind); 17] = [
             ("sin", Kind::Sin),
@@ -670,6 +833,74 @@ mod tests {
         assert_eq!(eval("!0"), 1.0);
         assert_eq!(eval("6 & 3"), 2.0);
         assert_eq!(eval("16 >> 2"), 4.0);
+    }
+
+    fn refs(text: &str) -> Vec<(String, bool)> {
+        let (_, r) = Expr::parse_with_refs(text).unwrap();
+        r.into_iter().map(|r| (r.name, r.current)).collect()
+    }
+
+    #[test]
+    fn reference_functions_allocate_slots() {
+        assert_eq!(refs("v(a)"), vec![("a".into(), false)]);
+        assert_eq!(refs("i(a)"), vec![("a".into(), true)]);
+        assert_eq!(refs("dvdt(a)"), vec![("a".into(), false)]);
+        assert_eq!(refs("didt(a)"), vec![("a".into(), true)]);
+        // the same quantity shares a slot, a voltage and a current of one name do not
+        assert_eq!(refs("v(x)+dvdt(x)+v(x)"), vec![("x".into(), false)]);
+        assert_eq!(refs("v(x)+i(x)"), vec![("x".into(), false), ("x".into(), true)]);
+        // names keep their case and may be quoted
+        assert_eq!(refs("v(Vout)"), vec![("Vout".into(), false)]);
+        assert_eq!(refs("v(\"a,b\")"), vec![("a,b".into(), false)]);
+        assert_eq!(refs("v( in )"), vec![("in".into(), false)]);
+    }
+
+    #[test]
+    fn reference_values_come_from_the_state() {
+        let mut es = ExprState::new();
+        let (e, r) = Expr::parse_with_refs("2*v(in)").unwrap();
+        es.alloc_refs(r.len());
+        es.ref_values[0] = 1.5;
+        assert_eq!(e.eval(&es), 3.0);
+        // v(a, b) is the difference of the two voltages
+        let (e, r) = Expr::parse_with_refs("v(p, n)").unwrap();
+        es.alloc_refs(r.len());
+        es.ref_values.copy_from_slice(&[5.0, 2.0]);
+        assert_eq!(e.eval(&es), 3.0);
+        // dvdt reads (now - one step ago) / timestep
+        let (e, r) = Expr::parse_with_refs("dvdt(x)").unwrap();
+        es.alloc_refs(r.len());
+        es.time_step = 0.5;
+        es.ref_values[0] = 1.0;
+        es.update_last_values(0.0);
+        es.ref_values[0] = 2.0;
+        assert_eq!(e.eval(&es), 2.0);
+        es.reset();
+        assert_eq!(es.last_ref_values, vec![0.0]);
+    }
+
+    #[test]
+    fn old_meanings_of_i_and_didt_are_kept() {
+        let mut es = ExprState::new();
+        es.values[8] = 4.0;
+        // `i` alone is the 9th input
+        let (e, r) = Expr::parse_with_refs("i*2").unwrap();
+        assert!(r.is_empty());
+        assert_eq!(e.eval(&es), 8.0);
+        // `didt` alone is the derivative of input i
+        let (_, r) = Expr::parse_with_refs("didt").unwrap();
+        assert!(r.is_empty());
+        // `dvdt` alone was never valid
+        assert!(Expr::parse("dvdt").is_err());
+        assert!(Expr::parse("dvdt + 1").is_err());
+    }
+
+    #[test]
+    fn bad_references_are_reported() {
+        assert!(Expr::parse("v()").is_err());
+        assert!(Expr::parse("v(a").is_err());
+        assert!(Expr::parse("i(a, b)").is_err());
+        assert!(Expr::parse("v 1").is_err());
     }
 
     #[test]

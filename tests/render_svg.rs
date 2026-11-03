@@ -88,3 +88,48 @@ fn an_option_that_is_off_draws_what_the_default_draws() {
     let b = render(RC, &DrawCtx { euro_resistors: false, iec_gates: false, ..quiet() });
     assert_eq!(a, b);
 }
+
+/// A session on the AC test circuit with its three scopes, run for 5 ms so they have data.
+#[cfg(feature = "gui")]
+fn scope_session() -> prometheuscs::app::session::Session {
+    let text = std::fs::read_to_string("tests/compat/circuits-5x/scope-ac.txt").unwrap();
+    let mut s = prometheuscs::app::session::Session::load(&text, &Registry::standard()).unwrap();
+    while s.sim.st.t < 0.005 {
+        s.sim.step().unwrap();
+    }
+    s
+}
+
+#[cfg(feature = "gui")]
+#[test]
+fn one_scope_exports_as_svg_at_the_size_asked_with_or_without_background() {
+    use prometheuscs::render::export::{ScopeImage, scope_svg};
+    let s = scope_session();
+    let o = ScopeImage { width: 640, height: 240, transparent: false };
+    let svg = scope_svg(&s, 1, o).unwrap();
+    assert!(svg.contains(r#"width="640" height="240""#), "{svg}");
+    // the background is a filled rectangle over the whole picture
+    let background = r#"d="M0 0 L640 0 L640 240 L0 240 Z""#;
+    let filled = |svg: &str| {
+        svg.lines()
+            .any(|l| l.contains("<path") && l.contains(background) && !l.contains(r#"fill="none""#))
+    };
+    assert!(filled(&svg), "{svg}");
+    let clear = scope_svg(&s, 1, ScopeImage { transparent: true, ..o }).unwrap();
+    assert!(!filled(&clear), "{clear}");
+    // the curves are there either way
+    assert!(clear.matches("<path").count() > 3);
+}
+
+#[cfg(feature = "gui")]
+#[test]
+fn scope_export_sizes_outside_one_to_8192_are_refused() {
+    use prometheuscs::render::export::{ScopeImage, scope_png, scope_svg};
+    let s = scope_session();
+    for (width, height) in [(0, 240), (640, 0), (8193, 240), (640, 8193), (-5, 10)] {
+        let o = ScopeImage { width, height, transparent: false };
+        assert!(scope_svg(&s, 0, o).is_err(), "{width}x{height}");
+        assert!(scope_png(&s, 0, o).is_err(), "{width}x{height}");
+    }
+    assert!(scope_svg(&s, 9, ScopeImage { width: 10, height: 10, transparent: false }).is_err());
+}

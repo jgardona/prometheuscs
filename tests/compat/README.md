@@ -69,3 +69,27 @@ compares the listed ones too, which is how the list was cut down to the real one
 Examples with picosecond time steps (transmission lines, slow CMOS) never reach a millisecond
 in the wall-clock limit. Record them with `--steps`, which puts the checkpoints at that many
 time steps of each circuit instead of at fixed times.
+
+## CircuitJS 5.x features (no 5.x recordings)
+
+The recordings above were made with the Java build of CircuitJS1 (release 4.1.5.1js). The
+features CircuitJS added in release 5.x (two-terminal controlled sources, `v(name)` / `i(name)`
+references, meter labels) are checked without recording a 5.x build (spec 006, research R-1):
+
+* The controlled-source examples that 5.x redrew with the new sources (`cs-*`) are compared
+  with the recordings of their old versions, which are kept in
+  `tests/compat/circuits-5x/old/`: `tests/compat_5x.rs` matches the elements present in both
+  versions by type and coordinates. `compat_golden.rs` skips these examples. An example that
+  5.x changed in substance (not just redrew) is listed in `known_differences.json`.
+* Small circuits in the 5.x format, in `tests/compat/circuits-5x/`, are compared with values
+  worked out by hand (`expected.json`; the derivations are in that folder's README).
+
+```
+cargo test --test compat_5x
+```
+
+Building CircuitJS 5.0.4 and recording it is a fallback, only for a case where a nonlinear
+circuit (for example `dvdt()` over many steps) disagrees with what is expected. The TypeScript
+version builds with `npm ci && npm run build` in `ts/` of the CircuitJS checkout; `ts/dist`
+then replaces the page of the Electron shell in `app/`, and `cargo run --bin golden -- --app
+<that copy>` records it (release 5.x keeps the `window.CircuitJS1` interface the tool uses).

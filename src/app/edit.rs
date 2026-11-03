@@ -314,6 +314,13 @@ pub(crate) enum Drag {
     Rubber { x0: i32, y0: i32, x1: i32, y1: i32, additive: bool },
 }
 
+/// How far one wheel notch moves an element's own slider (of 100), as the original's sliders.
+const SLIDER_WHEEL_STEP: i32 = 4;
+
+/// Length (circuit units) of an element dropped from the toolbar: four grid steps, from the
+/// drop point to the right.
+const DROP_LENGTH: f64 = 64.0;
+
 /// Where pasted elements go.
 enum PasteAt {
     Point(i32, i32),
@@ -417,6 +424,23 @@ impl Session {
         }
         self.tool = tool;
         self.drag = Drag::None;
+    }
+
+    /// Places an element of registry `id` dropped at surface position (`px`, `py`), such as a
+    /// part dragged from the toolbar: its first post at the drop point and its second one
+    /// [`DROP_LENGTH`] to the right. It goes through the normal placement, so it splits the
+    /// wires its posts land on and can open its properties; the tool in use is kept. Returns
+    /// true when the element was placed.
+    pub fn drop_element(&mut self, id: &str, px: f64, py: f64) -> bool {
+        let previous = std::mem::replace(&mut self.tool, Tool::Place(id.to_string()));
+        self.drag = Drag::None;
+        self.deselect_all();
+        let placed = self.mouse_down(px, py, Mods::default(), 1) && {
+            self.mouse_drag(px + DROP_LENGTH * self.view.scale, py);
+            self.mouse_up()
+        };
+        self.tool = previous;
+        placed
     }
 
     // ---- hit testing -----------------------------------------------------------------------
@@ -780,13 +804,40 @@ impl Session {
                 if let Some(e) = self.sim.elements.get_mut(idx) {
                     e.base_mut().creating = false;
                 }
+                // a post dropped on a wire or a lead connects there
+                self.split_at_posts(&[idx]);
+                self.just_placed = Some(idx);
                 self.dirty = true;
                 self.reanalyze();
                 true
             }
-            Drag::Move { pushed: true, .. }
-            | Drag::Post { pushed: true, .. }
-            | Drag::Row { pushed: true, .. }
+            Drag::Move { pushed: true, scope, .. } => {
+                // the moved elements' posts connect to wires and leads they land on; moving
+                // everything together changes no connection
+                if scope == MoveScope::Selected {
+                    let moved = self.selected_indices();
+                    self.split_at_posts(&moved);
+                }
+                self.remove_zero_length();
+                self.dirty = true;
+                self.reanalyze();
+                true
+            }
+            Drag::Post { pushed: true, idx, first } => {
+                // the end that was dragged
+                let end = self.sim.elements.get(idx).map(|e| {
+                    let b = e.base();
+                    if first { (b.x, b.y) } else { (b.x2, b.y2) }
+                });
+                if let Some((x, y)) = end {
+                    self.split_at(x, y, &[idx]);
+                }
+                self.remove_zero_length();
+                self.dirty = true;
+                self.reanalyze();
+                true
+            }
+            Drag::Row { pushed: true, .. }
             | Drag::Column { pushed: true, .. }
             | Drag::PostsAt { pushed: true, .. } => {
                 self.remove_zero_length();
@@ -832,6 +883,31 @@ impl Session {
     }
 
     // ---- selection and deletion ------------------------------------------------------------
+
+    /// True when Swap Terminals has something to act on: a selected two-terminal element.
+    pub fn can_swap_terminals(&self) -> bool {
+        self.sim.elements.iter().any(|e| e.base().selected && e.post_count() == 2)
+    }
+
+    /// Swap Terminals: exchanges the two posts of every selected two-terminal element (as the
+    /// original's element menu). One undo step. Returns how many were swapped.
+    pub fn swap_terminals(&mut self) -> usize {
+        if !self.editing_allowed() || !self.can_swap_terminals() {
+            return 0;
+        }
+        self.push_undo();
+        let mut n = 0;
+        for e in &mut self.sim.elements {
+            if e.base().selected && e.post_count() == 2 {
+                e.base_mut().flip_posts();
+                e.set_points();
+                n += 1;
+            }
+        }
+        self.dirty = true;
+        self.reanalyze();
+        n
+    }
 
     /// Indices of the selected elements.
     pub fn selected_indices(&self) -> Vec<usize> {
@@ -989,6 +1065,10 @@ impl Session {
                     Some(n) => lines.push(format!("V = {}", voltage_text(e.get_post_voltage(n)))),
                     None => {
                         e.get_info(&mut lines);
+                        // a wire on a labeled node names it (upstream `WireElm.getInfo`)
+                        if lines.first().is_some_and(|l| l == "wire") {
+                            lines.extend(self.label_of_node(e.base().nodes.first().copied()));
+                        }
                         if self.settings.developer_mode {
                             let nodes: Vec<String> =
                                 e.base().nodes.iter().map(|n| n.0.to_string()).collect();
@@ -1007,6 +1087,19 @@ impl Session {
             }
         }
         lines
+    }
+
+    /// The name of the labeled node on circuit node `node`, if there is one.
+    fn label_of_node(&self, node: Option<crate::solver::stamper::NodeId>) -> Option<String> {
+        let node = node?;
+        self.sim.elements.iter().find_map(|e| match e.bus_role() {
+            crate::elements::element::BusRole::Label(name)
+                if e.base().nodes.first() == Some(&node) =>
+            {
+                Some(name)
+            }
+            _ => None,
+        })
     }
 
     /// Whether the information box has an element to describe (and so is taller in the
@@ -1356,7 +1449,8 @@ impl Session {
             s.speed = speed;
         }
         self.store_scopes();
-        self.dirty = true;
+        // the time scale of a scope is a way of looking, like zooming: it does not make the
+        // circuit unsaved (research R-12)
         self.reanalyze();
     }
 
@@ -1415,7 +1509,7 @@ impl Session {
         };
         p.man_pos = pos.clamp(-steps, steps);
         p.man_set = true;
-        self.dirty = true;
+        // moving a trace up or down is a way of looking: not an unsaved change (R-12)
         if let Some(w) = &self.worker {
             w.send(super::worker::Command::PlotPosition { scope: idx, plot, pos });
         }
@@ -1635,7 +1729,8 @@ impl Session {
         f(&mut self.sim.scopes);
         self.store_scopes();
         self.scope_views.clear();
-        self.dirty = true;
+        // stacking, combining and the like only arrange the scopes: the circuit is not
+        // unsaved because of it (research R-12)
         self.reanalyze();
     }
 
@@ -2081,6 +2176,35 @@ impl Session {
             .filter(|&i| !self.edit_fields(i).is_empty() || self.embedded_scope(i).is_some())
     }
 
+    /// After a placement: the element whose properties should open, when "Show Properties on
+    /// Create" is on and the element is not one rarely edited when placed (see
+    /// [`crate::elements::registry::ElementDescriptor::quiet_on_create`]). Asking clears it.
+    /// The element returned becomes the only one selected, since the properties panel shows
+    /// the selection.
+    pub fn take_properties_after_place(&mut self) -> Option<usize> {
+        let i = self.just_placed.take()?;
+        if !self.settings.show_properties_on_create || i >= self.sim.elements.len() {
+            return None;
+        }
+        let quiet =
+            self.registry.get(self.sim.elements[i].class_name()).is_some_and(|d| d.quiet_on_create);
+        if quiet || self.edit_fields(i).is_empty() {
+            return None;
+        }
+        self.deselect_all();
+        self.sim.elements[i].base_mut().selected = true;
+        Some(i)
+    }
+
+    /// After a click at surface position (`px`, `py`): the element whose properties the side
+    /// panel should show, when "Show Properties on Click" is on.
+    pub fn properties_on_click(&self, px: f64, py: f64) -> Option<usize> {
+        if !self.settings.show_properties_on_click {
+            return None;
+        }
+        self.element_for_edit(px, py)
+    }
+
     /// Operates the switches whose keyboard shortcut is `key`. Returns true when one was found.
     pub fn key_toggle(&mut self, key: &str) -> bool {
         let hits: Vec<usize> = self
@@ -2129,41 +2253,70 @@ impl Session {
 
     /// Nudges the first numeric field of the element under the pointer with the mouse wheel.
     /// `up` raises the value. Returns true when a value changed.
-    pub fn wheel_at(&mut self, px: f64, py: f64, up: bool) -> bool {
+    pub fn wheel_at(&mut self, px: f64, py: f64, up: bool) -> Option<String> {
         if !self.settings.mouse_wheel_edit || !self.editing_allowed() {
-            return false;
+            return None;
         }
         let (gx, gy) = self.view.to_circuit(px, py);
-        let Some(i) = self.element_at(gx, gy) else { return false };
+        let i = self.element_at(gx, gy)?;
+        let dir = if up { 1 } else { -1 };
+        // an element with its own slider (a potentiometer) moves the slider
+        if let Some(sl) = self.sim.elements[i].slider() {
+            let v = (sl.value + SLIDER_WHEEL_STEP * dir).clamp(0, 100);
+            if v == sl.value {
+                return None;
+            }
+            self.push_undo();
+            self.set_element_slider(i, v);
+            self.dirty = true;
+            return Some(format!("{} {v}%", crate::locale::ls(&sl.text)));
+        }
+        // a transistor, MOSFET or JFET swaps its type
+        let old = self.sim.elements[i].class_name();
+        if matches!(
+            old,
+            "NTransistorElm"
+                | "PTransistorElm"
+                | "NMosfetElm"
+                | "PMosfetElm"
+                | "NJfetElm"
+                | "PJfetElm"
+        ) {
+            self.push_undo();
+            let name = self.sim.elements[i].toggle_polarity()?;
+            self.dirty = true;
+            self.reanalyze();
+            return Some(crate::locale::ls(name));
+        }
         let fields = self.edit_fields(i);
-        let Some((n, mut ei)) = fields.into_iter().enumerate().find(|(_, f)| {
+        let (n, mut ei) = fields.into_iter().enumerate().find(|(_, f)| {
             f.text.is_none() && f.choice.is_none() && f.checkbox.is_none() && f.button.is_none()
-        }) else {
-            return false;
-        };
-        // resistors, capacitors and inductors step through commercial E12 values over the
-        // decades of the original's scroll popup; other values are nudged by a factor
+        })?;
+        // one notch is one step: resistors, capacitors and inductors through the commercial
+        // E12 values over the decades of the original's scroll popup, other values along 1-2-5
         let e12_decades = match self.sim.elements[i].class_name() {
             "ResistorElm" => Some((-1, 7)),
             "CapacitorElm" | "PolarCapacitorElm" => Some((-11, -3)),
             "InductorElm" => Some((-6, 0)),
             _ => None,
         };
-        if let Some((minpow, maxpow)) = e12_decades {
-            let steps = (self.settings.wheel_sensitivity.round() as i32).max(1);
-            let steps = if up { steps } else { -steps };
-            ei.value = crate::elements::units::e12_step(ei.value, minpow, maxpow, steps);
-        } else {
-            let step = 1.0 + 0.1 * self.settings.wheel_sensitivity.max(0.0);
-            ei.value *= if up { step } else { 1.0 / step };
-        }
+        ei.value = match e12_decades {
+            Some((minpow, maxpow)) => {
+                crate::elements::units::e12_step(ei.value, minpow, maxpow, dir)
+            }
+            None => crate::elements::units::step_125(ei.value, dir),
+        };
         let value = ei.value;
         self.sim.apply_edit(i, n, &mut ei);
         self.sim.elements[i].set_points();
         self.dirty = true;
         self.refresh_slider_positions();
-        self.param_changed(i, n, value);
-        true
+        self.param_changed(i, n, value, false);
+        Some(format!(
+            "{} = {}",
+            crate::locale::ls(&ei.name),
+            crate::elements::units::short_unit_text(value, "")
+        ))
     }
 
     /// Entries for the Find Component list: element index and a description.
@@ -2338,6 +2491,49 @@ mod tests {
         assert!(s.glow_set().len() <= s.sim.elements.len() + 1);
     }
 
+    #[cfg(feature = "transistors")]
+    #[cfg(feature = "mosfets")]
+    #[test]
+    fn mouse_wheel_swaps_transistor_and_mosfet_types() {
+        let text =
+            "$ 1 0.000005 10 50 5 50 5e-11\nt 0 0 64 0 0 1 0 0 100\nf 0 160 64 160 0 1.5 0.02\n";
+        let mut s = Session::load(text, &Registry::standard()).unwrap();
+        s.canvas_size = (800.0, 600.0);
+        s.fit_pending = false;
+        s.settings.mouse_wheel_edit = true;
+        let at = |s: &Session, i: usize| {
+            let b = s.sim.elements[i].base();
+            // the view of a test session is the identity: screen and circuit coincide
+            (f64::from(b.x + b.x2) / 2.0, f64::from(b.y + b.y2) / 2.0)
+        };
+        let (x, y) = at(&s, 0);
+        assert_eq!(s.wheel_at(x, y, true).as_deref(), Some("PNP"));
+        assert_eq!(s.sim.elements[0].class_name(), "PTransistorElm");
+        assert_eq!(s.wheel_at(x, y, false).as_deref(), Some("NPN"));
+        let (x, y) = at(&s, 1);
+        assert!(s.wheel_at(x, y, true).is_some());
+        assert_eq!(s.sim.elements[1].class_name(), "PMosfetElm");
+        // one undo puts the type back
+        s.undo();
+        assert_eq!(s.sim.elements[1].class_name(), "NMosfetElm");
+    }
+
+    #[cfg(feature = "sources")]
+    #[test]
+    fn mouse_wheel_moves_other_values_along_125() {
+        let text = "$ 1 0.000005 10 50 5 50 5e-11\ni 0 0 64 0 0 0.01\n";
+        let mut s = Session::load(text, &Registry::standard()).unwrap();
+        s.canvas_size = (800.0, 600.0);
+        s.fit_pending = false;
+        s.settings.mouse_wheel_edit = true;
+        let (x, y) = (32.0, 0.0);
+        assert!(s.wheel_at(x, y, true).is_some());
+        assert!((s.edit_fields(0)[0].value - 0.02).abs() < 1e-12);
+        assert!(s.wheel_at(x, y, false).is_some());
+        assert!(s.wheel_at(x, y, false).is_some());
+        assert!((s.edit_fields(0)[0].value - 0.005).abs() < 1e-12);
+    }
+
     #[cfg(feature = "passive")]
     #[cfg(feature = "reactive")]
     #[test]
@@ -2345,55 +2541,61 @@ mod tests {
         let mut s = session();
         s.settings.mouse_wheel_edit = true;
         // resistor 1k from (0,0) to (64,0)
-        assert!(s.wheel_at(32.0, 0.0, true));
+        assert!(s.wheel_at(32.0, 0.0, true).is_some());
         assert_eq!(s.edit_fields(1)[0].value, 1200.0);
-        assert!(s.wheel_at(32.0, 0.0, true));
+        assert!(s.wheel_at(32.0, 0.0, true).is_some());
         assert_eq!(s.edit_fields(1)[0].value, 1500.0);
-        assert!(s.wheel_at(32.0, 0.0, false));
-        assert!(s.wheel_at(32.0, 0.0, false));
-        assert!(s.wheel_at(32.0, 0.0, false));
+        assert!(s.wheel_at(32.0, 0.0, false).is_some());
+        assert!(s.wheel_at(32.0, 0.0, false).is_some());
+        assert!(s.wheel_at(32.0, 0.0, false).is_some());
         assert_eq!(s.edit_fields(1)[0].value, 820.0);
         // capacitor 1 uF from (64,0) to (64,64)
-        assert!(s.wheel_at(64.0, 32.0, true));
+        assert!(s.wheel_at(64.0, 32.0, true).is_some());
         assert_eq!(s.edit_fields(2)[0].value, 1.2e-6);
-        // a sensitivity of 2 takes two steps a notch
+        // one notch is one step, whatever the zoom sensitivity
         s.settings.wheel_sensitivity = 2.0;
-        assert!(s.wheel_at(64.0, 32.0, true));
-        assert_eq!(s.edit_fields(2)[0].value, 1.8e-6);
+        assert!(s.wheel_at(64.0, 32.0, true).is_some());
+        assert_eq!(s.edit_fields(2)[0].value, 1.5e-6);
 
         let text = "$ 1 0.000005 10 50 5 50 5e-11\nl 0 0 64 0 0 1 0\n";
         let mut s = Session::load(text, &Registry::standard()).unwrap();
         s.settings.mouse_wheel_edit = true;
-        assert!(s.wheel_at(32.0, 0.0, false));
+        assert!(s.wheel_at(32.0, 0.0, false).is_some());
         assert_eq!(s.edit_fields(0)[0].value, 0.82);
-        assert!(s.wheel_at(32.0, 0.0, true));
-        assert!(s.wheel_at(32.0, 0.0, true));
+        assert!(s.wheel_at(32.0, 0.0, true).is_some());
+        assert!(s.wheel_at(32.0, 0.0, true).is_some());
         // 1 H is the top of the inductor range
         assert_eq!(s.edit_fields(0)[0].value, 1.0);
     }
 
-    #[cfg(feature = "sources")]
-    #[test]
-    fn mouse_wheel_still_nudges_other_values_by_a_factor() {
-        let mut s = session();
-        s.settings.mouse_wheel_edit = true;
-        let i = 0;
-        let field = s
-            .edit_fields(i)
-            .into_iter()
-            .find(|f| {
-                f.text.is_none() && f.choice.is_none() && f.checkbox.is_none() && f.button.is_none()
-            })
-            .unwrap();
-        let (b, before) = (s.sim.elements[i].base().clone(), field.value);
-        assert!(before != 0.0, "{} is zero, so a factor would not show", field.name);
-        assert!(s.wheel_at(f64::from(b.x + b.x2) / 2.0, f64::from(b.y + b.y2) / 2.0, true));
-        let after = s.edit_fields(i).into_iter().find(|f| f.name == field.name).unwrap().value;
-        assert!((after - before * 1.1).abs() <= before.abs() * 1e-9, "{before} -> {after}");
-    }
-
     fn press(s: &mut Session, x: f64, y: f64) {
         s.mouse_down(x, y, Mods::default(), 1);
+    }
+
+    #[cfg(feature = "passive")]
+    #[test]
+    fn placing_an_element_on_a_wire_splits_it_and_one_undo_restores_it() {
+        let text = "$ 1 0.000005 10 50 5 50 5e-11\nw 0 192 320 192 0\n";
+        let mut s = Session::load(text, &Registry::standard()).unwrap();
+        s.canvas_size = (800.0, 600.0);
+        s.fit_pending = false;
+        s.set_tool(Tool::Place("ResistorElm".into()));
+        // a resistor hanging down from the middle of the wire
+        press(&mut s, 160.0, 192.0);
+        s.mouse_drag(160.0, 288.0);
+        assert!(s.mouse_up());
+        let wires: Vec<_> = s
+            .sim
+            .elements
+            .iter()
+            .filter(|e| e.class_name() == "WireElm")
+            .map(|e| (e.base().x, e.base().x2))
+            .collect();
+        assert_eq!(wires.len(), 2, "{wires:?}");
+        assert!(wires.contains(&(0, 160)) && wires.contains(&(160, 320)), "{wires:?}");
+        s.undo();
+        assert_eq!(s.sim.elements.len(), 1);
+        assert_eq!((s.sim.elements[0].base().x, s.sim.elements[0].base().x2), (0, 320));
     }
 
     #[cfg(feature = "passive")]

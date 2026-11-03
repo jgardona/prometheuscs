@@ -1,17 +1,17 @@
 ---
 exemplo: cs-ramp.txt
-titulo: VCVS Voltage Ramp
+titulo: CVS Voltage Ramp
 categoria: Controlled Sources
 verificacoes:
-  - t=0.05 elemento=2:ResistorElm grandeza=vd esperado=2.5 tol=0.01
-  - t=0.1 elemento=2:ResistorElm grandeza=vd esperado=5 tol=0.01
-  - t=0.2 elemento=2:ResistorElm grandeza=vd esperado=5 tol=0.01
+  - t=0.05 elemento=1:ResistorElm grandeza=vd esperado=2.5 tol=0.01
+  - t=0.1 elemento=1:ResistorElm grandeza=vd esperado=5 tol=0.01
+  - t=0.2 elemento=1:ResistorElm grandeza=vd esperado=5 tol=0.01
 ---
 
-# Rampa de tensão (VCVS com função linear por partes)
+# Rampa de tensão (fonte de tensão controlada com função linear por partes)
 
 <!-- navegacao:inicio -->
-[Índice](README.md) · [Anterior: VCVS Full Rectifier](cs-fullrectifier.md) · [Próximo: Current Adder](cs-currentadder.md)
+[Índice](README.md) · [Anterior: CVS Full Rectifier](cs-fullrectifier.md) · [Próximo: CCS Current Adder](cs-currentadder.md)
 <!-- navegacao:fim -->
 
 ## Objetivo
@@ -24,20 +24,20 @@ Mostrar uma fonte de tensão controlada pelo **tempo**: a função $\text{pwl}(t
 ![Esquema do circuito](img/cs-ramp.svg)
 <!-- esquema:fim -->
 
-Uma VCVS sem entradas de controle, com a expressão $\text{pwl}(t, 0, 0, 0{,}1, 5)$, alimenta um resistor de $1\ \text{k}\Omega$ ligado à terra.
+Uma fonte de tensão controlada com a expressão $\text{pwl}(t, 0, 0, 0{,}1, 5)$, que só depende do tempo, alimenta um resistor de $1\ \text{k}\Omega$ ligado à terra.
 
 <!-- componentes:inicio -->
 | N.º | Tipo | Elemento | Valores |
 |----:|------|----------|---------|
-| 0 | `VCVSElm` | VCVS | Output Function = pwl(t,0,0,.1,5); # of Inputs = 0 |
-| 1 | `GroundElm` | ground | Symbol = Earth |
-| 2 | `ResistorElm` | resistor | Resistance (ohms) = 1k |
-| 3 | `GroundElm` | ground | Symbol = Earth |
+| 0 | `GroundElm` | ground | Symbol = Earth |
+| 1 | `ResistorElm` | resistor | Resistance (ohms) = 1k |
+| 2 | `GroundElm` | ground | Symbol = Earth |
+| 3 | `ControlledVoltageElm` | Controlled Voltage Source | Output Voltage = pwl(t,0,0,.1,5) |
 <!-- componentes:fim -->
 
 ## Teoria
 
-As fontes controladas deste simulador são definidas por uma **expressão** sobre as entradas, que se chamam $a$, $b$, $c$, ... (as tensões ou correntes nos terminais de controle). O resultado é a tensão (VCVS, CCVS) ou a corrente (VCCS, CCCS) que a fonte impõe na saída. A função $\text{pwl}(x, x_1, y_1, x_2, y_2, \ldots)$ interpola linearmente entre os pontos $(x_k, y_k)$ e mantém o último valor depois do último ponto. Com $x = t$ e os pontos $(0, 0)$ e $(0{,}1\ \text{s}, 5\ \text{V})$,
+As fontes controladas de dois terminais (o losango) são definidas por uma **expressão** que lê o resto do circuito **pelo nome**: $v(\text{nome})$ é a tensão de um nó rotulado ou sobre um voltímetro com rótulo, $i(\text{nome})$ a corrente de um amperímetro com rótulo, e $\text{dvdt}$ / $\text{didt}$ as suas taxas de variação. O resultado é a tensão (fonte de tensão controlada, com o $+$ no segundo terminal) ou a corrente (fonte de corrente controlada, no sentido da seta) que a fonte impõe. A função $\text{pwl}(x, x_1, y_1, x_2, y_2, \ldots)$ interpola linearmente entre os pontos $(x_k, y_k)$ e mantém o último valor depois do último ponto. Com $x = t$ e os pontos $(0, 0)$ e $(0{,}1\ \text{s}, 5\ \text{V})$,
 
 $$V(t) = \begin{cases} 50\ \text{V/s}\cdot t, & 0 \le t \le 0{,}1\ \text{s},\\ 5\ \text{V}, & t > 0{,}1\ \text{s}.\end{cases}$$
 

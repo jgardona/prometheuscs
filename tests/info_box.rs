@@ -122,3 +122,59 @@ fn the_box_is_drawn_in_the_bottom_right_corner() {
     // without an element it is a strip of 70 pixels
     assert!(draw(false).contains("M640 530 L800 530 L800 600 L640 600 Z"));
 }
+
+/// Upstream `WireElm.getInfo`: a wire on a labeled node names the node (spec FR-025).
+#[cfg(feature = "passive")]
+#[cfg(feature = "outputs")]
+#[test]
+fn a_wire_on_a_labeled_node_shows_the_label() {
+    // the wire from the source to the first resistor carries the label "vin"
+    let text = format!("{CIRCUIT}207 64 64 64 32 0 vin\n");
+    let mut s = Session::load(&text, &Registry::standard()).unwrap();
+    s.fit_pending = false;
+    s.view = View { scale: 1.0, x: 0.0, y: 0.0 };
+    s.update(Duration::from_millis(16)).unwrap();
+    // the middle of the wire 64,64 to 128,64
+    s.hover_at(Some((96.0, 64.0)));
+    let l = s.info_lines();
+    assert_eq!(l[0], "wire", "{l:?}");
+    assert!(l.iter().any(|x| x == "vin"), "{l:?}");
+    // a wire on a node without a label shows none
+    s.hover_at(Some((224.0, 64.0)));
+    let l = s.info_lines();
+    assert_eq!(l[0], "wire", "{l:?}");
+    assert!(!l.iter().any(|x| x == "vin"), "{l:?}");
+}
+
+/// A simulation error stays visible until the circuit is changed or reset (spec FR-024). The
+/// solver gets past every small degenerate circuit tried, so the stop is recorded the way the
+/// step loop records a singular matrix.
+#[cfg(feature = "passive")]
+#[cfg(feature = "sources")]
+#[test]
+fn a_simulation_error_stays_until_the_circuit_changes_or_is_reset() {
+    use prometheuscs::app::commands::{Action, apply};
+    let stopped = || {
+        let mut s = session();
+        s.record_stop("Singular matrix!", None);
+        s
+    };
+    let mut s = stopped();
+    let message = s.stop_message.clone().expect("a message");
+    // looking around, the controls and more frames leave it
+    s.hover_at(Some((160.0, 64.0)));
+    s.zoom_at(10.0, 10.0, 1.2);
+    apply(&mut s, Action::Speed(50.0));
+    apply(&mut s, Action::Brightness(20.0));
+    let _ = s.update(Duration::from_millis(16));
+    assert_eq!(s.stop_message.as_deref(), Some(message.as_str()));
+    // Reset clears it
+    apply(&mut s, Action::Restart);
+    assert!(s.stop_message.is_none());
+    // and so does an edit of the circuit
+    let mut s = stopped();
+    let i = s.sim.elements.iter().position(|e| e.class_name() == "ResistorElm").unwrap();
+    let f = s.edit_fields(i);
+    s.apply_edit_fields(i, f);
+    assert!(s.stop_message.is_none());
+}

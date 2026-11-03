@@ -61,6 +61,8 @@ pub enum Command {
         n: usize,
         /// New value.
         value: f64,
+        /// From a slider (see [`crate::elements::element::EditInfo::continuous`]).
+        continuous: bool,
     },
     /// Move the slider an element owns itself (for example a potentiometer), 0 to 100.
     ElementSlider {
@@ -203,7 +205,7 @@ fn handle(s: &mut Session, command: Command, syncs: &mut Vec<Sender<()>>) -> boo
         Command::SetRunning(on) => s.set_running(on),
         Command::Reset => s.reset(),
         Command::SetSpeed(ic) => s.options.iter_count = ic,
-        Command::Edit { elm, n, value } => s.edit_value(elm, n, value),
+        Command::Edit { elm, n, value, continuous } => s.edit_value(elm, n, value, continuous),
         Command::ElementSlider { elm, value } => s.apply_element_slider(elm, value),
         Command::Toggle(elms) => s.toggle_now(&elms),
         Command::FindDc => {

@@ -254,6 +254,11 @@ impl Element for TransistorElm {
     fn class_name(&self) -> &'static str {
         if self.pnp == -1 { "PTransistorElm" } else { "NTransistorElm" }
     }
+    fn toggle_polarity(&mut self) -> Option<&'static str> {
+        self.pnp = -self.pnp;
+        self.set_points();
+        Some(if self.pnp == -1 { "PNP" } else { "NPN" })
+    }
     fn dump_type(&self) -> i32 {
         i32::from(b't')
     }

@@ -103,7 +103,46 @@ Then add the tests the element needs: a text and XML round trip, a stamping chec
 number you can work out by hand (see `tests/solver_basic.rs`), and, for a family, the
 `#[cfg(feature = "...")]` on every test that needs it.
 
-## 4. Removing a component or a family
+## 4. Exposing a reference name
+
+Expressions of the controlled sources can read other components by name: `v(name)` reads a
+voltage, `i(name)` a current (see section 4.6 of [arquitetura.md](arquitetura.md)). A component
+becomes readable by returning its name from `Element::expr_ref_name`; the simulator then finds
+it whenever an expression mentions that name, with no change outside the component.
+
+The convention, as in CircuitJS 5.x, is an optional label stored in the XML attribute `lb`,
+written only when set, shown as an edit field called `Label`, and drawn next to the reading. The
+ammeter (`src/elements/measure.rs`) is the example:
+
+```rust
+fn dump_xml(&self, out: &mut XmlOut) {
+    default_dump_xml(&self.base, out);
+    // ... the component's own attributes ...
+    if !self.label.is_empty() {
+        out.str_attr("lb", &self.label);
+    }
+}
+fn undump_xml(&mut self, xml: &XmlNode) {
+    // ...
+    self.label = xml.string_attr("lb", "");
+}
+fn expr_ref_name(&self) -> Option<&str> {
+    (!self.label.is_empty()).then_some(self.label.as_str())
+}
+```
+
+What the name reads depends on the component:
+
+- `v(name)` reads the voltage from the component's post 0 to its post 1.
+- `i(name)` reads `get_current()` and stamps against the component's voltage source, so it only
+  works for a component with one (`voltage_source_count() > 0`, like the ammeter). For anything
+  else the expression's info box says `not a current meter`.
+
+A component whose own expression refers to others (a new kind of controlled source) uses
+`expr::refs::ExprEngine` and returns the references from `Element::expr_refs`; see
+`ControlledSource` in `src/elements/controlled.rs`.
+
+## 5. Removing a component or a family
 
 Disable the family's feature in `Cargo.toml`, or delete its file, its `mod` line, its
 `register` call and its feature. Nothing else changes. A circuit that uses the missing part

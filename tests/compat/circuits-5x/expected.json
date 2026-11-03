@@ -1,0 +1,50 @@
+{
+  "cv-vnode": {
+    "time": 0.0001,
+    "points": [[96, 192, 5.0], [224, 192, 10.0], [320, 192, 0.0]],
+    "currents": [[4, 0.01]],
+    "info": [3, []]
+  },
+  "ci-didt": {
+    "time": 0.001,
+    "points": [[96, 192, 1.0], [320, 192, 1.0]],
+    "currents": [[1, 0.0009975]],
+    "info": [5, []]
+  },
+  "vccs-vref": {
+    "time": 0.001,
+    "points": [[464, 240, 5.0]],
+    "currents": [[8, 0.005]],
+    "info": [0, []]
+  },
+  "unknown-ref": {
+    "time": 0.0001,
+    "points": [[224, 192, 1.0]],
+    "currents": [],
+    "info": [2, ["unknown name: v(nothere)"]]
+  },
+  "not-current-meter": {
+    "time": 0.0001,
+    "points": [[224, 192, 1.0]],
+    "currents": [],
+    "info": [5, ["not a current meter: vp"]]
+  },
+  "sub-scoped-ref": {
+    "time": 0.0001,
+    "points": [[200, 100, 1.0], [296, 100, 2.0], [200, 300, 2.0], [296, 300, 4.0]],
+    "currents": [],
+    "info": [0, []]
+  },
+  "mono-invert": {
+    "time": 0.0055,
+    "points": [[160, 160, 0.0], [256, 160, 5.0]],
+    "currents": [],
+    "info": [0, []]
+  },
+  "scope-ac": {
+    "time": 0.0025,
+    "points": [[96, 192, 6.0], [224, 288, 3.0]],
+    "currents": [],
+    "info": [0, []]
+  }
+}

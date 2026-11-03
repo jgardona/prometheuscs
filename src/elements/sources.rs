@@ -406,9 +406,11 @@ impl Waveform {
         flags & FLAG_TIME_SPEC != 0 && self.has_timing_options()
     }
 
-    /// Changes the frequency, keeping the waveform continuous at the current time. A frequency
-    /// too high for the time step is limited to what the time step supports.
-    fn set_frequency(&mut self, new_freq: f64) {
+    /// Changes the frequency. A continuous change (a slider) keeps the waveform continuous at
+    /// the current time; any other change restarts it in phase with the other sources, as
+    /// after loading. A frequency too high for the time step is limited to what the time step
+    /// supports.
+    fn set_frequency(&mut self, new_freq: f64, continuous: bool) {
         let (t, max_time_step) = sim_clock();
         let old_freq = self.frequency;
         self.frequency = new_freq;
@@ -416,17 +418,17 @@ impl Waveform {
         if self.frequency > max_freq {
             self.frequency = max_freq;
         }
-        self.freq_time_zero = if self.frequency == 0.0 {
+        self.freq_time_zero = if !continuous || self.frequency == 0.0 {
             0.0
         } else {
             t - old_freq * (t - self.freq_time_zero) / self.frequency
         };
     }
 
-    fn set_frequency_from_times(&mut self, high: f64, low: f64) {
+    fn set_frequency_from_times(&mut self, high: f64, low: f64, continuous: bool) {
         let new_freq = 1.0 / (high + low);
         let new_duty = high / (high + low);
-        self.set_frequency(new_freq);
+        self.set_frequency(new_freq, continuous);
         self.duty_cycle = new_duty;
     }
 
@@ -578,6 +580,11 @@ impl Waveform {
     /// Applies an edit; returns true when the points must be recalculated.
     fn set_edit(&mut self, n: usize, ei: &mut EditInfo, flags: &mut i32, rail: bool) -> bool {
         let mut points = false;
+        // any change from the edit dialog puts the waveform in phase with the other sources
+        // (as after loading); a slider keeps it continuous
+        if !ei.continuous {
+            self.freq_time_zero = 0.0;
+        }
         match n {
             0 => self.max_voltage = ei.value,
             2 => self.bias = ei.value,
@@ -629,10 +636,10 @@ impl Waveform {
                         let high = ei.value;
                         let low = (1.0 - self.duty_cycle) / self.frequency;
                         if high > 0.0 && low > 0.0 {
-                            self.set_frequency_from_times(high, low);
+                            self.set_frequency_from_times(high, low, ei.continuous);
                         }
                     } else if ei.value != 0.0 {
-                        self.set_frequency(ei.value);
+                        self.set_frequency(ei.value, ei.continuous);
                     }
                 }
                 2 => {
@@ -644,7 +651,7 @@ impl Waveform {
                         let high = self.duty_cycle / self.frequency;
                         let low = ei.value;
                         if high > 0.0 && low > 0.0 {
-                            self.set_frequency_from_times(high, low);
+                            self.set_frequency_from_times(high, low, ei.continuous);
                         }
                     } else {
                         self.duty_cycle = ei.value * 0.01;
@@ -655,7 +662,7 @@ impl Waveform {
             }
         } else {
             if n2 == 0 && self.waveform != WF_DC && ei.value != 0.0 {
-                self.set_frequency(ei.value);
+                self.set_frequency(ei.value, ei.continuous);
             }
             if n2 == 1 {
                 self.phase_shift = ei.value * PI / 180.0;

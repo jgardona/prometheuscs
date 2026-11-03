@@ -36,7 +36,7 @@ Dois inversores lógicos (alimentação de $5\ \text{V}$, limiar de $2{,}5\ \tex
 | 1 | `CapacitorElm` | capacitor | Capacitance (F) = 40μ; Trapezoidal Approximation = sim; Initial Voltage (on Reset) = 1m; Series Resistance = 0 |
 | 2 | `ResistorElm` | resistor | Resistance (ohms) = 4k |
 | 3 | `InverterElm` | inverter | Slew Rate (V/ns) = 200μ; High Logic Voltage = 5; DeMorgan's Symbol = não |
-| 4 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0 |
+| 4 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0; Label =  |
 | 5 | `GroundElm` | ground | Symbol = Earth |
 | 7 | `ResistorElm` | resistor | Resistance (ohms) = 400 |
 | 9 | `OutputElm` | output | Show Voltage = não |

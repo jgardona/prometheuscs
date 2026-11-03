@@ -88,6 +88,96 @@ pub fn save_svg(s: &mut Session, path: &Path) -> Result<(), String> {
     Ok(())
 }
 
+/// The largest width or height of an exported scope picture, in pixels.
+pub const MAX_SCOPE_IMAGE: i32 = 8192;
+
+/// How to export one scope as a picture.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct ScopeImage {
+    /// Width in pixels, 1 to [`MAX_SCOPE_IMAGE`].
+    pub width: i32,
+    /// Height in pixels, 1 to [`MAX_SCOPE_IMAGE`].
+    pub height: i32,
+    /// Leave the background unpainted.
+    pub transparent: bool,
+}
+
+impl ScopeImage {
+    fn check(&self) -> Result<(), String> {
+        let ok = |v: i32| (1..=MAX_SCOPE_IMAGE).contains(&v);
+        if ok(self.width) && ok(self.height) {
+            Ok(())
+        } else {
+            Err(crate::locale::ls("Width and height must be between 1 and 8192"))
+        }
+    }
+}
+
+/// Draws scope `index` of the session filling a `o.width` x `o.height` picture, with the
+/// scales it has on screen (research R-11).
+fn draw_scope_picture(
+    g: &mut dyn super::painter::Painter,
+    s: &Session,
+    index: usize,
+    o: ScopeImage,
+) -> Result<(), String> {
+    let views = s.scope_views();
+    let view = views.get(index).ok_or_else(|| crate::locale::ls("No such scope"))?;
+    let mut state = s
+        .scope_scales
+        .state(index)
+        .unwrap_or(super::scopes::ScaleState { values: view.scale, negative: false });
+    let spot = super::scopes::ScopeSpot {
+        x: 0.0,
+        y: 0.0,
+        w: f64::from(o.width),
+        h: f64::from(o.height),
+        slot: 0,
+        cursor: None,
+        cursor_y: None,
+        selected: None,
+        measure_from: None,
+        glow: false,
+        transparent: o.transparent,
+    };
+    super::scopes::draw_scope(g, view, &mut state, &spot, s.settings.white_background);
+    Ok(())
+}
+
+/// PNG bytes of scope `index` drawn as `o` asks.
+pub fn scope_png(s: &Session, index: usize, o: ScopeImage) -> Result<Vec<u8>, String> {
+    o.check()?;
+    let surface =
+        ImageSurface::create(Format::ARgb32, o.width, o.height).map_err(|e| e.to_string())?;
+    {
+        let cr = Context::new(&surface).map_err(|e| e.to_string())?;
+        draw_scope_picture(&mut CairoPainter::new(&cr), s, index, o)?;
+    }
+    let mut out = Vec::new();
+    surface.write_to_png(&mut out).map_err(|e| e.to_string())?;
+    Ok(out)
+}
+
+/// The SVG text of scope `index` drawn as `o` asks.
+pub fn scope_svg(s: &Session, index: usize, o: ScopeImage) -> Result<String, String> {
+    o.check()?;
+    let mut g = super::svg::SvgPainter::new(f64::from(o.width), f64::from(o.height));
+    draw_scope_picture(&mut g, s, index, o)?;
+    Ok(g.finish())
+}
+
+/// Writes scope `index` as a PNG or SVG file (chosen by `svg`).
+pub fn save_scope(
+    s: &Session,
+    index: usize,
+    o: ScopeImage,
+    svg: bool,
+    path: &Path,
+) -> Result<(), String> {
+    let bytes = if svg { scope_svg(s, index, o)?.into_bytes() } else { scope_png(s, index, o)? };
+    std::fs::write(path, bytes).map_err(|e| format!("{}: {e}", path.display()))
+}
+
 /// Draws the circuit scaled to fit a page of `width` x `height` points (for printing).
 pub fn draw_page(cr: &Context, s: &mut Session, width: f64, height: f64) {
     let Some(f) = frame(s) else { return };

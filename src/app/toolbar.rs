@@ -93,6 +93,22 @@ fn part_button(
     b.set_tooltip_text(Some(&part_name(registry, id)));
     b.set_action_name(Some("win.place"));
     b.set_action_target_value(Some(&id.to_variant()));
+    // the part can also be dragged onto the canvas; it carries the id the button places now
+    // (a group's button changes it)
+    let source = gtk::DragSource::new();
+    source.set_actions(gtk::gdk::DragAction::COPY);
+    let button = b.clone();
+    source.connect_prepare(move |_, _, _| {
+        let id = button.action_target_value()?.get::<String>()?;
+        Some(gtk::gdk::ContentProvider::for_value(&id.to_value()))
+    });
+    let button = b.clone();
+    source.connect_drag_begin(move |source, _| {
+        // the icon under the pointer is the button's picture
+        let picture = gtk::WidgetPaintable::new(button.child().as_ref());
+        source.set_icon(Some(&picture), 12, 12);
+    });
+    b.add_controller(source);
     b
 }
 

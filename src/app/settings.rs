@@ -57,10 +57,18 @@ pub struct AppSettings {
     pub developer_mode: bool,
     /// Frame rate below which the simulation stops keeping up with real time.
     pub min_frame_rate: u32,
-    /// How much one notch of the mouse wheel changes a value (1 is a tenth).
+    /// How fast the mouse wheel zooms (and changes the speed of a scope). Values change one
+    /// step per notch whatever this is.
     pub wheel_sensitivity: f64,
     /// Size of the text that shows component values.
     pub value_font_size: i32,
+    /// Open the properties of an element just placed (unless it is one rarely edited then).
+    pub show_properties_on_create: bool,
+    /// Show the properties of an element clicked, in the side panel.
+    pub show_properties_on_click: bool,
+    /// The last picks of the Find Component palette, newest first (at most
+    /// [`super::palette::MAX_RECENT`]).
+    pub palette_recent: Vec<String>,
 }
 
 /// The colours of the dialog before any change: green, red, gray, cyan and yellow.
@@ -96,6 +104,10 @@ impl Default for AppSettings {
             min_frame_rate: 20,
             wheel_sensitivity: 1.0,
             value_font_size: 12,
+            // the defaults of CircuitJS 5.x
+            show_properties_on_create: false,
+            show_properties_on_click: true,
+            palette_recent: Vec::new(),
         }
     }
 }

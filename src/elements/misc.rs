@@ -903,6 +903,8 @@ pub struct GyratorElm {
     arrow: Polygon,
     current: [f64; 2],
     curcount: [f64; 2],
+    /// Read from a file without a width: take it from the geometry once it is known.
+    width_from_geometry: bool,
 }
 
 impl GyratorElm {
@@ -921,11 +923,19 @@ impl GyratorElm {
             arrow: Polygon::default(),
             current: [0.0; 2],
             curcount: [0.0; 2],
+            width_from_geometry: false,
         }
     }
 
     fn vertical(&self) -> bool {
         self.base.flags & GYRATOR_VERTICAL != 0
+    }
+
+    /// The width the original derives from the two points (at least 32, negative when
+    /// vertical).
+    fn geometric_width(&self) -> i32 {
+        let b = &self.base;
+        if self.vertical() { -32.max((b.x2 - b.x).abs()) } else { 32.max((b.y2 - b.y).abs()) }
     }
 }
 
@@ -941,16 +951,25 @@ impl Element for GyratorElm {
         }
     }
 
-    // the original writes nothing of its own; the resistance is kept in an extra attribute
+    // as CircuitJS 5.x: `r` the gyration resistance and `wi` the width; files written by
+    // earlier versions of this program kept the resistance in `gr`
     fn dump_xml(&self, out: &mut XmlOut) {
         default_dump_xml(&self.base, out);
-        if self.resistance != 1000.0 {
-            out.double_attr("gr", self.resistance);
-        }
+        out.double_attr("r", self.resistance);
+        out.int_attr("wi", self.width);
     }
     fn undump_xml(&mut self, xml: &XmlNode) {
         self.base.flags = xml.int_attr("f", self.base.flags);
-        self.resistance = xml.double_attr("gr", self.resistance);
+        let old = xml.double_attr("gr", self.resistance);
+        self.resistance = xml.double_attr("r", old);
+        match xml.attr("wi").and_then(|w| w.trim().parse::<i32>().ok()) {
+            Some(w) => {
+                self.width = w;
+                self.width_from_geometry = false;
+            }
+            // the position is set after this; set_points takes the width from it
+            None => self.width_from_geometry = true,
+        }
     }
 
     fn post_count(&self) -> usize {
@@ -973,6 +992,7 @@ impl Element for GyratorElm {
         } else {
             32.max((yy - b.y).abs())
         };
+        self.width_from_geometry = false;
         if xx == b.x {
             yy = b.y;
         }
@@ -982,6 +1002,10 @@ impl Element for GyratorElm {
     }
 
     fn set_points(&mut self) {
+        if self.width_from_geometry {
+            self.width = self.geometric_width();
+            self.width_from_geometry = false;
+        }
         self.base.set_points();
         if self.vertical() {
             self.base.point2.x = self.base.point1.x;

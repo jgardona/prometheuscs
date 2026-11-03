@@ -119,7 +119,7 @@ fn deleting_a_subcircuit_forgets_it() {
     let (mut s, mut m) = made();
     m.name = "gone".into();
     s.finish_subcircuit(m, ModelScope::Circuit).unwrap();
-    s.delete_subcircuit("gone");
+    s.delete_subcircuit("gone").unwrap();
     assert!(!s.subcircuit_names().contains(&"gone".to_string()));
     assert!(!s.circuit_xml().contains("nm=\"gone\""));
 }
@@ -132,4 +132,74 @@ fn a_circuit_without_pins_cannot_become_a_subcircuit() {
     )
     .unwrap();
     assert!(s.start_subcircuit().unwrap_err().contains("no external"));
+}
+
+/// A doubler: `out` = 2 * v(in), with the reference inside the subcircuit.
+const DOUBLER: &str = r#"<cir f="1" ts="0.000005" ic="10" cb="50" pb="50" vr="5" mts="5e-11">
+<ln x="64 96 32 96" f="0" te="in"/>
+<r x="64 96 64 160" f="0" r="1000"/>
+<g x="64 160 64 176" f="0"/>
+<cv x="160 160 160 96" f="0" ex="2*v(in)"/>
+<w x="160 96 192 96" f="0"/>
+<ln x="192 96 224 96" f="0" te="out"/>
+<g x="160 160 160 176" f="0"/>
+</cir>
+"#;
+
+#[cfg(feature = "analog")]
+#[cfg(feature = "outputs")]
+#[cfg(feature = "passive")]
+#[cfg(feature = "sources")]
+#[test]
+fn each_copy_of_a_subcircuit_reads_its_own_named_node() {
+    let mut s = Session::load(DOUBLER, &Registry::standard()).unwrap();
+    let mut m = s.start_subcircuit().expect("a model");
+    // the reference was written as model node numbers: the node of `in`, and ground
+    let cv = m.elms.iter().find(|e| e.tag == "cv").unwrap();
+    let rn: Vec<i32> = cv.attr("rn").unwrap().split(' ').map(|t| t.parse().unwrap()).collect();
+    let pin_in = m.ext.iter().find(|p| p.name == "in").unwrap().node;
+    assert_eq!(rn, vec![pin_in, 0]);
+    m.name = "doubler".into();
+    s.finish_subcircuit(m, ModelScope::Circuit).unwrap();
+    // the model is saved with the circuit, references included
+    let xml = s.circuit_xml();
+    assert!(xml.contains(&format!("rn=\"{pin_in} 0\"")), "{xml}");
+    // two copies, driven with 1 V and 2 V
+    let reg = Registry::standard();
+    let mut text = String::from("$ 1 0.000005 10 50 5 50 5e-11\n");
+    for (k, volts) in [(0, 1), (1, 2)] {
+        let y = 100 + 200 * k;
+        let one = format!("410 200 {y} 232 {y} 0 doubler\n");
+        let r = prometheuscs::format::parser::parse(
+            &format!("$ 1 0.000005 10 50 5 50 5e-11\n{one}"),
+            &reg,
+        );
+        let e = &r.circuit.elements[0];
+        let (pin_in, pin_out) = (e.get_post(0).unwrap(), e.get_post(1).unwrap());
+        text += &one;
+        text += &format!(
+            "v {x} {y0} {x} {y1} 0 0 40 {volts} 0 0 0.5\ng {x} {y0} {x} {gy} 0\nr {ox} {oy} {ox} {oy2} 0 1000000\ng {ox} {oy2} {ox} {oy3} 0\n",
+            x = pin_in.x,
+            y1 = pin_in.y,
+            y0 = pin_in.y - 64,
+            gy = pin_in.y - 48,
+            ox = pin_out.x,
+            oy = pin_out.y,
+            oy2 = pin_out.y + 32,
+            oy3 = pin_out.y + 48,
+        );
+    }
+    let mut s2 = Session::load(&text, &reg).unwrap();
+    for _ in 0..20 {
+        s2.sim.step().unwrap();
+    }
+    let outs: Vec<f64> = s2
+        .sim
+        .elements
+        .iter()
+        .filter(|e| e.class_name() == "CustomCompositeElm")
+        .map(|e| e.get_post_voltage(1))
+        .collect();
+    assert_eq!(outs.len(), 2);
+    assert!((outs[0] - 2.0).abs() < 1e-6 && (outs[1] - 4.0).abs() < 1e-6, "{outs:?}");
 }

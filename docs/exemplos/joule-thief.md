@@ -40,7 +40,7 @@ Uma fonte de $1{,}5\ \text{V}$ (a pilha) alimenta um transformador de dois enrol
 | 13 | `ResistorElm` | resistor | Resistance (ohms) = 10 |
 | 14 | `CapacitorElm` | capacitor | Capacitance (F) = 10μ; Trapezoidal Approximation = sim; Initial Voltage (on Reset) = 1m; Series Resistance = 0 |
 | 15 | `DiodeElm` | diode | Model = default |
-| 21 | `LEDElm` | LED | Red Value (0-1) = 1; Green Value (0-1) = 0; Blue Value (0-1) = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
+| 21 | `LEDElm` | LED | Color = #ff0000;  = 0;  = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
 <!-- componentes:fim -->
 
 ## Teoria

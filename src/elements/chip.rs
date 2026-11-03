@@ -599,6 +599,14 @@ pub trait ChipLogic: Clone + std::fmt::Debug + 'static {
     fn set_spice_source(&mut self, _c: &mut ChipCore, _i: usize, _vs: VsId) {}
     /// Gives input pair `i` the current of the voltage source it senses.
     fn set_spice_current(&mut self, _c: &mut ChipCore, _i: usize, _current: f64) {}
+    /// See [`Element::expr_refs`].
+    fn expr_refs(&self) -> &[crate::expr::ExprRef] {
+        &[]
+    }
+    /// See [`Element::set_ref_resolution`].
+    fn set_ref_resolution(&mut self, _k: usize, _r: crate::expr::refs::RefResolution) {}
+    /// See [`Element::set_ref_current`].
+    fn set_ref_current(&mut self, _k: usize, _current: f64) {}
     /// The model tag this chip needs in files (custom logic).
     fn model_xml(&self) -> Option<XmlOut> {
         None
@@ -927,6 +935,15 @@ impl<L: ChipLogic> Element for ChipElm<L> {
     }
     fn set_spice_current(&mut self, i: usize, current: f64) {
         self.logic.set_spice_current(&mut self.core, i, current);
+    }
+    fn expr_refs(&self) -> &[crate::expr::ExprRef] {
+        self.logic.expr_refs()
+    }
+    fn set_ref_resolution(&mut self, k: usize, r: crate::expr::refs::RefResolution) {
+        self.logic.set_ref_resolution(k, r);
+    }
+    fn set_ref_current(&mut self, k: usize, current: f64) {
+        self.logic.set_ref_current(k, current);
     }
     fn set_voltage_source(&mut self, j: usize, vs: VsId) {
         let pin =

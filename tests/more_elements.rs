@@ -135,14 +135,40 @@ fn an_am_source_follows_its_envelope() {
 #[cfg(feature = "sources")]
 #[test]
 fn a_stop_trigger_pauses_the_run_when_its_voltage_is_reached() {
+    // 5 V charging 1 uF through 1 kohm: the capacitor passes the 1 V trigger after 0.22 ms
     let line = "408 160 160 224 160 0 1 0 0";
     let p = posts_of(line);
-    let text = format!("{line}\n{}", source_at(p[0].0, p[0].1, 5.0));
+    let (x, y) = p[0];
+    let text = format!(
+        "{line}\n{src}r {sx} {y} {x} {y} 0 1000\nc {x} {y} {x} {cy} 0 1e-6 0 0 0\n{g}",
+        src = source_at(x - 128, y, 5.0),
+        sx = x - 128,
+        cy = y + 64,
+        g = ground(x, y + 64),
+    );
     let mut sim = load(&text, "0.00001");
     assert_eq!(sim.pause_count, 0);
     sim.run_steps(200).unwrap();
     assert_eq!(sim.pause_count, 1, "paused");
-    assert!(sim.time() < 0.0002, "the remaining steps were not taken: {}", sim.time());
+    assert!(sim.time() < 0.0005, "the remaining steps were not taken: {}", sim.time());
+}
+
+#[cfg(feature = "outputs")]
+#[cfg(feature = "passive")]
+#[cfg(feature = "sources")]
+#[test]
+fn a_stop_trigger_does_not_fire_on_load_or_reset() {
+    // its condition (at least 1 V) is already true when the circuit loads: no transition
+    let text = std::fs::read_to_string("tests/compat/circuits-5x/stop-trigger-load.txt").unwrap();
+    let r = parse(&text, &Registry::standard());
+    assert!(r.errors.is_empty(), "{:?}", r.errors);
+    let mut sim = Simulation::new(r.circuit.elements, r.circuit.options.sim_settings());
+    sim.analyze().unwrap();
+    sim.run_steps(200).unwrap();
+    assert_eq!(sim.pause_count, 0, "fired on load");
+    sim.reset();
+    sim.run_steps(200).unwrap();
+    assert_eq!(sim.pause_count, 0, "fired on reset");
 }
 
 #[cfg(feature = "analog")]
@@ -615,4 +641,91 @@ fn the_segments_of_a_transmission_line_travel_with_the_worker_state() {
     let (mut bare, mut fed) = (copy(), copy());
     fed.set_visual_state(&state);
     assert!(draw(&mut fed).len() > draw(&mut bare).len(), "the segments are drawn");
+}
+
+#[cfg(feature = "digital")]
+#[cfg(feature = "sources")]
+#[test]
+fn an_inverted_monostable_fires_on_the_falling_edge() {
+    // a 100 Hz square wave, high for the first 5 ms; a 1 ms pulse
+    let q_at = |flags: i32, t: f64| {
+        let line = format!("194 160 160 224 160 {flags} false 0.001");
+        let p = posts_of(&line);
+        let text = format!("{line}\n{}", clock_to(p[0].0, p[0].1, 100.0));
+        let mut sim = load(&text, "0.00001");
+        while sim.time() < t {
+            sim.step().unwrap();
+        }
+        sim.elements[0].get_post_voltage(1) > 2.5
+    };
+    // normal: fires at the rising edge (10 ms), not at the falling one (5 ms)
+    assert!(!q_at(0, 0.0055) && q_at(0, 0.0105));
+    // inverted (flag 2): the other way round
+    assert!(q_at(2, 0.0055) && !q_at(2, 0.0105));
+}
+
+#[cfg(feature = "digital")]
+#[test]
+fn the_monostable_offers_invert_trigger_and_saves_it_in_its_flags() {
+    let reg = Registry::standard();
+    let mut e = reg.create("MonostableElm", 160, 160).unwrap();
+    let n = (0..8)
+        .find(|&n| {
+            e.get_edit_info(n).is_some_and(|ei| ei.text.as_deref() == Some("Invert Trigger"))
+        })
+        .expect("an Invert Trigger field");
+    let mut ei = e.get_edit_info(n).unwrap();
+    ei.checkbox = Some(true);
+    e.set_edit_value(n, &mut ei);
+    assert_eq!(e.base().flags & 2, 2);
+    assert_eq!(e.get_edit_info(n).unwrap().checkbox, Some(true));
+}
+
+#[cfg(feature = "outputs")]
+#[test]
+fn a_text_color_is_saved_and_read_back() {
+    use prometheuscs::format::writer::write_xml;
+    let text = std::fs::read_to_string("tests/compat/circuits-5x/text-color.txt").unwrap();
+    let r = parse(&text, &Registry::standard());
+    assert!(r.errors.is_empty(), "{:?}", r.errors);
+    let xml = write_xml(&r.circuit);
+    assert!(xml.contains(r##"co="#ff0000""##), "{xml}");
+    // without a color none is written
+    let plain = text.replace(r##" co="#ff0000""##, "");
+    let xml = write_xml(&parse(&plain, &Registry::standard()).circuit);
+    assert!(!xml.contains("co="), "{xml}");
+}
+
+#[cfg(feature = "digital")]
+#[test]
+fn sram_loads_its_contents_from_a_file_of_raw_bytes() {
+    let reg = Registry::standard();
+    let mut e = reg.create("SRAMElm", 160, 160).unwrap();
+    let field = |e: &dyn prometheuscs::elements::element::Element, name: &str| {
+        (0..12).find(|&n| e.get_edit_info(n).is_some_and(|ei| ei.name == name)).unwrap()
+    };
+    let load = field(e.as_ref(), "Load Contents From File");
+    let contents = field(e.as_ref(), "Contents");
+    let dir = std::env::temp_dir().join(format!("sram-load-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let small = dir.join("small.bin");
+    std::fs::write(&small, [3u8, 0, 7]).unwrap();
+    let mut ei = e.get_edit_info(load).unwrap();
+    ei.text = Some(small.to_string_lossy().into_owned());
+    e.set_edit_value(load, &mut ei);
+    assert!(ei.error.is_none(), "{:?}", ei.error);
+    assert_eq!(e.get_edit_info(contents).unwrap().text.as_deref(), Some("0: 3\n2: 7\n"));
+    // a file too large is refused and the contents stay
+    let big = dir.join("big.bin");
+    std::fs::write(&big, vec![1u8; 128_000]).unwrap();
+    let mut ei = e.get_edit_info(load).unwrap();
+    ei.text = Some(big.to_string_lossy().into_owned());
+    e.set_edit_value(load, &mut ei);
+    assert_eq!(ei.error.as_deref(), Some("Cannot load: That file is too large!"));
+    assert_eq!(e.get_edit_info(contents).unwrap().text.as_deref(), Some("0: 3\n2: 7\n"));
+    // the reload option keeps its meaning, now after the file field
+    assert!(
+        e.get_edit_info(load + 1).unwrap().text.as_deref() == Some("Restore Contents on Reset")
+    );
+    std::fs::remove_dir_all(&dir).unwrap();
 }

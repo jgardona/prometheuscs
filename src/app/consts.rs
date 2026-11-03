@@ -57,6 +57,12 @@ pub const AUDIO_FILE: &str = "audio.wav";
 pub const IMAGE_FILE: &str = "circuito.png";
 /// Suggested name of the SVG export.
 pub const SVG_FILE: &str = "circuito.svg";
+/// Suggested name of a subcircuit library holding several models.
+pub const SUBCIRCUIT_LIBRARY_FILE: &str = "subcircuitos.xml";
+/// Suggested name of a scope picture saved as PNG.
+pub const SCOPE_IMAGE_FILE: &str = "osciloscopio.png";
+/// Suggested name of a scope picture saved as SVG.
+pub const SCOPE_SVG_FILE: &str = "osciloscopio.svg";
 /// Patterns of the files the open dialog accepts.
 pub const CIRCUIT_GLOBS: [&str; 3] = ["*.txt", "*.xml", "*.circuitjs"];
 
@@ -95,6 +101,9 @@ mod tests {
             (GLOB_WAV, AUDIO_FILE),
             (GLOB_PNG, IMAGE_FILE),
             (GLOB_SVG, SVG_FILE),
+            (GLOB_XML, SUBCIRCUIT_LIBRARY_FILE),
+            (GLOB_PNG, SCOPE_IMAGE_FILE),
+            (GLOB_SVG, SCOPE_SVG_FILE),
         ] {
             assert!(file.ends_with(glob.trim_start_matches('*')), "{file} vs {glob}");
         }

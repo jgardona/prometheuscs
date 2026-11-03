@@ -88,6 +88,8 @@ pub struct Ammeter {
     selected_value: f64,
     center: Point,
     arrow: Polygon,
+    /// Optional name, drawn next to the reading and usable as `i(label)` in an expression.
+    label: String,
 }
 
 impl Ammeter {
@@ -107,6 +109,7 @@ impl Ammeter {
             selected_value: 0.0,
             center: Point::default(),
             arrow: Polygon::default(),
+            label: String::new(),
         }
     }
 
@@ -153,11 +156,18 @@ impl Element for Ammeter {
         default_dump_xml(&self.base, out);
         out.int_attr("me", self.meter);
         out.int_attr("sc", self.scale);
+        if !self.label.is_empty() {
+            out.str_attr("lb", &self.label);
+        }
     }
     fn undump_xml(&mut self, xml: &XmlNode) {
         self.base.flags = xml.int_attr("f", self.base.flags);
         self.meter = xml.int_attr("me", self.meter);
         self.scale = xml.int_attr("sc", self.scale);
+        self.label = xml.string_attr("lb", "");
+    }
+    fn expr_ref_name(&self) -> Option<&str> {
+        (!self.label.is_empty()).then_some(self.label.as_str())
     }
 
     fn voltage_source_count(&self) -> usize {
@@ -271,10 +281,13 @@ impl Element for Ammeter {
         do_dots(g, &mut self.base, c);
         self.base.set_bbox_pts(p1, p2, width);
         let scale = Scale::from_index(self.scale);
-        let s = match self.meter {
+        let mut s = match self.meter {
             1 => unit_text_with_scale(self.rms, "A(rms)", scale, false),
             _ => unit_text_with_scale(self.base.current, "A", scale, false),
         };
+        if !self.label.is_empty() {
+            s = format!("{} {s}", self.label);
+        }
         draw_values(g, &self.base, c, Some(&s), width, false, false);
         draw_posts(g, &self.base, self, c);
     }
@@ -310,6 +323,7 @@ impl Element for Ammeter {
                 self.scale.max(0) as usize,
             )),
             2 => Some(EditInfo::checkbox("Circular Symbol", self.as_circle())),
+            3 => Some(EditInfo::text("Label", &self.label)),
             _ => None,
         }
     }
@@ -318,6 +332,7 @@ impl Element for Ammeter {
             0 => self.meter = ei.choice_index as i32,
             1 => self.scale = ei.choice_index as i32,
             2 => self.base.flags = ei.change_flag(self.base.flags, FLAG_CIRCLE),
+            3 => self.label = ei.text.clone().unwrap_or_default(),
             _ => {}
         }
     }
@@ -858,6 +873,10 @@ pub struct StopTrigger {
     trigger_count: i32,
     /// Seconds until a triggered stop happens, for the info panel.
     remaining: f64,
+    /// The condition has been seen false since the last reset (or load), so a true one is a
+    /// real transition. Without it a condition already true at load or reset would stop the
+    /// simulation on the first step.
+    armed: bool,
 }
 
 impl StopTrigger {
@@ -877,6 +896,7 @@ impl StopTrigger {
             condition_start: 0.0,
             trigger_count: 0,
             remaining: 0.0,
+            armed: false,
         }
     }
 
@@ -936,6 +956,7 @@ impl Element for StopTrigger {
         self.condition_active = false;
         self.duration_met = false;
         self.trigger_count = 0;
+        self.armed = false;
     }
     fn set_points(&mut self) {
         self.base.set_points();
@@ -948,7 +969,11 @@ impl Element for StopTrigger {
         let v = self.base.volts[0];
         let condition = (self.kind == 0 && v >= self.trigger_voltage)
             || (self.kind == 1 && v <= self.trigger_voltage);
-        if !self.condition_active && condition {
+        if !condition {
+            self.armed = true;
+        }
+        // only a false-to-true transition starts it
+        if self.armed && !self.condition_active && condition {
             self.condition_active = true;
             self.condition_start = s.t;
             self.duration_met = false;

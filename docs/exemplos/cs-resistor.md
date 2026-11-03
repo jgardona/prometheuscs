@@ -1,20 +1,20 @@
 ---
 exemplo: cs-resistor.txt
-titulo: VCCS Resistor
+titulo: CCS Resistor
 categoria: Controlled Sources
 verificacoes:
-  - t=0.01 elemento=8:RailElm grandeza=i esperado=0.005 tol=0.01
+  - t=0.01 elemento=4:RailElm grandeza=i esperado=0.005 tol=0.01
 ---
 
-# Resistor feito com uma fonte de corrente controlada por tensão
+# Resistor feito com uma fonte de corrente controlada
 
 <!-- navegacao:inicio -->
-[Índice](README.md) · [Próximo: VCCS Varying Resistor](cs-varyresistor.md)
+[Índice](README.md) · [Próximo: CCS Varying Resistor](cs-varyresistor.md)
 <!-- navegacao:fim -->
 
 ## Objetivo
 
-Mostrar o mais simples uso de uma fonte de corrente controlada por tensão (VCCS): com a expressão $-(a-b)/1000$ ela se comporta exatamente como um resistor de $1\ \text{k}\Omega$, porque a corrente é proporcional à tensão entre os seus terminais de controle.
+Mostrar o mais simples uso de uma fonte de corrente controlada: com a expressão $v(\text{vd})/1000$ ela se comporta exatamente como um resistor de $1\ \text{k}\Omega$, porque a sua corrente é proporcional à tensão lida pelo voltímetro `vd`, que está sobre os mesmos dois nós.
 
 ## O circuito
 
@@ -22,27 +22,28 @@ Mostrar o mais simples uso de uma fonte de corrente controlada por tensão (VCCS
 ![Esquema do circuito](img/cs-resistor.svg)
 <!-- esquema:fim -->
 
-Uma fonte de $5\ \text{V}$ está ligada ao terminal positivo de controle de uma VCCS e a corrente que ela impõe passa de volta ao mesmo nó. Os terminais de controle $a$ e $b$ estão ligados aos dois lados do "componente" (a fonte de $5\ \text{V}$ e a terra), e a saída da VCCS está ligada em paralelo com os mesmos dois nós.
+Uma fonte de $5\ \text{V}$ alimenta uma fonte de corrente controlada ligada entre o seu terminal e a terra. Um voltímetro com o rótulo `vd`, ligado entre os mesmos dois nós, dá o nome pelo qual a expressão lê a tensão: $v(\text{vd})$.
 
 <!-- componentes:inicio -->
 | N.º | Tipo | Elemento | Valores |
 |----:|------|----------|---------|
-| 0 | `VCCSElm` | VCCS | Output Function = -(a-b)/1000; # of Inputs = 2 |
-| 7 | `GroundElm` | ground | Symbol = Earth |
-| 8 | `RailElm` | voltage source | Voltage = 5; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |
+| 3 | `GroundElm` | ground | Symbol = Earth |
+| 4 | `RailElm` | voltage source | Voltage = 5; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |
+| 5 | `ControlledCurrentElm` | Controlled Current Source | Output Current = v(vd)/1000 |
+| 6 | `ProbeElm` | voltmeter | Show Voltage = sim; Value = Voltage; Scale = Auto; Use Circle Symbol = sim; Series Resistance (0 = infinite) = 0; Label = vd |
 <!-- componentes:fim -->
 
 ## Teoria
 
-As fontes controladas deste simulador são definidas por uma **expressão** sobre as entradas, que se chamam $a$, $b$, $c$, ... (as tensões ou correntes nos terminais de controle). O resultado é a tensão (VCVS, CCVS) ou a corrente (VCCS, CCCS) que a fonte impõe na saída. A VCCS tem duas entradas, $a$ (a tensão do nó positivo) e $b$ (a do nó negativo), e a expressão de saída é
+As fontes controladas de dois terminais (o losango) são definidas por uma **expressão** que lê o resto do circuito **pelo nome**: $v(\text{nome})$ é a tensão de um nó rotulado ou sobre um voltímetro com rótulo, $i(\text{nome})$ a corrente de um amperímetro com rótulo, e $\text{dvdt}$ / $\text{didt}$ as suas taxas de variação. O resultado é a tensão (fonte de tensão controlada, com o $+$ no segundo terminal) ou a corrente (fonte de corrente controlada, no sentido da seta) que a fonte impõe. Aqui a expressão é
 
-$$I = -\frac{a - b}{1000\ \Omega}.$$
+$$I = \frac{v(\text{vd})}{1000\ \Omega},$$
 
-O sinal negativo é o da convenção de sentido de corrente do simulador: a corrente que a fonte controlada **absorve** do nó $a$ é $(a-b)/1000$, igual à de um resistor de $1\ \text{k}\Omega$ ligado entre $a$ e $b$. Variando a expressão pode-se simular qualquer relação corrente-tensão (resistores não lineares, resistências que variam com o tempo, etc.).
+e $v(\text{vd})$ é a tensão entre os dois nós em que a fonte está ligada. A corrente é a mesma que um resistor de $1\ \text{k}\Omega$ ligado entre esses nós deixaria passar. Variando a expressão pode-se simular qualquer relação corrente-tensão (resistores não lineares, resistências que variam com o tempo, etc.).
 
 ## Resultados esperados
 
-Com $a - b = 5\ \text{V}$:
+Com $v(\text{vd}) = 5\ \text{V}$:
 
 $$I = \frac{5\ \text{V}}{1000\ \Omega} = 5\ \text{mA}.$$
 
@@ -51,7 +52,7 @@ O simulador mostra que a fonte de $5\ \text{V}$ fornece exatamente $5{,}000\ \te
 ## O que observar
 
 - Passe o ponteiro sobre a fonte de $5\ \text{V}$: a corrente é a de um resistor de $1\ \text{k}\Omega$.
-- Edite a expressão para $-(a-b)/500$ e a corrente dobra.
+- Edite a expressão para $v(\text{vd})/500$ e a corrente dobra.
 - O mesmo se faria com um resistor comum; o interesse da fonte controlada é poder usar funções arbitrárias (veja os exemplos seguintes).
 
 ## Limites do modelo

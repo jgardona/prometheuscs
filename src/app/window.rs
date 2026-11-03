@@ -7,6 +7,7 @@ use super::dialogs::{self, OtherOptions};
 use super::edit::{Mods, ScopeMode, Tool};
 use super::examples::{ExampleItem, ExampleList, parse_setup_list};
 use super::menus::{self, ActionEntry};
+use super::palette::{DoubleShift, Palette, Pick, record};
 use super::session::Session;
 use super::settings::{AppSettings, settings_path};
 use super::toolbar::{self, Toolbar};
@@ -90,12 +91,22 @@ fn paint_frame(s: &mut Session, g: &mut dyn Painter, w: f64, h: f64) {
         let tall = s.info_is_about_an_element();
         crate::render::scene::draw_info_box(g, &lines, (w, h), tall, s.settings.white_background);
     }
+    // why the simulation stopped, until the circuit changes or is reset
+    if let Some(text) = &s.stop_message {
+        crate::render::scene::draw_stop_message(g, text, (w, h), s.settings.white_background);
+    }
 }
 
 /// Translates the name a circuit gives to one of its sliders.
 fn slider_title(name: &str) -> String {
     locale::ls(name)
 }
+
+/// How long the value popup of a wheel notch stays up.
+const WHEEL_POPUP_TIME: std::time::Duration = std::time::Duration::from_millis(1000);
+
+/// How far (pixels) the pointer must move to hide the value popup of a wheel notch.
+const WHEEL_POPUP_MOVE: f64 = 4.0;
 
 /// Messages handled by the window.
 #[derive(Debug)]
@@ -120,6 +131,8 @@ pub enum Msg {
     Refresh,
     /// Open a circuit file.
     OpenPath(PathBuf),
+    /// Read only the subcircuit models of a file.
+    LoadSubcircuits(PathBuf),
     /// Save to a file.
     SavePath(PathBuf),
     /// Load circuit text typed or pasted by the user.
@@ -136,6 +149,10 @@ pub enum Msg {
     Notice(String),
     /// Hide the banner.
     DismissBanner,
+    /// Show the properties of this element in the side panel (`None` empties it).
+    ShowProperties(Option<usize>),
+    /// A field of the side panel's properties was committed.
+    PanelEdit(usize, Vec<EditInfo>),
 }
 
 /// Window state.
@@ -146,6 +163,8 @@ pub struct App {
     examples: ExampleList,
     registry: Registry,
     notice: Option<String>,
+    /// The element whose properties the side panel shows, while it stays selected.
+    properties: Option<usize>,
 }
 
 /// The GPU canvas and its font, once the GL context exists.
@@ -180,6 +199,10 @@ pub struct Widgets {
     /// The buttons of the bar that only make sense while a model is being edited.
     context_save: [gtk::Button; 2],
     shown_audio: Vec<(usize, String)>,
+    /// The properties section of the side panel, and the element it shows with the fields as
+    /// last shown or committed (a change from elsewhere, such as undo, rebuilds it).
+    properties: gtk::Box,
+    shown_properties: Option<(usize, Rc<RefCell<Vec<EditInfo>>>)>,
 }
 
 /// Range of the simulation speed slider, as in the original: the speed grows exponentially,
@@ -247,10 +270,26 @@ fn open_element_editor(
     tx: &relm4::Sender<Msg>,
     i: usize,
 ) {
-    let (title, fields, labels) = {
+    let (title, fields) = {
         let s = ses.borrow();
-        (s.element_title(i), s.edit_fields(i), s.model_buttons(i))
+        (s.element_title(i), s.edit_fields(i))
     };
+    let buttons = element_buttons(win, ses, tx, i);
+    let tx = tx.clone();
+    dialogs::edit_element_with(win, &title, fields, buttons, None, move |f| {
+        let _ = tx.send(Msg::ApplyEdit(i, f));
+    });
+}
+
+/// The buttons under the fields of element `i`: its device models, and for a subcircuit
+/// instance its components, pin layout and model.
+fn element_buttons(
+    win: &adw::ApplicationWindow,
+    ses: &Rc<RefCell<Session>>,
+    tx: &relm4::Sender<Msg>,
+    i: usize,
+) -> Vec<dialogs::DialogButton> {
+    let labels = ses.borrow().model_buttons(i);
     let mut buttons: Vec<dialogs::DialogButton> = labels
         .into_iter()
         .enumerate()
@@ -311,10 +350,7 @@ fn open_element_editor(
             }),
         ));
     }
-    let tx = tx.clone();
-    dialogs::edit_element_with(win, &title, fields, buttons, None, move |f| {
-        let _ = tx.send(Msg::ApplyEdit(i, f));
-    });
+    buttons
 }
 
 /// Shows the pin layout dialog of a subcircuit being made or changed; a name or layout that
@@ -346,30 +382,107 @@ fn open_subcircuit_manager(
     ses: &Rc<RefCell<Session>>,
     tx: &relm4::Sender<Msg>,
 ) {
-    let names = ses.borrow().subcircuit_names();
-    let (w1, s1, t1) = (win.clone(), ses.clone(), tx.clone());
+    let models: Vec<dialogs::ManagedModel> = {
+        let s = ses.borrow();
+        s.subcircuit_names()
+            .into_iter()
+            .filter_map(|name| {
+                let scope = s.subcircuit_scope(&name)?;
+                Some(dialogs::ManagedModel { name, scope })
+            })
+            .collect()
+    };
+    // the manager shows the changed list again once the old dialog has gone
+    let reopen = {
+        let (w, s, t) = (win.clone(), ses.clone(), tx.clone());
+        Rc::new(move || {
+            let (w, s, t) = (w.clone(), s.clone(), t.clone());
+            glib::idle_add_local_once(move || open_subcircuit_manager(&w, &s, &t));
+        })
+    };
+    let (s1, t1) = (ses.clone(), tx.clone());
     let (w2, s2, t2) = (win.clone(), ses.clone(), tx.clone());
-    let (w3, s3, t3) = (win.clone(), ses.clone(), tx.clone());
-    dialogs::subcircuit_manager(
-        win,
-        &names,
-        move |n| {
+    let (s3, t3, r3) = (ses.clone(), tx.clone(), reopen.clone());
+    let (w4, s4, t4) = (win.clone(), ses.clone(), tx.clone());
+    let (s5, t5, r5) = (ses.clone(), tx.clone(), reopen.clone());
+    let s6 = ses.clone();
+    let actions = dialogs::ManagerActions {
+        place: Box::new(move |n| {
             s1.borrow_mut().place_subcircuit(&n);
             let _ = t1.send(Msg::Refresh);
-            let _ = &w1;
-        },
-        move |n| {
+        }),
+        edit: Box::new(move |n| {
             let model = s2.borrow().subcircuit_model(&n);
             if let Some(m) = model {
                 open_subcircuit_dialog(&w2, &s2, &t2, &m, None);
             }
-        },
-        move |n| {
-            s3.borrow_mut().delete_subcircuit(&n);
+        }),
+        set_scope: Box::new(move |names, scope| {
+            for n in &names {
+                let r = guarded("subcircuit scope", Err("failed".to_string()), || {
+                    s3.borrow_mut().set_subcircuit_scope(n, scope)
+                });
+                if let Err(e) = r {
+                    let _ = t3.send(Msg::Notice(locale::ls(&e)));
+                }
+            }
             let _ = t3.send(Msg::Refresh);
-            open_subcircuit_manager(&w3, &s3, &t3);
-        },
-    );
+            r3();
+        }),
+        save_library: Box::new(move |names| {
+            let text = s4.borrow().library_text(&names);
+            let text = match text {
+                Ok(t) => t,
+                Err(e) => {
+                    let _ = t4.send(Msg::Notice(locale::ls(&e)));
+                    return;
+                }
+            };
+            let suggested = match names.as_slice() {
+                [one] => format!("{one}.xml"),
+                _ => consts::SUBCIRCUIT_LIBRARY_FILE.to_string(),
+            };
+            let t = t4.clone();
+            let title = locale::ls("Save Library...");
+            dialogs::choose_save(&w4, &title, &suggested, consts::GLOB_XML, move |path| {
+                if let Err(e) = std::fs::write(&path, &text) {
+                    let _ = t.send(Msg::Notice(format!("{}: {e}", path.display())));
+                }
+            });
+        }),
+        delete: Box::new(move |names| {
+            let r = guarded("delete subcircuits", Err("failed".to_string()), || {
+                s5.borrow_mut().delete_subcircuits(&names)
+            });
+            if r.is_ok() {
+                let _ = t5.send(Msg::Refresh);
+                r5();
+            }
+            r
+        }),
+        preview: Box::new(move |name, cr, w, h| {
+            let s = s6.borrow();
+            draw_model_preview(&s, name, cr, w, h);
+        }),
+    };
+    dialogs::subcircuit_manager(win, &models, None, actions);
+}
+
+/// Draws an instance of subcircuit `name`, fitted to `w` by `h`, for the manager's preview.
+fn draw_model_preview(s: &Session, name: &str, cr: &gtk::cairo::Context, w: f64, h: f64) {
+    let mut cc = crate::format::xml::XmlOut::new("cc");
+    cc.str_attr("x", "0 0 64 0").int_attr("f", 0).str_attr("mo", name);
+    let mut root = crate::format::xml::XmlOut::new("cir");
+    root.child(cc);
+    let mut r = crate::format::parser::parse(&root.to_pretty_string(), &s.registry);
+    if r.circuit.elements.is_empty() {
+        return;
+    }
+    let view = crate::render::scene::View::fit(&r.circuit.elements, w, h, 2.0);
+    let posts = crate::render::scene::post_draw_list(&r.circuit.elements);
+    let mut g = crate::render::cairo::CairoPainter::new(cr);
+    let ctx = s.draw_ctx.clone();
+    crate::render::scene::draw_scene(&mut g, &mut r.circuit.elements, &posts, &ctx, view, (w, h));
 }
 
 /// Shows the Add Sliders dialog of element `i`; values that are not allowed show it again.
@@ -618,6 +731,14 @@ fn show_scope_menu(
             }),
         ));
     }
+    // a docked scope can be saved as a picture (command id `scope-export-image`)
+    if let ScopeTarget::Docked(i) = target {
+        let (ses, win, tx) = (ses.clone(), win.clone(), tx.clone());
+        body.append(&entry(
+            "Export Image...",
+            Box::new(move || open_scope_export(&win, &ses, &tx, i, None, None)),
+        ));
+    }
     {
         let (ses, win) = (ses.clone(), win.clone());
         body.append(&entry(
@@ -663,6 +784,57 @@ fn show_scope_menu(
         glib::idle_add_local_once(move || p.unparent());
     });
     popover.popup();
+}
+
+/// The Export Image dialog of docked scope `i`: format, size and background, then where to
+/// save it. A size it cannot use shows the dialog again with the reason.
+fn open_scope_export(
+    win: &adw::ApplicationWindow,
+    ses: &Rc<RefCell<Session>>,
+    tx: &relm4::Sender<Msg>,
+    i: usize,
+    fields: Option<Vec<EditInfo>>,
+    error: Option<String>,
+) {
+    use crate::render::export::{ScopeImage, save_scope};
+    let fields = fields.unwrap_or_else(|| {
+        vec![
+            EditInfo::choice("Format", vec!["PNG".into(), "SVG".into()], 0),
+            EditInfo::number("Width", 640.0).set_dimensionless(),
+            EditInfo::number("Height", 240.0).set_dimensionless(),
+            EditInfo::checkbox("Transparent Background", false),
+        ]
+    });
+    let (win2, ses2, tx2) = (win.clone(), ses.clone(), tx.clone());
+    let title = locale::ls("Export Image...");
+    dialogs::edit_element_with(win, &title, fields, Vec::new(), error.as_deref(), move |f| {
+        let svg = f[0].choice_index == 1;
+        let o = ScopeImage {
+            width: f[1].value.round() as i32,
+            height: f[2].value.round() as i32,
+            transparent: f[3].checkbox.unwrap_or(false),
+        };
+        let max = crate::render::export::MAX_SCOPE_IMAGE;
+        if !(1..=max).contains(&o.width) || !(1..=max).contains(&o.height) {
+            let why = locale::ls("Width and height must be between 1 and 8192");
+            open_scope_export(&win2, &ses2, &tx2, i, Some(f), Some(why));
+            return;
+        }
+        let (name, glob) = if svg {
+            (consts::SCOPE_SVG_FILE, consts::GLOB_SVG)
+        } else {
+            (consts::SCOPE_IMAGE_FILE, consts::GLOB_PNG)
+        };
+        let (ses, tx) = (ses2.clone(), tx2.clone());
+        dialogs::choose_save(&win2, &locale::ls("Export Image..."), name, glob, move |path| {
+            let r = guarded("scope image", Err("failed".to_string()), || {
+                save_scope(&ses.borrow(), i, o, svg, &path)
+            });
+            if let Err(e) = r {
+                let _ = tx.send(Msg::Notice(locale::ls(&e)));
+            }
+        });
+    });
 }
 
 /// Shows the dialog of a device model being created or edited for element `i`.
@@ -845,6 +1017,12 @@ impl App {
                     let _ = s.send(Msg::OpenPath(p));
                 });
             }
+            Cmd::LoadSubcircuitsOnly => {
+                let s = sender.input_sender().clone();
+                dialogs::choose_open(&w, move |p| {
+                    let _ = s.send(Msg::LoadSubcircuits(p));
+                });
+            }
             Cmd::ImportText => {
                 let (s1, s2) = (sender.input_sender().clone(), sender.input_sender().clone());
                 dialogs::import_text(
@@ -938,10 +1116,24 @@ impl App {
                 }
             }
             Cmd::Find => {
-                let labels = self.session.borrow().element_labels();
-                let s = sender.input_sender().clone();
-                dialogs::find(&w, labels, move |i| {
-                    let _ = s.send(Msg::Focus(i));
+                let (palette, recent) = {
+                    let ses = self.session.borrow();
+                    let palette = Palette::from_menus(
+                        &ses.registry,
+                        &ses.subcircuit_names(),
+                        ses.element_labels(),
+                    );
+                    (palette, ses.settings.palette_recent.clone())
+                };
+                let (s, ses) = (sender.input_sender().clone(), self.session.clone());
+                dialogs::find(&w, palette, recent, move |pick| {
+                    if let Some(key) = pick.key() {
+                        ses.borrow_mut().change_settings(|st| record(&mut st.palette_recent, key));
+                    }
+                    let _ = s.send(match pick {
+                        Pick::Run(cmd) => Msg::Command(cmd),
+                        Pick::Focus(i) => Msg::Focus(i),
+                    });
                 });
             }
             Cmd::Paste => {
@@ -978,6 +1170,8 @@ impl App {
                     min_frame_rate: st.min_frame_rate,
                     wheel_sensitivity: st.wheel_sensitivity,
                     value_font_size: st.value_font_size,
+                    show_properties_on_create: st.show_properties_on_create,
+                    show_properties_on_click: st.show_properties_on_click,
                     language: None,
                 };
                 let s = sender.input_sender().clone();
@@ -1223,6 +1417,12 @@ impl SimpleComponent for App {
             let (ses, tx) = (session.clone(), sender.input_sender().clone());
             drag.connect_drag_end(move |_, _, _| {
                 guarded("mouse release", false, || ses.borrow_mut().mouse_up());
+                // "Show Properties on Create": the panel shows the element just placed
+                let placed =
+                    guarded("properties", None, || ses.borrow_mut().take_properties_after_place());
+                if placed.is_some() {
+                    let _ = tx.send(Msg::ShowProperties(placed));
+                }
                 let _ = tx.send(Msg::Refresh);
             });
         }
@@ -1231,6 +1431,18 @@ impl SimpleComponent for App {
         {
             let (ses, win, tx) = (session.clone(), root.clone(), sender.input_sender().clone());
             click.connect_pressed(move |_, n, x, y| {
+                if n == 1 {
+                    // with "Show Properties on Click", the side panel follows the click
+                    let target = guarded("click", None, || {
+                        let s = ses.borrow();
+                        (s.settings.show_properties_on_click && matches!(s.tool, Tool::Select))
+                            .then(|| s.properties_on_click(x, y))
+                    });
+                    if let Some(t) = target {
+                        let _ = tx.send(Msg::ShowProperties(t));
+                    }
+                    return;
+                }
                 if n != 2 {
                     return;
                 }
@@ -1245,6 +1457,26 @@ impl SimpleComponent for App {
             });
         }
         area.add_controller(click);
+        // a part dragged from the toolbar is placed where it is dropped
+        let drop = gtk::DropTarget::new(String::static_type(), gdk::DragAction::COPY);
+        {
+            let (ses, tx) = (session.clone(), sender.input_sender().clone());
+            drop.connect_drop(move |_, value, x, y| {
+                let Ok(id) = value.get::<String>() else { return false };
+                let placed = guarded("drop", false, || ses.borrow_mut().drop_element(&id, x, y));
+                if placed {
+                    let target = guarded("properties", None, || {
+                        ses.borrow_mut().take_properties_after_place()
+                    });
+                    if target.is_some() {
+                        let _ = tx.send(Msg::ShowProperties(target));
+                    }
+                }
+                let _ = tx.send(Msg::Refresh);
+                placed
+            });
+        }
+        area.add_controller(drop);
         // right click on an element: a small menu of what can be done with it
         let context = gtk::GestureClick::builder().button(3).build();
         {
@@ -1316,6 +1548,12 @@ impl SimpleComponent for App {
                             None,
                             None,
                         ),
+                        crate::app::commands::Node::Item(
+                            Cmd::SwapTerminals,
+                            "Swap Terminals".to_string(),
+                            None,
+                            None,
+                        ),
                     ]),
                 ];
                 let popover = flat_menu_popover(&nodes);
@@ -1330,10 +1568,34 @@ impl SimpleComponent for App {
             });
         }
         area.add_controller(context);
+        // the popup that shows the value a wheel notch set: it hides after about a second, or
+        // as soon as the pointer moves away from where it was shown
+        let wheel_popup = gtk::Popover::new();
+        wheel_popup.set_autohide(false);
+        wheel_popup.set_can_focus(false);
+        wheel_popup.set_can_target(false);
+        wheel_popup.set_position(gtk::PositionType::Top);
+        let wheel_label = gtk::Label::new(None);
+        wheel_popup.set_child(Some(&wheel_label));
+        wheel_popup.set_parent(&area);
+        {
+            let p = wheel_popup.clone();
+            area.connect_destroy(move |_| p.unparent());
+        }
+        // where the popup was shown, and a counter so only the latest notch's timer hides it
+        let wheel_at_point = Rc::new(Cell::new(None::<(f64, f64)>));
+        let wheel_generation = Rc::new(Cell::new(0_u64));
         let motion = gtk::EventControllerMotion::new();
         {
             let (ses, lp) = (session.clone(), last_pointer.clone());
+            let (pop, shown_at) = (wheel_popup.clone(), wheel_at_point.clone());
             motion.connect_motion(move |_, x, y| {
+                if let Some((px, py)) = shown_at.get() {
+                    if (x - px).hypot(y - py) > WHEEL_POPUP_MOVE {
+                        shown_at.set(None);
+                        pop.popdown();
+                    }
+                }
                 lp.set((x, y));
                 guarded("hover", (), || ses.borrow_mut().hover_at(Some((x, y))));
             });
@@ -1346,15 +1608,35 @@ impl SimpleComponent for App {
         let scroll = gtk::EventControllerScroll::new(gtk::EventControllerScrollFlags::VERTICAL);
         {
             let (ses, lp) = (session.clone(), last_pointer.clone());
+            let (pop, label) = (wheel_popup.clone(), wheel_label.clone());
+            let (shown_at, generation) = (wheel_at_point.clone(), wheel_generation.clone());
             scroll.connect_scroll(move |_, _, dy| {
                 let (x, y) = lp.get();
-                guarded("wheel", (), || {
+                let changed = guarded("wheel", None, || {
                     let mut s = ses.borrow_mut();
-                    if !s.wheel_at(x, y, dy < 0.0) {
+                    let changed = s.wheel_at(x, y, dy < 0.0);
+                    if changed.is_none() {
                         let step = 1.1_f64.powf(s.settings.wheel_sensitivity);
                         s.zoom_at(x, y, if dy < 0.0 { step } else { 1.0 / step });
                     }
+                    changed
                 });
+                if let Some(text) = changed {
+                    label.set_text(&text);
+                    pop.set_pointing_to(Some(&gdk::Rectangle::new(x as i32, y as i32, 1, 1)));
+                    pop.popup();
+                    shown_at.set(Some((x, y)));
+                    let n = generation.get().wrapping_add(1);
+                    generation.set(n);
+                    let (pop, shown_at, generation) =
+                        (pop.clone(), shown_at.clone(), generation.clone());
+                    glib::timeout_add_local_once(WHEEL_POPUP_TIME, move || {
+                        if generation.get() == n {
+                            shown_at.set(None);
+                            pop.popdown();
+                        }
+                    });
+                }
                 glib::Propagation::Stop
             });
         }
@@ -1364,7 +1646,24 @@ impl SimpleComponent for App {
         let keys = gtk::EventControllerKey::new();
         {
             let (ses, tx, sp) = (session.clone(), sender.input_sender().clone(), space.clone());
-            keys.connect_key_pressed(move |_, key, _, state| {
+            let shift = Cell::new(DoubleShift::default());
+            keys.connect_key_pressed(move |ctl, key, _, state| {
+                // a double Shift opens Find Component, except while typing in a text field
+                let typing = ctl
+                    .widget()
+                    .and_then(|w| w.root())
+                    .and_then(|r| r.focus())
+                    .is_some_and(|f| f.is::<gtk::Editable>() || f.is::<gtk::TextView>());
+                if !typing {
+                    let mut d = shift.get();
+                    let is_shift = matches!(key, gdk::Key::Shift_L | gdk::Key::Shift_R);
+                    let fire = d.press(is_shift, std::time::Instant::now());
+                    shift.set(d);
+                    if fire {
+                        let _ = tx.send(Msg::Command(Cmd::Find));
+                        return glib::Propagation::Stop;
+                    }
+                }
                 if key == gdk::Key::Escape {
                     let _ = tx.send(Msg::Command(Cmd::SetTool(Tool::Select)));
                     return glib::Propagation::Stop;
@@ -1404,6 +1703,10 @@ impl SimpleComponent for App {
         panel.set_margin_end(12);
         let reset = gtk::Button::with_label(&locale::ls("Reset"));
         let run_button = gtk::Button::with_label(&locale::ls("Stop"));
+        // a click on them must not take the keyboard from the canvas: Space and the element
+        // keys would then press the button again (upstream 5.x)
+        reset.set_focus_on_click(false);
+        run_button.set_focus_on_click(false);
         {
             let s = sender.clone();
             reset.connect_clicked(move |_| s.input(Msg::Reset));
@@ -1441,6 +1744,8 @@ impl SimpleComponent for App {
         panel.append(&speed_row);
         panel.append(&current_row);
         panel.append(&bright_row);
+        let properties = gtk::Box::new(gtk::Orientation::Vertical, 6);
+        panel.append(&properties);
         let circuit_label = gtk::Label::new(None);
         circuit_label.set_xalign(0.0);
         circuit_label.set_wrap(true);
@@ -1869,7 +2174,15 @@ impl SimpleComponent for App {
             glib::Propagation::Proceed
         });
 
-        let model = App { session, window: root.clone(), assets, examples, registry, notice };
+        let model = App {
+            session,
+            window: root.clone(),
+            assets,
+            examples,
+            registry,
+            notice,
+            properties: None,
+        };
         let widgets = Widgets {
             sliders,
             run_button,
@@ -1885,6 +2198,8 @@ impl SimpleComponent for App {
             shown_sliders: Vec::new(),
             audio,
             shown_audio: Vec::new(),
+            properties,
+            shown_properties: None,
             context_bar,
             context_label,
             context_save,
@@ -1916,6 +2231,59 @@ impl SimpleComponent for App {
 }
 
 impl App {
+    /// After a subcircuit library was read: says in the banner which models it brought.
+    fn notice_loaded_library(&mut self) {
+        let loaded = self.session.borrow_mut().take_loaded_library();
+        if let Some(names) = loaded {
+            self.notice = Some(if names.is_empty() {
+                locale::ls("No subcircuits found in file")
+            } else {
+                format!("{}{}", locale::ls("Loaded subcircuits: "), names.join(", "))
+            });
+        }
+    }
+
+    /// Shows in the side panel the properties of the element [`App::properties`] names,
+    /// rebuilding them only when the element or its fields changed from what is shown.
+    fn sync_properties(&self, s: &Session, widgets: &mut Widgets, sender: &ComponentSender<Self>) {
+        let want = self.properties.map(|i| (i, s.edit_fields(i))).filter(|(_, f)| !f.is_empty());
+        let same = match (&want, &widgets.shown_properties) {
+            (Some((i, f)), Some((j, shown))) => i == j && *f == *shown.borrow(),
+            (None, None) => true,
+            _ => false,
+        };
+        if same {
+            return;
+        }
+        while let Some(child) = widgets.properties.first_child() {
+            widgets.properties.remove(&child);
+        }
+        let Some((i, fields)) = want else {
+            widgets.shown_properties = None;
+            return;
+        };
+        let heading = gtk::Label::new(Some(&s.element_title(i)));
+        heading.set_xalign(0.0);
+        heading.set_wrap(true);
+        heading.add_css_class("heading");
+        widgets.properties.append(&heading);
+        let editor = dialogs::PropertyEditor::new(fields.clone(), None);
+        let shown = Rc::new(RefCell::new(fields));
+        {
+            let (shown, tx) = (shown.clone(), sender.input_sender().clone());
+            editor.apply_on_commit(move |f| {
+                *shown.borrow_mut() = f.clone();
+                let _ = tx.send(Msg::PanelEdit(i, f));
+            });
+        }
+        let tx = sender.input_sender().clone();
+        for (label, action) in element_buttons(&self.window, &self.session, &tx, i) {
+            editor.add_button(&label).connect_clicked(move |_| action());
+        }
+        widgets.properties.append(editor.widget());
+        widgets.shown_properties = Some((i, shown));
+    }
+
     fn update_inner(&mut self, msg: Msg, sender: &ComponentSender<Self>) {
         match msg {
             Msg::Command(cmd) => {
@@ -1938,9 +2306,20 @@ impl App {
             Msg::CurrentSpeed(v) => apply(&mut self.session.borrow_mut(), Action::CurrentSpeed(v)),
             Msg::Brightness(v) => apply(&mut self.session.borrow_mut(), Action::Brightness(v)),
             Msg::Refresh => {}
+            Msg::LoadSubcircuits(p) => {
+                let r = std::fs::read_to_string(&p)
+                    .map_err(|e| format!("{}: {e}", p.display()))
+                    .and_then(|text| self.session.borrow_mut().load_subcircuits_only(&text));
+                if let Err(e) = r {
+                    self.notice = Some(locale::ls(&e));
+                }
+                self.notice_loaded_library();
+            }
             Msg::OpenPath(p) => {
                 let r = self.session.borrow_mut().open_file(&p);
                 self.notice = r.err();
+                // a subcircuit library only adds models: say which
+                self.notice_loaded_library();
                 self.show_load_problems();
             }
             Msg::SavePath(p) => {
@@ -1987,6 +2366,8 @@ impl App {
                     st.developer_mode = o.developer_mode;
                     st.min_frame_rate = o.min_frame_rate;
                     st.wheel_sensitivity = o.wheel_sensitivity;
+                    st.show_properties_on_create = o.show_properties_on_create;
+                    st.show_properties_on_click = o.show_properties_on_click;
                     st.value_font_size = o.value_font_size;
                 });
                 if let Some(code) = &o.language {
@@ -1996,10 +2377,16 @@ impl App {
                 }
             }
             Msg::Notice(text) => self.notice = Some(text),
-            Msg::DismissBanner => {
-                self.notice = None;
-                self.session.borrow_mut().clear_stop();
-            }
+            Msg::DismissBanner => self.notice = None,
+            Msg::ShowProperties(target) => self.properties = target,
+            Msg::PanelEdit(i, fields) => self.session.borrow_mut().apply_edit_fields(i, fields),
+        }
+        // the panel follows the selection: an element no longer selected leaves it
+        let s = self.session.borrow();
+        let still =
+            |i: usize| !s.inspecting() && s.sim.elements.get(i).is_some_and(|e| e.base().selected);
+        if self.properties.is_some_and(|i| !still(i)) {
+            self.properties = None;
         }
     }
 
@@ -2012,7 +2399,8 @@ impl App {
             widgets.shown_models = models;
         }
         widgets.run_button.set_label(&locale::ls(if s.running { "Stop" } else { "Run" }));
-        let message = self.notice.clone().or_else(|| s.stop_message.clone());
+        // the banner carries notices; a stop of the simulation is written on the canvas
+        let message = self.notice.clone();
         widgets.banner.set_title(message.as_deref().unwrap_or(""));
         widgets.banner.set_revealed(message.is_some());
         widgets.toolbar.widget.set_visible(s.settings.show_toolbar);
@@ -2051,6 +2439,7 @@ impl App {
             }
             widgets.shown_audio = outputs;
         }
+        self.sync_properties(&s, widgets, sender);
         let key = slider_key(&s);
         if widgets.shown_sliders == key {
             return;

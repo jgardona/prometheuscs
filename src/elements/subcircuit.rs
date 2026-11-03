@@ -392,9 +392,10 @@ impl CustomComposite {
         });
         self.net = ChildNet::default();
         if let Some(m) = &self.model {
-            let (children, nodes) = build_children(m);
-            self.net.children = children;
-            self.net.child_nodes = nodes;
+            let m2 = build_children(m);
+            self.net.children = m2.children;
+            self.net.child_nodes = m2.nodes;
+            self.net.child_refs = m2.refs;
             self.net.ext_nodes = m.ext.iter().map(|e| e.node).collect();
         }
         self.net.set_high_voltage(self.high_voltage);
@@ -413,7 +414,7 @@ impl CustomComposite {
 }
 
 /// Creates the children of a model.
-fn build_children(model: &CompositeModel) -> (Vec<Box<dyn Element>>, Vec<Vec<i32>>) {
+fn build_children(model: &CompositeModel) -> super::composite::ModelChildren {
     children_from_xml(&model.elms)
 }
 
@@ -709,7 +710,7 @@ mod tests {
     fn children_get_their_leads_when_built_from_a_model() {
         let node =
             crate::format::xml::parse(r#"<r nn="1 2" x="64 32 128 32" f="0" r="100"/>"#).unwrap();
-        let (children, _) = super::super::composite::children_from_xml(&[node]);
+        let children = super::super::composite::children_from_xml(&[node]).children;
         assert_eq!(children.len(), 1);
         let b = children[0].base();
         // the leads sit on the part, not at the origin

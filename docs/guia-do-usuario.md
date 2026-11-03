@@ -99,13 +99,17 @@ Os passos abaixo detalham cada uma dessas ações.
 
 ### Colocar componentes
 
-Há três caminhos:
+Há quatro caminhos:
 
 1. **Menu Desenhar.** Lista todos os componentes por categoria (seção 11). Escolher um deixa o
    programa no modo de colocação.
 2. **Barra de ferramentas.** Os componentes mais usados, com uma seta ao lado de alguns para
-   abrir mais opções.
+   abrir mais opções. Clicar num botão entra no modo de colocação; **arrastar o botão até o
+   canvas** coloca a peça direto onde você soltar, com o primeiro terminal no ponto da soltura
+   e o segundo quatro quadradinhos à direita. O modo em uso não muda.
 3. **Teclas.** Quase todos os componentes comuns têm uma letra (seção 13).
+4. **Procurar Componente** (`/` ou **Shift duas vezes**): digite parte do nome e tecle Enter
+   (veja "Editar o circuito" abaixo).
 
 No modo de colocação, **clique e arraste**: o primeiro ponto é onde você clicou, o segundo é onde
 você soltou, e ambos caem na grade. O modo continua ativo para você colocar mais de um; **Esc**
@@ -117,7 +121,12 @@ Escolha o fio (tecla **w**) e arraste de um ponto a outro. Um fio **roteado** (t
 **Shift+w**) guarda os pontos do caminho; use-o quando quiser um traçado em L.
 
 Terminais que caem no mesmo ponto estão ligados; um ponto branco marca uma junção de três ou
-mais. O terra é um elemento: **toda parte do circuito precisa estar ligada a um terra** (ou a um
+mais. Passar o mouse sobre um fio mostra, na caixa de informações, a corrente e a tensão dele e,
+se o fio está num nó com rótulo (**Labeled Node**), o **nome do rótulo**. **Um terminal que cai no meio de um fio** (ou da perna de um componente) também liga: o
+fio é dividido em dois naquele ponto. Isso vale ao colocar um componente, ao soltar uma peça
+arrastada da barra e ao mover componentes, e um único **Desfazer** volta tudo. Por exemplo,
+desenhe primeiro um fio de terra comprido e depois coloque os capacitores com a perna de baixo
+sobre ele. O terra é um elemento: **toda parte do circuito precisa estar ligada a um terra** (ou a um
 fonte de tensão que o defina), senão aparece o erro *Need to ground...* ou a matriz fica
 singular.
 
@@ -132,6 +141,7 @@ singular.
 
 - **Arrastar um componente selecionado** o move (com tudo o que está selecionado junto).
 - **Arrastar um terminal** de um componente isolado move só aquela ponta, esticando-o.
+- Ao soltar, os terminais que caírem no meio de um fio se ligam a ele (veja "Fios").
 - O submenu **Desenhar > Drag** escolhe outros modos de arrasto:
 
 | Modo | O que arrasta |
@@ -148,10 +158,27 @@ singular.
 - **Clique duplo** num componente abre uma janela com os campos dele: resistência, tensão,
   frequência, forma de onda, modelo, rótulos, e assim por diante. Os valores aceitam sufixos
   (`4k7`, `1u`, `2.2n`, `10meg`, `5 rms`).
+- **Painel de propriedades.** Com **Mostrar Propriedades ao Clicar** (ligada de fábrica), um
+  clique num componente mostra os mesmos campos no painel da direita, abaixo dos controles de
+  velocidade. Cada campo vale assim que é confirmado: **Enter** (ou o botão ✓) num campo de
+  texto, ou na hora numa chave, numa lista ou numa cor. Cada confirmação é um passo de
+  **Desfazer**. O painel acompanha a seleção e se esvazia quando o componente deixa de estar
+  selecionado. Com **Mostrar Propriedades ao Criar** (desligada de fábrica), o painel abre
+  sozinho para o componente que você acabou de colocar, exceto para os que quase nunca se
+  editam nessa hora: fios, terra, entradas lógicas, rótulos de nó, texto e caixas. As duas
+  opções ficam em **Opções > Outras Opções** (seção 10).
 - Alguns campos têm botões extras, como **Editar Modelo** (diodos, transistores, MOSFETs,
   relés) ou os de arquivo (seção 12).
-- Com **Opções > Editar Valores com Roda do Mouse**, girar a roda sobre um componente muda o
-  primeiro valor numérico dele em passos de 10%.
+- **Roda do mouse.** Com **Opções > Editar Valores com Roda do Mouse**, cada passo da roda
+  sobre um componente muda o primeiro valor numérico dele em **exatamente um degrau**, e um
+  balãozinho junto ao ponteiro mostra o valor novo por cerca de um segundo:
+  - resistores, capacitores e indutores andam pela série comercial **E12** (1 kΩ → 1,2 kΩ →
+    1,5 kΩ…);
+  - os outros valores andam pela sequência **1-2-5** (1 → 2 → 5 → 10…);
+  - transistores trocam entre **NPN e PNP**, e MOSFETs e JFETs entre **canal N e canal P**;
+  - um componente com controle deslizante próprio (o potenciômetro) move o controle um passo.
+
+  A sensibilidade da roda (em Outras Opções) só afeta o zoom, não os degraus.
 
 ### Menu do botão direito
 
@@ -163,6 +190,7 @@ Clique com o botão direito num componente:
 | Inserir Controles Deslizantes | Põe campos do componente no painel como sliders |
 | Duplicar | Faz uma cópia ao lado |
 | Excluir | Remove o componente |
+| Permutar Terminais | Troca as duas pontas de um componente de dois terminais (inverte a polaridade de um diodo, de uma fonte, de um capacitor polarizado); dá para desfazer |
 
 Num osciloscópio solto no circuito, o menu é o do osciloscópio (seção 6).
 
@@ -182,9 +210,19 @@ Menu **Editar**:
 | Zoom 100% / Mais / Menos | `0` / `+` / `-` |
 | Espelhar X / Espelhar Y | |
 | Girar (anti-horário / horário) | |
+| Permutar Terminais | |
 
-- **Procurar Componente** abre uma lista com campo de busca; escolher um item seleciona o
-  componente e leva o canvas até ele.
+- **Procurar Componente** (`/`, **Shift duas vezes** em menos de 0,4 s, o botão da lupa ou o
+  menu) abre uma paleta com campo de busca. O que você digita filtra, sem diferenciar
+  maiúsculas, quatro grupos, nesta ordem:
+  1. **Recentes:** as últimas 10 escolhas, da mais nova para a mais velha (ficam gravadas);
+  2. **Componentes:** tudo o que o menu Desenhar coloca, inclusive os subcircuitos;
+  3. **Comandos:** os itens dos outros menus;
+  4. **Elementos neste circuito:** escolher um seleciona o componente e leva o canvas até ele.
+
+  As setas ↑ e ↓ movem o destaque e **Enter** executa o item destacado (o primeiro, se você não
+  mexeu nas setas). O Shift duplo não abre a paleta enquanto você digita num campo de texto.
+- **Permutar Terminais** vale para os componentes de dois terminais selecionados.
 - **Espelhar** e **Girar** valem para a seleção (ou para o circuito todo se nada estiver
   selecionado) e dá para desfazer.
 - **Copiar** põe o texto do circuito na área de transferência, então dá para colar em outro
@@ -232,6 +270,13 @@ Mensagens comuns, todas iguais às do CircuitJS1:
 | capacitor exceeded max reverse voltage | Um capacitor polarizado foi ligado ao contrário |
 | max current exceeded | Um diodo, LED ou transistor passou da corrente máxima |
 
+A mensagem fica **escrita em vermelho no alto do canvas** (com o componente responsável
+destacado, quando se sabe qual é) e **continua lá** enquanto o circuito não muda: mexer no
+zoom, nos controles de velocidade ou passar o mouse não a apaga. Ela some quando você
+**reinicia** (botão Reiniciar), **edita** o circuito (um valor, um componente colocado, movido ou
+apagado), aciona um interruptor ou manda **Executar** de novo. A faixa no alto da janela fica
+para avisos passageiros, como o resultado de carregar uma biblioteca de subcircuitos.
+
 ## 6. Osciloscópios
 
 Os osciloscópios mostram um valor ao longo do tempo. Ficam na faixa embaixo do canvas, ou
@@ -263,6 +308,11 @@ Clique com o botão direito num osciloscópio:
 - **Remover Plot:** tira um dos valores (quando há vários).
 - **Reiniciar:** apaga o histórico.
 - **Exportar CSV…:** grava as amostras (tempo e mínimo e máximo de cada valor).
+- **Exportar Imagem…** (osciloscópios da faixa): grava só esse osciloscópio como figura. A
+  janela pede o **formato** (PNG ou SVG), a **largura** e a **altura** em pixels (de 1 a 8192;
+  o padrão é 640 por 240) e **Fundo Transparente**, que deixa o fundo sem pintar (as curvas, a
+  grade e os textos continuam). A escala é a que o osciloscópio tem na tela. Depois ela pergunta
+  onde salvar.
 - **Propriedades…:** a janela completa (abaixo). Também abre com a engrenagem no canto inferior
   esquerdo de cada osciloscópio, ou com clique duplo num osciloscópio solto.
 - **Desacoplar / Acoplar:** tira o osciloscópio da faixa e o põe como um retângulo no circuito, e
@@ -280,6 +330,14 @@ Cada osciloscópio ocupa uma coluna; as colunas ficam lado a lado.
   juntos.
 - No menu **Diagramas de Tempo**, as versões para todos de uma vez: **Empilhar Todos,
   Desempilhar Todos, Combinar Todos, Separar Todos**.
+
+**Rótulos e legendas.** O rótulo que você dá a um osciloscópio (nas propriedades) aparece entre
+as medidas, também nos empilhados, desde que caiba. Quando dois osciloscópios empilhados um
+sobre o outro têm o mesmo rótulo, só o de cima o escreve. Um osciloscópio **combinado** (com
+valores de vários componentes) e sem rótulo mostra uma **legenda**: um quadradinho na cor de
+cada curva e o nome dela (o componente e o que é medido, como `R1 V` ou `C1 I`). A legenda só
+aparece se couber inteira nos três quartos de cima do osciloscópio. Na escala manual, onde as
+curvas podem ser deslocadas, ela as lista de cima para baixo, na ordem em que aparecem.
 
 Quando a área é larga, uma coluna de informação aparece à direita: o tempo (`t = …`), o passo de
 tempo e, sob o ponteiro, as informações do componente tocado (ou do que o osciloscópio mede).
@@ -299,7 +357,13 @@ tempo e, sob o ponteiro, as informações do componente tocado (ou do que o osci
 - **Arrastar** sobre o gráfico mede um trecho: aparecem `Δt` e `Δ` (a variação do valor), também
   sobre placas.
 - Passar o mouse sobre um osciloscópio destaca em ciano os componentes que ele mede, com `+` e
-  `−` nos terminais.
+  `−` nos terminais. Num **Plot X/Y**, as pontas de prova e saídas que ele usa ganham o papel
+  de cada uma: **X**, **Y**, **Br** (brilho), **R**, **G** ou **B** (cores); uma que faz dois
+  papéis mostra os dois (`X/Y`).
+- Com o **gatilho** no modo normal ou automático, cada varredura disparada fica na tela, inteira,
+  **até a próxima estar completa**. Um pulso raro continua visível muito depois de passar, em vez
+  de sumir para a esquerda; enquanto a próxima varredura é capturada, a anterior continua.
+- Arrastar dentro da faixa dos osciloscópios nunca move nem seleciona componentes do circuito.
 
 Com o botão pressionado sobre uma curva no **modo de escala manual**, o arrasto vertical move a
 curva.
@@ -313,7 +377,11 @@ A janela de propriedades tem:
 - **Gatilho (trigger):** modo (livre, normal, automático), borda (subida ou descida) e nível. O
   gatilho congela a imagem no ponto em que o sinal cruza o nível.
 - Para cada valor: **escala por divisão** e **posição vertical**, e **acoplamento CA** (tira a
-  componente contínua de uma tensão).
+  componente contínua de uma tensão). O acoplamento CA vale tanto na escala manual quanto na
+  automática. Ele começa rápido: no início usa a média de tudo o que viu, então uma senoide de
+  1 V sobre 5 V já aparece quase centrada no zero depois do primeiro período (a sobra cai para
+  menos de 2% da amplitude em uns seis períodos). **Reiniciar** (no menu do osciloscópio ou o
+  botão do painel) zera o filtro.
 - **Medidas:** valor de pico, pico negativo, pico a pico, frequência, valor RMS, média, ciclo de
   trabalho, escala, informação estendida do componente e ângulo de fase.
 - **Espectro em escala logarítmica** (dB).
@@ -385,7 +453,11 @@ Menu **Arquivo**:
 
 - **Formatos.** O programa abre e grava os dois formatos do CircuitJS1: o **texto** (uma linha
   por componente, que começa com `$` e as opções do circuito) e o **XML** (`<cir>…</cir>`). Ele
-  grava XML. Circuitos feitos no CircuitJS1 abrem aqui, e os daqui abrem lá.
+  grava XML. Circuitos feitos no CircuitJS1 abrem aqui, e os daqui abrem lá — inclusive os da
+  versão atual (5.0.4), com as fontes controladas de dois terminais, as expressões com
+  `v(nome)` e `i(nome)` e os medidores com rótulo (seção 11). Esses componentes só existem no
+  formato XML; *Exportar Como Texto* e *Exportar Como Link* também usam XML, então nada se
+  perde.
 - **Links.** *Exportar Como Link* gera o mesmo tipo de link que o CircuitJS1 (com o circuito
   comprimido no parâmetro `ctz`), no formato do CircuitJS1. A janela *Importar de Texto* só aceita o texto do circuito, não um link.
 - **Arquivos com problemas.** Se uma linha de um arquivo não puder ser lida (componente
@@ -419,9 +491,37 @@ Um subcircuito vira um componente (um "chip") a partir de um pedaço do circuito
 
 O novo subcircuito já fica escolhido para ser colocado.
 
-**Usar.** Cada subcircuito criado aparece em **Desenhar > Subcircuitos**, ou no **Gerenciador de Subcircuitos**
-(**Ferramentas > Subcircuit Manager**), que lista os existentes com botões para colocar, editar o
-layout dos pinos e apagar.
+**Usar.** Cada subcircuito aparece em **Desenhar > Subcircuitos**, sejam os deste circuito, os
+desta sessão ou os salvos; a lista acompanha as mudanças feitas no gerenciador.
+
+**Onde fica guardado.** Os três lugares correspondem ao *local*, *global* e *persistente* do
+CircuitJS 5.x:
+
+| Lugar | No CircuitJS 5.x | Some quando |
+|-------|------------------|-------------|
+| Neste circuito | local | Você abre outro circuito (vai junto no arquivo) |
+| Nesta sessão | global | O programa fecha |
+| Salvo entre sessões | persistente | Você o apaga (fica na pasta de configuração, seção 15) |
+
+Mudar o lugar nunca muda o modelo em si.
+
+**Gerenciador de Subcircuitos** (**Ferramentas > Subcircuit Manager**). Lista os subcircuitos, cada
+um com o lugar onde está guardado, e mostra o **desenho do chip** do primeiro selecionado. Dá
+para selecionar **vários** (Ctrl+clique ou Shift+clique):
+
+- **Colocar** e **Editar Layout de Pinos** valem para um subcircuito selecionado.
+- **Guardar os subcircuitos selecionados em:** *Este circuito*, *Esta sessão* ou *Salvar
+  Múltiplas Sessões* move todos os selecionados.
+- **Salvar Biblioteca…** grava os selecionados (e os subcircuitos que eles usam por dentro) num
+  arquivo de **biblioteca**: um XML com `sublib="1"` na raiz, o mesmo formato do CircuitJS 5.x.
+- **Excluir** pede confirmação e é **recusado** se o circuito usa algum dos selecionados,
+  diretamente ou dentro de outro subcircuito; a mensagem diz quais. Nesse caso nada é apagado.
+
+**Bibliotecas.** **Arquivo > Carregar Somente Subcircuitos…** lê os subcircuitos de um arquivo
+(uma biblioteca, ou qualquer circuito) e os deixa disponíveis **nesta sessão**, sem mexer no
+circuito aberto. Abrir uma biblioteca com **Arquivo > Abrir** faz o mesmo: o circuito continua o
+mesmo e uma faixa diz quais subcircuitos foram carregados (ou que o arquivo não tinha nenhum).
+Para tê-los sempre, use **Salvar Múltiplas Sessões** no gerenciador depois de carregar.
 
 **Editar uma instância.** Clique duas vezes numa instância:
 
@@ -461,13 +561,20 @@ programa.
 | Atalhos… | Lista os atalhos de teclado |
 | Outras Opções… | Veja abaixo |
 
-**Outras Opções.**
+**Outras Opções.** Nesta janela, como em todas as outras, clicar no **texto** de uma caixa de
+seleção também a marca ou desmarca.
 
 - **Passo de tempo:** o maior passo (em segundos). Passos menores dão mais precisão e menos
   velocidade.
 - **Faixa de tensão para cores:** a tensão que corresponde ao verde (ou vermelho) mais forte.
 - **Ajustar o passo de tempo automaticamente:** diminui o passo quando a convergência falha.
 - **Encontrar o ponto CC ao reiniciar.**
+- **Sensibilidade do zoom da roda do mouse:** quanto cada passo da roda aproxima ou afasta (e
+  muda a escala de um osciloscópio). Não afeta a edição de valores pela roda, que é sempre um
+  degrau por passo.
+- **Mostrar Propriedades ao Criar** (desligada de fábrica) e **Mostrar Propriedades ao
+  Clicar** (ligada de fábrica): quando o painel de propriedades aparece (seção 4, "Editar
+  valores"). São os padrões do CircuitJS 5.x.
 
 ## 11. Componentes
 
@@ -482,7 +589,7 @@ As teclas de atalho estão na seção 13.
 | Outputs and Labels | Medidores (voltímetro, ohmímetro, amperímetro, wattímetro, ponta de prova), saída, texto, caixa, linha, nó rotulado, gatilho de parada, gravador de dados, ponto de teste, motores (CC, trifásico, chave de proteção), LED, saída de áudio |
 | Switches | Relé e as partes de bobina e contato |
 | Logic Gates, Input and Output | Entrada e saída lógica, inversor, NAND, NOR, AND, OR, XOR, XNOR, buffer com atraso, tri-state |
-| Active Building Blocks | Schmitt (e inversor Schmitt), amp-op (e com entradas trocadas), fontes controladas (VCVS, VCCS, CCVS, CCCS), girador, chaves analógicas |
+| Active Building Blocks | Schmitt (e inversor Schmitt), amp-op (e com entradas trocadas), fontes controladas (VCVS, VCCS, CCVS, CCCS e as de dois terminais: fonte de tensão controlada e fonte de corrente controlada), girador, chaves analógicas |
 | Active Components | Diodos (comum, Zener, varactor, túnel), transistores (NPN, PNP, Darlington), triodo, SCR, diac, triac, MOSFETs e JFETs (canal N e P), transistor de unijunção, comparador, amplificador de Norton, OTA, optoacoplador, amp-op real (LM741, LM324) |
 | Analog and Hybrid Chips | 555, comparador de fase, VCO, conveyor de corrente (CC2), relé com atraso, multiplexador analógico, ADC, DAC |
 | Digital Chips | Flip-flops (D, JK, T), latch, contadores, anel, monoestável, somadores, multiplexador e demultiplexador, displays (sete segmentos, decimal, matriz de LED, instrução), SRAM e ROM, registradores de deslocamento, gerador de sequência, barramentos (separador, transceptor, entrada), lógica personalizada |
@@ -501,11 +608,53 @@ componente sob o ponteiro está fazendo: tensão, corrente, potência e valores 
 - **Texto, caixa e linha:** anotações; não participam da simulação.
 - **Cor (LED e texto):** nas propriedades do LED e do texto a cor se escolhe com um seletor de cor
   (um botão com a cor atual), não digitando valores.
-- **Gatilho de parada (Stop Trigger):** pára o tempo quando a entrada passa de um nível.
+- **Gatilho de parada (Stop Trigger):** pára o tempo quando a entrada passa de um nível. Só a
+  **passagem** conta: se a condição já é verdadeira quando o circuito abre ou é reiniciado, o
+  gatilho espera que ela fique falsa antes de poder disparar.
+- **Monoestável:** dá um pulso do tamanho do *Período* a cada borda de subida da entrada. Com
+  **Inverter Disparo** (Invert Trigger) marcado, dispara na borda de descida, e a entrada ganha
+  uma bolinha no desenho.
+- **SRAM:** o campo **Carregar Conteúdo de Arquivo** (Load Contents From File) abre um arquivo e
+  o lê como bytes: cada byte vira um valor, a partir do endereço 0 (com mais de 8 bits de dados,
+  cada par de bytes vira um valor). Arquivos de 128 000 bytes ou mais são recusados e o conteúdo
+  não muda.
 - **Gravador de dados (Data Export):** guarda o que passou pelo terminal; grava num arquivo
   (seção 12).
 - **Linha de transmissão:** a cor do interior da linha mostra a tensão que viaja nela.
 - **Lâmpada:** o brilho segue a temperatura do filamento.
+
+### Fontes controladas e referências por nome
+
+As **fontes de tensão e de corrente controladas** de dois terminais (o losango) têm um único
+campo, *Tensão de Saída* ou *Corrente de Saída*, com uma **expressão**. Elas não têm terminais de
+controle: a expressão lê o resto do circuito **pelo nome**. A fonte de tensão tem o `+` no
+segundo terminal; a de corrente empurra a corrente no sentido da seta.
+
+| Na expressão | Lê | Unidade |
+|--------------|----|---------|
+| `v(nome)` | a tensão do nó rotulado `nome`, ou sobre o voltímetro com rótulo `nome` | V |
+| `v(a, b)` | `v(a) - v(b)` | V |
+| `i(nome)` | a corrente do amperímetro com rótulo `nome` | A |
+| `dvdt(nome)` | quanto `v(nome)` muda por segundo | V/s |
+| `didt(nome)` | quanto `i(nome)` muda por segundo | A/s |
+
+Além disso valem as funções de sempre (`sin`, `abs`, `clamp`, `pwl`, `t`, `lastoutput`…).
+Exemplos: `2*v(in)` dobra a tensão do nó `in`; `10*i(ib)` é uma transresistência de 10 Ω;
+`1e-6*dvdt(vc)` é a corrente de um capacitor de 1 µF.
+
+- **Dar nome a um medidor:** o voltímetro e o amperímetro têm o campo **Rótulo** (Label). O
+  rótulo aparece ao lado da leitura e é o nome que a expressão usa. Um nó rotulado ganha de um
+  medidor com o mesmo nome.
+- **Nomes:** maiúsculas e minúsculas contam (`Vout` não é `vout`). Um nome com vírgula ou
+  parênteses vai entre aspas: `v("a,b")`.
+- **Dentro de um subcircuito** os nomes valem só dentro dele: cada cópia lê os seus próprios nós.
+- **As fontes antigas também leem nomes:** VCVS, VCCS, CCVS e CCCS aceitam `v()` e `i()` junto
+  com as entradas `a`, `b`, …
+- **Erros:** uma expressão com erro de sintaxe é recusada na edição (*Parse error in
+  expression*) e a anterior continua valendo. Um nome que não existe vale 0, e a caixa de
+  informações da fonte diz `unknown name: v(nome)`; um `i()` que aponta para um voltímetro diz
+  `not a current meter: nome`.
+- Os exemplos **Controlled Sources** (os arquivos `cs-*`) usam essas fontes.
 
 ## 12. Áudio, dados e arquivos de amostras
 
@@ -537,7 +686,7 @@ digitar o caminho também.
 | Ctrl+X / C / V / D | Recortar / Copiar / Colar / Duplicar |
 | Delete | Excluir |
 | Ctrl+A | Selecionar tudo |
-| `/` | Procurar componente |
+| `/` ou Shift duas vezes | Procurar componente (paleta) |
 | `0`, `+`, `-` | Zoom 100%, mais, menos |
 | F11 | Tela cheia |
 | Esc | Volta ao modo de seleção |
@@ -564,18 +713,26 @@ digitar o caminho também.
 
 | Gesto | Faz |
 |-------|-----|
-| Clique | Seleciona, ou aciona um interruptor |
-| Clique duplo | Edita o componente |
+| Clique | Seleciona, ou aciona um interruptor; com a opção ligada, mostra as propriedades no painel |
+| Clique duplo | Edita o componente numa janela |
+| Arrastar um botão da barra até o canvas | Coloca a peça onde você soltar |
 | Clique + arrasto | Move (num componente selecionado), seleciona (no vazio), ou desenha (no modo de colocação) |
 | Clique direito num componente | Menu do componente |
 | Clique direito num osciloscópio | Menu do osciloscópio |
-| Roda | Zoom, ou muda o valor (com a opção ligada), ou muda a escala de tempo (sobre um osciloscópio) |
+| Roda | Zoom, ou muda o valor um degrau (com a opção ligada; E12, 1-2-5, NPN/PNP, canal N/P), ou muda a escala de tempo (sobre um osciloscópio) |
 | Shift + arrasto, botão do meio | Move o canvas |
 
 ## 14. Quando algo dá errado
 
-- **O circuito não anda / uma faixa de aviso aparece.** Leia a mensagem (seção 5). O componente
-  responsável fica destacado; confira o terra e as ligações.
+- **O circuito não anda / uma mensagem vermelha aparece no alto do canvas.** Leia a mensagem
+  (seção 5). O componente responsável fica destacado; confira o terra e as ligações. A mensagem
+  fica até você mudar o circuito ou reiniciar.
+- **Quando o programa pergunta se quer salvar.** Só quando o **conteúdo do circuito** mudou:
+  colocar, apagar, mover, girar ou editar componentes, criar ou remover osciloscópios, mudar as
+  propriedades deles, mexer nos subcircuitos do circuito. Mexer nos controles de **velocidade da
+  simulação, velocidade da corrente e brilho da potência**, no zoom, em mover o canvas, em
+  empilhar, combinar ou separar osciloscópios, na escala de tempo de um osciloscópio (roda do
+  mouse) e na posição vertical de uma curva **não** conta.
 - **Um arquivo abre com uma lista de avisos.** O programa ignorou as linhas que não conseguiu
   ler, e o resto do circuito carregou. Isso acontece, por exemplo, com componentes de versões
   mais novas do CircuitJS1 que ainda não existem aqui.
@@ -611,7 +768,7 @@ Com `RUST_LOG=prometheuscs=debug`, o programa imprime mensagens de diagnóstico.
 |---------|----------|
 | `settings.json` | As opções marcadas e o idioma |
 | `autosave.xml` | A cópia automática do circuito |
-| `subcircuits/*.xml` | Os subcircuitos guardados como "salvos" |
+| `subcircuits/*.xml` | A biblioteca do usuário: os subcircuitos guardados como "salvos entre sessões", um arquivo por modelo, lidos ao abrir o programa |
 
 ## 16. Diferenças em relação ao CircuitJS1
 
@@ -629,3 +786,12 @@ Diferenças conhecidas:
   original, mas ao mudar suas configurações o histórico dele recomeça.
 - Resultados numéricos foram conferidos contra o CircuitJS1 com gravações de 373 circuitos; as
   diferenças que se conhecem estão em `tests/compat/known_differences.json`.
+- A versão de referência é o **CircuitJS 5.0.4**. As gravações foram feitas com a versão Java
+  (4.1.5.1js); as novidades da 5.x são conferidas contra valores calculados à mão e contra as
+  gravações das versões antigas dos exemplos que a 5.x redesenhou (veja
+  `tests/compat/README.md`). O exemplo *cs-varicap* mudou de valores na 5.x e por isso não tem
+  gravação para comparar.
+- No CircuitJS 5.x a janela de propriedades pode abrir **ao lado do componente**. Aqui ela não
+  faz isso: no Wayland o GTK não deixa escolher onde uma janela aparece. Em troca, as
+  propriedades podem ficar no **painel da direita** (seção 4, "Editar valores"), que segue a
+  seleção.

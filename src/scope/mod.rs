@@ -156,6 +156,21 @@ pub struct Trigger {
     last_total: Option<u64>,
     at_total: u64,
     time: f64,
+    /// The last sweep captured in full, shown until the next one is (upstream `6c479b07`):
+    /// the buffer keeps recording while the trigger waits, so without it a rare trigger's sweep
+    /// would scroll away.
+    sweep: Option<Sweep>,
+}
+
+/// A copy of a scope's plots taken once a triggered sweep has been captured in full.
+#[derive(Clone, Debug)]
+struct Sweep {
+    /// Per plot: minimum and maximum of each sample, oldest first, and how many are valid.
+    plots: Vec<(Vec<f64>, Vec<f64>, usize)>,
+    /// Samples from the trigger sample to the newest one when the copy was taken.
+    back: usize,
+    /// Time of the trigger.
+    time: f64,
 }
 
 impl Default for Trigger {
@@ -172,6 +187,7 @@ impl Default for Trigger {
             last_total: None,
             at_total: 0,
             time: 0.0,
+            sweep: None,
         }
     }
 }
@@ -193,13 +209,24 @@ impl Trigger {
         self.waiting = false;
         self.fired = false;
         self.last_total = None;
+        self.sweep = None;
     }
 
-    /// Looks at the newest sample of the first plot, once per new sample.
-    fn check(&mut self, plot: &ScopePlot, t: f64) {
+    /// The sweep to draw instead of the live buffer, if any: while the trigger holds a sweep
+    /// and is not running free.
+    fn held_sweep(&self, plots: usize) -> Option<&Sweep> {
+        self.sweep.as_ref().filter(|s| {
+            self.is_active() && self.state != TriggerState::AutoRun && s.plots.len() == plots
+        })
+    }
+
+    /// Looks at the newest sample of the first plot, once per new sample. Returns true when
+    /// a triggered sweep has just been captured in full (its holdoff ended).
+    fn check(&mut self, plot: &ScopePlot, t: f64) -> bool {
         if !self.is_active() || self.last_total == Some(plot.total) {
-            return;
+            return false;
         }
+        let mut complete = false;
         self.last_total = Some(plot.total);
         let val = 0.5 * (plot.max[plot.ptr] + plot.min[plot.ptr]);
         let crossing = if self.edge == TRIGGER_EDGE_RISING {
@@ -235,6 +262,7 @@ impl Trigger {
                 if self.holdoff >= TRIGGER_HOLDOFF {
                     self.state = TriggerState::Armed;
                     self.holdoff = 0;
+                    complete = true;
                 }
             }
             TriggerState::AutoRun => {
@@ -244,6 +272,7 @@ impl Trigger {
             }
         }
         self.prev_value = val;
+        complete
     }
 }
 
@@ -272,9 +301,10 @@ pub struct ScopePlot {
     pub man_set: bool,
     /// The plot shows its voltage with the DC level removed.
     pub ac_coupled: bool,
-    /// State of the high-pass filter behind AC coupling: its last output and last input.
-    ac_last_out: f64,
-    ac_last_in: f64,
+    /// The DC level the AC coupling removes (the voltage of the coupling capacitor), and the
+    /// samples since the filter was emptied, for its fast start.
+    ac_dc: f64,
+    ac_count: u64,
 }
 
 impl ScopePlot {
@@ -293,8 +323,8 @@ impl ScopePlot {
             man_pos: 0,
             man_set: false,
             ac_coupled: false,
-            ac_last_out: 0.0,
-            ac_last_in: 0.0,
+            ac_dc: 0.0,
+            ac_count: 0,
         }
     }
 
@@ -310,6 +340,19 @@ impl ScopePlot {
         self.last_update = t;
         self.filled = 0;
         self.total = 0;
+        // the AC filter starts over too, so it carries nothing from before
+        self.ac_dc = 0.0;
+        self.ac_count = 0;
+    }
+
+    /// The minimum and maximum of each sample, oldest first.
+    fn ordered(&self) -> (Vec<f64>, Vec<f64>) {
+        (1..=POINTS)
+            .map(|i| {
+                let k = (self.ptr + i) % POINTS;
+                (self.min[k], self.max[k])
+            })
+            .unzip()
     }
 }
 
@@ -802,6 +845,7 @@ impl Scope {
             *a = a.max(b);
         }
         self.plots.extend(other.plots);
+        self.trigger.sweep = None;
     }
 
     /// One scope per plot, each with the speed, flags and scales of this one. The text stays
@@ -849,6 +893,7 @@ impl Scope {
     pub fn remove_plot(&mut self, plot: usize) -> bool {
         if plot < self.plots.len() {
             self.plots.remove(plot);
+            self.trigger.sweep = None;
         }
         !self.plots.is_empty()
     }
@@ -929,13 +974,16 @@ impl Scope {
         for p in &mut self.plots {
             let Some(e) = elements.get(p.elm) else { continue };
             let mut v = e.scope_value(p.value);
-            // first-order high-pass filter, run all the time so that it is primed when the
-            // plot is switched to AC coupling
-            let out = alpha * (p.ac_last_out + v - p.ac_last_in);
-            p.ac_last_in = v;
-            p.ac_last_out = out;
+            // first-order high-pass filter, written as v - dc with dc following v by a factor
+            // k (k = 1 - alpha is the usual filter). It starts at k = 1 and falls as 1/n, so dc
+            // is the running average of the samples so far until it reaches 1 - alpha: a pure
+            // AC signal is centred at once instead of after a long transient (upstream
+            // `a5c29008`). It runs all the time, so it is primed when AC coupling is switched on.
+            p.ac_count += 1;
+            let k = (1.0 / p.ac_count as f64).max(1.0 - alpha);
+            p.ac_dc += (v - p.ac_dc) * k;
             if p.ac_coupled && p.can_ac_couple() {
-                v = out;
+                v -= p.ac_dc;
             }
             values.push(v);
             if p.filled == 0 {
@@ -973,34 +1021,52 @@ impl Scope {
         } else {
             self.trace = None;
         }
-        if let Some(first) = self.plots.first() {
-            self.trigger.check(first, t);
+        let complete = self.plots.first().is_some_and(|first| self.trigger.check(first, t));
+        if complete {
+            self.trigger.sweep = Some(Sweep {
+                plots: self
+                    .plots
+                    .iter()
+                    .map(|p| {
+                        let (min, max) = p.ordered();
+                        (min, max, p.filled)
+                    })
+                    .collect(),
+                back: self
+                    .plots
+                    .first()
+                    .map_or(0, |p| p.total.saturating_sub(self.trigger.at_total))
+                    .min(POINTS as u64 - 1) as usize,
+                time: self.trigger.time,
+            });
         }
     }
 
     /// What the interface needs to draw the scope.
     pub fn view(&self, elements: &[Box<dyn Element>], max_time_step: f64, time: f64) -> ScopeView {
+        // a triggered scope draws the last sweep captured in full until the next one is
+        let held = self.trigger.held_sweep(self.plots.len());
         let plots = self
             .plots
             .iter()
-            .map(|p| {
-                let (min, max): (Vec<f64>, Vec<f64>) = (1..=POINTS)
-                    .map(|i| {
-                        let k = (p.ptr + i) % POINTS;
-                        (p.min[k], p.max[k])
-                    })
-                    .unzip();
+            .enumerate()
+            .map(|(n, p)| {
+                let ((min, max), valid) = match held {
+                    Some(s) => ((s.plots[n].0.clone(), s.plots[n].1.clone()), s.plots[n].2),
+                    None => (p.ordered(), p.filled),
+                };
                 let title = elements.get(p.elm).and_then(|e| e.elm_type()).unwrap_or_default();
                 // a plot without a manual scale of its own shows what its units suggest
                 let man_scale =
                     if p.man_set { p.man_scale } else { self.man_scale_from_max(p.units, false) };
                 PlotView {
+                    elm: p.elm,
                     units: p.units,
                     value: p.value,
                     title,
                     min,
                     max,
-                    valid: p.filled,
+                    valid,
                     man_scale,
                     man_pos: p.man_pos,
                 }
@@ -1012,13 +1078,16 @@ impl Scope {
             level: self.trigger.level,
             state: self.trigger.state,
             waiting: self.trigger.waiting,
-            triggered: self.trigger.is_triggered(),
-            back: self
-                .plots
-                .first()
-                .map_or(0, |p| p.total.saturating_sub(self.trigger.at_total))
-                .min(POINTS as u64 - 1) as usize,
-            time: self.trigger.time,
+            triggered: held.is_some() || self.trigger.is_triggered(),
+            back: match held {
+                Some(s) => s.back,
+                None => self
+                    .plots
+                    .first()
+                    .map_or(0, |p| p.total.saturating_sub(self.trigger.at_total))
+                    .min(POINTS as u64 - 1) as usize,
+            },
+            time: held.map_or(self.trigger.time, |s| s.time),
         });
         ScopeView {
             position: self.position,
@@ -1079,6 +1148,8 @@ pub struct TriggerView {
 /// A plot as the interface draws it: samples from oldest to newest.
 #[derive(Clone, Debug, PartialEq)]
 pub struct PlotView {
+    /// Index of the plotted element.
+    pub elm: usize,
     /// Units of the value.
     pub units: i32,
     /// Which value of the element is plotted.
@@ -1201,5 +1272,123 @@ fn value_menu_key(value: i32, transistor: bool) -> &'static str {
         VAL_R => "Show Resistance",
         VAL_CHARGE => "Show Charge",
         _ => "Show Value",
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::elements::element::Base;
+
+    /// An element whose scope value is whatever the test sets.
+    struct Signal {
+        base: Base,
+        v: f64,
+    }
+
+    impl Element for Signal {
+        crate::impl_element_base!("SignalElm");
+        fn scope_value(&self, _x: i32) -> f64 {
+            self.v
+        }
+    }
+
+    fn signal(v: f64) -> Vec<Box<dyn Element>> {
+        vec![Box::new(Signal { base: Base::new(0, 0), v })]
+    }
+
+    /// Sets the value of the only element, a [`Signal`].
+    fn set(elements: &mut [Box<dyn Element>], v: f64) {
+        elements[0].as_any_mut().downcast_mut::<Signal>().expect("a Signal").v = v;
+    }
+
+    fn scope_on(elements: &[Box<dyn Element>]) -> Scope {
+        let mut sc = Scope::blank(1, 0, 0);
+        sc.plots.push(ScopePlot::new(0, VAL_VOLTAGE, elements[0].scope_units(VAL_VOLTAGE)));
+        sc
+    }
+
+    #[test]
+    fn ac_coupling_centres_an_offset_sine_quickly_in_auto_scale() {
+        // a 1 V, 100 Hz sine on 5 V, one sample per 10 µs step
+        let (dt, f) = (1e-5_f64, 100.0_f64);
+        let mut el = signal(5.0);
+        let mut sc = scope_on(&el);
+        sc.plots[0].ac_coupled = true;
+        assert!(!sc.is_manual(), "auto scale");
+        let per_period = (1.0 / f / dt).round() as usize;
+        let mut out = Vec::new();
+        for n in 0..8 * per_period {
+            let t = n as f64 * dt;
+            set(&mut el, 5.0 + (2.0 * std::f64::consts::PI * f * t).sin());
+            sc.time_step(&el, t, dt);
+            out.push(sc.plots[0].max[sc.plots[0].ptr]);
+        }
+        let mean = |period: usize| {
+            let seg = &out[period * per_period..(period + 1) * per_period];
+            seg.iter().sum::<f64>() / seg.len() as f64
+        };
+        // the running-average start (upstream `a5c29008`) leaves about 0.11 V in the second
+        // period, where the plain filter would still be more than 3 V off, and the mean is
+        // within 2% of the amplitude from the sixth period on
+        assert!(mean(1).abs() < 0.12, "second period: {}", mean(1));
+        for p in 5..8 {
+            assert!(mean(p).abs() < 0.02, "period {}: {}", p + 1, mean(p));
+        }
+    }
+
+    #[test]
+    fn reset_empties_the_ac_filter() {
+        let el = signal(5.0);
+        let mut sc = scope_on(&el);
+        sc.plots[0].ac_coupled = true;
+        for n in 0..100 {
+            sc.time_step(&el, f64::from(n) * 1e-5, 1e-5);
+        }
+        assert!((sc.plots[0].ac_dc - 5.0).abs() < 1e-9);
+        sc.reset(0.0);
+        assert_eq!((sc.plots[0].ac_dc, sc.plots[0].ac_count), (0.0, 0));
+    }
+
+    #[test]
+    fn a_triggered_scope_keeps_its_last_sweep_until_the_next_one_is_complete() {
+        let dt = 1e-5;
+        let mut el = signal(0.0);
+        let mut sc = scope_on(&el);
+        sc.trigger.mode = TRIGGER_NORMAL;
+        sc.trigger.level = 2.5;
+        let mut t = 0.0;
+        let mut run = |sc: &mut Scope, el: &mut Vec<Box<dyn Element>>, v: f64, n: usize| {
+            set(el, v);
+            for _ in 0..n {
+                sc.time_step(el, t, dt);
+                t += dt;
+            }
+        };
+        let pulse_at = |sc: &Scope, el: &[Box<dyn Element>]| {
+            let v = sc.view(el, dt, 0.0);
+            let tr = v.trigger.unwrap();
+            let p = &v.plots[0];
+            // the sample at the trigger point is the pulse
+            (tr.triggered, p.max[POINTS - 1 - tr.back], tr.time)
+        };
+        run(&mut sc, &mut el, 0.0, 20);
+        run(&mut sc, &mut el, 5.0, 1);
+        let first_time = sc.trigger.time;
+        // long after the pulse, far more than a buffer later, it is still shown
+        run(&mut sc, &mut el, 0.0, 3 * POINTS);
+        let (held, v, time) = pulse_at(&sc, &el);
+        assert!(held && v == 5.0 && time == first_time, "{held} {v} {time}");
+        // a second pulse: while its sweep is being captured the first one stays up
+        run(&mut sc, &mut el, 5.0, 1);
+        run(&mut sc, &mut el, 0.0, 10);
+        assert_eq!(pulse_at(&sc, &el).2, first_time);
+        // once captured, the new sweep replaces it
+        run(&mut sc, &mut el, 0.0, TRIGGER_HOLDOFF as usize);
+        let (held, v, time) = pulse_at(&sc, &el);
+        assert!(held && v == 5.0 && time > first_time, "{held} {v} {time}");
+        // Reset forgets the sweep
+        sc.reset(t);
+        assert!(sc.trigger.sweep.is_none());
     }
 }

@@ -254,6 +254,7 @@ fn placed(view: &ScopeView, (w, h): (f64, f64), cursor: Option<(f64, f64)>, ligh
         selected: None,
         measure_from: None,
         glow: false,
+        transparent: false,
     };
     draw_scope(&mut g, view, &mut state, &spot, light);
     g.finish()

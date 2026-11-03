@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // Derived from CircuitJS1 (C) Paul Falstad and Iain Sharp (VCVSElm, VCCSElm, CCVSElm,
-// CCCSElm).
+// CCCSElm, ControlledSourceElm, ControlledVoltageElm, ControlledCurrentElm).
 //! Controlled sources whose output is an expression of the inputs: voltage-controlled
-//! voltage and current sources and current-controlled voltage and current sources.
+//! voltage and current sources and current-controlled voltage and current sources, plus the
+//! two-terminal controlled voltage and current sources (the diamond symbol), whose expression
+//! refers to the rest of the circuit by name (`v(label)`, `i(meter)`, see [`crate::expr`]).
 //!
 //! The expression is linearised around the previous iteration, so a source can implement any
 //! function a circuit needs (multipliers, limiters, differentiators).
@@ -13,10 +15,15 @@
 
 use super::chip::*;
 use super::element::*;
+use super::geometry::*;
 use super::registry::{ElementDescriptor, Registry};
-use crate::expr::{Expr, ExprState};
+use super::units::{current_text, voltage_text};
+use crate::expr::refs::{ExprEngine, OwnerNodes, RefResolution, StampInput};
+use crate::expr::{ExprRef, ExprState};
 use crate::format::tokenizer::{Tokenizer, escape, unescape};
 use crate::format::xml::{XmlNode, XmlOut};
+use crate::impl_element_base;
+use crate::render::painter::Painter;
 use crate::solver::path::{PathKind, Validator};
 use crate::solver::stamper::{NodeId, Stamper, VsId};
 
@@ -42,6 +49,325 @@ pub fn register(r: &mut Registry) {
     source!("VCCSElm", "Add VCCS", 213, Kind::Vccs);
     source!("CCVSElm", "Add CCVS", 214, Kind::Ccvs);
     source!("CCCSElm", "Add CCCS", 215, Kind::Cccs);
+    r.add(ElementDescriptor::new(
+        "ControlledVoltageElm",
+        FAMILY,
+        "Add Controlled Voltage Source",
+        CAT,
+        |x, y| Box::new(ControlledSource::new(Output::Voltage, x, y)),
+    ));
+    r.add(ElementDescriptor::new(
+        "ControlledCurrentElm",
+        FAMILY,
+        "Add Controlled Current Source",
+        CAT,
+        |x, y| Box::new(ControlledSource::new(Output::Current, x, y)),
+    ));
+}
+
+/// What a two-terminal controlled source puts out.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Output {
+    /// A voltage (post 2 is +), tag `cv`.
+    Voltage,
+    /// A current from post 1 to post 2, tag `ci`.
+    Current,
+}
+
+/// Half the long diagonal of the diamond.
+const DIAMOND_SIZE: i32 = 18;
+
+/// A two-terminal controlled source: a diamond whose output is an expression that refers to
+/// the rest of the circuit by name. It has no input pins; every input is a reference.
+pub struct ControlledSource {
+    base: Base,
+    output: Output,
+    engine: ExprEngine,
+    broken: bool,
+    center: Point,
+    side1: Point,
+    side2: Point,
+    ashaft: [Point; 2],
+    arrow: Polygon,
+}
+
+impl ControlledSource {
+    /// A source being placed, with the default expression of the original.
+    pub fn new(output: Output, x: i32, y: i32) -> Self {
+        let text = match output {
+            Output::Voltage => "v(in)",
+            Output::Current => ".001*v(in)",
+        };
+        ControlledSource {
+            base: Base::new(x, y),
+            output,
+            engine: ExprEngine::new(text),
+            broken: false,
+            center: Point::default(),
+            side1: Point::default(),
+            side2: Point::default(),
+            ashaft: [Point::default(); 2],
+            arrow: Polygon::default(),
+        }
+    }
+
+    /// The expression as typed.
+    pub fn expr_string(&self) -> &str {
+        &self.engine.expr_string
+    }
+
+    fn label(&self) -> &'static str {
+        match self.output {
+            Output::Voltage => "Output Voltage",
+            Output::Current => "Output Current",
+        }
+    }
+
+    /// Splits the borrow: the engine, and the node data it reads.
+    fn engine_and_nodes(&mut self) -> (&mut ExprEngine, OwnerNodes<'_>) {
+        let ref_base = 2;
+        let o = OwnerNodes { volts: &self.base.volts, nodes: &self.base.nodes, ref_base };
+        (&mut self.engine, o)
+    }
+}
+
+impl Element for ControlledSource {
+    impl_element_base!();
+
+    fn class_name(&self) -> &'static str {
+        match self.output {
+            Output::Voltage => "ControlledVoltageElm",
+            Output::Current => "ControlledCurrentElm",
+        }
+    }
+    fn xml_dump_type(&self) -> String {
+        match self.output {
+            Output::Voltage => "cv".into(),
+            Output::Current => "ci".into(),
+        }
+    }
+    fn dump_xml(&self, out: &mut XmlOut) {
+        default_dump_xml(&self.base, out);
+        out.str_attr("ex", &self.engine.expr_string);
+    }
+    fn undump_xml(&mut self, xml: &XmlNode) {
+        self.base.flags = xml.int_attr("f", self.base.flags);
+        let text = xml.string_attr("ex", &self.engine.expr_string);
+        let _ = self.engine.set_text(&text);
+    }
+
+    fn expr_refs(&self) -> &[ExprRef] {
+        self.engine.refs()
+    }
+    fn set_ref_resolution(&mut self, k: usize, r: RefResolution) {
+        self.engine.set_resolution(k, r);
+    }
+    fn set_ref_current(&mut self, k: usize, current: f64) {
+        self.engine.set_ref_current(k, current);
+    }
+
+    fn voltage_source_count(&self) -> usize {
+        usize::from(self.output == Output::Voltage)
+    }
+    fn voltage_source_nodes(&self) -> Option<(NodeId, NodeId)> {
+        (self.output == Output::Voltage).then(|| (self.base.nodes[0], self.base.nodes[1]))
+    }
+    fn non_linear(&self) -> bool {
+        true
+    }
+    // a reference node is only read, but it has to share the matrix with the posts
+    fn get_connection(&self, n1: usize, n2: usize) -> bool {
+        n1 < 2 && n2 < 2
+    }
+    fn get_matrix_connection(&self, _n1: usize, _n2: usize) -> bool {
+        true
+    }
+    fn get_current_into_node(&self, n: usize) -> f64 {
+        match n {
+            0 => -self.base.current,
+            1 => self.base.current,
+            _ => 0.0,
+        }
+    }
+
+    fn validate(&mut self, idx: usize, v: &mut Validator<'_>) -> bool {
+        // a current source with nowhere for its current to go is a matrix error
+        self.broken = self.output == Output::Current
+            && !v.find_path(PathKind::Inductor, idx, self.base.nodes[1], self.base.nodes[0]);
+        true
+    }
+
+    fn stamp(&mut self, s: &mut Stamper) {
+        let n = &self.base.nodes;
+        match self.output {
+            Output::Voltage => {
+                if let Some(vs) = self.base.volt_source {
+                    s.set_vs_nodes(vs, n[0], n[1]);
+                    s.stamp_voltage_source_var(n[0], n[1], vs);
+                }
+            }
+            Output::Current => {
+                if self.broken {
+                    s.stamp_resistor(n[0], n[1], 1e8);
+                }
+            }
+        }
+    }
+
+    fn do_step(&mut self, s: &mut Stamper) {
+        if !self.engine.is_valid() || (self.output == Output::Current && self.broken) {
+            if self.output == Output::Current {
+                self.base.current = 0.0;
+            }
+            return;
+        }
+        let limit = crate::expr::refs::converge_limit(s);
+        let (t, dt) = (s.t, s.time_step);
+        let output = self.output;
+        let (n0, n1) = (self.base.nodes[0], self.base.nodes[1]);
+        let vs = self.base.volt_source;
+        let out_v = self.base.volts[1] - self.base.volts[0];
+        let (engine, o) = self.engine_and_nodes();
+        if !engine.check_convergence(&o, limit) {
+            s.converged = false;
+        }
+        let rs = engine.eval_and_stamp(false, &o, t, dt, |input, dx| match (output, input) {
+            (Output::Voltage, StampInput::Voltage(pos, neg)) => {
+                if let Some(vs) = vs {
+                    s.stamp_matrix(vs, pos, -dx);
+                    s.stamp_matrix(vs, neg, dx);
+                }
+            }
+            (Output::Voltage, StampInput::Current(ivs)) => {
+                if let Some(vs) = vs {
+                    s.stamp_matrix(vs, ivs, -dx);
+                }
+            }
+            (Output::Current, StampInput::Voltage(pos, neg)) => {
+                s.stamp_vccs(n0, n1, pos, neg, dx);
+            }
+            (Output::Current, StampInput::Current(ivs)) => s.stamp_cccs(n0, n1, ivs, dx),
+        });
+        let v0 = engine.value;
+        engine.save_inputs(&o);
+        match output {
+            Output::Voltage => {
+                // the output has to settle too, not just the inputs
+                if (out_v - v0).abs() > v0.abs() * 0.01 && s.sub_iterations < 100 {
+                    s.converged = false;
+                }
+                if let Some(vs) = vs {
+                    s.stamp_right_side(vs, rs);
+                }
+            }
+            Output::Current => {
+                s.stamp_current_source(n0, n1, rs);
+                self.base.current = v0;
+            }
+        }
+    }
+
+    fn step_finished(&mut self, _s: &mut Stamper) {
+        // the output as solved, which lastoutput reports
+        let out = match self.output {
+            Output::Voltage => self.get_voltage_diff(),
+            Output::Current => self.base.current,
+        };
+        self.engine.step_finished(out);
+    }
+    fn reset(&mut self) {
+        self.base.volts.iter_mut().for_each(|v| *v = 0.0);
+        self.base.curcount = 0.0;
+        self.base.current = 0.0;
+        self.engine.reset();
+    }
+
+    fn set_points(&mut self) {
+        self.base.set_points();
+        self.base.calc_leads(DIAMOND_SIZE * 2);
+        let b = &self.base;
+        let d = f64::from(DIAMOND_SIZE);
+        self.center = interp_point(b.point1, b.point2, 0.5);
+        self.side1 = interp_point_g(b.point1, b.point2, 0.5, d);
+        self.side2 = interp_point_g(b.point1, b.point2, 0.5, -d);
+        // arrow along the long axis, pointing from post 1 to post 2
+        self.ashaft = [interp_point(b.lead1, b.lead2, 0.3), interp_point(b.lead1, b.lead2, 0.6)];
+        let tip = interp_point(b.lead1, b.lead2, 0.75);
+        self.arrow = calc_arrow(self.center, tip, 7.0, 6.0);
+    }
+
+    fn draw(&mut self, g: &mut dyn Painter, c: &DrawCtx) {
+        draw_2_leads(g, &self.base, c);
+        g.set_color(if self.base.needs_highlight() { c.select_color } else { c.light_gray });
+        set_power_color_w(g, &self.base, c, self.get_power());
+        let (l1, l2) = (self.base.lead1, self.base.lead2);
+        draw_thick_line(g, l1, self.side1);
+        draw_thick_line(g, self.side1, l2);
+        draw_thick_line(g, l2, self.side2);
+        draw_thick_line(g, self.side2, l1);
+        match self.output {
+            Output::Voltage => {
+                // post 2 is the + terminal; the signs sit along the diamond, which keeps its
+                // size when the element is stretched
+                g.set_font_size(12);
+                let pm = interp_point(l1, l2, 0.3);
+                let pp = interp_point(l1, l2, 0.7);
+                draw_centered_text(g, &mut self.base, "\u{2212}", pm.x, pm.y, true);
+                draw_centered_text(g, &mut self.base, "+", pp.x, pp.y, true);
+            }
+            Output::Current => {
+                draw_thick_line(g, self.ashaft[0], self.ashaft[1]);
+                fill_polygon(g, &self.arrow);
+            }
+        }
+        let (p1, p2) = (self.base.point1, self.base.point2);
+        self.base.set_bbox_pts(p1, p2, f64::from(DIAMOND_SIZE));
+        do_dots(g, &mut self.base, c);
+        draw_posts(g, &self.base, self, c);
+    }
+
+    fn get_voltage_diff(&self) -> f64 {
+        self.base.volts[1] - self.base.volts[0]
+    }
+    fn get_power(&self) -> f64 {
+        -self.get_voltage_diff() * self.base.current
+    }
+    fn set_current(&mut self, _vs: VsId, c: f64) {
+        self.base.current = c;
+    }
+
+    fn get_info(&self, arr: &mut Vec<String>) {
+        arr.push(
+            match self.output {
+                Output::Voltage => "Controlled Voltage Source",
+                Output::Current => "Controlled Current Source",
+            }
+            .into(),
+        );
+        arr.push(format!("{} = {}", self.label(), self.engine.expr_string));
+        arr.push(format!("V = {}", voltage_text(self.get_voltage_diff())));
+        arr.push(format!("I = {}", current_text(self.base.current)));
+        arr.extend(self.engine.unresolved_info());
+        if self.broken {
+            arr.push("(no current path)".into());
+        }
+    }
+
+    fn get_edit_info(&self, n: usize) -> Option<EditInfo> {
+        (n == 0).then(|| EditInfo::text(self.label(), &self.engine.expr_string).disallow_sliders())
+    }
+    fn set_edit_value(&mut self, n: usize, ei: &mut EditInfo) {
+        if n != 0 {
+            return;
+        }
+        let Some(text) = ei.text.clone() else { return };
+        let old = self.engine.expr_string.clone();
+        if let Err(err) = self.engine.set_text(&text) {
+            // keep the expression that worked
+            let _ = self.engine.set_text(&old);
+            ei.error = Some(err);
+        }
+    }
 }
 
 /// Which controlled source.
@@ -62,10 +388,8 @@ pub enum Kind {
 pub struct Controlled {
     kind: Kind,
     input_count: usize,
-    expr_string: String,
-    expr: Option<Expr>,
-    state: ExprState,
-    last_volts: Vec<f64>,
+    /// The expression, its `v()`/`i()` references and the input history.
+    engine: ExprEngine,
     last_currents: Vec<f64>,
     last_output: f64,
     broken: bool,
@@ -75,15 +399,7 @@ fn sign(a: f64, b: f64) -> f64 {
     if a > 0.0 { b } else { -b }
 }
 
-fn converge_limit(s: &Stamper) -> f64 {
-    if s.sub_iterations < 10 {
-        0.001
-    } else if s.sub_iterations < 200 {
-        0.01
-    } else {
-        0.1
-    }
-}
+use crate::expr::refs::converge_limit;
 
 impl Controlled {
     fn spice(c: &ChipCore) -> bool {
@@ -98,29 +414,36 @@ impl Controlled {
         let mut s = Controlled {
             kind,
             input_count: 2,
-            expr_string: expr_string.into(),
-            expr: None,
-            state: ExprState::new(),
-            last_volts: Vec::new(),
+            engine: ExprEngine::new(expr_string),
             last_currents: Vec::new(),
             last_output: 0.0,
             broken: false,
         };
-        s.parse_expr();
+        s.update_pin_inputs();
         s
     }
 
+    /// The expression as typed.
+    pub fn expr_string(&self) -> &str {
+        &self.engine.expr_string
+    }
+
+    /// Parses the expression again; the message is the edit dialog's error.
     fn parse_expr(&mut self) -> Option<String> {
-        match Expr::parse(&self.expr_string) {
-            Ok(e) => {
-                self.expr = Some(e);
-                None
-            }
-            Err(err) => {
-                self.expr = Expr::parse("").ok();
-                Some(format!("Parse error in expression: {}: {err}", self.expr_string))
-            }
-        }
+        let err = self.engine.parse().err();
+        self.update_pin_inputs();
+        err
+    }
+
+    /// The voltage-controlled sources read their input pins as `a`, `b`, ...; the
+    /// current-controlled ones load their sensed currents themselves.
+    fn update_pin_inputs(&mut self) {
+        let pins = if self.current_input() { 0 } else { self.input_count };
+        self.engine.set_pin_inputs(pins);
+    }
+
+    fn owner<'a>(&self, c: &'a ChipCore) -> OwnerNodes<'a> {
+        OwnerNodes { volts: &c.base.volts, nodes: &c.base.nodes, ref_base: c.pins.len() }
     }
 
     fn current_input(&self) -> bool {
@@ -135,13 +458,13 @@ impl Controlled {
     /// first current, as in the original).
     fn set_current_value(&mut self, n: usize, cur: f64) {
         if n == 0 && self.pairs() < 9 {
-            self.state.values[8] = cur;
+            self.engine.state.values[8] = cur;
         }
-        self.state.values[n] = cur;
+        self.engine.state.values[n] = cur;
     }
 
     fn eval(&self) -> f64 {
-        self.expr.as_ref().map_or(0.0, |e| e.eval(&self.state))
+        self.engine.eval_state()
     }
 }
 
@@ -191,7 +514,8 @@ impl ChipLogic for Controlled {
             let (plus, minus) = if self.kind == Kind::Ccvs { ("V+", "V-") } else { ("O+", "O-") };
             pins.push(Pin::output(0, SIDE_E, plus));
             pins.push(Pin::new(1, SIDE_E, minus));
-            self.state = ExprState::new();
+            self.engine.state.values = ExprState::new().values;
+            self.engine.reset();
             self.last_currents = vec![0.0; self.pairs() + 1];
         } else {
             for i in 0..ic {
@@ -204,10 +528,11 @@ impl ChipLogic for Controlled {
                 pins.push(Pin::new(0, SIDE_E, "C+"));
                 pins.push(Pin::new(1, SIDE_E, "C-"));
             }
-            self.last_volts = vec![0.0; ic];
-            self.state = ExprState::new();
+            self.engine.state.values = ExprState::new().values;
+            self.engine.reset();
         }
         c.pins = pins;
+        self.update_pin_inputs();
     }
 
     fn voltage_source_count(&self, c: &ChipCore) -> usize {
@@ -247,29 +572,37 @@ impl ChipLogic for Controlled {
             self.input_count = n.clamp(0, 8) as usize;
         }
         if let Some(t) = st.next_token() {
-            self.expr_string = unescape(t);
+            self.engine.expr_string = unescape(t);
         }
         self.parse_expr();
         self.setup_pins(c);
         c.base.alloc_nodes(c.pins.len());
     }
     fn write_extra(&self, _c: &ChipCore) -> String {
-        format!(" {} {}", self.input_count, escape(&self.expr_string))
+        format!(" {} {}", self.input_count, escape(&self.engine.expr_string))
     }
     fn read_xml(&mut self, _c: &mut ChipCore, xml: &XmlNode) {
         self.input_count = xml.int_attr("ic", self.input_count as i32).clamp(0, 8) as usize;
-        self.expr_string = xml.string_attr("ex", &self.expr_string);
+        self.engine.expr_string = xml.string_attr("ex", &self.engine.expr_string);
         self.parse_expr();
     }
     fn write_xml(&self, _c: &ChipCore, out: &mut XmlOut) {
         out.int_attr("ic", self.input_count as i32);
-        out.str_attr("ex", &self.expr_string);
+        out.str_attr("ex", &self.engine.expr_string);
     }
     fn on_reset(&mut self, _c: &mut ChipCore) {
-        self.state.reset();
-        self.last_volts.fill(0.0);
+        self.engine.reset();
         self.last_currents.fill(0.0);
         self.last_output = 0.0;
+    }
+    fn expr_refs(&self) -> &[ExprRef] {
+        self.engine.refs()
+    }
+    fn set_ref_resolution(&mut self, k: usize, r: RefResolution) {
+        self.engine.set_resolution(k, r);
+    }
+    fn set_ref_current(&mut self, k: usize, current: f64) {
+        self.engine.set_ref_current(k, current);
     }
 
     fn connection(&self, n1: usize, n2: usize) -> bool {
@@ -340,12 +673,12 @@ impl ChipLogic for Controlled {
     fn step_finished(&mut self, c: &mut ChipCore, _s: &mut Stamper) {
         let ic = self.input_count;
         match self.kind {
-            Kind::Vccs | Kind::Cccs => self.state.update_last_values(c.pins[ic].current),
-            Kind::Vcvs => self.state.update_last_values(c.base.volts[ic] - c.base.volts[ic + 1]),
+            Kind::Vccs | Kind::Cccs => self.engine.step_finished(c.pins[ic].current),
+            Kind::Vcvs => self.engine.step_finished(c.base.volts[ic] - c.base.volts[ic + 1]),
             Kind::Ccvs => {
-                self.state.update_last_values(c.base.volts[ic] - c.base.volts[ic + 1]);
+                self.engine.step_finished(c.base.volts[ic] - c.base.volts[ic + 1]);
                 for i in 0..self.pairs() {
-                    self.state.last_values[i] = c.pins[i * 2 + 1].current;
+                    self.engine.state.last_values[i] = c.pins[i * 2 + 1].current;
                 }
             }
         }
@@ -390,11 +723,12 @@ impl ChipLogic for Controlled {
             ));
         }
         arr.push(format!("I = {}", current_text(c.pins[ic].current)));
+        arr.extend(self.engine.unresolved_info());
     }
 
     fn chip_edit_info(&self, _c: &ChipCore, n: usize) -> Option<EditInfo> {
         match n {
-            0 => Some(EditInfo::text("Output Function", &self.expr_string)),
+            0 => Some(EditInfo::text("Output Function", &self.engine.expr_string)),
             1 => Some(
                 EditInfo::new("# of Inputs", self.input_count as f64, 1.0, 8.0).set_dimensionless(),
             ),
@@ -405,10 +739,14 @@ impl ChipLogic for Controlled {
     fn set_chip_edit_value(&mut self, _c: &mut ChipCore, n: usize, ei: &mut EditInfo) {
         match n {
             0 => {
+                let old = self.engine.expr_string.clone();
                 if let Some(t) = &ei.text {
-                    self.expr_string.clone_from(t);
+                    self.engine.expr_string.clone_from(t);
                 }
                 if let Some(err) = self.parse_expr() {
+                    // keep the expression that worked
+                    self.engine.expr_string = old;
+                    self.parse_expr();
                     ei.error = Some(err);
                 }
             }
@@ -417,6 +755,7 @@ impl ChipLogic for Controlled {
                 let odd = self.current_input() && (v as i64) % 2 == 1;
                 if (0.0..=8.0).contains(&v) && !odd {
                     self.input_count = v as usize;
+                    self.update_pin_inputs();
                 }
             }
             _ => {}
@@ -435,82 +774,64 @@ impl Controlled {
             return;
         }
         let limit = converge_limit(s);
-        let volts = c.base.volts.clone();
-        for i in 0..ic {
-            if (volts[i] - self.last_volts[i]).abs() > limit {
-                s.converged = false;
-            }
+        let (t, dt) = (s.t, s.time_step);
+        let o = OwnerNodes { volts: &c.base.volts, nodes: &c.base.nodes, ref_base: c.pins.len() };
+        if !self.engine.check_convergence(&o, limit) {
+            s.converged = false;
         }
-        self.state.t = s.t;
-        self.state.time_step = s.time_step;
-        for (i, v) in volts.iter().take(ic).enumerate() {
-            self.state.values[i] = *v;
-        }
-        let v0 = -self.eval();
-        let mut rs = v0;
-        for i in 0..ic {
-            let mut dv = volts[i] - self.last_volts[i];
-            if dv.abs() < 1e-6 {
-                dv = 1e-6;
-            }
-            self.state.values[i] = volts[i];
-            let v = -self.eval();
-            self.state.values[i] = volts[i] - dv;
-            let v2 = -self.eval();
-            let mut dx = (v - v2) / dv;
-            if dx.abs() < 1e-6 {
-                dx = sign(dx, 1e-6);
-            }
-            s.stamp_vccs(n[ic], n[ic + 1], n[i], NodeId::GROUND, dx);
-            rs -= dx * volts[i];
-            self.state.values[i] = volts[i];
-        }
+        // the output is a current from the + pin to the - pin of minus the expression
+        let rs = self.engine.eval_and_stamp(true, &o, t, dt, |input, dx| match input {
+            StampInput::Voltage(pos, neg) => s.stamp_vccs(n[ic], n[ic + 1], pos, neg, dx),
+            StampInput::Current(vs) => s.stamp_cccs(n[ic], n[ic + 1], vs, dx),
+        });
+        self.engine.save_inputs(&o);
         s.stamp_current_source(n[ic], n[ic + 1], rs);
+        let v0 = self.engine.value;
         c.pins[ic].current = -v0;
         c.pins[ic + 1].current = v0;
-        self.last_volts[..ic].copy_from_slice(&volts[..ic]);
     }
 
     fn step_vcvs(&mut self, c: &mut ChipCore, s: &mut Stamper) {
         let ic = self.input_count;
-        let n = c.base.nodes.clone();
         let limit = converge_limit(s);
-        let volts = c.base.volts.clone();
-        for i in 0..ic {
-            if (volts[i] - self.last_volts[i]).abs() > limit {
-                s.converged = false;
-            }
+        let (t, dt) = (s.t, s.time_step);
+        let o = OwnerNodes { volts: &c.base.volts, nodes: &c.base.nodes, ref_base: c.pins.len() };
+        if !self.engine.check_convergence(&o, limit) {
+            s.converged = false;
         }
         let Some(vn) = c.pins[ic].volt_source else { return };
-        self.state.t = s.t;
-        self.state.time_step = s.time_step;
-        for (i, v) in volts.iter().take(ic).enumerate() {
-            self.state.values[i] = *v;
-        }
-        let v0 = self.eval();
+        let rs = self.engine.eval_and_stamp(false, &o, t, dt, |input, dx| match input {
+            StampInput::Voltage(pos, neg) => {
+                s.stamp_matrix(vn, pos, -dx);
+                s.stamp_matrix(vn, neg, dx);
+            }
+            StampInput::Current(ivs) => s.stamp_matrix(vn, ivs, -dx),
+        });
+        let v0 = self.engine.value;
+        let volts = &c.base.volts;
         if (volts[ic] - volts[ic + 1] - v0).abs() > v0.abs() * 0.01 && s.sub_iterations < 100 {
             s.converged = false;
         }
-        let mut rs = v0;
-        for i in 0..ic {
-            let mut dv = volts[i] - self.last_volts[i];
-            if dv.abs() < 1e-6 {
-                dv = 1e-6;
-            }
-            self.state.values[i] = volts[i];
-            let v = self.eval();
-            self.state.values[i] = volts[i] - dv;
-            let v2 = self.eval();
-            let mut dx = (v - v2) / dv;
-            if dx.abs() < 1e-6 {
-                dx = sign(dx, 1e-6);
-            }
-            s.stamp_matrix(vn, n[i], -dx);
-            rs -= dx * volts[i];
-            self.state.values[i] = volts[i];
-        }
         s.stamp_right_side(vn, rs);
-        self.last_volts[..ic].copy_from_slice(&volts[..ic]);
+        self.engine.save_inputs(&o);
+    }
+
+    /// The `v()`/`i()` part of a current-controlled source's linearisation: the sensed
+    /// currents were differentiated by the caller, so this only adds the references (it
+    /// re-derives the same value, so subtracting `v0` leaves just their residual).
+    fn stamp_refs(
+        &mut self,
+        c: &ChipCore,
+        s: &mut Stamper,
+        v0: f64,
+        mut stamp: impl FnMut(&mut Stamper, StampInput, f64),
+    ) -> f64 {
+        if self.engine.refs().is_empty() {
+            return 0.0;
+        }
+        let (t, dt) = (s.t, s.time_step);
+        let o = self.owner(c);
+        self.engine.eval_and_stamp(false, &o, t, dt, |input, dx| stamp(s, input, dx)) - v0
     }
 
     fn step_ccvs(&mut self, c: &mut ChipCore, s: &mut Stamper) {
@@ -526,9 +847,12 @@ impl Controlled {
         if (out_v - self.last_output).abs() > converge_limit(s) {
             s.converged = false;
         }
+        if !self.engine.check_convergence(&self.owner(c), converge_limit(s)) {
+            s.converged = false;
+        }
         if let Some(vno) = c.pins[ic].volt_source {
-            self.state.t = s.t;
-            self.state.time_step = s.time_step;
+            self.engine.state.t = s.t;
+            self.engine.state.time_step = s.time_step;
             for i in 0..pairs {
                 self.set_current_value(i, c.pins[i * 2 + 1].current);
             }
@@ -551,8 +875,16 @@ impl Controlled {
                 rs -= dx * cur;
                 self.set_current_value(i, cur);
             }
+            rs += self.stamp_refs(c, s, v0, |s, input, dx| match input {
+                StampInput::Voltage(pos, neg) => {
+                    s.stamp_matrix(vno, pos, -dx);
+                    s.stamp_matrix(vno, neg, dx);
+                }
+                StampInput::Current(ivs) => s.stamp_matrix(vno, ivs, -dx),
+            });
             s.stamp_right_side(vno, rs);
         }
+        self.engine.save_inputs(&self.owner(c));
         for i in 0..pairs {
             self.last_currents[i] = c.pins[i * 2 + 1].current;
         }
@@ -578,8 +910,11 @@ impl Controlled {
         for i in 0..=pairs {
             self.last_currents[i] = c.pins[i * 2 + 1].current;
         }
-        self.state.t = s.t;
-        self.state.time_step = s.time_step;
+        if !self.engine.check_convergence(&self.owner(c), converge_limit(s)) {
+            s.converged = false;
+        }
+        self.engine.state.t = s.t;
+        self.engine.state.time_step = s.time_step;
         for i in 0..pairs {
             self.set_current_value(i, c.pins[i * 2 + 1].current);
         }
@@ -606,7 +941,13 @@ impl Controlled {
             rs -= dx * cur;
             self.set_current_value(i, cur);
         }
+        // the output is a current from O- to O+
+        rs += self.stamp_refs(c, s, v0, |s, input, dx| match input {
+            StampInput::Voltage(pos, neg) => s.stamp_vccs(n[ic + 1], n[ic], pos, neg, dx),
+            StampInput::Current(vs) => s.stamp_cccs(n[ic + 1], n[ic], vs, dx),
+        });
         s.stamp_current_source(n[ic + 1], n[ic], rs);
+        self.engine.save_inputs(&self.owner(c));
     }
 }
 
@@ -621,7 +962,7 @@ mod tests {
         assert!(text.ends_with(" 2 .1*(a-b)"), "{text}");
         let mut st = Tokenizer::new("2 a/2\\pb/2");
         let back = ChipElm::from_dump(Controlled::new(Kind::Vcvs), 0, 0, 32, 0, 0, &mut st);
-        assert_eq!(back.logic.expr_string, "a/2+b/2");
+        assert_eq!(back.logic.expr_string(), "a/2+b/2");
         assert_eq!(back.core.pins.len(), 4);
     }
 
