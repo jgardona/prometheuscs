@@ -2754,6 +2754,22 @@ mod tests {
         assert_eq!(s.edit_fields(1)[0].value, 1000.0);
     }
 
+    #[cfg(feature = "reactive")]
+    #[test]
+    fn inductance_edit_from_the_panel_changes_the_inductor() {
+        let text = "$ 1 0.000005 10 50 5 50 5e-11\nl 0 0 0 64 0 1 0 0 0\nw 0 64 64 64 0\nr 64 64 64 0 0 1000\nw 64 0 0 0 0\n";
+        let mut s = Session::load(text, &Registry::standard()).unwrap();
+        let idx = s.sim.elements.iter().position(|e| e.class_name() == "InductorElm").unwrap();
+        let mut f = s.edit_fields(idx);
+        assert_eq!(f[0].name, "Inductance (H)");
+        f[0].value = 1000.0;
+        s.apply_edit_fields(idx, f);
+        assert_eq!(s.edit_fields(idx)[0].value, 1000.0);
+        let mut info = Vec::new();
+        s.sim.elements[idx].get_info(&mut info);
+        assert!(info.iter().any(|l| l.starts_with("L = 1 kH") || l.starts_with("L = 1000")), "{info:?}");
+    }
+
     #[cfg(feature = "sources")]
     #[test]
     #[cfg(feature = "switches")]

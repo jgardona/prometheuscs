@@ -202,8 +202,13 @@ pub struct Widgets {
     /// The properties section of the side panel, and the element it shows with the fields as
     /// last shown or committed (a change from elsewhere, such as undo, rebuilds it).
     properties: gtk::Box,
-    shown_properties: Option<(usize, Rc<RefCell<Vec<EditInfo>>>)>,
+    /// The editor is kept here: its commit handlers hold only a weak link to it, so dropping
+    /// it would leave the panel's fields unable to apply anything.
+    shown_properties: Option<ShownProperties>,
 }
+
+/// What the side panel shows: the element, its fields as last shown or committed, the editor.
+type ShownProperties = (usize, Rc<RefCell<Vec<EditInfo>>>, dialogs::PropertyEditor);
 
 /// Range of the simulation speed slider, as in the original: the speed grows exponentially,
 /// so only a range this wide reaches both very slow and very fast runs.
@@ -2248,7 +2253,7 @@ impl App {
     fn sync_properties(&self, s: &Session, widgets: &mut Widgets, sender: &ComponentSender<Self>) {
         let want = self.properties.map(|i| (i, s.edit_fields(i))).filter(|(_, f)| !f.is_empty());
         let same = match (&want, &widgets.shown_properties) {
-            (Some((i, f)), Some((j, shown))) => i == j && *f == *shown.borrow(),
+            (Some((i, f)), Some((j, shown, _))) => i == j && *f == *shown.borrow(),
             (None, None) => true,
             _ => false,
         };
@@ -2281,7 +2286,7 @@ impl App {
             editor.add_button(&label).connect_clicked(move |_| action());
         }
         widgets.properties.append(editor.widget());
-        widgets.shown_properties = Some((i, shown));
+        widgets.shown_properties = Some((i, shown, editor));
     }
 
     fn update_inner(&mut self, msg: Msg, sender: &ComponentSender<Self>) {
