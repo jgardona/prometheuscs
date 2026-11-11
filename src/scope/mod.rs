@@ -1046,6 +1046,10 @@ impl Scope {
     pub fn view(&self, elements: &[Box<dyn Element>], max_time_step: f64, time: f64) -> ScopeView {
         // a triggered scope draws the last sweep captured in full until the next one is
         let held = self.trigger.held_sweep(self.plots.len());
+        let time_per_sample = max_time_step * f64::from(self.speed);
+        // the time of the newest drawn sample: a held sweep is frozen, so it must not follow
+        // the live time (the time grid would drift while the curves stand still)
+        let data_time = held.map_or(time, |s| s.time + s.back as f64 * time_per_sample);
         let plots = self
             .plots
             .iter()
@@ -1095,8 +1099,8 @@ impl Scope {
             scale: self.scale,
             speed: self.speed,
             trace: self.trace.clone(),
-            time_per_sample: max_time_step * f64::from(self.speed),
-            time,
+            time_per_sample,
+            time: data_time,
             plots,
             xy: self.xy,
             plot_xy: self.plot_xy,
@@ -1390,5 +1394,35 @@ mod tests {
         // Reset forgets the sweep
         sc.reset(t);
         assert!(sc.trigger.sweep.is_none());
+    }
+
+    #[test]
+    fn a_held_sweep_is_timed_from_its_capture_not_from_the_live_time() {
+        let dt = 1e-5;
+        let mut el = signal(0.0);
+        let mut sc = scope_on(&el);
+        sc.trigger.mode = TRIGGER_NORMAL;
+        sc.trigger.level = 2.5;
+        let t = std::cell::Cell::new(0.0);
+        let mut run = |sc: &mut Scope, el: &mut Vec<Box<dyn Element>>, v: f64, n: usize| {
+            set(el, v);
+            for _ in 0..n {
+                sc.time_step(el, t.get(), dt);
+                t.set(t.get() + dt);
+            }
+        };
+        run(&mut sc, &mut el, 0.0, 20);
+        run(&mut sc, &mut el, 5.0, 1);
+        run(&mut sc, &mut el, 0.0, 2 * TRIGGER_HOLDOFF as usize);
+        let a = sc.view(&el, dt, t.get());
+        run(&mut sc, &mut el, 0.0, 500);
+        let b = sc.view(&el, dt, t.get());
+        assert!(a.trigger.as_ref().unwrap().triggered);
+        // the same sweep: the same time at its newest sample whatever the live time
+        assert_eq!(a.time, b.time);
+        // and that time is the trigger time plus the samples after it
+        let tr = a.trigger.unwrap();
+        let expect = tr.time + tr.back as f64 * a.time_per_sample;
+        assert!((a.time - expect).abs() < 1e-12);
     }
 }

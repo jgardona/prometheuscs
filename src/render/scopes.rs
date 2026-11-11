@@ -1490,9 +1490,16 @@ fn draw_trigger(
             gx += 8.0;
         }
         g.set_font_size(10);
-        let edge =
-            if t.edge == crate::scope::TRIGGER_EDGE_RISING { "T\u{2191}" } else { "T\u{2193}" };
-        g.draw_string(edge, x + w - 25.0, level_y - 3.0);
+        // "T" plus an arrow drawn as lines: a font glyph for the arrow may be missing
+        g.draw_string("T", x + w - 25.0, level_y - 3.0);
+        let ax = (x + w - 10.0) as i32;
+        let (tail, tip) = (level_y as i32 - 2, level_y as i32 - 10);
+        let (tail, tip) =
+            if t.edge == crate::scope::TRIGGER_EDGE_RISING { (tail, tip) } else { (tip, tail) };
+        g.draw_line(ax, tail, ax, tip);
+        let barb = if tip < tail { 3 } else { -3 };
+        g.draw_line(ax, tip, ax - 3, tip + barb);
+        g.draw_line(ax, tip, ax + 3, tip + barb);
     }
     let status = match t.state {
         crate::scope::TriggerState::Armed if t.waiting => "WAIT",
@@ -1868,6 +1875,8 @@ mod tests {
         draw_scopes(&mut g, &[v.clone()], &mut scales, 400.0, 200.0, false, None);
         let svg = g.finish();
         assert!(svg.contains("WAIT"), "{svg}");
+        // the edge marker holds no arrow glyph (fonts may lack it)
+        assert!(!svg.contains('\u{2191}') && !svg.contains('\u{2193}'), "{svg}");
         // once triggered the display is held around the trigger sample: the newest samples
         // are not at the right edge any more
         if let Some(t) = &mut v.trigger {
