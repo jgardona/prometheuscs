@@ -3,6 +3,7 @@
 #![allow(clippy::expect_used, clippy::unwrap_used, clippy::panic)]
 //! The documentation of the example circuits (`docs/exemplos`): complete, up to date, and honest.
 
+use prometheuscs::app::examples::{ExampleItem, parse_setup_list};
 use prometheuscs::exdocs::{check_all, sync_all};
 use std::path::{Path, PathBuf};
 
@@ -37,6 +38,83 @@ fn the_readme_links_the_index() {
         readme.contains("docs/exemplos/README.md"),
         "README.md must link docs/exemplos/README.md"
     );
+}
+
+#[test]
+fn every_document_is_one_click_from_the_index() {
+    let index = std::fs::read_to_string("docs/exemplos/README.md").unwrap();
+    let mut missing = Vec::new();
+    for entry in std::fs::read_dir("docs/exemplos").unwrap().flatten() {
+        let name = entry.file_name().to_string_lossy().to_string();
+        if name.ends_with(".md") && name != "README.md" && !index.contains(&format!("]({name})")) {
+            missing.push(name);
+        }
+    }
+    assert!(missing.is_empty(), "documents the index does not link: {missing:?}");
+}
+
+/// The menu as the index lists it: `# Group` for a heading, then the entries of the group in the
+/// order of the menu, then its sub-groups; the entries that are in no group are collected apart in
+/// `loose`.
+fn menu_titles(items: &[ExampleItem], out: &mut Vec<String>, loose: Option<&mut Vec<String>>) {
+    let mut loose = loose;
+    for item in items {
+        if let ExampleItem::Circuit { title, .. } = item {
+            match loose.as_deref_mut() {
+                Some(l) => l.push(title.clone()),
+                None => out.push(title.clone()),
+            }
+        }
+    }
+    for item in items {
+        if let ExampleItem::Group { title, items } = item {
+            out.push(format!("# {title}"));
+            menu_titles(items, out, None);
+        }
+    }
+}
+
+#[test]
+fn the_index_follows_the_order_and_the_categories_of_the_menu() {
+    let list = parse_setup_list(&std::fs::read_to_string("assets/setuplist.txt").unwrap());
+    let (mut want, mut want_loose) = (Vec::new(), Vec::new());
+    menu_titles(&list.items, &mut want, Some(&mut want_loose));
+    // what the index shows, in order: a heading (`##` and deeper) for a category or sub-category and an entry
+    // `- [Title](file.md)` (or `- Title — *pendente*`); the entries in no group are under
+    // `## Sem categoria`
+    let index = std::fs::read_to_string("docs/exemplos/README.md").unwrap();
+    let (mut have, mut have_loose) = (Vec::new(), Vec::new());
+    let (mut in_blocks, mut in_loose) = (false, false);
+    for line in index.lines() {
+        let heading = line
+            .strip_prefix("## ")
+            .or_else(|| line.strip_prefix("### "))
+            .or_else(|| line.strip_prefix("#### "));
+        if let Some(h) = heading {
+            let title = h.split(" — ").next().unwrap_or(h).to_string();
+            in_blocks = true;
+            in_loose = title == "Sem categoria";
+            if !in_loose {
+                have.push(format!("# {title}"));
+            }
+        } else if in_blocks && let Some(e) = line.strip_prefix("- ") {
+            let title = match e.strip_prefix('[') {
+                Some(rest) => rest.split("](").next().unwrap_or(rest).to_string(),
+                None => e.split(" — ").next().unwrap_or(e).to_string(),
+            };
+            if in_loose { have_loose.push(title) } else { have.push(title) }
+        }
+    }
+    let first = have.iter().zip(&want).position(|(h, w)| h != w);
+    assert!(
+        have == want,
+        "the index must follow the categories and the order of the menu: first difference at {first:?} (index {:?}, menu {:?}), lengths {} and {}",
+        first.map(|i| &have[i]),
+        first.map(|i| &want[i]),
+        have.len(),
+        want.len()
+    );
+    assert_eq!(have_loose, want_loose, "the entries outside any group");
 }
 
 fn scratch(name: &str) -> PathBuf {

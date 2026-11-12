@@ -468,6 +468,10 @@ Menu **Arquivo**:
   Salvamento Automático**.
 - **Exemplos.** O menu **Exemplos de Circuitos** reúne os 373 circuitos em grupos. Abrir um
   exemplo substitui o circuito atual.
+  Cada exemplo tem um documento com o objetivo do circuito, a teoria e as equações, os valores que
+  o simulador dá e o que observar na janela: veja o índice em
+  [docs/exemplos/README.md](exemplos/README.md), que segue os mesmos grupos do menu. Os valores
+  dos documentos são conferidos contra o simulador pela ferramenta `exdocs`.
 - **Imagem e impressão** usam o mesmo desenho do canvas, inclusive com **Fundo Branco**
   (seção 10), o que gasta menos tinta.
 

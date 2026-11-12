@@ -23,6 +23,7 @@ módulos e de funções são o que importa.
 11. [Convenções do código](#11-convenções-do-código)
 12. [Armadilhas conhecidas](#12-armadilhas-conhecidas)
 13. [Receitas: onde mexer para…](#13-receitas-onde-mexer-para)
+14. [Documentação dos exemplos](#14-documentação-dos-exemplos)
 
 ---
 
@@ -480,6 +481,7 @@ Regras:
 | Desenho | `tests/render_svg.rs` (com `insta`), `render_cairo.rs` |
 | Osciloscópios | `tests/scopes.rs`, `src/render/scopes.rs` |
 | Desempenho | `benches/solver.rs`, `--bench-render`, `tests/bench/` |
+| Documentação dos exemplos (completa, atualizada e conferida contra o simulador) | `tests/example_docs.rs`, `src/exdocs/` (seção 14) |
 
 ### Comparação com o original
 
@@ -560,3 +562,47 @@ cargo test --no-default-features --features passive,reactive,sources,switches,lo
 | Mudar o que a janela recebe do solver | `solver/snapshot.rs`, `Simulation::snapshot` e `Session::apply_snapshot` |
 | Medir desempenho | `cargo bench --bench solver` e `--bench-render` |
 | Conferir contra o original | `tests/compat/README.md` |
+| Documentar um exemplo novo, ou mudar um existente | `docs/exemplos/<arquivo>.md` e `cargo run --release --bin exdocs -- sync` e `check` (seção 14) |
+
+## 14. Documentação dos exemplos
+
+Cada circuito do menu **Exemplos de Circuitos** tem um documento em `docs/exemplos/<arquivo>.md`
+(366 documentos para as 367 entradas do menu; um arquivo que aparece em duas categorias tem um
+só documento). O índice, `docs/exemplos/README.md`, segue as categorias e a ordem de
+`assets/setuplist.txt` e diz, por categoria, se ela está `documentado` ou `pendente (n de m)`.
+
+**O documento** (em português) tem um cabeçalho (`exemplo`, `titulo`, `categoria` e as
+verificações) e sete seções, nesta ordem: Objetivo, O circuito, Teoria, Resultados esperados, O
+que observar, Limites do modelo, Referências. O formato exato, com as regras que a ferramenta
+confere, está em `specs/004-circuit-example-docs/contracts/document-format.md`.
+
+**Partes geradas.** Três trechos de cada documento não são escritos à mão e a ferramenta os
+reescreve: a linha de navegação (índice, anterior, próximo), o esquema do circuito
+(`docs/exemplos/img/<arquivo>.svg`, desenhado a partir do próprio arquivo do exemplo) e a tabela
+de componentes (cada elemento com seus valores e unidades, vinda de `get_edit_info`).
+
+**Verificações.** O cabeçalho lista linhas como
+`t=0.02 de=0.01 elemento=2:CapacitorElm grandeza=vd fn=rms esperado=0.707 tol=0.03`: a
+ferramenta roda o exemplo no simulador até o instante `t` e compara a grandeza (`vd`, `i` ou
+`v<k>`, o terminal `k` contado a partir de zero) com o valor que o documento afirma, dentro da
+tolerância; `fn` escolhe uma função sobre a janela (`valor`, `max`, `min`, `rms`, `media`,
+`freq`) e `alterna=N[@t],M` aciona chaves ou entradas lógicas antes de medir. Um documento sem
+nada a medir (uma demonstração gráfica) usa `sem-verificacao` com o motivo.
+
+**A ferramenta** é `src/bin/exdocs.rs`, sobre o módulo `src/exdocs/`:
+
+| Comando | O que faz |
+|---------|-----------|
+| `cargo run --release --bin exdocs -- sync` | Reescreve o índice, os esquemas e as partes geradas |
+| `… -- check` | Confere cabeçalho, seções, matemática e links, partes geradas, verificações e órfãos; sai com 1 se houver problema |
+| `… -- facts <exemplo.txt>` | Lista os elementos do exemplo, para quem vai escrever |
+| `… -- skeleton <exemplo.txt>` | Cria o documento com as seções vazias; não sobrescreve |
+| `… -- probe <exemplo.txt> <t>` | Mostra tensões e correntes de cada elemento no instante `t` |
+| `… -- figure <exemplo.txt> <saida.svg>` | Desenha o esquema de um exemplo |
+
+Os mesmos testes rodam em `tests/example_docs.rs`: um documento que falta, um valor que o
+simulador não confirma, uma tabela ou um índice desatualizados e um documento sem entrada no menu
+fazem o teste falhar. Um exemplo que não carrega numa configuração de famílias (veja a seção 9)
+é pulado, não reprovado. Para um exemplo novo: acrescente-o a `setuplist.txt`, rode `skeleton`,
+escreva o documento, `sync` e `check`.
+

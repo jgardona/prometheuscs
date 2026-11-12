@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="113" height="305" viewBox="0 0 113 305">
+<defs>
+<linearGradient id="g0" gradientUnits="userSpaceOnUse" x1="40" y1="96" x2="40" y2="128"><stop offset="0" stop-color="#807f7f"/><stop offset="1" stop-color="#807f7f"/></linearGradient>
+</defs>
+<path d="M0 0 L113 0 L113 305 L0 305 Z" fill="#000000" stroke="none"/>
+<path d="M40 72 L40 57" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="26" y="45" font-size="12" text-anchor="start" dominant-baseline="central" fill="#ffffff">+2kV</text>
+<path d="M40 72 L40 96" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 128 L40 152" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 96 L34 98 L46 102 L34 106 L46 110 L34 114 L46 118 L34 122 L46 126 L40 128" fill="none" stroke="url(#g0)" stroke-width="3" stroke-linecap="round"/>
+<text x="50" y="118" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">2M</text>
+<path d="M40 152 L40 188" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 212 L40 248" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 196 L48 188 L32 188 Z" fill="#807f7f" stroke="none"/>
+<path d="M40 204 L32 212 L48 212 Z" fill="#807f7f" stroke="none"/>
+<path d="M40 248 L40 264" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M50 264 L30 264" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M46 269 L34 269" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M42 274 L38 274" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M72 152 L72 196" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M84 196 L60 196" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M72 248 L72 204" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M84 204 L60 204" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="86" y="206" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">10nF</text>
+<path d="M72 248 L40 248" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="56" y="242" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M40 152 L72 152" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="56" y="146" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff"></text>
+<path d="M43 152 L42.9 152.78 L42.6 153.5 L42.12 154.12 L41.5 154.6 L40.78 154.9 L40 155 L39.22 154.9 L38.5 154.6 L37.88 154.12 L37.4 153.5 L37.1 152.78 L37 152 L37.1 151.22 L37.4 150.5 L37.88 149.88 L38.5 149.4 L39.22 149.1 L40 149 L40.78 149.1 L41.5 149.4 L42.12 149.88 L42.6 150.5 L42.9 151.22 L43 152 Z" fill="#ffffff" stroke="none"/>
+<path d="M43 248 L42.9 248.78 L42.6 249.5 L42.12 250.12 L41.5 250.6 L40.78 250.9 L40 251 L39.22 250.9 L38.5 250.6 L37.88 250.12 L37.4 249.5 L37.1 248.78 L37 248 L37.1 247.22 L37.4 246.5 L37.88 245.88 L38.5 245.4 L39.22 245.1 L40 245 L40.78 245.1 L41.5 245.4 L42.12 245.88 L42.6 246.5 L42.9 247.22 L43 248 Z" fill="#ffffff" stroke="none"/>
+</svg>

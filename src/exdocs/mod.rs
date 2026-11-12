@@ -147,6 +147,30 @@ pub fn sync_all(root: &Path) -> Result<Vec<String>, String> {
     Ok(changed)
 }
 
+/// The `categoria` a document of an example under `path` must carry: the path of its menu
+/// groups, or `Sem categoria` for an entry that is in no group (the blank circuit).
+#[must_use]
+pub fn category_label(path: &[String]) -> String {
+    if path.is_empty() { "Sem categoria".to_string() } else { path.join(" > ") }
+}
+
+/// Whether the example uses a family that this build leaves out *inside* a subcircuit or a
+/// composite element (the OTA, the Norton amplifier, the subcircuit rectifier, the unijunction
+/// transistor): such a file still loads without errors but its elements are missing, so its
+/// numbers cannot be checked here and the check is skipped, as for a file that does not load.
+fn lacks_hidden_family(file: &str) -> bool {
+    let needs: &[bool] = if file.starts_with("ota-") {
+        &[cfg!(feature = "transistors")]
+    } else if file.starts_with("norton-") || file == "ujtosc.txt" {
+        &[cfg!(feature = "diodes"), cfg!(feature = "analog")]
+    } else if file == "fullrect-sc.txt" {
+        &[cfg!(feature = "diodes")]
+    } else {
+        &[]
+    };
+    needs.iter().any(|have| !have)
+}
+
 /// Everything wrong with the documents under `root`, one `file: message` per problem.
 pub fn check_all(root: &Path) -> Vec<String> {
     let ctx = match load(root) {
@@ -180,18 +204,16 @@ pub fn check_all(root: &Path) -> Vec<String> {
                 if fm.title != *title {
                     say(format!("`titulo` é `{}`, o menu diz `{title}`", fm.title));
                 }
-                if fm.category != path.join(" > ") {
-                    say(format!(
-                        "`categoria` é `{}`, o menu diz `{}`",
-                        fm.category,
-                        path.join(" > ")
-                    ));
+                let category = category_label(path);
+                if fm.category != category {
+                    say(format!("`categoria` é `{}`, o menu diz `{category}`", fm.category));
                 }
                 let example = std::fs::read_to_string(ctx.circuits.join(file));
                 for (n, line) in fm.checks.iter().enumerate() {
                     match checks::parse_check(line) {
                         Err(e) => say(format!("verificação {}: {e}", n + 1)),
                         Ok(check) => match &example {
+                            Ok(_) if lacks_hidden_family(file) => {}
                             Ok(text) => {
                                 if let Err(e) = checks::run_check(text, &check, &registry) {
                                     say(format!("verificação {} ({line}): {e}", n + 1));
@@ -246,4 +268,16 @@ pub fn check_all(root: &Path) -> Vec<String> {
         )),
     }
     problems
+}
+
+#[cfg(test)]
+mod tests {
+    use super::category_label;
+
+    #[test]
+    fn the_category_of_an_entry_outside_any_group_is_named() {
+        assert_eq!(category_label(&[]), "Sem categoria");
+        let path = ["Misc Devices".to_string(), "JFETs".to_string()];
+        assert_eq!(category_label(&path), "Misc Devices > JFETs");
+    }
 }

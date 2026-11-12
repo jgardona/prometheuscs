@@ -430,6 +430,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "analog")]
     fn the_small_grid_of_the_header_lays_out_the_elements_that_follow() {
         let small = switch_control("$ 3 5e-6 10 50 5 50 5e-11\n159 280 352 344 352 0\n");
         assert_eq!(small.map(|p| (p.x, p.y)), Some((312, 368)));
@@ -438,6 +439,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "analog")]
     fn the_small_grid_of_an_xml_file_lays_out_its_elements() {
         let small = switch_control("<cir f=\"3\"><as x=\"280 352 344 352\" f=\"0\"/></cir>");
         assert_eq!(small.map(|p| (p.x, p.y)), Some((312, 368)));

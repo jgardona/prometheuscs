@@ -98,6 +98,7 @@ elementos, o solver e os osciloscópios não dependem do GTK.
 |-----------|----------|
 | [docs/guia-do-usuario.md](docs/guia-do-usuario.md) | Todas as funções do simulador e como usá-las |
 | [docs/arquitetura.md](docs/arquitetura.md) | Como o programa é organizado, para quem vai mantê-lo |
+| [docs/exemplos/](docs/exemplos/README.md) | Documentação científica de cada circuito de exemplo (teoria, equações, resultados esperados) |
 | [docs/adding-a-component.md](docs/adding-a-component.md) | Como acrescentar um componente novo (em inglês) |
 | [docs/exemplos/README.md](docs/exemplos/README.md) | O que cada circuito de exemplo mostra |
 | [tests/compat/README.md](tests/compat/README.md) | Como a compatibilidade com o original é conferida |
