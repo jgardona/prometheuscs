@@ -42,7 +42,7 @@ Um NMOS (modelo padrão, sem diodo de corpo) tem a porta ligada a uma fonte de $
 
 Na saturação (modelo de lei quadrática de [n-MOSFET](nmosfet.md), $\lambda = 0$) a corrente de dreno é
 
-$$I_D = \tfrac12\beta\,(V_{GS} - V_t)^2,$$
+$$I_D = \tfrac12\beta\thinspace(V_{GS} - V_t)^2,$$
 
 que **não** depende de $V_{DS}$: o transistor mantém a corrente fixada por $V_{GS}$ enquanto $V_{DS} \ge V_{GS} - V_t$ (a tensão de conformidade mínima). Se a carga muda, a tensão sobre ela se ajusta por $V = R I_D$, e o dreno acompanha.
 

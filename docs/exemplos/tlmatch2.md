@@ -61,7 +61,7 @@ Dois circuitos iguais, alimentados por fontes senoidais de $5\ \text{V}$ e $100\
 
 A impedância de uma linha em aberto é puramente reativa, com susceptância $B = \tan(\beta\ell)/Z_0$, e ela pode cancelar a parte imaginária da admitância vista. A $100\ \text{MHz}$, o trecho de $1{,}76\ \text{ns}$ ($63{,}4^\circ$) de linha de $75\ \Omega$ transforma a carga de $300\ \Omega$ em
 
-$$Y_{\text{in}} = \frac{1}{75}\,(1 + j1{,}5)\ \text{S}.$$
+$$Y_{\text{in}} = \frac{1}{75}\thinspace(1 + j1{,}5)\ \text{S}.$$
 
 A parte real ($1/75\ \text{S}$) é a admitância da linha: está casada. O que sobra é uma susceptância de $+1{,}5/75$. O toco aberto de $3{,}44\ \text{ns}$ ($123{,}7^\circ$) tem susceptância $\tan(123{,}7^\circ)/75 = -1{,}5/75$, que cancela exatamente a parte imaginária. A admitância total é $1/75\ \text{S}$ e a linha da fonte vê $75\ \Omega$ puros.
 

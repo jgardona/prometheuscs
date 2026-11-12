@@ -54,7 +54,7 @@ $$I_P = \frac{1}{K_{g1}}\left(V_{GK} + \frac{V_{PK}}{\mu}\right)^{3/2}\quad\text
 
 e zero em caso contrário (corte). O fator de amplificação $\mu$ diz quantas vezes a grade controla mais que a placa; aqui $\mu = 93$ (como o de um 12AX7). A corrente de grade é desprezada enquanto $V_{GK} \le 0$; para $V_{GK} > 0$ o simulador a modela como um resistor de $6\ \text{k}\Omega$ entre grade e cátodo.
 
-**Polarização.** O resistor do cátodo dá uma polarização automática: a corrente de placa $I$ cria no cátodo a tensão $V_K = 3\ \text{k}\Omega\cdot I$, e a grade, em $0\ \text{V}$ em média, fica em $V_{GK} = -V_K$. O ponto de operação satisfaz $I = (1{,}72 - 3140\,I)^{3/2}/1360$, de solução $I \approx 0{,}35\ \text{mA}$ ($V_K \approx 1{,}05\ \text{V}$, placa em $\approx 156{,}4\ \text{V}$).
+**Polarização.** O resistor do cátodo dá uma polarização automática: a corrente de placa $I$ cria no cátodo a tensão $V_K = 3\ \text{k}\Omega\cdot I$, e a grade, em $0\ \text{V}$ em média, fica em $V_{GK} = -V_K$. O ponto de operação satisfaz $I = (1{,}72 - 3140\thinspace I)^{3/2}/1360$, de solução $I \approx 0{,}35\ \text{mA}$ ($V_K \approx 1{,}05\ \text{V}$, placa em $\approx 156{,}4\ \text{V}$).
 
 **Pequenos sinais.** A transcondutância é $g_m = 1{,}5\sqrt{V_{GK} + V_{PK}/\mu}/K_{g1} = 0{,}87\ \text{mS}$, a resistência de placa $r_p = \mu/g_m = 107\ \text{k}\Omega$, e o ganho, com o cátodo desacoplado e a carga de $10\ \text{k}\Omega \parallel 100\ \text{k}\Omega$, é
 

@@ -50,7 +50,7 @@ Quatro entradas lógicas ($0$ ou $5\ \text{V}$) ligam-se, por resistores de $100
 
 O nó inversor é uma terra virtual; cada bit em $1$ injeta $5\ \text{V}/R_k$, e as correntes somam-se na realimentação ([Summing Amplifier](amp-sum.md)):
 
-$$V_{out} = -R_f \cdot 5\ \text{V} \left(\frac{b_3}{100} + \frac{b_2}{200} + \frac{b_1}{400} + \frac{b_0}{800}\right) = -\frac{160{,}6 \cdot 5}{800} N \approx -1{,}004\, N\ \text{V},$$
+$$V_{out} = -R_f \cdot 5\ \text{V} \left(\frac{b_3}{100} + \frac{b_2}{200} + \frac{b_1}{400} + \frac{b_0}{800}\right) = -\frac{160{,}6 \cdot 5}{800} N \approx -1{,}004\thinspace N\ \text{V},$$
 
 com $N = 8b_3 + 4b_2 + 2b_1 + b_0$. A saída é cerca de $-1\ \text{V}$ por unidade. O defeito deste conversor é a **faixa de valores** dos resistores, que dobra a cada bit: para $12$ bits, de $R$ a $2048 R$, com a precisão do maior resistor proporcional à do menor, o que é impraticável num circuito integrado. A [escada R-2R](r2rladder.md) resolve isso com dois valores.
 

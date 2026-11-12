@@ -43,11 +43,11 @@ O centelhador (*spark gap*) do simulador é uma chave controlada pela tensão: c
 
 **Carga.** Entre $V_V$ (a tensão em que o centelhador se apaga) e a ruptura $V_B$, o capacitor carrega pela fonte através de $R = 2\ \text{M}\Omega$ com a constante $RC = 20\ \text{ms}$:
 
-$$t_c = RC\,\ln\frac{V_s - V_V}{V_s - V_B} = 20\ \text{ms}\cdot\ln\frac{2000 - 10}{2000 - 1000} = 13{,}7\ \text{ms}.$$
+$$t_c = RC\thinspace\ln\frac{V_s - V_V}{V_s - V_B} = 20\ \text{ms}\cdot\ln\frac{2000 - 10}{2000 - 1000} = 13{,}7\ \text{ms}.$$
 
 **Descarga.** O centelhador conduz pela resistência de $10\ \text{k}\Omega$ com a constante $R_{on}C = 0{,}1\ \text{ms}$ e se apaga quando a corrente cai a $1\ \text{mA}$, isto é, quando $V = I_{hold}R_{on} = 10\ \text{V}$ ($V_V$). O valor assintótico da descarga, $V_s R_{on}/(R + R_{on}) = 9{,}95\ \text{V}$, fica um pouco abaixo de $10\ \text{V}$, então o tempo de descarga é
 
-$$t_d = R_{on}C\,\ln\frac{V_B - 9{,}95}{V_V - 9{,}95} \approx 0{,}99\ \text{ms}.$$
+$$t_d = R_{on}C\thinspace\ln\frac{V_B - 9{,}95}{V_V - 9{,}95} \approx 0{,}99\ \text{ms}.$$
 
 O período é $T = t_c + t_d = 14{,}7\ \text{ms}$, ou $f = 67{,}9\ \text{Hz}$.
 

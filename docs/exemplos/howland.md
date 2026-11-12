@@ -51,7 +51,7 @@ Uma fonte de $-5\ \text{V}$ ($V_\text{in}$) liga-se por um resistor de $5\ \text
 
 Seja $V_L$ a tensão sobre a carga (a mesma da entrada não inversora). Pelo curto-circuito virtual, a entrada inversora também está em $V_L$. A corrente em $R_1$ é a mesma que passa em $R_2$:
 
-$$\frac{V_\text{in} - V_L}{R_1} = \frac{V_L - V_o}{R_2} \;\;(R_1 = R_2)\quad\Longrightarrow\quad V_o = 2V_L - V_\text{in}.$$
+$$\frac{V_\text{in} - V_L}{R_1} = \frac{V_L - V_o}{R_2} \thickspace\thickspace(R_1 = R_2)\quad\Longrightarrow\quad V_o = 2V_L - V_\text{in}.$$
 
 A corrente na carga é a que sobra da corrente que vem da saída por $R_3$ menos a que vai à terra por $R_4$:
 

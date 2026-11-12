@@ -49,13 +49,13 @@ Cálculo pela equação (o simulador reproduz os valores a menos de $10^{-6}$):
 
 | $v$ | $i$ |
 |----:|----:|
-| $+1{,}23\ \text{V}$ | $+3\,634{,}6\ \text{A}$ |
+| $+1{,}23\ \text{V}$ | $+3\thinspace634{,}6\ \text{A}$ |
 | $-5{,}0\ \text{V}$ | $-0{,}17\ \mu\text{A}$ |
 | $-5{,}4\ \text{V}$ | $-2{,}4\ \mu\text{A}$ |
 | $-5{,}5\ \text{V}$ | $-0{,}105\ \text{mA}$ |
 | $-5{,}6\ \text{V}$ | $-5{,}00\ \text{mA}$ |
 | $-5{,}7\ \text{V}$ | $-239\ \text{mA}$ |
-| $-5{,}93\ \text{V}$ | $-1\,737{,}5\ \text{A}$ |
+| $-5{,}93\ \text{V}$ | $-1\thinspace737{,}5\ \text{A}$ |
 
 A corrente é nula até perto de $-5{,}3\ \text{V}$ e depois sobe de modo abrupto: o "joelho" da ruptura. As correntes de milhares de ampères nas pontas da varredura são só consequência de o gerador ser ideal e de não haver resistor limitador. As verificações conferem os extremos da tensão e da corrente (tolerância de 1% e 2%).
 

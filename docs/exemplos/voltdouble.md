@@ -49,13 +49,13 @@ sem resistência série. Para uma corrente $i \gg I_s$ a tensão é $v = nV_T\ln
 
 ## Resultados esperados
 
-A **ponte de Cockcroft–Walton** (multiplicador de tensão) usa diodos e capacitores para obter uma tensão contínua próxima de $N\,V_p$ a partir de uma fonte alternada de pico $V_p$, sem transformador. Cada capacitor é carregado até $V_p - V_D$ (um diodo é o "grampo" do exemplo anterior) e os capacitores se somam em série na saída. A cada ciclo, o capacitor de saída é recarregado e se descarrega na carga, de modo que há uma ondulação pequena na frequência da fonte (ou do dobro dela).
+A **ponte de Cockcroft–Walton** (multiplicador de tensão) usa diodos e capacitores para obter uma tensão contínua próxima de $N\thinspace V_p$ a partir de uma fonte alternada de pico $V_p$, sem transformador. Cada capacitor é carregado até $V_p - V_D$ (um diodo é o "grampo" do exemplo anterior) e os capacitores se somam em série na saída. A cada ciclo, o capacitor de saída é recarregado e se descarrega na carga, de modo que há uma ondulação pequena na frequência da fonte (ou do dobro dela).
 
 Neste dobrador, no semiciclo positivo um diodo carrega um capacitor até $V_p - V_D$ e no negativo o outro diodo carrega o segundo capacitor com a mesma tensão; as duas tensões se somam:
 
-$$V_{saida} \approx 2\,(V_p - V_D),$$
+$$V_{saida} \approx 2\thinspace(V_p - V_D),$$
 
-com uma ondulação pico a pico de $\Delta V \approx I/(f\,C_{eq})$ em que $C_{eq} = 50\ \mu\text{F}$ é a associação em série. Cada diodo suporta uma tensão inversa de cerca de $2V_p$.
+com uma ondulação pico a pico de $\Delta V \approx I/(f\thinspace C_{eq})$ em que $C_{eq} = 50\ \mu\text{F}$ é a associação em série. Cada diodo suporta uma tensão inversa de cerca de $2V_p$.
 
 ## O que observar
 

@@ -51,11 +51,11 @@ Uma porta de transmissão CMOS (um PMOS e um NMOS, com diodo de corpo) liga uma 
 
 **Amostragem.** Com o botão apertado, a porta de transmissão fica ligada com resistência $R_{on} \approx 15$ a $25\ \Omega$ (veja [Porta de transmissão CMOS](cmostransgate.md)) e o capacitor segue a entrada com a constante de tempo $\tau = R_{on}C \approx 2{,}5\ \mu\text{s}$. O erro de acompanhamento de um sinal que varia é
 
-$$\varepsilon \approx \tau\,\frac{dv_{in}}{dt}, \qquad \left|\frac{dv_{in}}{dt}\right|_{max} = 2\pi f A = 2\pi \cdot 40 \cdot 2{,}5 \approx 628\ \text{V/s} \ \Rightarrow\ \varepsilon_{max} \approx 1{,}6\ \text{mV}.$$
+$$\varepsilon \approx \tau\thinspace\frac{dv_{in}}{dt}, \qquad \left|\frac{dv_{in}}{dt}\right|_{max} = 2\pi f A = 2\pi \cdot 40 \cdot 2{,}5 \approx 628\ \text{V/s} \ \Rightarrow\ \varepsilon_{max} \approx 1{,}6\ \text{mV}.$$
 
 **Retenção.** Soltando o botão, a porta abre e o capacitor mantém a carga: $V_C$ fica quase constante, pois o seguidor tem corrente de entrada nula. A única perda é a fuga da porta aberta (no modelo, uma condutância de $10^{-8}\ \text{S}$ por transistor), que faz a tensão cair a uma taxa
 
-$$\frac{dV_C}{dt} = -\frac{I_{fuga}}{C} \approx -\frac{g_{fuga}\,\Delta V}{C}.$$
+$$\frac{dV_C}{dt} = -\frac{I_{fuga}}{C} \approx -\frac{g_{fuga}\thinspace\Delta V}{C}.$$
 
 Há também um erro no instante em que a porta abre (injeção de carga e atraso de abertura), que o modelo sem capacitâncias não tem.
 

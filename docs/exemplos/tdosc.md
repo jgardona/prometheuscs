@@ -50,7 +50,7 @@ Uma fonte de $1{,}5\ \text{V}$ alimenta um divisor de $80\ \Omega$ e $24\ \Omega
 
 O diodo túnel do simulador tem a corrente
 
-$$I(V) = I_P\,\frac{V}{V_P}\,e^{1 - V/V_P} + I_P\,e^{-V_{PP}/V_T}\left(e^{V/V_T} - 1\right) + I_V\left(e^{V - V_V} - e^{-V_V}\right),$$
+$$I(V) = I_P\thinspace\frac{V}{V_P}\thinspace e^{1 - V/V_P} + I_P\thinspace e^{-V_{PP}/V_T}\left(e^{V/V_T} - 1\right) + I_V\left(e^{V - V_V} - e^{-V_V}\right),$$
 
 com $V_P = 0{,}1\ \text{V}$, $I_P = 4{,}7\ \text{mA}$, $V_V = 0{,}37\ \text{V}$, $I_V = 370\ \mu\text{A}$, $V_T = 26\ \text{mV}$ e $V_{PP} = 0{,}525\ \text{V}$. O primeiro termo é o de tunelamento (pico), o segundo, a corrente de difusão usual (Shockley) e o terceiro, uma corrente excedente que cresce de novo depois do vale. A curva tem um **pico** de $4{,}73\ \text{mA}$ em $0{,}10\ \text{V}$ e um **vale** de $1{,}00\ \text{mA}$ em $0{,}43\ \text{V}$; entre os dois, a inclinação é negativa: é a região de resistência diferencial negativa.
 

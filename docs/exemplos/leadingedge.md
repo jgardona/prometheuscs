@@ -61,11 +61,11 @@ Um gerador de onda quadrada de $200\ \text{kHz}$ (período de $5\ \mu\text{s}$, 
 
 O capacitor em série com o resistor transmite as **variações** de tensão. Numa borda de subida de $0$ a $V_{DD}$, o nó entre eles pula para $\approx V_{DD}$ e decai com $\tau = RC$:
 
-$$v(t) = V_p\,e^{-t/\tau}, \qquad V_p \le V_{DD};$$
+$$v(t) = V_p\thinspace e^{-t/\tau}, \qquad V_p \le V_{DD};$$
 
 numa borda de descida, o nó pula para $-V_p$ e decai a zero. O inversor seguinte tem limiar $V_{th} = 2{,}5\ \text{V}$: a saída fica em nível lógico "alto" enquanto $v > V_{th}$, isto é, durante
 
-$$t_w = \tau\,\ln\frac{V_p}{V_{th}}.$$
+$$t_w = \tau\thinspace\ln\frac{V_p}{V_{th}}.$$
 
 Na borda de descida o nó vai a $-V_p$, abaixo do limiar, e não há pulso: o circuito responde só à borda de subida. A largura do pulso, $t_w$, é ajustada por $\tau$ e deve ser menor que a metade do período para os pulsos se separarem.
 

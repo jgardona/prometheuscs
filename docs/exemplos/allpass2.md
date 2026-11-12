@@ -47,7 +47,7 @@ A função de transferência é $H(s) = (1 - s\tau)/(1 + s\tau)$, com $\tau = RC
 
 Para um degrau de $-5$ para $+5\ \text{V}$ ($\Delta V = 10\ \text{V}$), com $V_+ = -5\ \text{V}$ no instante do degrau:
 
-$$V_\text{out}(0^+) = 2\,(-5) - 5 = -15\ \text{V}, \qquad V_\text{out}(t) = 5 - 20\,e^{-t/\tau}.$$
+$$V_\text{out}(0^+) = 2\thinspace(-5) - 5 = -15\ \text{V}, \qquad V_\text{out}(t) = 5 - 20\thinspace e^{-t/\tau}.$$
 
 Cada degrau de $10\ \text{V}$ da entrada produz, portanto, um pico de quase $\mp 15\ \text{V}$, três vezes a amplitude da entrada, que depois relaxa em direção a $\pm 5\ \text{V}$.
 
@@ -55,7 +55,7 @@ Cada degrau de $10\ \text{V}$ da entrada produz, portanto, um pico de quase $\mp
 
 Para a transição de subida em $t = 100\ \text{ms}$ (a entrada passa de $-5$ para $+5\ \text{V}$):
 
-| Instante | $t - 100\ \text{ms}$ | $5 - 20\,e^{-t/\tau}$ | Simulador |
+| Instante | $t - 100\ \text{ms}$ | $5 - 20\thinspace e^{-t/\tau}$ | Simulador |
 |----------|-----------------------:|-----------------------:|----------:|
 | $100{,}1\ \text{ms}$ | $0{,}1\ \text{ms}$ | $-13{,}10\ \text{V}$ | $-13{,}02\ \text{V}$ |
 | $100{,}5\ \text{ms}$ | $0{,}5\ \text{ms}$ | $-7{,}13\ \text{V}$ | $-7{,}08\ \text{V}$ |

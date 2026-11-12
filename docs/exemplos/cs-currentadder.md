@@ -43,7 +43,7 @@ As fontes controladas de dois terminais (o losango) são definidas por uma **exp
 
 $$I_\text{out} = i(a) + i(b) = I_1 + I_2;$$
 
-o resistor converte essa corrente na tensão $V = R\,(I_1 + I_2)$.
+o resistor converte essa corrente na tensão $V = R\thinspace(I_1 + I_2)$.
 
 ## Resultados esperados
 

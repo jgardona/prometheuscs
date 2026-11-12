@@ -2767,7 +2767,10 @@ mod tests {
         assert_eq!(s.edit_fields(idx)[0].value, 1000.0);
         let mut info = Vec::new();
         s.sim.elements[idx].get_info(&mut info);
-        assert!(info.iter().any(|l| l.starts_with("L = 1 kH") || l.starts_with("L = 1000")), "{info:?}");
+        assert!(
+            info.iter().any(|l| l.starts_with("L = 1 kH") || l.starts_with("L = 1000")),
+            "{info:?}"
+        );
     }
 
     #[cfg(feature = "sources")]

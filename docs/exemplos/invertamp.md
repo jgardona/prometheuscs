@@ -48,7 +48,7 @@ A realimentação por $R_f$ força, em corrente contínua, a entrada e a saída 
 
 $$\frac{V_{out} - V_M}{V_{in}} = -\frac{Z_f}{Z_{in}} = -j\omega R_f C, \qquad |H| = \omega R_f C = 2\pi f R_f C.$$
 
-É a função de **derivação**: $v_{out} - V_M = -R_f C\,dv_{in}/dt$, com o ganho proporcional à frequência e uma defasagem de $-90^\circ$ em relação à entrada (uma senoide derivada é uma cossenoide). Isso vale enquanto o ganho do inversor for muito maior que $|H|$ e a saída não saturar.
+É a função de **derivação**: $v_{out} - V_M = -R_f C\thinspace dv_{in}/dt$, com o ganho proporcional à frequência e uma defasagem de $-90^\circ$ em relação à entrada (uma senoide derivada é uma cossenoide). Isso vale enquanto o ganho do inversor for muito maior que $|H|$ e a saída não saturar.
 
 ## Resultados esperados
 

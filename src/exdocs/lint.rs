@@ -127,6 +127,8 @@ fn math(text: &str, out: &mut Vec<String>) {
     let mut display = 0usize;
     let mut paragraph = String::new();
     let mut singles = 0usize;
+    let mut in_display = false;
+    let mut flagged = false;
     let finish = |paragraph: &mut String, singles: &mut usize, out: &mut Vec<String>| {
         if *singles % 2 == 1 {
             let start: String = paragraph.trim().chars().take(40).collect();
@@ -144,15 +146,32 @@ fn math(text: &str, out: &mut Vec<String>) {
         paragraph.push(' ');
         let chars: Vec<char> = line.chars().collect();
         let mut i = 0;
+        let mut in_inline = false;
         while i < chars.len() {
             match chars[i] {
-                '\\' => i += 2,
+                '\\' => {
+                    // Markdown eats the backslash before punctuation, so these reach the
+                    // math engine as bare `,` `;` `!` `{` `}` `\`.
+                    let eaten = chars.get(i + 1).is_some_and(|c| ",;!{}\\".contains(*c));
+                    if (in_display || in_inline) && eaten && !flagged {
+                        flagged = true;
+                        out.push(
+                            "escape de pontuação dentro de fórmula (`\\,` `\\;` `\\!` `\\{` `\\}` `\\\\`): \
+                             o Markdown remove a barra; use `\\thinspace`, `\\thickspace`, \
+                             `\\negthinspace`, `\\lbrace`, `\\rbrace`, `\\cr`"
+                                .into(),
+                        );
+                    }
+                    i += 2;
+                }
                 '$' if chars.get(i + 1) == Some(&'$') => {
                     display += 1;
+                    in_display = !in_display;
                     i += 2;
                 }
                 '$' => {
                     singles += 1;
+                    in_inline = !in_inline && !in_display;
                     i += 1;
                 }
                 _ => i += 1,
@@ -276,6 +295,26 @@ mod tests {
         assert!(lint(&package).iter().any(|m| m.contains("usepackage")));
         // a dollar sign in code or escaped is not mathematics
         let ok = full().replace("Texto.", "Custa \\$5 e `$x` é código.");
+        assert_eq!(lint(&ok), Vec::<String>::new());
+    }
+
+    #[test]
+    fn punctuation_escapes_inside_mathematics_are_reported() {
+        for bad in ["\\,", "\\;", "\\!", "\\{", "\\\\"] {
+            let inline = full().replace("Vale $v = R i$.", &format!("Vale $a{bad}b$."));
+            assert!(
+                lint(&inline).iter().any(|m| m.contains("pontuação")),
+                "{bad}: {:?}",
+                lint(&inline)
+            );
+            let block = full().replace("$$\\frac{a}{b}$$", &format!("$$a{bad}b$$"));
+            assert!(
+                lint(&block).iter().any(|m| m.contains("pontuação")),
+                "{bad}: {:?}",
+                lint(&block)
+            );
+        }
+        let ok = full().replace("Vale $v = R i$.", "Vale $a\\thinspace b \\cr c$ e \\, fora.");
         assert_eq!(lint(&ok), Vec::<String>::new());
     }
 

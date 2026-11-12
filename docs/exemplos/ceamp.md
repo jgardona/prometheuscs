@@ -54,21 +54,21 @@ O transistor bipolar do simulador (modelo "default") segue o modelo de Ebers–M
 
 $$I_C = I_s\left(e^{V_{BE}/V_T} - e^{V_{BC}/V_T}\right) - \frac{I_s}{\beta_R}\left(e^{V_{BC}/V_T} - 1\right),\qquad I_B = \frac{I_s}{\beta}\left(e^{V_{BE}/V_T} - 1\right) + \frac{I_s}{\beta_R}\left(e^{V_{BC}/V_T} - 1\right),$$
 
-com $I_s = 10^{-13}\ \text{A}$, $\beta = 100$, $\beta_R = 1$ e $V_T = 25{,}865\ \text{mV}$; sem efeito Early, sem capacitâncias e sem resistências série. Na **região ativa** ($V_{BE} \approx 0{,}65$ a $0{,}75\ \text{V}$, junção base-coletor com polarização inversa) isso se reduz a $I_C = \beta I_B = I_s\,e^{V_{BE}/V_T}$, com transcondutância $g_m = I_C/V_T$ e resistência de emissor $r_e = V_T/I_E$. O PNP é o complementar, com todas as tensões e correntes invertidas.
+com $I_s = 10^{-13}\ \text{A}$, $\beta = 100$, $\beta_R = 1$ e $V_T = 25{,}865\ \text{mV}$; sem efeito Early, sem capacitâncias e sem resistências série. Na **região ativa** ($V_{BE} \approx 0{,}65$ a $0{,}75\ \text{V}$, junção base-coletor com polarização inversa) isso se reduz a $I_C = \beta I_B = I_s\thinspace e^{V_{BE}/V_T}$, com transcondutância $g_m = I_C/V_T$ e resistência de emissor $r_e = V_T/I_E$. O PNP é o complementar, com todas as tensões e correntes invertidas.
 
 ## Resultados esperados
 
 **Polarização.** O divisor fixa a base em $V_B \approx 20\cdot 10/120 = 1{,}67\ \text{V}$ (menos o efeito da corrente de base); o emissor fica $V_{BE}$ abaixo, e a corrente de emissor é $I_E \approx (V_B - V_{BE})/R_E$. O coletor fica em $V_C = V_{CC} - R_C I_C$.
 
-**Ganho de pequenos sinais.** Para uma variação $v_b$ na base, a corrente do coletor varia $i_c = g_m\,v_{be}$, e a tensão de saída é
+**Ganho de pequenos sinais.** Para uma variação $v_b$ na base, a corrente do coletor varia $i_c = g_m\thinspace v_{be}$, e a tensão de saída é
 
-$$A_v = \frac{v_c}{v_b} = -\frac{R_C\,\|\,R_L}{r_e + R_E} \approx -\frac{R_C}{R_E}\quad (R_E \gg r_e),$$
+$$A_v = \frac{v_c}{v_b} = -\frac{R_C\thinspace\|\thinspace R_L}{r_e + R_E} \approx -\frac{R_C}{R_E}\quad (R_E \gg r_e),$$
 
 negativo (inversão de fase). Com o resistor de emissor sem desacoplamento, o ganho depende pouco do transistor (realimentação negativa) e é mais linear, à custa de menor ganho.
 
 ## O que observar
 
-Em regime (de $0{,}05$ a $0{,}1\ \text{s}$), a integração numérica independente dá: corrente de emissor $I_E = 0.976\ \text{mA}$ (média da queda em $R_E$), tensão de coletor média $10.33\ \text{V}$, $r_e = V_T/I_E = 26.5\ \Omega$. O sinal de entrada na base ($1{,}0\ \text{V}$ pico a pico) vira $9.57\ \text{V}$ pico a pico no coletor, um ganho de tensão de $9.53$ (invertido), em acordo com a previsão $R_C\,\|\,R_L/(r_e + R_E) = 9{,}9\ \text{k}\Omega/1026\ \Omega = 9.64$ (a pequena diferença vem da distorção e da corrente de base). A saída, depois do capacitor de acoplamento (carga de $1\ \text{M}\Omega$), varia entre $-4.56$ e $5.01\ \text{V}$, centrada em zero (o capacitor bloqueia a componente contínua). As verificações conferem o máximo e o mínimo no coletor, a corrente (queda média em $R_E$), os extremos da tensão de base e os da saída (tolerância de 1%).
+Em regime (de $0{,}05$ a $0{,}1\ \text{s}$), a integração numérica independente dá: corrente de emissor $I_E = 0.976\ \text{mA}$ (média da queda em $R_E$), tensão de coletor média $10.33\ \text{V}$, $r_e = V_T/I_E = 26.5\ \Omega$. O sinal de entrada na base ($1{,}0\ \text{V}$ pico a pico) vira $9.57\ \text{V}$ pico a pico no coletor, um ganho de tensão de $9.53$ (invertido), em acordo com a previsão $R_C\thinspace\|\thinspace R_L/(r_e + R_E) = 9{,}9\ \text{k}\Omega/1026\ \Omega = 9.64$ (a pequena diferença vem da distorção e da corrente de base). A saída, depois do capacitor de acoplamento (carga de $1\ \text{M}\Omega$), varia entre $-4.56$ e $5.01\ \text{V}$, centrada em zero (o capacitor bloqueia a componente contínua). As verificações conferem o máximo e o mínimo no coletor, a corrente (queda média em $R_E$), os extremos da tensão de base e os da saída (tolerância de 1%).
 
 ## Limites do modelo
 

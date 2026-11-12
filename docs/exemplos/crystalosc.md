@@ -51,7 +51,7 @@ O cristal tem as duas ressonâncias de [Oscilador a cristal de quartzo](crystalo
 
 $$f_s = \frac{1}{2\pi\sqrt{L C_s}} = 10{,}0659\ \text{MHz}, \qquad f_p = f_s\sqrt{1 + C_s/C_0} = 10{,}0834\ \text{MHz},$$
 
-e entre elas é indutivo. No oscilador de Pierce, o cristal atua como o indutor de um circuito $\pi$ com os dois capacitores, que dá ao amplificador inversor o deslocamento de fase de $180^\circ$ que falta para a realimentação positiva. A oscilação começa a partir de ruído com **crescimento exponencial** $A(t) = A_0\,e^{t/\tau_g}$ enquanto o ganho de malha supera $1$, e satura quando o inversor atinge os trilhos.
+e entre elas é indutivo. No oscilador de Pierce, o cristal atua como o indutor de um circuito $\pi$ com os dois capacitores, que dá ao amplificador inversor o deslocamento de fase de $180^\circ$ que falta para a realimentação positiva. A oscilação começa a partir de ruído com **crescimento exponencial** $A(t) = A_0\thinspace e^{t/\tau_g}$ enquanto o ganho de malha supera $1$, e satura quando o inversor atinge os trilhos.
 
 ## Resultados esperados
 

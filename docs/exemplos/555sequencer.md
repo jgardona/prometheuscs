@@ -63,9 +63,9 @@ Três 555 alimentados com $5\ \text{V}$ são monoestáveis idênticos, cada um c
 
 ## Teoria
 
-Cada monoestável produz um pulso de duração $T = 1{,}1\,RC = 1{,}1\cdot 1\ \text{k}\Omega\cdot 2\ \mu\text{F} = 2{,}2\ \text{ms}$. O acoplamento por capacitor transmite só as **transições**: quando a saída do primeiro 555 desce ao fim do pulso, o capacitor leva o pino de disparo do segundo a nível baixo por um instante, e o segundo dispara. O terceiro faz o mesmo com o segundo. Os pulsos ficam, portanto, em sequência, sem sobreposição:
+Cada monoestável produz um pulso de duração $T = 1{,}1\thinspace RC = 1{,}1\cdot 1\ \text{k}\Omega\cdot 2\ \mu\text{F} = 2{,}2\ \text{ms}$. O acoplamento por capacitor transmite só as **transições**: quando a saída do primeiro 555 desce ao fim do pulso, o capacitor leva o pino de disparo do segundo a nível baixo por um instante, e o segundo dispara. O terceiro faz o mesmo com o segundo. Os pulsos ficam, portanto, em sequência, sem sobreposição:
 
-$$[t_0,\,t_0 + T],\quad [t_0 + T,\,t_0 + 2T],\quad [t_0 + 2T,\,t_0 + 3T].$$
+$$[t_0,\thinspace t_0 + T],\quad [t_0 + T,\thinspace t_0 + 2T],\quad [t_0 + 2T,\thinspace t_0 + 3T].$$
 
 ## Resultados esperados
 

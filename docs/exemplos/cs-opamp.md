@@ -40,9 +40,9 @@ Uma fonte senoidal de $40\ \text{Hz}$ e $5\ \text{V}$ de pico é a entrada não 
 
 ## Teoria
 
-As fontes controladas de dois terminais (o losango) são definidas por uma **expressão** que lê o resto do circuito **pelo nome**: $v(\text{nome})$ é a tensão de um nó rotulado ou sobre um voltímetro com rótulo, $i(\text{nome})$ a corrente de um amperímetro com rótulo, e $\text{dvdt}$ / $\text{didt}$ as suas taxas de variação. O resultado é a tensão (fonte de tensão controlada, com o $+$ no segundo terminal) ou a corrente (fonte de corrente controlada, no sentido da seta) que a fonte impõe. A fonte produz $V_\text{out} = A\,v(\text{ab}) = A\,(V_+ - V_-)$ com $A = 1000$. Com a realimentação $\beta = R_1/(R_1 + R_2) = 1/3$ ($V_- = \beta V_\text{out}$):
+As fontes controladas de dois terminais (o losango) são definidas por uma **expressão** que lê o resto do circuito **pelo nome**: $v(\text{nome})$ é a tensão de um nó rotulado ou sobre um voltímetro com rótulo, $i(\text{nome})$ a corrente de um amperímetro com rótulo, e $\text{dvdt}$ / $\text{didt}$ as suas taxas de variação. O resultado é a tensão (fonte de tensão controlada, com o $+$ no segundo terminal) ou a corrente (fonte de corrente controlada, no sentido da seta) que a fonte impõe. A fonte produz $V_\text{out} = A\thinspace v(\text{ab}) = A\thinspace(V_+ - V_-)$ com $A = 1000$. Com a realimentação $\beta = R_1/(R_1 + R_2) = 1/3$ ($V_- = \beta V_\text{out}$):
 
-$$V_\text{out} = \frac{A}{1 + A\beta}\,V_+ = \frac{1000}{1 + 333{,}3}\,V_+ = 2{,}991\,V_+.$$
+$$V_\text{out} = \frac{A}{1 + A\beta}\thinspace V_+ = \frac{1000}{1 + 333{,}3}\thinspace V_+ = 2{,}991\thinspace V_+.$$
 
 O ganho ideal, $1 + R_2/R_1 = 3$, difere do real em $0{,}3\%$ por causa do ganho finito.
 

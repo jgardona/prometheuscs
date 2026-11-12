@@ -24,7 +24,7 @@ Mostrar um filtro passa-baixas de Butterworth de décima ordem realizado como um
 ![Esquema do circuito](img/butter10lo.svg)
 <!-- esquema:fim -->
 
-Uma escada de cinco indutores em série e cinco capacitores em derivação, com carga de $50\ \Omega$ (valores na tabela abaixo). O sinal de teste é uma varredura **linear** de 100 Hz a 2 kHz em 0,15 s e 5 V de pico: $f(t) = f_{min} + (f_{max}-f_{min})\,t/T$.
+Uma escada de cinco indutores em série e cinco capacitores em derivação, com carga de $50\ \Omega$ (valores na tabela abaixo). O sinal de teste é uma varredura **linear** de 100 Hz a 2 kHz em 0,15 s e 5 V de pico: $f(t) = f_{min} + (f_{max}-f_{min})\thinspace t/T$.
 
 <!-- componentes:inicio -->
 | N.º | Tipo | Elemento | Valores |

@@ -40,11 +40,11 @@ Uma fonte de 5 V é ligada às duas extremidades de um potenciômetro de $1\ \te
 
 Entre as extremidades do potenciômetro passa a corrente $I=V/R$, e a tensão no cursor, medida em vazio a partir da extremidade inferior, é
 
-$$V_{out} = V\,\frac{(1-x)R}{R} = V\,(1-x).$$
+$$V_{out} = V\thinspace\frac{(1-x)R}{R} = V\thinspace(1-x).$$
 
 Se uma carga $R_L$ for ligada ao cursor, ela fica em paralelo com o trecho inferior e a saída cai (efeito de carga):
 
-$$V_{out} = V\,\frac{R_b\,\|\,R_L}{R_a + R_b\,\|\,R_L}.$$
+$$V_{out} = V\thinspace\frac{R_b\thinspace\|\thinspace R_L}{R_a + R_b\thinspace\|\thinspace R_L}.$$
 
 ## Resultados esperados
 

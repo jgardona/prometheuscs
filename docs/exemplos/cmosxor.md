@@ -53,7 +53,7 @@ As saídas do inversor e da porta de transmissão estão ligadas à saída lógi
 
 Logo
 
-$$Y = A\,\overline{B} + \overline{A}\,B = A \oplus B.$$
+$$Y = A\thinspace\overline{B} + \overline{A}\thinspace B = A \oplus B.$$
 
 A porta de transmissão (ver [CMOS Transmission Gate](cmostransgate.md)) passa bem tanto o $0$ (pelo NMOS) quanto o $1$ (pelo PMOS), e por isso os níveis de saída são completos.
 

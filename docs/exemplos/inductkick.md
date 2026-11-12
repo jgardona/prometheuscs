@@ -39,9 +39,9 @@ Uma fonte de $5\ \text{V}$ alimenta, em série, um indutor de $1\ \text{H}$, um 
 
 ## Teoria
 
-A tensão num indutor é $v = L\,\dfrac{di}{dt}$. Com a chave fechada, a corrente cresce como $i(t) = \dfrac{V}{R}\left(1 - e^{-Rt/L}\right)$ até $V/R = 50\ \text{mA}$ ($\tau = L/R = 10\ \text{ms}$), e o indutor armazena a energia $E = \tfrac12 L I^2 = 1{,}2\ \text{mJ}$.
+A tensão num indutor é $v = L\thinspace\dfrac{di}{dt}$. Com a chave fechada, a corrente cresce como $i(t) = \dfrac{V}{R}\left(1 - e^{-Rt/L}\right)$ até $V/R = 50\ \text{mA}$ ($\tau = L/R = 10\ \text{ms}$), e o indutor armazena a energia $E = \tfrac12 L I^2 = 1{,}2\ \text{mJ}$.
 
-Quando a chave abre, a corrente do indutor não pode cair a zero instantaneamente (isso exigiria $v = L\,di/dt \to \infty$): ela continua e carrega a capacitância $C$ em paralelo com a chave. O que sobra é um circuito RLC em série com a fonte, quase sem amortecimento (o fator de amortecimento é $\zeta = \tfrac{R}{2}\sqrt{C/L} \approx 10^{-3}$), de modo que a tensão na chave oscila à frequência
+Quando a chave abre, a corrente do indutor não pode cair a zero instantaneamente (isso exigiria $v = L\thinspace di/dt \to \infty$): ela continua e carrega a capacitância $C$ em paralelo com a chave. O que sobra é um circuito RLC em série com a fonte, quase sem amortecimento (o fator de amortecimento é $\zeta = \tfrac{R}{2}\sqrt{C/L} \approx 10^{-3}$), de modo que a tensão na chave oscila à frequência
 
 $$f_0 = \frac{1}{2\pi\sqrt{LC}}$$
 
@@ -49,11 +49,11 @@ com amplitude $\approx I_0\sqrt{L/C}$, em que $I_0$ é a corrente no instante da
 
 ## Resultados esperados
 
-Aberta a chave em $t = 50\ \text{ms}$, a corrente do indutor já chegou a $I_0 = 50\,(1 - e^{-5}) = 49{,}66\ \text{mA}$. Com $C = 500\ \text{pF}$:
+Aberta a chave em $t = 50\ \text{ms}$, a corrente do indutor já chegou a $I_0 = 50\thinspace(1 - e^{-5}) = 49{,}66\ \text{mA}$. Com $C = 500\ \text{pF}$:
 
-$$f_0 = \frac{1}{2\pi\sqrt{1\cdot 500\ \text{pF}}} = 7{,}12\ \text{kHz},\qquad V_{pico} \approx I_0\sqrt{\frac{L}{C}} = 0{,}0497\cdot 44\,721 = 2{,}22\ \text{kV}.$$
+$$f_0 = \frac{1}{2\pi\sqrt{1\cdot 500\ \text{pF}}} = 7{,}12\ \text{kHz},\qquad V_{pico} \approx I_0\sqrt{\frac{L}{C}} = 0{,}0497\cdot 44\thinspace721 = 2{,}22\ \text{kV}.$$
 
-A integração das equações do circuito dá $+2\,222\ \text{V}$ e $-2\,204\ \text{V}$ nos extremos da oscilação. O simulador (passo de $5\ \mu\text{s}$, cerca de $28$ pontos por ciclo) dá $+2\,185\ \text{V}$ e $-2\,198\ \text{V}$ e $7{,}09\ \text{kHz}$: o passo discreto da simulação limita o pico lido (cerca de 1,7% abaixo do valor contínuo) e desloca um pouco a frequência (0,4%). As verificações conferem a corrente antes da abertura ($49{,}08\ \text{mA}$ em $40\ \text{ms}$), os dois extremos e a frequência, com tolerância de 2% (3% no pico positivo).
+A integração das equações do circuito dá $+2\thinspace222\ \text{V}$ e $-2\thinspace204\ \text{V}$ nos extremos da oscilação. O simulador (passo de $5\ \mu\text{s}$, cerca de $28$ pontos por ciclo) dá $+2\thinspace185\ \text{V}$ e $-2\thinspace198\ \text{V}$ e $7{,}09\ \text{kHz}$: o passo discreto da simulação limita o pico lido (cerca de 1,7% abaixo do valor contínuo) e desloca um pouco a frequência (0,4%). As verificações conferem a corrente antes da abertura ($49{,}08\ \text{mA}$ em $40\ \text{ms}$), os dois extremos e a frequência, com tolerância de 2% (3% no pico positivo).
 
 ## O que observar
 

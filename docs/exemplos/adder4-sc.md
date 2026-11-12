@@ -77,7 +77,7 @@ $$S = A \oplus B \oplus C_{in},\qquad C_{out} = AB + C_{in}(A \oplus B).$$
 
 Ligando $n$ deles em cascata, com o vai-um de saída de cada estágio como entrada do próximo, obtém-se um somador de $n$ bits:
 
-$$A + B + C_{in} = \sum_{i=0}^{n-1} S_i\, 2^i + C_{out}\, 2^n.$$
+$$A + B + C_{in} = \sum_{i=0}^{n-1} S_i\thinspace 2^i + C_{out}\thinspace 2^n.$$
 
 O atraso de propagação do vai-um cresce com $n$ (é o ponto fraco do *ripple-carry*); os somadores de verdade usam antecipação de vai-um (por exemplo, o de Brent–Kung do exemplo *brentkung*). Aqui as portas não têm atraso, então a soma aparece de imediato.
 

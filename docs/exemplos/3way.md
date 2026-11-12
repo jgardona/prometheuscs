@@ -40,7 +40,7 @@ Uma fonte de $120\ \text{V}$ eficazes ($169{,}7\ \text{V}$ de pico, $60\ \text{H
 
 Com um viajante superior e um inferior, existem dois caminhos entre as chaves; a corrente passa se e só se as duas chaves estiverem na mesma posição (as duas em cima ou as duas embaixo), o que é a função lógica
 
-$$L = \overline{A \oplus B} = A\,B + \bar A\,\bar B,$$
+$$L = \overline{A \oplus B} = A\thinspace B + \bar A\thinspace\bar B,$$
 
 um "OU exclusivo negado" (coincidência), em que $A$ e $B$ são as posições das chaves. Trocar a posição de **qualquer** das chaves inverte o estado da lâmpada, qualquer que seja a posição da outra, e por isso cada chave pode apagar ou acender a lâmpada.
 

@@ -46,7 +46,7 @@ A maioria é a soma dos produtos de cada par:
 
 $$M = AB + BC + AC.$$
 
-Na forma NAND-NAND (pela lei de De Morgan, $X + Y + Z = \overline{\overline{X}\,\overline{Y}\,\overline{Z}}$), cada produto vira uma NAND e a soma vira a NAND final:
+Na forma NAND-NAND (pela lei de De Morgan, $X + Y + Z = \overline{\overline{X}\thinspace\overline{Y}\thinspace\overline{Z}}$), cada produto vira uma NAND e a soma vira a NAND final:
 
 $$M = \overline{\overline{AB} \cdot \overline{BC} \cdot \overline{AC}}.$$
 

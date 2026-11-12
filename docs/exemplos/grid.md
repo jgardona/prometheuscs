@@ -93,7 +93,7 @@ Uma grade retangular de $5\times 7$ nós, com resistores de $5\ \Omega$ em cada 
 
 Para uma rede de $n$ nós e condutâncias $G_{ij} = 1/R_{ij}$, a lei de Kirchhoff das correntes em cada nó dá o sistema linear
 
-$$\mathbf{G}\,\mathbf{v} = \mathbf{i},$$
+$$\mathbf{G}\thinspace\mathbf{v} = \mathbf{i},$$
 
 em que $\mathbf{G}$ é a matriz de condutâncias (a "laplaciana" do grafo: $G_{ii}$ é a soma das condutâncias que chegam ao nó $i$, e $G_{ij} = -1/R_{ij}$), $\mathbf{v}$ é o vetor de tensões e $\mathbf{i}$, o das correntes injetadas. A resistência equivalente entre dois nós $a$ e $b$ é a tensão entre eles quando se injeta $1\ \text{A}$ em $a$ e se retira em $b$:
 

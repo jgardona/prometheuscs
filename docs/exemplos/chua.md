@@ -58,7 +58,7 @@ $$C_1\frac{dv_1}{dt} = \frac{v_2 - v_1}{R} - g(v_1),\quad C_2\frac{dv_2}{dt} = \
 
 onde $g(v)$ é a característica do resistor de Chua, linear por partes:
 
-$$g(v) = m_0\,v + \tfrac{1}{2}(m_1 - m_0)\left(|v + B_p| - |v - B_p|\right),\qquad m_0,\,m_1 < 0.$$
+$$g(v) = m_0\thinspace v + \tfrac{1}{2}(m_1 - m_0)\left(|v + B_p| - |v - B_p|\right),\qquad m_0,\thinspace m_1 < 0.$$
 
 A inclinação negativa fornece a energia que mantém a oscilação, e as inclinações mudam fora da região central, o que dobra a trajetória de volta. Variando $R$ (a "resistência de acoplamento"), o circuito passa por equilíbrios, ciclos periódicos, dobramentos de período, o atrator espiral de Chua e, por fim, o atrator de duplo rolo, formado por duas "asas" ao redor dos dois pontos de equilíbrio externos, entre as quais a trajetória alterna de forma irregular.
 

@@ -57,11 +57,11 @@ Um sinal de $20\ \text{Hz}$ ($1\ \text{V}$ de pico) e outro de $20\ \text{kHz}$ 
 
 O **amplificador operacional de transcondutância** (OTA, aqui no estilo do LM13700) é uma fonte de corrente controlada por tensão: a corrente de saída é proporcional à tensão diferencial de entrada,
 
-$$I_{out} = g_m\,(V_+ - V_-),\qquad g_m \approx \frac{I_{ABC}}{2V_T}\ \ (\approx 19{,}2\ I_{ABC}\ \text{a }25^\circ\text{C}),$$
+$$I_{out} = g_m\thinspace(V_+ - V_-),\qquad g_m \approx \frac{I_{ABC}}{2V_T}\ \ (\approx 19{,}2\ I_{ABC}\ \text{a }25^\circ\text{C}),$$
 
 e a transcondutância $g_m$ é controlada pela corrente de polarização $I_{ABC}$ (*amplifier bias current*), que entra num terminal próprio. Variando $I_{ABC}$ varia-se o ganho do circuito: é por isso que o OTA é a base dos amplificadores controlados por tensão (VCA), dos filtros controlados (VCF) e dos moduladores.
 
-Um OTA que carrega um capacitor $C$ é um **integrador**: $C\,dV_o/dt = g_m(V_i - V_o)$ com realimentação, o que dá um filtro passa-baixas de um polo com frequência de corte
+Um OTA que carrega um capacitor $C$ é um **integrador**: $C\thinspace dV_o/dt = g_m(V_i - V_o)$ com realimentação, o que dá um filtro passa-baixas de um polo com frequência de corte
 
 $$f_c = \frac{g_m}{2\pi C}\propto I_{ABC}.$$
 

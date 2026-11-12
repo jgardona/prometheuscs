@@ -46,11 +46,11 @@ Os pinos do 555 neste documento são referidos pelo nome: *dis* (descarga), *tr*
 
 Com a saída variando entre $0$ e $V_{CC}$, a carga vai de $V_{CC}/3$ a $2V_{CC}/3$ em direção a $V_{CC}$:
 
-$$t_h = RC\,\ln\frac{V_{CC} - V_{CC}/3}{V_{CC} - 2V_{CC}/3} = RC\ln 2,$$
+$$t_h = RC\thinspace\ln\frac{V_{CC} - V_{CC}/3}{V_{CC} - 2V_{CC}/3} = RC\ln 2,$$
 
 e a descarga é simétrica, $t_l = RC\ln 2$. Portanto
 
-$$T = 2\,RC\ln 2 = 1{,}386\,RC, \qquad f = \frac{0{,}721}{RC} = \frac{0{,}721}{10\ \text{k}\Omega\cdot 300\ \text{nF}} \approx 240{,}5\ \text{Hz},$$
+$$T = 2\thinspace RC\ln 2 = 1{,}386\thinspace RC, \qquad f = \frac{0{,}721}{RC} = \frac{0{,}721}{10\ \text{k}\Omega\cdot 300\ \text{nF}} \approx 240{,}5\ \text{Hz},$$
 
 com ciclo de trabalho de $50\%$, independente de $V_{CC}$.
 

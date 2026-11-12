@@ -49,7 +49,7 @@ sem resistência série. Para uma corrente $i \gg I_s$ a tensão é $v = nV_T\ln
 
 Na saída, em cada semiciclo um dos dois diodos conduz e fixa a tensão em $\pm v_D(i)$; o outro bloqueia. A corrente que passa pelo diodo é a do resistor, $i = (v_s - v_D)/R$, e a tensão de saída é a queda do diodo nessa corrente:
 
-$$v_{saida} = \pm\,nV_T\ln\left(\frac{i}{I_s} + 1\right).$$
+$$v_{saida} = \pm\thinspace nV_T\ln\left(\frac{i}{I_s} + 1\right).$$
 
 Como a queda de um diodo varia só $119\ \text{mV}$ por década de corrente, a saída fica quase constante mesmo que a amplitude da entrada varie muito.
 

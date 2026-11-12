@@ -49,7 +49,7 @@ O amplificador de Norton (como o LM3900) é um **amplificador de diferença de c
 
 A rampa tem inclinação $dV/dt = I/C = (12\ \text{V}/1\ \text{M}\Omega)/100\ \text{nF} = 120\ \text{V/s}$ (a entrada inversora de Norton fica próxima de $0\ \text{V}$). Com a excursão de $10{,}0\ \text{V}$ (de $1{,}0\ \text{V}$ a $11{,}0\ \text{V}$), o tempo de subida é
 
-$$t_{subida} = \frac{C\,\Delta V}{I} = \frac{100\ \text{nF}\cdot 9{,}97\ \text{V}}{12\ \mu\text{A}} = 83{,}1\ \text{ms}, $$
+$$t_{subida} = \frac{C\thinspace\Delta V}{I} = \frac{100\ \text{nF}\cdot 9{,}97\ \text{V}}{12\ \mu\text{A}} = 83{,}1\ \text{ms}, $$
 
 e a descarga ocupa só cerca de $1\ \text{ms}$ do período de $84{,}0\ \text{ms}$.
 

@@ -48,7 +48,7 @@ $$Z_R = R,\qquad Z_L = j\omega L,\qquad Z_C = \frac{1}{j\omega C},\qquad \omega 
 
 A parte imaginária é a **reatância**: $X_L=\omega L$ (cresce com a frequência) e $X_C = 1/(\omega C)$ (diminui com ela). A amplitude da corrente e a defasagem entre tensão e corrente seguem de $I = V/Z$.
 
-A tensão sobre o capacitor num divisor RC é $V_C = V\,\dfrac{X_C}{\sqrt{R^2+X_C^2}}$, com $X_C = 1/(2\pi f C)$. A frequência de corte do filtro RC (onde $X_C=R$) é $f_c = \dfrac{1}{2\pi RC} = 26{,}5\ \text{Hz}$ neste circuito.
+A tensão sobre o capacitor num divisor RC é $V_C = V\thinspace\dfrac{X_C}{\sqrt{R^2+X_C^2}}$, com $X_C = 1/(2\pi f C)$. A frequência de corte do filtro RC (onde $X_C=R$) é $f_c = \dfrac{1}{2\pi RC} = 26{,}5\ \text{Hz}$ neste circuito.
 
 ## Resultados esperados
 

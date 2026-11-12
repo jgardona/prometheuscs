@@ -72,7 +72,7 @@ O simulador dá a tabela completa:
 
 ## O que observar
 
-Clique nas entradas e confira que $C_{out}\,S$, lido em binário, é sempre o número de entradas em $1$.
+Clique nas entradas e confira que $C_{out}\thinspace S$, lido em binário, é sempre o número de entradas em $1$.
 
 ## Limites do modelo
 

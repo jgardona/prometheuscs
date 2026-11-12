@@ -47,7 +47,7 @@ Quatro resistores de $1\ \text{k}\Omega$ montam o amplificador diferencial: duas
 
 Com resistores iguais ($R_1 = R_2 = R_3 = R_4 = R$) e realimentação negativa,
 
-$$V_\text{out} = \frac{R_f}{R_1}\,(V_2 - V_1) = V_2 - V_1,$$
+$$V_\text{out} = \frac{R_f}{R_1}\thinspace(V_2 - V_1) = V_2 - V_1,$$
 
 onde $V_1$ e $V_2$ são as tensões das duas entradas. Qualquer parcela comum às duas se cancela. Aqui $V_1 = V_c$ e $V_2 = V_c - v_d$, com $V_c$ a senoide de $60\ \text{Hz}$ e $v_d$ o quadrado de $1\ \text{V}$, e portanto
 

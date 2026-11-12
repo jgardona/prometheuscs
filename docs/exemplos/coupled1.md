@@ -54,14 +54,14 @@ Há duas cópias do mesmo circuito, uma sobre a outra. Cada uma é uma cadeia de
 
 Se cada malha tem indutância $L$ e os capacitores são todos iguais a $C$, as correntes de malha $i_1$ e $i_2$ obedecem a
 
-$$L\,\ddot q_1 = -\frac{2q_1 - q_2}{C},\qquad L\,\ddot q_2 = -\frac{2q_2 - q_1}{C},$$
+$$L\thinspace\ddot q_1 = -\frac{2q_1 - q_2}{C},\qquad L\thinspace\ddot q_2 = -\frac{2q_2 - q_1}{C},$$
 
-(com os amortecimentos pequenos de $1\ \Omega$ desprezados), em que $q_k$ é a carga que passou pela malha $k$. Procurando soluções $q_k \propto e^{j\omega t}$, os modos normais são os autovetores da matriz $\begin{pmatrix}2 & -1\\ -1 & 2\end{pmatrix}$ de autovalores $\lambda$ e frequências
+(com os amortecimentos pequenos de $1\ \Omega$ desprezados), em que $q_k$ é a carga que passou pela malha $k$. Procurando soluções $q_k \propto e^{j\omega t}$, os modos normais são os autovetores da matriz $\begin{pmatrix}2 & -1\cr -1 & 2\end{pmatrix}$ de autovalores $\lambda$ e frequências
 
 $$\omega_k = \omega_0\sqrt{\lambda_k},\qquad \omega_0 = \frac{1}{\sqrt{LC}} = 316{,}2\ \text{rad/s}:$$
 
 - **modo em fase**, $\lambda = 1$: as duas correntes de malha são iguais e a corrente no capacitor do meio se anula; $f = \omega_0/2\pi = 50{,}33\ \text{Hz}$;
-- **modo em oposição**, $\lambda = 3$: as correntes são opostas e o capacitor do meio recebe o dobro; $f = \sqrt{3}\,\omega_0/2\pi = 87{,}17\ \text{Hz}$.
+- **modo em oposição**, $\lambda = 3$: as correntes são opostas e o capacitor do meio recebe o dobro; $f = \sqrt{3}\thinspace\omega_0/2\pi = 87{,}17\ \text{Hz}$.
 
 Para $N$ malhas acopladas em cadeia, $\lambda_k = 2 - 2\cos\dfrac{k\pi}{N+1}$, $k = 1,\dots,N$.
 

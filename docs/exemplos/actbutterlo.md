@@ -64,13 +64,13 @@ $$f_0 = \frac{1}{2\pi R\sqrt{C_f C_g}}, \qquad Q = \frac12\sqrt{\frac{C_f}{C_g}}
 
 Os valores deste exemplo dão $Q = \tfrac12\sqrt{1{,}493/0{,}1} = 1{,}932$ (primeira seção), $\tfrac12\sqrt{2} = 0{,}707$ (segunda) e $\tfrac12\sqrt{1{,}072} = 0{,}518$ (terceira), e $f_0 = 1000\ \text{Hz}$ nas três ($411{,}9\ \Omega\cdot\sqrt{1{,}493\ \mu\text{F}\cdot 100\ \text{nF}}\cdot 2\pi = 1{,}0\ \text{ms}$, e similarmente nas outras): é um Butterworth de $6.^\text{a}$ ordem com $f_c = 1\ \text{kHz}$.
 
-Para um ruído branco de densidade espectral constante até a frequência de Nyquist $f_N = 32\ \text{kHz}$, a potência na saída é a da banda equivalente de ruído do filtro, que para o Butterworth de ordem $n$ é $f_c\,\dfrac{\pi/2n}{\sin(\pi/2n)} = 1{,}0115\ \text{kHz}$ ($n = 6$). O valor eficaz da saída é, portanto,
+Para um ruído branco de densidade espectral constante até a frequência de Nyquist $f_N = 32\ \text{kHz}$, a potência na saída é a da banda equivalente de ruído do filtro, que para o Butterworth de ordem $n$ é $f_c\thinspace\dfrac{\pi/2n}{\sin(\pi/2n)} = 1{,}0115\ \text{kHz}$ ($n = 6$). O valor eficaz da saída é, portanto,
 
-$$V_{\text{rms,out}} = V_{\text{rms,in}}\sqrt{\frac{1{,}0115\ \text{kHz}}{32\ \text{kHz}}} = 0{,}1778\,V_{\text{rms,in}}.$$
+$$V_{\text{rms,out}} = V_{\text{rms,in}}\sqrt{\frac{1{,}0115\ \text{kHz}}{32\ \text{kHz}}} = 0{,}1778\thinspace V_{\text{rms,in}}.$$
 
 ## Resultados esperados
 
-Em uma janela de $0{,}3\ \text{s}$ (cerca de $19\,000$ amostras):
+Em uma janela de $0{,}3\ \text{s}$ (cerca de $19\thinspace000$ amostras):
 
 | Grandeza | Valor |
 |----------|------:|

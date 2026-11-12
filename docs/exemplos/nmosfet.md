@@ -40,9 +40,9 @@ Duas fontes de tensão com *sliders* ligam-se diretamente ao transistor, com a f
 O MOSFET do simulador segue o **modelo de lei quadrática** (nível 1), com tensão de limiar $V_t$ (padrão: $1{,}5\ \text{V}$), parâmetro de transcondutância $\beta$ (padrão: $0{,}02\ \text{A/V}^2$) e modulação do comprimento do canal $\lambda$ (padrão: $0$). Com $V_{ov} = V_{GS} - V_t$:
 
 $$I_D = \begin{cases}
-\approx 0 & V_{GS} < V_t \quad \text{(corte)}\\[4pt]
-\beta\left(V_{ov}\,V_{DS} - \tfrac{1}{2}V_{DS}^2\right)(1 + \lambda V_{DS}) & V_{DS} < V_{ov} \quad \text{(triodo)}\\[4pt]
-\tfrac{1}{2}\beta\,V_{ov}^2\,(1 + \lambda V_{DS}) & V_{DS} \ge V_{ov} \quad \text{(saturação)}
+\approx 0 & V_{GS} < V_t \quad \text{(corte)}\cr
+\beta\left(V_{ov}\thinspace V_{DS} - \tfrac{1}{2}V_{DS}^2\right)(1 + \lambda V_{DS}) & V_{DS} < V_{ov} \quad \text{(triodo)}\cr
+\tfrac{1}{2}\beta\thinspace V_{ov}^2\thinspace(1 + \lambda V_{DS}) & V_{DS} \ge V_{ov} \quad \text{(saturação)}
 \end{cases}$$
 
 No corte o simulador deixa só uma condutância de fuga de $10^{-8}\ \text{S}$ entre dreno e fonte. Na saturação, a transcondutância é $g_m = \beta V_{ov}(1 + \lambda V_{DS})$ e a condutância de saída, $g_{ds} = \tfrac{1}{2}\beta V_{ov}^2\lambda$ (com $\lambda = 0$ o simulador usa o piso de $10^{-8}\ \text{S}$). Os MOSFETs deste projeto são do tipo de enriquecimento: sem tensão de porta, não há canal.

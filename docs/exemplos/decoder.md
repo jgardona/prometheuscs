@@ -50,7 +50,7 @@ Duas entradas lógicas numéricas, $A_1$ (elemento 19, em cima) e $A_0$ (element
 
 Cada saída é um **mintermo** das entradas, o produto que só vale $1$ numa combinação:
 
-$$Y_0 = \overline{A_1}\,\overline{A_0}, \quad Y_1 = \overline{A_1}\,A_0, \quad Y_2 = A_1\,\overline{A_0}, \quad Y_3 = A_1\,A_0.$$
+$$Y_0 = \overline{A_1}\thinspace\overline{A_0}, \quad Y_1 = \overline{A_1}\thinspace A_0, \quad Y_2 = A_1\thinspace\overline{A_0}, \quad Y_3 = A_1\thinspace A_0.$$
 
 Para cada número $k = 2A_1 + A_0$, só $Y_k$ é $1$. Um decodificador de $n$ entradas tem $2^n$ saídas, e como cada saída é um mintermo, qualquer função lógica de $n$ variáveis pode ser feita com um decodificador e uma porta OR que junte os mintermos em que ela vale $1$.
 

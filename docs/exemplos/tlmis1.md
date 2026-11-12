@@ -50,7 +50,7 @@ Como a fonte é casada com a linha de $75\ \Omega$, a onda refletida na junção
 
 $$V_{\max} = 2{,}5\cdot 1{,}739 = 4{,}348\ \text{V},\qquad V_{\min} = 2{,}5\cdot 0{,}261 = 0{,}652\ \text{V}.$$
 
-A junção é um ventre ($4{,}348\ \text{V}$) e a tensão na entrada da linha é $V^{+}\,|1 + \Gamma e^{-j2\theta}|$, com $\theta = 2\pi f\tau = 11{,}75\ \text{rad}$, o que dá $3{,}01\ \text{V}$. A carga recebe a mesma amplitude da junção, $4{,}348\ \text{V}$, porque a linha de $500\ \Omega$ está casada.
+A junção é um ventre ($4{,}348\ \text{V}$) e a tensão na entrada da linha é $V^{+}\thinspace|1 + \Gamma e^{-j2\theta}|$, com $\theta = 2\pi f\tau = 11{,}75\ \text{rad}$, o que dá $3{,}01\ \text{V}$. A carga recebe a mesma amplitude da junção, $4{,}348\ \text{V}$, porque a linha de $500\ \Omega$ está casada.
 
 ## Resultados esperados
 

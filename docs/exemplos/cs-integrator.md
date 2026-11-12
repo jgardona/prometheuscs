@@ -16,7 +16,7 @@ verificacoes:
 
 ## Objetivo
 
-Mostrar como uma fonte controlada pode acumular o valor da entrada ao longo do tempo: a expressão $\text{lastoutput} + \text{timestep}\cdot 100\cdot a$ é a integração numérica (método de Euler) de $100\,a$, o que dá um integrador ideal sem amplificador operacional.
+Mostrar como uma fonte controlada pode acumular o valor da entrada ao longo do tempo: a expressão $\text{lastoutput} + \text{timestep}\cdot 100\cdot a$ é a integração numérica (método de Euler) de $100\thinspace a$, o que dá um integrador ideal sem amplificador operacional.
 
 ## O circuito
 
@@ -42,7 +42,7 @@ A entrada é a soma de duas fontes de onda quadrada em série: uma de $40\ \text
 
 As fontes controladas deste simulador são definidas por uma **expressão** sobre as entradas, que se chamam $a$, $b$, $c$, ... (as tensões ou correntes nos terminais de controle). O resultado é a tensão (VCVS, CCVS) ou a corrente (VCCS, CCCS) que a fonte impõe na saída. Na expressão, $\text{lastoutput}$ é a saída no passo de tempo anterior e $\text{timestep}$ é o passo. Então
 
-$$V_\text{out}(t + \Delta t) = V_\text{out}(t) + 100\,a\,\Delta t \quad\Longrightarrow\quad V_\text{out}(t) = 100\int_0^t a\,d\tau,$$
+$$V_\text{out}(t + \Delta t) = V_\text{out}(t) + 100\thinspace a\thinspace\Delta t \quad\Longrightarrow\quad V_\text{out}(t) = 100\int_0^t a\thinspace d\tau,$$
 
 um integrador de ganho $100\ \text{s}^{-1}$ (equivalente a $RC = 10\ \text{ms}$), **sem inversão**. A entrada assume, a cada $6{,}25\ \text{ms}$, os valores $-3$, $-7$, $+7$ e $+3\ \text{V}$ em um ciclo de $25\ \text{ms}$, e em cada trecho a saída varia de $100\cdot a\cdot 6{,}25\ \text{ms}$, isto é, $-1{,}875$, $-4{,}375$, $+4{,}375$ e $+1{,}875\ \text{V}$.
 

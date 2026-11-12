@@ -55,14 +55,14 @@ O transistor bipolar do simulador (modelo "default") segue o modelo de Ebers–M
 
 $$I_C = I_s\left(e^{V_{BE}/V_T} - e^{V_{BC}/V_T}\right) - \frac{I_s}{\beta_R}\left(e^{V_{BC}/V_T} - 1\right),\qquad I_B = \frac{I_s}{\beta}\left(e^{V_{BE}/V_T} - 1\right) + \frac{I_s}{\beta_R}\left(e^{V_{BC}/V_T} - 1\right),$$
 
-com $I_s = 10^{-13}\ \text{A}$, $\beta = 100$, $\beta_R = 1$ e $V_T = 25{,}865\ \text{mV}$; sem efeito Early, sem capacitâncias e sem resistências série. Na **região ativa** ($V_{BE} \approx 0{,}65$ a $0{,}75\ \text{V}$, junção base-coletor com polarização inversa) isso se reduz a $I_C = \beta I_B = I_s\,e^{V_{BE}/V_T}$, com transcondutância $g_m = I_C/V_T$ e resistência de emissor $r_e = V_T/I_E$. O PNP é o complementar, com todas as tensões e correntes invertidas.
+com $I_s = 10^{-13}\ \text{A}$, $\beta = 100$, $\beta_R = 1$ e $V_T = 25{,}865\ \text{mV}$; sem efeito Early, sem capacitâncias e sem resistências série. Na **região ativa** ($V_{BE} \approx 0{,}65$ a $0{,}75\ \text{V}$, junção base-coletor com polarização inversa) isso se reduz a $I_C = \beta I_B = I_s\thinspace e^{V_{BE}/V_T}$, com transcondutância $g_m = I_C/V_T$ e resistência de emissor $r_e = V_T/I_E$. O PNP é o complementar, com todas as tensões e correntes invertidas.
 
 ## Resultados esperados
 
 Como $I_C \approx I_E$, as variações de corrente passam pelos dois resistores iguais, $R_C = R_E = R$:
 
 - no **emissor**, $v_e \approx v_b$ (seguidor de emissor, ganho $\approx +1$);
-- no **coletor**, $v_c = -R_C\,i_c \approx -R_C\,v_b/R_E = -v_b$ (ganho $\approx -1$).
+- no **coletor**, $v_c = -R_C\thinspace i_c \approx -R_C\thinspace v_b/R_E = -v_b$ (ganho $\approx -1$).
 
 Os dois sinais têm a mesma amplitude e fases opostas: servem para excitar um estágio push-pull ou uma ponte. Os ganhos são só aproximadamente $\pm 1$, porque $r_e$ está em série com $R_E$ (reduzindo o do coletor) e as cargas diferem.
 

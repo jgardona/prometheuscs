@@ -54,7 +54,7 @@ A entrada é um gerador de ruído branco (valores aleatórios uniformes entre $-
 
 Para uma seção Sallen-Key passa-altas de ganho unitário, com capacitores $C_1$ e $C_2$ em série e resistores $R_1$ (à saída) e $R_2$ (à terra),
 
-$$f_0 = \frac{1}{2\pi\sqrt{R_1 R_2 C_1 C_2}}, \qquad Q = \frac{\sqrt{R_1R_2C_1C_2}}{R_1\,(C_1 + C_2)}.$$
+$$f_0 = \frac{1}{2\pi\sqrt{R_1 R_2 C_1 C_2}}, \qquad Q = \frac{\sqrt{R_1R_2C_1C_2}}{R_1\thinspace(C_1 + C_2)}.$$
 
 Com os valores deste exemplo, as três seções têm todas $f_0 \approx 4{,}88\ \text{kHz}$ e $Q = 1{,}932$; $0{,}707$; $0{,}518$ (os fatores de qualidade de Butterworth de $6.^\text{a}$ ordem): o conjunto é um filtro passa-altas de Butterworth de sexta ordem com frequência de corte $f_c \approx 4{,}88\ \text{kHz}$.
 

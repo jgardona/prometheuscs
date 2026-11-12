@@ -47,11 +47,11 @@ Mesma estrutura do exemplo anterior (comparador de fase e frequência, filtro, s
 
 O VCO do simulador é um oscilador de relaxação com três pinos externos: a tensão de controle $V_i$ alimenta, pelo resistor $R_1$, uma corrente $V_i/R_1$, somada a uma corrente fixa $V_\text{ref}/R_2$ (com $V_\text{ref} = 5\ \text{V}$, pelo resistor $R_2$), que carrega e descarrega o capacitor externo $C$ entre $0{,}5$ e $4{,}5\ \text{V}$ ($\Delta V = 4\ \text{V}$), invertendo o sentido da corrente a cada limite. A saída é uma onda quadrada de $0$ a $5\ \text{V}$ com frequência
 
-$$f_\text{VCO} = \frac{I}{2\,C\,\Delta V} = \frac{V_i/R_1 + 5/R_2}{8\,C}.$$
+$$f_\text{VCO} = \frac{I}{2\thinspace C\thinspace\Delta V} = \frac{V_i/R_1 + 5/R_2}{8\thinspace C}.$$
 
 Para travar em $970\ \text{Hz}$ a tensão de controle é
 
-$$V_i = R_1\left(8\,C\,f_\text{ent} - \frac{5}{R_2}\right) = 30\ \text{k}\Omega\,(77{,}6\ \mu\text{A} - 5\ \mu\text{A}) = 2{,}18\ \text{V}.$$
+$$V_i = R_1\left(8\thinspace C\thinspace f_\text{ent} - \frac{5}{R_2}\right) = 30\ \text{k}\Omega\thinspace(77{,}6\ \mu\text{A} - 5\ \mu\text{A}) = 2{,}18\ \text{V}.$$
 
 A constante de tempo do filtro, $(2\ \text{k}\Omega + 1\ \text{k}\Omega)\cdot 10\ \mu\text{F} = 30\ \text{ms}$, é menor que a do PLL de $120\ \text{Hz}$ ($(500\ \Omega + 1\ \text{k}\Omega)\cdot 90\ \mu\text{F} = 135\ \text{ms}$), e a captura é mais rápida.
 

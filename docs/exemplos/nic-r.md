@@ -44,15 +44,15 @@ O circuito tem duas metades iguais, cada uma com a sua fonte senoidal de $100\ \
 
 Com a realimentação negativa, o operacional trabalha como amplificador não inversor de ganho $1 + R_5/R_{11} = 1 + 100/150 = 5/3$ em relação à tensão $V$ da fonte:
 
-$$V_\text{out} = \left(1 + \frac{R_5}{R_{11}}\right) V = \frac{5}{3}\,V.$$
+$$V_\text{out} = \left(1 + \frac{R_5}{R_{11}}\right) V = \frac{5}{3}\thinspace V.$$
 
 A corrente que a fonte fornece passa por $R_2$ (da fonte até a saída):
 
-$$I = \frac{V - V_\text{out}}{R_2} = \frac{V\,(1 - 5/3)}{100\ \Omega} = -\frac{V}{150\ \Omega}.$$
+$$I = \frac{V - V_\text{out}}{R_2} = \frac{V\thinspace(1 - 5/3)}{100\ \Omega} = -\frac{V}{150\ \Omega}.$$
 
 A impedância vista pela fonte é
 
-$$Z_\text{in} = \frac{V}{I} = -\frac{R_2\,R_{11}}{R_5} = -150\ \Omega.$$
+$$Z_\text{in} = \frac{V}{I} = -\frac{R_2\thinspace R_{11}}{R_5} = -150\ \Omega.$$
 
 A corrente tem o mesmo módulo que a de um resistor de $+150\ \Omega$, mas sinal oposto. Uma resistência negativa **fornece** potência ao circuito, e a energia vem da alimentação do operacional.
 

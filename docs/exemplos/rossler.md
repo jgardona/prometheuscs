@@ -66,9 +66,9 @@ O circuito é um computador analógico: cinco amplificadores operacionais, três
 
 O sistema de Rössler (1976) é
 
-$$\dot x = -y - z,\qquad \dot y = x + a\,y,\qquad \dot z = b + z\,(x - c).$$
+$$\dot x = -y - z,\qquad \dot y = x + a\thinspace y,\qquad \dot z = b + z\thinspace(x - c).$$
 
-A parte linear em $x$ e $y$ gira e, com $a > 0$, expande em espiral; o termo não linear $z\,(x-c)$ lança a trajetória para cima quando $x$ passa de $c$ e a recoloca perto do plano $xy$, onde ela volta a espiralar. Num circuito, cada derivada vira um integrador (um operacional com capacitor), os termos lineares viram somadores com resistores, e a não linearidade é feita por um diodo, que liga e desliga um caminho conforme a tensão. As constantes de tempo do exemplo ficam entre $0{,}1$ e $5\ \text{ms}$ ($1\ \text{nF}$ com resistores de $100\ \text{k}\Omega$ a $5\ \text{M}\Omega$).
+A parte linear em $x$ e $y$ gira e, com $a > 0$, expande em espiral; o termo não linear $z\thinspace(x-c)$ lança a trajetória para cima quando $x$ passa de $c$ e a recoloca perto do plano $xy$, onde ela volta a espiralar. Num circuito, cada derivada vira um integrador (um operacional com capacitor), os termos lineares viram somadores com resistores, e a não linearidade é feita por um diodo, que liga e desliga um caminho conforme a tensão. As constantes de tempo do exemplo ficam entre $0{,}1$ e $5\ \text{ms}$ ($1\ \text{nF}$ com resistores de $100\ \text{k}\Omega$ a $5\ \text{M}\Omega$).
 
 Um sistema caótico tem três propriedades: é determinístico, é limitado (as tensões ficam dentro de uma faixa) e é sensível às condições iniciais (dois estados quase iguais divergem exponencialmente, com expoente de Lyapunov positivo).
 

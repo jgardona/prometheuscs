@@ -69,7 +69,7 @@ Com a habilitação $E = 1$, a NAND dá $\overline{D}$ e a AND dá $\overline{D}
 
 Como os dois buffers recebem habilitações complementares, sempre exatamente um aciona a linha:
 
-$$Y = \overline{S}\,D_1 + S\,D_2.$$
+$$Y = \overline{S}\thinspace D_1 + S\thinspace D_2.$$
 
 Se os dois estivessem habilitados com dados diferentes, um PMOS e um NMOS ligariam a alimentação à terra através da linha: é a **contenção de barramento**, que um sistema com buffers tri-state tem de evitar.
 

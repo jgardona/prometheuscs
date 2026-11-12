@@ -43,7 +43,7 @@ A fonte é um gerador de varredura logarítmica de $5\ \text{V}$ de pico, de $10
 
 A entrada não inversora recebe a entrada filtrada por um passa-baixas $RC$: $V_+ = V_\text{in}/(1 + sRC)$. Com $R_f = R_1$, o amplificador é a combinação de um não inversor (ganho $2$) para $V_+$ e de um inversor (ganho $-1$) para $V_\text{in}$:
 
-$$V_\text{out} = 2\,V_+ - V_\text{in} = V_\text{in}\left(\frac{2}{1 + sRC} - 1\right) = V_\text{in}\,\frac{1 - sRC}{1 + sRC}.$$
+$$V_\text{out} = 2\thinspace V_+ - V_\text{in} = V_\text{in}\left(\frac{2}{1 + sRC} - 1\right) = V_\text{in}\thinspace\frac{1 - sRC}{1 + sRC}.$$
 
 O módulo é $1$ em qualquer frequência, e a fase é
 

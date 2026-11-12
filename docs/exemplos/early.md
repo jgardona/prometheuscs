@@ -51,7 +51,7 @@ Há dois circuitos iguais. Em cada um, um transistor NPN ($\beta = 100$) tem o e
 
 Na região ativa, o modelo de Ebers–Moll sem efeito Early dá uma corrente de coletor que só depende de $V_{BE}$:
 
-$$I_C = I_s\,e^{V_{BE}/V_T}.$$
+$$I_C = I_s\thinspace e^{V_{BE}/V_T}.$$
 
 O estreitamento da região de base quando a tensão coletor-base cresce faz a corrente aumentar. No modelo de Gummel–Poon do simulador, isso entra com a **tensão de Early direta** $V_{AF}$, e a corrente de coletor passa a ser
 

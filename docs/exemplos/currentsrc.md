@@ -45,13 +45,13 @@ O transistor bipolar do simulador (modelo "default") segue o modelo de Ebers–M
 
 $$I_C = I_s\left(e^{V_{BE}/V_T} - e^{V_{BC}/V_T}\right) - \frac{I_s}{\beta_R}\left(e^{V_{BC}/V_T} - 1\right),\qquad I_B = \frac{I_s}{\beta}\left(e^{V_{BE}/V_T} - 1\right) + \frac{I_s}{\beta_R}\left(e^{V_{BC}/V_T} - 1\right),$$
 
-com $I_s = 10^{-13}\ \text{A}$, $\beta = 100$, $\beta_R = 1$ e $V_T = 25{,}865\ \text{mV}$; sem efeito Early, sem capacitâncias e sem resistências série. Na **região ativa** ($V_{BE} \approx 0{,}65$ a $0{,}75\ \text{V}$, junção base-coletor com polarização inversa) isso se reduz a $I_C = \beta I_B = I_s\,e^{V_{BE}/V_T}$, com transcondutância $g_m = I_C/V_T$ e resistência de emissor $r_e = V_T/I_E$. O PNP é o complementar, com todas as tensões e correntes invertidas.
+com $I_s = 10^{-13}\ \text{A}$, $\beta = 100$, $\beta_R = 1$ e $V_T = 25{,}865\ \text{mV}$; sem efeito Early, sem capacitâncias e sem resistências série. Na **região ativa** ($V_{BE} \approx 0{,}65$ a $0{,}75\ \text{V}$, junção base-coletor com polarização inversa) isso se reduz a $I_C = \beta I_B = I_s\thinspace e^{V_{BE}/V_T}$, com transcondutância $g_m = I_C/V_T$ e resistência de emissor $r_e = V_T/I_E$. O PNP é o complementar, com todas as tensões e correntes invertidas.
 
 ## Resultados esperados
 
 A tensão de emissor segue a da base, $V_E = V_B - V_{BE}$, e a corrente de emissor é $I_E = V_E/R_E$. Como $I_C = \dfrac{\beta}{\beta + 1}I_E$ e, na região ativa, $I_C$ não depende de $V_{CE}$, a corrente na carga fica constante enquanto o transistor não satura (enquanto $V_C > V_E + V_{CE(sat)}$):
 
-$$I_C \approx \frac{V_B - V_{BE}}{R_E},\qquad V_B = V_{CC}\frac{R_2}{R_1 + R_2} - I_B (R_1\,\|\,R_2).$$
+$$I_C \approx \frac{V_B - V_{BE}}{R_E},\qquad V_B = V_{CC}\frac{R_2}{R_1 + R_2} - I_B (R_1\thinspace\|\thinspace R_2).$$
 
 A tensão na carga acompanha $I_C R_L$ ($= 8{,}2\ \text{V}$): a fonte de corrente "empurra" a mesma corrente por qualquer carga, dentro da faixa de tensão disponível (aqui, $10 - 1{,}4 - 0{,}2 = 8{,}4\ \text{V}$ no máximo).
 

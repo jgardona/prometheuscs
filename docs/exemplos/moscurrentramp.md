@@ -45,7 +45,7 @@ Um NMOS (modelo padrão, sem diodo de corpo) tem a porta em $2{,}5\ \text{V}$ e 
 
 ## Teoria
 
-A degeneração de fonte fixa a corrente: $V_{GS} = 2{,}5 - 10 I$ e, na saturação, $I = \tfrac12\beta (V_{GS} - V_t)^2 = 0{,}01\,(1 - 10 I)^2$ ($\beta = 0{,}02\ \text{A/V}^2$, $V_t = 1{,}5\ \text{V}$), ou seja, $I^2 - 1{,}2 I + 0{,}01 = 0$, de raiz útil
+A degeneração de fonte fixa a corrente: $V_{GS} = 2{,}5 - 10 I$ e, na saturação, $I = \tfrac12\beta (V_{GS} - V_t)^2 = 0{,}01\thinspace(1 - 10 I)^2$ ($\beta = 0{,}02\ \text{A/V}^2$, $V_t = 1{,}5\ \text{V}$), ou seja, $I^2 - 1{,}2 I + 0{,}01 = 0$, de raiz útil
 
 $$I = \frac{1{,}2 - \sqrt{1{,}44 - 0{,}04}}{2} = 8{,}39\ \text{mA}, \qquad V_{ov} = 1 - 10 I = 0{,}916\ \text{V}.$$
 

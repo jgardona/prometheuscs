@@ -45,11 +45,11 @@ Cada exemplo desta família tem dois circuitos lado a lado, idênticos exceto po
 
 ## Teoria
 
-Indutores em paralelo têm a mesma tensão $v$, e a corrente de cada um é $i_k = \dfrac{1}{L_k}\displaystyle\int v\,dt$ (com correntes iniciais nulas). A corrente total é a soma, então
+Indutores em paralelo têm a mesma tensão $v$, e a corrente de cada um é $i_k = \dfrac{1}{L_k}\displaystyle\int v\thinspace dt$ (com correntes iniciais nulas). A corrente total é a soma, então
 
 $$\frac{1}{L_{eq}} = \sum_k \frac{1}{L_k},\qquad\text{ou, para dois: } L_{eq} = \frac{L_1 L_2}{L_1 + L_2}.$$
 
-A corrente se divide em proporção inversa à indutância: $i_k = i\,\dfrac{L_{eq}}{L_k}$, ou seja, o menor indutor leva a maior parte.
+A corrente se divide em proporção inversa à indutância: $i_k = i\thinspace\dfrac{L_{eq}}{L_k}$, ou seja, o menor indutor leva a maior parte.
 
 A constante de tempo do RL é $\tau = L_{eq}/R$.
 
@@ -57,7 +57,7 @@ A constante de tempo do RL é $\tau = L_{eq}/R$.
 
 Com $L_{eq} = \dfrac{1\cdot 5}{6} = 0{,}8333\ \text{H}$, $\tau = 8{,}333\ \text{ms}$. Em $t=\tau$:
 
-$$i = 50\,(1-e^{-1}) = 31{,}61\ \text{mA},\qquad v_L = 5\,e^{-1} = 1{,}839\ \text{V}.$$
+$$i = 50\thinspace(1-e^{-1}) = 31{,}61\ \text{mA},\qquad v_L = 5\thinspace e^{-1} = 1{,}839\ \text{V}.$$
 
 A corrente se divide em $\dfrac{L_{eq}}{L_1} = \dfrac56$ para o indutor de $1\ \text{H}$ ($26{,}34\ \text{mA}$) e $\dfrac{L_{eq}}{L_2} = \dfrac16$ para o de $5\ \text{H}$ ($5{,}268\ \text{mA}$). As verificações conferem a corrente do indutor único, as duas correntes parciais e a tensão, em $t = 8{,}333\ \text{ms}$.
 

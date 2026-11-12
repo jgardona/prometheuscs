@@ -60,7 +60,7 @@ Uma escada LC de oito indutores e oito capacitores (quatro seções ressonantes 
 
 Um rejeita-faixa de Butterworth pode ser obtido de um passa-baixas protótipo pela transformação
 
-$$s \;\longrightarrow\; \frac{B\,s}{s^2 + \omega_0^2},\qquad \omega_0^2 = \omega_1\omega_2,\quad B = \omega_2 - \omega_1,$$
+$$s \thickspace\longrightarrow\thickspace \frac{B\thinspace s}{s^2 + \omega_0^2},\qquad \omega_0^2 = \omega_1\omega_2,\quad B = \omega_2 - \omega_1,$$
 
 que troca cada indutor do protótipo por uma associação paralela LC e cada capacitor por uma série LC. A resposta é plana na faixa passante, tem $-3\ \text{dB}$ nas frequências de corte $f_1$ e $f_2$ e é praticamente nula em torno da frequência central $f_0=\sqrt{f_1 f_2}$.
 

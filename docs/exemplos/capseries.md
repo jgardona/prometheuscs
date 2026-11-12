@@ -49,19 +49,19 @@ Capacitores em série são atravessados pela mesma corrente e, portanto, acumula
 
 $$\frac{1}{C_{eq}} = \sum_k \frac{1}{C_k},\qquad C_{eq} = \frac{C_1 C_2}{C_1 + C_2}.$$
 
-A tensão em cada capacitor é $v_k = Q/C_k = v\,\dfrac{C_{eq}}{C_k}$: **o menor capacitor fica com a maior tensão**.
+A tensão em cada capacitor é $v_k = Q/C_k = v\thinspace\dfrac{C_{eq}}{C_k}$: **o menor capacitor fica com a maior tensão**.
 
-Carregado por uma fonte $V$ através de $R$, o conjunto tem $\tau = R\,C_{eq}$ e
+Carregado por uma fonte $V$ através de $R$, o conjunto tem $\tau = R\thinspace C_{eq}$ e
 
-$$v_C(t) = V\left(1 - e^{-t/\tau}\right),\qquad i(t) = \frac{V}{R}\,e^{-t/\tau}.$$
+$$v_C(t) = V\left(1 - e^{-t/\tau}\right),\qquad i(t) = \frac{V}{R}\thinspace e^{-t/\tau}.$$
 
 ## Resultados esperados
 
 $C_{eq} = \dfrac{1000\cdot 100}{1100} = 90{,}91\ \mu\text{F}$ e $\tau = 100\cdot 90{,}91\ \mu\text{F} = 9{,}091\ \text{ms}$. Em $t = \tau$:
 
-$$v_C = 5\,(1-e^{-1}) = 3{,}161\ \text{V},\qquad i = 50\,e^{-1} = 18{,}39\ \text{mA}.$$
+$$v_C = 5\thinspace(1-e^{-1}) = 3{,}161\ \text{V},\qquad i = 50\thinspace e^{-1} = 18{,}39\ \text{mA}.$$
 
-A carga é $Q = C_{eq}\,v_C = 287{,}3\ \mu\text{C}$, e a tensão se divide em $Q/1\,\text{mF} = 0{,}2873\ \text{V}$ e $Q/100\,\mu\text{F} = 2{,}873\ \text{V}$ (soma $3{,}161\ \text{V}$). As verificações conferem a tensão do capacitor único, as duas tensões parciais e a corrente.
+A carga é $Q = C_{eq}\thinspace v_C = 287{,}3\ \mu\text{C}$, e a tensão se divide em $Q/1\thinspace\text{mF} = 0{,}2873\ \text{V}$ e $Q/100\thinspace\mu\text{F} = 2{,}873\ \text{V}$ (soma $3{,}161\ \text{V}$). As verificações conferem a tensão do capacitor único, as duas tensões parciais e a corrente.
 
 ## O que observar
 

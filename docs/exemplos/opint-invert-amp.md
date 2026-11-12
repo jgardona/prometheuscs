@@ -76,7 +76,7 @@ O circuito é o amplificador operacional clássico de $20$ transistores ($13$ NP
 
 Como no amplificador inversor ideal, o terra virtual na entrada inversora dá
 
-$$V_\text{out} = -\frac{R_f}{R_1}\,V_\text{in} = -\frac{2\ \text{k}\Omega}{1\ \text{k}\Omega}\,V_\text{in} = -2\,V_\text{in}.$$
+$$V_\text{out} = -\frac{R_f}{R_1}\thinspace V_\text{in} = -\frac{2\ \text{k}\Omega}{1\ \text{k}\Omega}\thinspace V_\text{in} = -2\thinspace V_\text{in}.$$
 
 Com o ganho de malha aberta de cerca de $10^5$, o erro de ganho é da ordem de $(1 + R_f/R_1)/A \approx 3\times 10^{-5}$, desprezível. A fabricação dos transistores, o espelho de corrente, o capacitor de compensação: tudo isso fica escondido pela realimentação.
 

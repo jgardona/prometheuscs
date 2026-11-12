@@ -57,7 +57,7 @@ Com $v_1 = v_2 = v_{cm}$ a entrada diferencial é $v_d = 0$ e só o ganho de mod
 
 $$\Delta I_T \approx \frac{\Delta v_{cm}}{R_T}, \qquad A_{cm} = \frac{v_o}{v_{cm}} \approx -\frac{R_C}{R_E + r_e + 2R_T}.$$
 
-Com $r_e = V_T/I_E \approx 270\ \Omega$ (corrente de repouso de $95{,}8\ \mu\text{A}$ por ramo): $A_{cm} \approx -75\,000/151\,270 \approx -0{,}496$. O ganho diferencial do mesmo circuito é $A_d \approx 29{,}5$, o que dá $\text{CMRR} \approx 59{,}5$ ($35{,}5\ \text{dB}$).
+Com $r_e = V_T/I_E \approx 270\ \Omega$ (corrente de repouso de $95{,}8\ \mu\text{A}$ por ramo): $A_{cm} \approx -75\thinspace000/151\thinspace270 \approx -0{,}496$. O ganho diferencial do mesmo circuito é $A_d \approx 29{,}5$, o que dá $\text{CMRR} \approx 59{,}5$ ($35{,}5\ \text{dB}$).
 
 ## Resultados esperados
 

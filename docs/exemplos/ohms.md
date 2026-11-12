@@ -16,7 +16,7 @@ verificacoes:
 
 ## Objetivo
 
-Mostrar que, num resistor, a corrente é proporcional à tensão aplicada e inversamente proporcional à resistência: $V = R\,I$. O exemplo põe a mesma tensão sobre dois resistores de valores diferentes para que a diferença de corrente fique visível.
+Mostrar que, num resistor, a corrente é proporcional à tensão aplicada e inversamente proporcional à resistência: $V = R\thinspace I$. O exemplo põe a mesma tensão sobre dois resistores de valores diferentes para que a diferença de corrente fique visível.
 
 ## O circuito
 
@@ -40,11 +40,11 @@ Uma fonte de tensão variável (de 0 a 5 V, com um *slider* chamado "Voltage") a
 
 A lei de Ohm relaciona a tensão $V$ entre os terminais de um resistor, a corrente $I$ que o atravessa e a resistência $R$:
 
-$$V = R\,I \qquad\Longleftrightarrow\qquad I = \frac{V}{R} = G\,V,\qquad G=\frac{1}{R}.$$
+$$V = R\thinspace I \qquad\Longleftrightarrow\qquad I = \frac{V}{R} = G\thinspace V,\qquad G=\frac{1}{R}.$$
 
 O gráfico de $I$ contra $V$ é uma reta que passa pela origem, com inclinação igual à condutância $G$ (em siemens, S). A potência dissipada, que vira calor, é
 
-$$P = V\,I = R\,I^2 = \frac{V^2}{R}.$$
+$$P = V\thinspace I = R\thinspace I^2 = \frac{V^2}{R}.$$
 
 Dois resistores ligados à mesma tensão (em paralelo) recebem a mesma $V$ e, portanto, correntes inversamente proporcionais às resistências: $I_1/I_2 = R_2/R_1$.
 

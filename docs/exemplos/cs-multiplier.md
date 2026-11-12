@@ -39,7 +39,7 @@ Duas fontes senoidais de $5\ \text{V}$ de pico ($40\ \text{Hz}$ e $88\ \text{Hz}
 
 As fontes controladas deste simulador são definidas por uma **expressão** sobre as entradas, que se chamam $a$, $b$, $c$, ... (as tensões ou correntes nos terminais de controle). O resultado é a tensão (VCVS, CCVS) ou a corrente (VCCS, CCCS) que a fonte impõe na saída. Com $a = 5\sin(2\pi f_1 t)$ e $b = 5\sin(2\pi f_2 t)$,
 
-$$a\,b = 25\,\sin(2\pi f_1 t)\,\sin(2\pi f_2 t) = \frac{25}{2}\Bigl[\cos\bigl(2\pi(f_2 - f_1)t\bigr) - \cos\bigl(2\pi(f_2 + f_1)t\bigr)\Bigr].$$
+$$a\thinspace b = 25\thinspace\sin(2\pi f_1 t)\thinspace\sin(2\pi f_2 t) = \frac{25}{2}\Bigl[\cos\bigl(2\pi(f_2 - f_1)t\bigr) - \cos\bigl(2\pi(f_2 + f_1)t\bigr)\Bigr].$$
 
 O espectro da saída tem duas componentes de amplitude $12{,}5\ \text{V}$: uma na frequência diferença, $88 - 40 = 48\ \text{Hz}$, e outra na soma, $88 + 40 = 128\ \text{Hz}$. As frequências de entrada desaparecem. O valor médio é zero e o valor eficaz é $12{,}5\ \text{V}$, o produto dos valores eficazes das entradas ($5/\sqrt 2$ cada).
 

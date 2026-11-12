@@ -49,7 +49,7 @@ O comparador de fase tipo II é feito de dois *flip-flops* sensíveis à borda d
 
 A largura do pulso é a diferença de tempo entre as bordas das duas entradas, e portanto proporcional à defasagem. Se $f_1 > f_2$, o $\text{UP}$ fica ativo uma parte de cada ciclo de $I_2$, entre a borda de $I_1$ e a de $I_2$ seguinte; ao longo de um ciclo de batimento essa parte vai de $0$ a $100\%$, com média de $50\%$. Logo, com $f_1 > f_2$ a saída é alta durante a metade do tempo e em alta impedância na outra metade, e o valor médio no divisor é
 
-$$\overline{v} = 2{,}5\ \text{V} + \tfrac12\,(5 - 2{,}5)\ \text{V} = 3{,}75\ \text{V}.$$
+$$\overline{v} = 2{,}5\ \text{V} + \tfrac12\thinspace(5 - 2{,}5)\ \text{V} = 3{,}75\ \text{V}.$$
 
 Se $f_1 < f_2$, seria $2{,}5 - 1{,}25 = 1{,}25\ \text{V}$. Com as frequências iguais, a saída pulsa só em torno de $2{,}5\ \text{V}$ e o valor médio mede a fase.
 

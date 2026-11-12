@@ -45,9 +45,9 @@ Uma fonte senoidal de $5\ \text{V}$ de pico e $200\ \text{Hz}$ (o sinal) passa p
 
 Com $V_{DS}$ pequeno, o JFET se comporta como um resistor cuja condutância é controlada por $V_{GS}$:
 
-$$G_{ds} = \left.\frac{\partial I_D}{\partial V_{DS}}\right|_{V_{DS}\to 0} = \beta\,(V_{GS} - V_T) = 1{,}25\ \text{mS}\cdot(V_{GS} + 4\ \text{V}).$$
+$$G_{ds} = \left.\frac{\partial I_D}{\partial V_{DS}}\right|_{V_{DS}\to 0} = \beta\thinspace(V_{GS} - V_T) = 1{,}25\ \text{mS}\cdot(V_{GS} + 4\ \text{V}).$$
 
-Para $V_{GS} \le V_T = -4\ \text{V}$ o canal está cortado e o divisor não atenua. À medida que $V_{GS}$ sobe, a resistência do canal cai e a saída $v_o = v_s\,R_{ds}/(R_{ds} + 6\ \text{k}\Omega)$ diminui. A realimentação do nó de saída para o gatilho (o segundo resistor de $100\ \text{k}\Omega$) faz $V_{GS}$ acompanhar metade do sinal e lineariza a resistência do canal, reduzindo a distorção.
+Para $V_{GS} \le V_T = -4\ \text{V}$ o canal está cortado e o divisor não atenua. À medida que $V_{GS}$ sobe, a resistência do canal cai e a saída $v_o = v_s\thinspace R_{ds}/(R_{ds} + 6\ \text{k}\Omega)$ diminui. A realimentação do nó de saída para o gatilho (o segundo resistor de $100\ \text{k}\Omega$) faz $V_{GS}$ acompanhar metade do sinal e lineariza a resistência do canal, reduzindo a distorção.
 
 ## Resultados esperados
 

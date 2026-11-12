@@ -40,7 +40,7 @@ Uma fonte de corrente de $2\ \text{mA}$, ajustável por um *slider* chamado "Cur
 
 A entrada inversora é um terra virtual e o operacional não absorve corrente, de modo que toda a corrente $I$ da fonte passa pelo resistor de realimentação $R_f$:
 
-$$V_\text{out} = I\,R_f \qquad\text{(com o sentido da corrente do exemplo).}$$
+$$V_\text{out} = I\thinspace R_f \qquad\text{(com o sentido da corrente do exemplo).}$$
 
 A fonte de corrente trabalha com a tensão que precisar (aqui $5\ \text{V}$ entre a entrada e a fonte de $-5\ \text{V}$), e o terra virtual mantém a tensão na entrada igual a zero, o que é a vantagem do circuito sobre um simples resistor: a fonte de corrente vê uma carga de impedância quase nula e a medida não é afetada pela capacitância parasita do sensor. Esse é o circuito típico para ler a corrente de fotodiodos.
 

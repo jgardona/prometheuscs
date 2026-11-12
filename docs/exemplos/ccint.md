@@ -53,7 +53,7 @@ isto é, a tensão em $Y$ (de entrada de alta impedância) é copiada em $X$ (de
 
 A corrente que entra é $i = v_{in}/R = \pm 5\ \text{V}/100\ \Omega = \pm 50\ \text{mA}$ e é copiada para o capacitor:
 
-$$v_C(t) = \frac{1}{C}\int i\,dt = \frac{1}{RC}\int v_{in}\,dt,\qquad RC = 100\ \Omega\cdot 10\ \mu\text{F} = 1\ \text{ms}.$$
+$$v_C(t) = \frac{1}{C}\int i\thinspace dt = \frac{1}{RC}\int v_{in}\thinspace dt,\qquad RC = 100\ \Omega\cdot 10\ \mu\text{F} = 1\ \text{ms}.$$
 
 Com a entrada constante em $\pm 5\ \text{V}$, a tensão varia com a inclinação $\pm 5\ \text{V/ms}$: a integral de uma quadrada é uma triangular. Em meio período ($12{,}5\ \text{ms}$) a variação é de $62{,}5\ \text{V}$. O segundo transportador copia essa tensão para $Z$ pelo resistor de $1\ \text{k}\Omega$ de $X$ e pelo de $100\ \Omega$ de saída, dividindo-a por $10$.
 

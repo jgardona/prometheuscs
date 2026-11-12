@@ -63,7 +63,7 @@ A mesma rede do exemplo de Thévenin (13 resistores e 8 fontes de tensão contí
 
 $$I_N = \frac{V_{th}}{R_{th}},\qquad R_N = R_{th}.$$
 
-Uma carga $R_L$ recebe a corrente $I_L = I_N\,\dfrac{R_N}{R_N+R_L}$ (divisor de corrente).
+Uma carga $R_L$ recebe a corrente $I_L = I_N\thinspace\dfrac{R_N}{R_N+R_L}$ (divisor de corrente).
 
 ## Resultados esperados
 

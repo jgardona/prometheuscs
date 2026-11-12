@@ -57,7 +57,7 @@ $$i_N = i_A + i_B + i_C = 0.$$
 
 Por isso, num sistema equilibrado o fio neutro não conduz corrente (ele só carrega o desequilíbrio entre as cargas), e retirá-lo não muda as tensões das cargas.
 
-A tensão entre duas fases (tensão de linha) é $\sqrt3$ vezes a de fase: $V_{linha} = \sqrt3\cdot 120 = 208\ \text{V}$ eficazes. A potência total em cargas equilibradas é constante no tempo: $p = 3\,V_{ef}^2/R = 43{,}2\ \text{W}$, uma das vantagens do sistema trifásico para acionar motores.
+A tensão entre duas fases (tensão de linha) é $\sqrt3$ vezes a de fase: $V_{linha} = \sqrt3\cdot 120 = 208\ \text{V}$ eficazes. A potência total em cargas equilibradas é constante no tempo: $p = 3\thinspace V_{ef}^2/R = 43{,}2\ \text{W}$, uma das vantagens do sistema trifásico para acionar motores.
 
 ## Resultados esperados
 

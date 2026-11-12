@@ -20,7 +20,7 @@ verificacoes:
 
 ## Objetivo
 
-Mostrar um oscilador LC cujo elemento ativo é um **par diferencial** (de emissores acoplados) e cuja amplitude é limitada pela saturação de um dos transistores, e não por uma não linearidade suave. O texto do próprio circuito resume os dados: $f_0 = 71{,}2\ \text{Hz}$, $Q_u = 100$, $Q_L = 50$, $U_{out} = 0{,}85\,U_{sat}$.
+Mostrar um oscilador LC cujo elemento ativo é um **par diferencial** (de emissores acoplados) e cuja amplitude é limitada pela saturação de um dos transistores, e não por uma não linearidade suave. O texto do próprio circuito resume os dados: $f_0 = 71{,}2\ \text{Hz}$, $Q_u = 100$, $Q_L = 50$, $U_{out} = 0{,}85\thinspace U_{sat}$.
 
 ## O circuito
 
@@ -60,7 +60,7 @@ Um circuito ressonante paralelo tem um indutor de $100\ \text{mH}$, um capacitor
 
 **Frequência.** Os resistores em paralelo com o circuito ressonante só introduzem perdas; a frequência é praticamente a de ressonância do LC:
 
-$$f_0 = \frac{1}{2\pi\sqrt{L\,C}} = \frac{1}{2\pi\sqrt{0{,}1 \cdot 50 \cdot 10^{-6}}} \approx 71{,}18\ \text{Hz}.$$
+$$f_0 = \frac{1}{2\pi\sqrt{L\thinspace C}} = \frac{1}{2\pi\sqrt{0{,}1 \cdot 50 \cdot 10^{-6}}} \approx 71{,}18\ \text{Hz}.$$
 
 **Fatores de qualidade.** A $f_0$, a reatância do indutor é $\omega_0 L = 44{,}7\ \Omega$. A perda $R_p$ sozinha dá $Q_u = R_p/(\omega_0 L) \approx 100$; com $R_L$ em paralelo, a resistência total é $R_p \parallel R_L = 2{,}25\ \text{k}\Omega$ e $Q_L = 2250/44{,}7 \approx 50$ (se $R_p = R_L$ então $Q_L = Q_u/2$).
 
@@ -81,7 +81,7 @@ No osciloscópio, uma senoide de $\pm 0{,}6\ \text{V}$ e período de $14\ \text{
 - O indutor é ideal (sem resistência série): as perdas do circuito ressonante são representadas por $R_p$ em paralelo, que define $Q_u$.
 - Não há capacitâncias nos transistores; em frequências mais altas elas deslocariam a frequência e o ganho.
 - A amplitude ($0{,}597\ \text{V}$) depende de o modelo do transistor ter saturação com $V_{BC} \approx 0{,}6\ \text{V}$; outro modelo de transistor daria outra amplitude.
-- O estimador $I\,R\,(2/\pi)$ da amplitude de um par diferencial não se aplica aqui: Q2 satura antes de o par poder fornecer essa tensão.
+- O estimador $I\thinspace R\thinspace(2/\pi)$ da amplitude de um par diferencial não se aplica aqui: Q2 satura antes de o par poder fornecer essa tensão.
 
 ## Referências
 

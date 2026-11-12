@@ -61,7 +61,7 @@ O simulador dá:
 
 ## O que observar
 
-Clique nas entradas e leia $C\,S$ como um número binário de dois bits: é sempre a soma $A + B$.
+Clique nas entradas e leia $C\thinspace S$ como um número binário de dois bits: é sempre a soma $A + B$.
 
 ## Limites do modelo
 

@@ -56,13 +56,13 @@ O transistor usa o modelo de Ebers–Moll descrito em [Transistor NPN](npn.md). 
 
 **Ponto de operação.** Com as bases em $0\ \text{V}$, o nó dos emissores fica em $-V_{BE} - I_E R_E \approx -0{,}63\ \text{V}$ e a corrente da cauda é
 
-$$I_T = \frac{V_E - (-15)}{R_T} \approx \frac{14{,}37}{75\,000} \approx 191{,}6\ \mu\text{A},$$
+$$I_T = \frac{V_E - (-15)}{R_T} \approx \frac{14{,}37}{75\thinspace000} \approx 191{,}6\ \mu\text{A},$$
 
 dividida igualmente entre os dois ramos: $I_E \approx 95{,}8\ \mu\text{A}$. A resistência de emissor do modelo de pequenos sinais é $r_e = V_T/I_E = 25{,}865\ \text{mV}/95{,}8\ \mu\text{A} \approx 270\ \Omega$.
 
 **Ganhos** (saída no coletor de Q2, pequenos sinais):
 
-$$A_d = \frac{v_o}{v_d} \approx \frac{R_C}{2\,(R_E + r_e)}, \qquad A_{cm} = \frac{v_o}{v_{cm}} \approx -\frac{R_C}{R_E + r_e + 2R_T},$$
+$$A_d = \frac{v_o}{v_d} \approx \frac{R_C}{2\thinspace(R_E + r_e)}, \qquad A_{cm} = \frac{v_o}{v_{cm}} \approx -\frac{R_C}{R_E + r_e + 2R_T},$$
 
 e a taxa de rejeição de modo comum $\text{CMRR} = |A_d / A_{cm}|$. A cauda resistiva é o que limita a rejeição: quanto maior $R_T$, menor o ganho de modo comum.
 
@@ -70,9 +70,9 @@ e a taxa de rejeição de modo comum $\text{CMRR} = |A_d / A_{cm}|$. A cauda res
 
 Com $R_C = 75\ \text{k}\Omega$, $R_E = 1\ \text{k}\Omega$, $R_T = 75\ \text{k}\Omega$ e $r_e \approx 270\ \Omega$:
 
-$$A_d \approx \frac{75\,000}{2\,(1000 + 270)} \approx 29{,}5, \qquad A_{cm} \approx -\frac{75\,000}{1000 + 270 + 150\,000} \approx -0{,}496, \qquad \text{CMRR} \approx 59{,}5\ (35{,}5\ \text{dB}).$$
+$$A_d \approx \frac{75\thinspace000}{2\thinspace(1000 + 270)} \approx 29{,}5, \qquad A_{cm} \approx -\frac{75\thinspace000}{1000 + 270 + 150\thinspace000} \approx -0{,}496, \qquad \text{CMRR} \approx 59{,}5\ (35{,}5\ \text{dB}).$$
 
-No repouso (todas as entradas em zero, como em $t = 12{,}5\ \text{ms}$) a corrente da cauda é $191{,}6\ \mu\text{A}$ e o coletor de Q2 fica em $15 - 75\,000 \cdot I_C \approx 7{,}87\ \text{V}$ (o simulador dá $7{,}868\ \text{V}$).
+No repouso (todas as entradas em zero, como em $t = 12{,}5\ \text{ms}$) a corrente da cauda é $191{,}6\ \mu\text{A}$ e o coletor de Q2 fica em $15 - 75\thinspace000 \cdot I_C \approx 7{,}87\ \text{V}$ (o simulador dá $7{,}868\ \text{V}$).
 
 Com as entradas ligadas, a saída oscila em torno de $7{,}88\ \text{V}$ e vai de $4{,}92\ \text{V}$ a $10{,}84\ \text{V}$: um pico de cerca de $2{,}96\ \text{V}$, que é $A_d \cdot 0{,}1\ \text{V}$ ($2{,}95\ \text{V}$) para o sinal de $200\ \text{Hz}$ ($v_d$ de $0{,}1\ \text{V}$ de pico), somado a uma pequena parcela do de $40\ \text{Hz}$. Analisando a saída por Fourier em $25\ \text{ms}$, o componente de $200\ \text{Hz}$ tem $2{,}92\ \text{V}$ de amplitude (ganho de $29{,}2$) e o de $40\ \text{Hz}$, $0{,}049\ \text{V}$ para $0{,}1\ \text{V}$ de entrada comum (ganho de $0{,}49$): ambos dentro de $2\%$ do previsto acima. As verificações conferem a corrente da cauda e a tensão de repouso, o valor eficaz de in 2 e o máximo, o mínimo e a média da saída (tolerância de $1\%$).
 

@@ -50,11 +50,11 @@ O sinal é uma senoide de $40\ \text{Hz}$ e $1\ \text{V}$ de pico. O primeiro op
 
 Seja $V_1$ a saída do primeiro estágio, o retificador de meia onda inversor de ganho $-1$:
 
-$$V_1 = \begin{cases} -V_\text{in}, & V_\text{in} > 0,\\ 0, & V_\text{in} \le 0.\end{cases}$$
+$$V_1 = \begin{cases} -V_\text{in}, & V_\text{in} > 0,\cr 0, & V_\text{in} \le 0.\end{cases}$$
 
 O segundo estágio soma a entrada, com peso 1, e $V_1$, com peso 2 (o resistor de $500\ \Omega$ é metade de $1\ \text{k}\Omega$), e inverte:
 
-$$V_\text{out} = -\left(V_\text{in} + 2\,V_1\right).$$
+$$V_\text{out} = -\left(V_\text{in} + 2\thinspace V_1\right).$$
 
 - Se $V_\text{in} > 0$: $V_1 = -V_\text{in}$ e $V_\text{out} = -V_\text{in} + 2V_\text{in} = V_\text{in}$.
 - Se $V_\text{in} < 0$: $V_1 = 0$ e $V_\text{out} = -V_\text{in} = |V_\text{in}|$.

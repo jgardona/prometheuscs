@@ -66,13 +66,13 @@ Uma referência de $16\ \text{V}$ alimenta uma escada de resistores de $50\ \tex
 
 Os dois lados de cada ramo $2R$ estão sempre em $0\ \text{V}$ (a terra ou a terra virtual), então a escada não depende das chaves. Olhando para a direita de cada nó, vê-se $2R$ em paralelo com $2R$, isto é, $R$: cada nó tem a metade da tensão do anterior, $16$, $8$, $4$ e $2\ \text{V}$, e cada ramo conduz metade da corrente do anterior:
 
-$$I_k = \frac{V_{ref}}{2R} \cdot 2^{k-3}, \qquad V_{out} = -R_f \sum_k b_k I_k = -\frac{R_f\, V_{ref}}{16 R} N \approx -1{,}002\, N\ \text{V}.$$
+$$I_k = \frac{V_{ref}}{2R} \cdot 2^{k-3}, \qquad V_{out} = -R_f \sum_k b_k I_k = -\frac{R_f\thinspace V_{ref}}{16 R} N \approx -1{,}002\thinspace N\ \text{V}.$$
 
 Com só dois valores de resistor, o casamento entre eles é fácil num circuito integrado, e a escada pode ser estendida a muitos bits. As correntes dos ramos são constantes (só mudam de destino), o que torna o conversor rápido.
 
 ## Resultados esperados
 
-O simulador dá, para todos os $16$ códigos, $V_{out} \approx -1{,}002\, N$; por exemplo, $-6{,}011\ \text{V}$ para $N = 6$ (o estado inicial), $-14{,}025\ \text{V}$ para $N = 14$, $-15{,}027\ \text{V}$ para $N = 15$, $-1{,}002\ \text{V}$ para $N = 1$, $-8{,}014\ \text{V}$ para $N = 8$ e $0$ para $N = 0$. As tensões dos nós são $16$, $8{,}0$, $4{,}0$ e $2{,}0\ \text{V}$ (as quedas de $8{,}0\ \text{V}$ no primeiro $R$ e de $2{,}0\ \text{V}$ no último $R$ série), independentemente das chaves.
+O simulador dá, para todos os $16$ códigos, $V_{out} \approx -1{,}002\thinspace N$; por exemplo, $-6{,}011\ \text{V}$ para $N = 6$ (o estado inicial), $-14{,}025\ \text{V}$ para $N = 14$, $-15{,}027\ \text{V}$ para $N = 15$, $-1{,}002\ \text{V}$ para $N = 1$, $-8{,}014\ \text{V}$ para $N = 8$ e $0$ para $N = 0$. As tensões dos nós são $16$, $8{,}0$, $4{,}0$ e $2{,}0\ \text{V}$ (as quedas de $8{,}0\ \text{V}$ no primeiro $R$ e de $2{,}0\ \text{V}$ no último $R$ série), independentemente das chaves.
 
 ## O que observar
 

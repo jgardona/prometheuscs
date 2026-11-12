@@ -41,9 +41,9 @@ Uma fonte de onda quadrada de $20\ \text{Hz}$ e $\pm 5\ \text{V}$ alimenta, por 
 
 As fontes controladas de dois terminais (o losango) são definidas por uma **expressão** que lê o resto do circuito **pelo nome**: $v(\text{nome})$ é a tensão de um nó rotulado ou sobre um voltímetro com rótulo, $i(\text{nome})$ a corrente de um amperímetro com rótulo, e $\text{dvdt}$ / $\text{didt}$ as suas taxas de variação. O resultado é a tensão (fonte de tensão controlada, com o $+$ no segundo terminal) ou a corrente (fonte de corrente controlada, no sentido da seta) que a fonte impõe. Aqui a corrente é proporcional à derivada da tensão $v$ lida pelo voltímetro `a`:
 
-$$i = C\,\frac{dv}{dt}, \qquad C = v_b\cdot 10^{-5}\ \frac{\text{F}}{\text{V}} = 8{,}385\ \text{V}\cdot 10\ \mu\text{F/V} = 83{,}85\ \mu\text{F}.$$
+$$i = C\thinspace\frac{dv}{dt}, \qquad C = v_b\cdot 10^{-5}\ \frac{\text{F}}{\text{V}} = 8{,}385\ \text{V}\cdot 10\ \mu\text{F/V} = 83{,}85\ \mu\text{F}.$$
 
-É um capacitor cuja capacitância segue a tensão $v_b$. O circuito é um RC em série, de constante de tempo $\tau = RC = 180\ \Omega\cdot 83{,}85\ \mu\text{F} = 15{,}09\ \text{ms}$, e em resposta a um degrau de $5\ \text{V}$ a tensão no capacitor é $v(t) = 5\,(1 - e^{-t/\tau})$, de modo que a queda no resistor é $5\,e^{-t/\tau}$.
+É um capacitor cuja capacitância segue a tensão $v_b$. O circuito é um RC em série, de constante de tempo $\tau = RC = 180\ \Omega\cdot 83{,}85\ \mu\text{F} = 15{,}09\ \text{ms}$, e em resposta a um degrau de $5\ \text{V}$ a tensão no capacitor é $v(t) = 5\thinspace(1 - e^{-t/\tau})$, de modo que a queda no resistor é $5\thinspace e^{-t/\tau}$.
 
 ## Resultados esperados
 
@@ -51,10 +51,10 @@ A onda quadrada de $20\ \text{Hz}$ ($50\ \text{ms}$ de período) vai de $-5$ a $
 
 | Instante | Queda no resistor (teoria) | Simulador |
 |----------|---------------------------:|----------:|
-| $t = 10\ \text{ms}$ | $5\,e^{-10/15{,}09} = 2{,}578\ \text{V}$ | $2{,}5779\ \text{V}$ |
-| $t = 40\ \text{ms}$ | $-9{,}046\,e^{-15/15{,}09} = -3{,}348\ \text{V}$ | $-3{,}3488\ \text{V}$ |
+| $t = 10\ \text{ms}$ | $5\thinspace e^{-10/15{,}09} = 2{,}578\ \text{V}$ | $2{,}5779\ \text{V}$ |
+| $t = 40\ \text{ms}$ | $-9{,}046\thinspace e^{-15/15{,}09} = -3{,}348\ \text{V}$ | $-3{,}3488\ \text{V}$ |
 
-Em $t = 25\ \text{ms}$ o capacitor está carregado a $5\,(1 - e^{-25/15{,}09}) = 4{,}046\ \text{V}$; depois de a fonte ir a $-5\ \text{V}$, a tensão do capacitor tende a $-5\ \text{V}$ com a mesma constante de tempo, partindo de um degrau de $9{,}046\ \text{V}$ ($4{,}046 + 5$), e em $t = 40\ \text{ms}$ ($15\ \text{ms}$ depois) a queda no resistor é $-9{,}046\,e^{-15/15{,}09} = -3{,}348\ \text{V}$. (A versão 5.x do original mudou a tensão de controle de $4{,}965$ para $8{,}385\ \text{V}$; com ela a capacitância e os valores acima também mudaram.) As verificações conferem os dois valores (tolerância de 1%).
+Em $t = 25\ \text{ms}$ o capacitor está carregado a $5\thinspace(1 - e^{-25/15{,}09}) = 4{,}046\ \text{V}$; depois de a fonte ir a $-5\ \text{V}$, a tensão do capacitor tende a $-5\ \text{V}$ com a mesma constante de tempo, partindo de um degrau de $9{,}046\ \text{V}$ ($4{,}046 + 5$), e em $t = 40\ \text{ms}$ ($15\ \text{ms}$ depois) a queda no resistor é $-9{,}046\thinspace e^{-15/15{,}09} = -3{,}348\ \text{V}$. (A versão 5.x do original mudou a tensão de controle de $4{,}965$ para $8{,}385\ \text{V}$; com ela a capacitância e os valores acima também mudaram.) As verificações conferem os dois valores (tolerância de 1%).
 
 ## O que observar
 

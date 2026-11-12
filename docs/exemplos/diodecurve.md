@@ -47,8 +47,8 @@ sem resistência série. Para uma corrente $i \gg I_s$ a tensão é $v = nV_T\ln
 
 Na varredura, o diodo vai de $v = -0{,}4\ \text{V}$ a $v = 0{,}9\ \text{V}$:
 
-- em $v = -0{,}4\ \text{V}$ a corrente é $-I_s\,(1 - e^{-0{,}4/0{,}05173}) = -0{,}1714\ \mu\text{A}$;
-- em $v = 0{,}9\ \text{V}$ ela é $I_s\,(e^{0{,}9/0{,}05173} - 1) = 6{,}165\ \text{A}$.
+- em $v = -0{,}4\ \text{V}$ a corrente é $-I_s\thinspace(1 - e^{-0{,}4/0{,}05173}) = -0{,}1714\ \mu\text{A}$;
+- em $v = 0{,}9\ \text{V}$ ela é $I_s\thinspace(e^{0{,}9/0{,}05173} - 1) = 6{,}165\ \text{A}$.
 
 As verificações conferem os dois extremos da tensão e da corrente, em dois ciclos (de $0{,}04$ a $0{,}1\ \text{s}$); o pico de corrente tem tolerância de 3% porque a leitura cai em um dos passos de $5\ \mu\text{s}$ perto do pico, onde a corrente varia $1{,}3\%$ por passo.
 

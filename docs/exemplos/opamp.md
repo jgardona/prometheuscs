@@ -22,7 +22,7 @@ Mostrar o comportamento de um amplificador operacional **sem realimentação**: 
 ![Esquema do circuito](img/opamp.svg)
 <!-- esquema:fim -->
 
-Um amplificador operacional de ganho $A = 100\,000$ e saída limitada a $\pm 15\ \text{V}$ tem a entrada inversora ($-$) ligada a uma fonte ajustável chamada "- Voltage" (3 V ao abrir o exemplo) e a entrada não inversora ($+$) ligada a outra fonte ajustável, "+ Voltage" (4 V ao abrir). Não há nenhum resistor nem ligação da saída de volta às entradas: o circuito está em *malha aberta*. Um elemento de saída (*output*) mostra a tensão na saída.
+Um amplificador operacional de ganho $A = 100\thinspace000$ e saída limitada a $\pm 15\ \text{V}$ tem a entrada inversora ($-$) ligada a uma fonte ajustável chamada "- Voltage" (3 V ao abrir o exemplo) e a entrada não inversora ($+$) ligada a outra fonte ajustável, "+ Voltage" (4 V ao abrir). Não há nenhum resistor nem ligação da saída de volta às entradas: o circuito está em *malha aberta*. Um elemento de saída (*output*) mostra a tensão na saída.
 
 <!-- componentes:inicio -->
 | N.º | Tipo | Elemento | Valores |
@@ -37,7 +37,7 @@ Um amplificador operacional de ganho $A = 100\,000$ e saída limitada a $\pm 15\
 
 O amplificador operacional é um amplificador diferencial de ganho muito alto. Na região linear,
 
-$$V_\text{out} = A\,(V_+ - V_-),$$
+$$V_\text{out} = A\thinspace(V_+ - V_-),$$
 
 mas a saída não pode ultrapassar os limites $V_\text{min}$ e $V_\text{max}$ (aqui $-15\ \text{V}$ e $+15\ \text{V}$, os parâmetros *Min Output* e *Max Output*). A saída só está na região linear quando
 
@@ -47,13 +47,13 @@ Fora dessa faixa estreita o amplificador *satura*: a saída vai para $V_\text{ma
 
 ## Resultados esperados
 
-Com as fontes nos valores iniciais, $V_+ - V_- = 4 - 3 = 1\ \text{V}$, que é cerca de $6\,700$ vezes maior que a faixa linear de $150\ \mu\text{V}$. O ganho teórico daria $A \cdot 1\ \text{V} = 100\ \text{kV}$, impossível, e a saída satura em $V_\text{max}$:
+Com as fontes nos valores iniciais, $V_+ - V_- = 4 - 3 = 1\ \text{V}$, que é cerca de $6\thinspace700$ vezes maior que a faixa linear de $150\ \mu\text{V}$. O ganho teórico daria $A \cdot 1\ \text{V} = 100\ \text{kV}$, impossível, e a saída satura em $V_\text{max}$:
 
 | Situação | Saída |
 |----------|-------|
 | $V_+ > V_-$ (valores iniciais) | cerca de $+15\ \text{V}$ (o simulador mostra $15{,}0001\ \text{V}$) |
 | $V_+ < V_-$ | cerca de $-15\ \text{V}$ (limite *Min Output*) |
-| $|V_+ - V_-| < 150\ \mu\text{V}$ | região linear, $A\,(V_+ - V_-)$ |
+| $|V_+ - V_-| < 150\ \mu\text{V}$ | região linear, $A\thinspace(V_+ - V_-)$ |
 
 A verificação deste documento confere a saída no estado inicial (tolerância de 1%).
 
@@ -65,7 +65,7 @@ A verificação deste documento confere a saída no estado inicial (tolerância 
 
 ## Limites do modelo
 
-O modelo é um amplificador ideal de ganho finito ($100\,000$) com limites de saída fixos. Não há tensão de *offset*, corrente de polarização das entradas, resistência de entrada ou de saída, largura de banda finita nem *slew rate*, e a saturação não depende da alimentação como em um amplificador real (cuja saída fica de 1 a 2 V abaixo dos trilhos).
+O modelo é um amplificador ideal de ganho finito ($100\thinspace000$) com limites de saída fixos. Não há tensão de *offset*, corrente de polarização das entradas, resistência de entrada ou de saída, largura de banda finita nem *slew rate*, e a saturação não depende da alimentação como em um amplificador real (cuja saída fica de 1 a 2 V abaixo dos trilhos).
 
 ## Referências
 

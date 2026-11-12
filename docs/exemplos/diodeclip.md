@@ -50,7 +50,7 @@ sem resistência série. Para uma corrente $i \gg I_s$ a tensão é $v = nV_T\ln
 
 Enquanto a saída está abaixo de $V_{ref} + v_D + v_R$, o diodo bloqueia e a saída segue a entrada. Acima disso o diodo conduz, e a saída fica **presa** ("ceifada") em
 
-$$V_{saida,max} = V_{ref} + v_D(i) + R_2\,i,\qquad i = \frac{V_{in} - V_{saida}}{R_1},$$
+$$V_{saida,max} = V_{ref} + v_D(i) + R_2\thinspace i,\qquad i = \frac{V_{in} - V_{saida}}{R_1},$$
 
 um nível que sobe só devagar com a entrada (a divisão entre $R_1 = 200\ \Omega$ e $R_2 = 100\ \Omega$ e a variação logarítmica de $v_D$). O pico negativo, sem diodo conduzindo, passa inalterado.
 

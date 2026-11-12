@@ -74,7 +74,7 @@ Para a saída ser $5\ \text{V}$ é preciso que os três contatos estejam fechado
 | 1 | 1 | 0 | 0 |
 | 1 | 1 | 1 | 1 |
 
-Só a última linha vale 1: $Y = A\cdot B\cdot C$. Os níveis de saída dependem de uma resistência de carga de $100\ \Omega$ ligada à terra, em série com $R_{on} = 0{,}05\ \Omega$ por contato fechado: com $k$ contatos fechados em série, $V_{saida} = 5\cdot\dfrac{100}{100 + 0{,}05\,k}$, ou seja, um pouco abaixo de $5\ \text{V}$. Com $k = 3$, $V_{saida} = 5\cdot 100/100{,}15 = 4{,}9925\ \text{V}$.
+Só a última linha vale 1: $Y = A\cdot B\cdot C$. Os níveis de saída dependem de uma resistência de carga de $100\ \Omega$ ligada à terra, em série com $R_{on} = 0{,}05\ \Omega$ por contato fechado: com $k$ contatos fechados em série, $V_{saida} = 5\cdot\dfrac{100}{100 + 0{,}05\thinspace k}$, ou seja, um pouco abaixo de $5\ \text{V}$. Com $k = 3$, $V_{saida} = 5\cdot 100/100{,}15 = 4{,}9925\ \text{V}$.
 
 As verificações conferem cinco das oito combinações (a saída é $0$ em quatro delas e $4{,}9925\ \text{V}$ quando as três entradas estão em 1) e o atraso: com as três entradas ligadas em $t = 0$, a saída ainda é $0$ em $4\ \text{ms}$ e já é $4{,}9925\ \text{V}$ em $12\ \text{ms}$, em acordo com os $5{,}5\ \text{ms}$ estimados.
 

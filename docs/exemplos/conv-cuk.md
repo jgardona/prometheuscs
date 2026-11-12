@@ -46,7 +46,7 @@ O MOSFET é comandado por uma fonte de onda quadrada de $1\ \text{kHz}$ (períod
 
 O capacitor de acoplamento $C_1$ carrega com a chave desligada (por $L_1$, pelo diodo) e descarrega com a chave ligada, enquanto o diodo está cortado. Em regime permanente, a tensão média sobre cada indutor é nula, e a de $C_1$ é $V_{in} + |V_{out}|$. Daí,
 
-$$V_{out} = -\frac{D}{1-D}\,V_{in}.$$
+$$V_{out} = -\frac{D}{1-D}\thinspace V_{in}.$$
 
 Como $L_1$ está em série com a fonte e $L_2$ em série com a carga, ambas as correntes variam só pela ondulação de cada indutor, o que reduz o ruído de entrada e de saída. Com $D = 0{,}5$, $V_{out} = -V_{in} = -5\ \text{V}$ (ideal).
 

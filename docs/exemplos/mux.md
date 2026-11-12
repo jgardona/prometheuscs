@@ -52,7 +52,7 @@ Duas portas de transmissão (NMOS e PMOS em paralelo, com diodos de corpo) ligam
 
 ## Teoria
 
-Cada porta de transmissão funciona como em [Porta de transmissão CMOS](cmostransgate.md): ligada, tem resistência $R_{on} \approx 25\ \Omega$ (entre $14$ e $25\ \Omega$); desligada, tem só a fuga. A seleção $S$ liga uma porta e, pelo inversor, a complementar $\bar S$ liga a outra: a saída é $v_{out} = S\,v_1 + \bar S\,v_2$ com um divisor de tensão com a carga, $v_{out} = v\,R_L/(R_L + R_{on})$, de modo que o ganho é $1000/1025 = 0{,}976$ no pior caso.
+Cada porta de transmissão funciona como em [Porta de transmissão CMOS](cmostransgate.md): ligada, tem resistência $R_{on} \approx 25\ \Omega$ (entre $14$ e $25\ \Omega$); desligada, tem só a fuga. A seleção $S$ liga uma porta e, pelo inversor, a complementar $\bar S$ liga a outra: a saída é $v_{out} = S\thinspace v_1 + \bar S\thinspace v_2$ com um divisor de tensão com a carga, $v_{out} = v\thinspace R_L/(R_L + R_{on})$, de modo que o ganho é $1000/1025 = 0{,}976$ no pior caso.
 
 ## Resultados esperados
 

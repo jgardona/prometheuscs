@@ -44,7 +44,7 @@ Um 555 alimentado com $10\ \text{V}$ tem o capacitor de $100\ \text{nF}$ ligado 
 
 Com dois caminhos de resistência diferente para carregar e para descarregar o capacitor entre $V_{CC}/3$ e $2V_{CC}/3$, os tempos em cada nível são
 
-$$t_h = 0{,}693\,R_\text{carga}\,C, \qquad t_l = 0{,}693\,R_\text{descarga}\,C, \qquad f = \frac{1}{0{,}693\,(R_\text{carga} + R_\text{descarga})\,C}, \qquad D = \frac{R_\text{carga}}{R_\text{carga} + R_\text{descarga}}.$$
+$$t_h = 0{,}693\thinspace R_\text{carga}\thinspace C, \qquad t_l = 0{,}693\thinspace R_\text{descarga}\thinspace C, \qquad f = \frac{1}{0{,}693\thinspace(R_\text{carga} + R_\text{descarga})\thinspace C}, \qquad D = \frac{R_\text{carga}}{R_\text{carga} + R_\text{descarga}}.$$
 
 Os tempos medidos no simulador coincidem com esta fórmula para $R_\text{carga} = 10\ \text{k}\Omega$ (nível alto de $0{,}68\ \text{ms}$, contra $0{,}693\ \text{ms}$) e $R_\text{descarga} = 150\ \text{k}\Omega$ (nível baixo de $10{,}5\ \text{ms}$, contra $10{,}4\ \text{ms}$). O diodo isola um caminho do outro: o de $10\ \text{k}\Omega$ só conduz durante a carga. Assim,
 

@@ -42,7 +42,7 @@ A fonte senoidal de $40\ \text{Hz}$ e $5\ \text{V}$ de pico está ligada diretam
 
 A realimentação negativa leva as duas entradas ao mesmo potencial, então a entrada inversora fica em $V_\text{in}$. Essa tensão é a saída dividida por $R_f$ e $R_1$:
 
-$$V_- = V_\text{out}\,\frac{R_1}{R_1 + R_f} = V_\text{in}\quad\Longrightarrow\quad V_\text{out} = \left(1 + \frac{R_f}{R_1}\right) V_\text{in}.$$
+$$V_- = V_\text{out}\thinspace\frac{R_1}{R_1 + R_f} = V_\text{in}\quad\Longrightarrow\quad V_\text{out} = \left(1 + \frac{R_f}{R_1}\right) V_\text{in}.$$
 
 Diferente do inversor, o sinal vai direto à entrada do operacional, que, idealmente, não drena corrente: a impedância de entrada do circuito é muito alta. O ganho nunca é menor que 1, e o caso $R_f = 0$ (ou $R_1 \to \infty$) é o seguidor de tensão.
 

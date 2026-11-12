@@ -51,15 +51,15 @@ Quatro entradas lógicas, de cima para baixo $I_3$ (elemento 10), $I_2$ (element
 
 A entrada de maior índice tem prioridade, e as de menor índice são ignoradas quando uma de maior índice está ativa. As equações são
 
-$$Y_1 = I_3 + I_2, \qquad Y_0 = I_3 + \overline{I_2}\,I_1, \qquad V = I_3 + I_2 + I_1 + I_0.$$
+$$Y_1 = I_3 + I_2, \qquad Y_0 = I_3 + \overline{I_2}\thinspace I_1, \qquad V = I_3 + I_2 + I_1 + I_0.$$
 
-O termo $\overline{I_2}\,I_1$ é o que dá a prioridade: $I_1$ só pode pôr o bit $Y_0$ em $1$ se $I_2$ não estiver ativa. A saída $V$ é necessária porque o código $00$ aparece tanto para "só $I_0$ ativa" quanto para "nenhuma ativa".
+O termo $\overline{I_2}\thinspace I_1$ é o que dá a prioridade: $I_1$ só pode pôr o bit $Y_0$ em $1$ se $I_2$ não estiver ativa. A saída $V$ é necessária porque o código $00$ aparece tanto para "só $I_0$ ativa" quanto para "nenhuma ativa".
 
 ## Resultados esperados
 
 O simulador dá, entre outras combinações:
 
-| Entradas ativas | $Y_1\,Y_0$ | $V$ |
+| Entradas ativas | $Y_1\thinspace Y_0$ | $V$ |
 |------|----:|----:|
 | nenhuma | 00 | 0 |
 | $I_0$ | 00 | 1 |

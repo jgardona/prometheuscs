@@ -39,7 +39,7 @@ Mostrar como um circuito de amortecimento ("snubber"), formado por um resistor e
 
 ## Teoria
 
-Com a chave aberta, a corrente $I_0$ do indutor precisa continuar. Sem o amortecedor, ela só tem o capacitor parasita de $500\ \text{pF}$ para carregar, e a tensão sobe até $I_0\sqrt{L/C}$, na ordem de $2\ \text{kV}$. Com o amortecedor, o ramo $R_s C_s$ em paralelo com o indutor oferece um caminho: a corrente passa a carregar o capacitor de $10\ \mu\text{F}$, cuja tensão sobe só $\Delta v = I\,t/C_s$, e o resistor $R_s$ dissipa a energia, de modo que a oscilação é fortemente amortecida.
+Com a chave aberta, a corrente $I_0$ do indutor precisa continuar. Sem o amortecedor, ela só tem o capacitor parasita de $500\ \text{pF}$ para carregar, e a tensão sobe até $I_0\sqrt{L/C}$, na ordem de $2\ \text{kV}$. Com o amortecedor, o ramo $R_s C_s$ em paralelo com o indutor oferece um caminho: a corrente passa a carregar o capacitor de $10\ \mu\text{F}$, cuja tensão sobe só $\Delta v = I\thinspace t/C_s$, e o resistor $R_s$ dissipa a energia, de modo que a oscilação é fortemente amortecida.
 
 O resultado é uma subida lenta e amortecida da tensão na chave, em lugar da oscilação de alta frequência e de grande amplitude do exemplo anterior.
 

@@ -38,9 +38,9 @@ Um resistor de $10\ \Omega$, um indutor de $1\ \text{H}$ e um capacitor de $15\ 
 
 ## Teoria
 
-Sem fonte, a lei das tensões de Kirchhoff dá $L\,\ddot q + R\,\dot q + q/C = 0$, ou, para a tensão do capacitor,
+Sem fonte, a lei das tensões de Kirchhoff dá $L\thinspace\ddot q + R\thinspace\dot q + q/C = 0$, ou, para a tensão do capacitor,
 
-$$\frac{d^2 v_C}{dt^2} + 2\alpha\,\frac{dv_C}{dt} + \omega_0^2\,v_C = 0,\qquad \alpha = \frac{R}{2L},\qquad \omega_0=\frac{1}{\sqrt{LC}}.$$
+$$\frac{d^2 v_C}{dt^2} + 2\alpha\thinspace\frac{dv_C}{dt} + \omega_0^2\thinspace v_C = 0,\qquad \alpha = \frac{R}{2L},\qquad \omega_0=\frac{1}{\sqrt{LC}}.$$
 
 Se $\alpha<\omega_0$ (subamortecido) a solução oscila com frequência $\omega_d$ e amplitude que decai com $e^{-\alpha t}$:
 
@@ -60,7 +60,7 @@ O período é $T = 24{,}34\ \text{ms}$, e depois de um período a amplitude é $
 
 - Aumente $R$ pelo *slider* até $2\sqrt{L/C} \approx 516\ \Omega$ (amortecimento crítico): a oscilação desaparece.
 - Diminua $R$: a oscilação dura mais ($Q$ maior).
-- Compare a tensão e a corrente do capacitor: como $i = C\,dv/dt$, a corrente está adiantada $90^\circ$ em relação à tensão.
+- Compare a tensão e a corrente do capacitor: como $i = C\thinspace dv/dt$, a corrente está adiantada $90^\circ$ em relação à tensão.
 - Feche a chave da fonte para ver a resposta forçada somada à natural.
 
 ## Limites do modelo

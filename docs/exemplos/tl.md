@@ -45,7 +45,7 @@ $$\Gamma = \frac{R_L - Z_0}{R_L + Z_0}.$$
 
 Com $R_L = Z_0$ temos $\Gamma = 0$: toda a potência é absorvida e não há onda refletida. A tensão na carga é então a da fonte atrasada de $\tau$:
 
-$$v_L(t) = V_p \sin\bigl(2\pi f\,(t - \tau)\bigr),\qquad \varphi = 360^\circ f\tau = 360^\circ \cdot 40\ \text{MHz}\cdot 30\ \text{ns} = 432^\circ \equiv 72^\circ.$$
+$$v_L(t) = V_p \sin\bigl(2\pi f\thinspace(t - \tau)\bigr),\qquad \varphi = 360^\circ f\tau = 360^\circ \cdot 40\ \text{MHz}\cdot 30\ \text{ns} = 432^\circ \equiv 72^\circ.$$
 
 A linha parece, para a fonte, um resistor de $Z_0$: a corrente de pico é $V_p/Z_0 = 5/75 = 66{,}7\ \text{mA}$.
 

@@ -52,11 +52,11 @@ Em M1, a porta está ligada ao dreno, então $V_{DS} = V_{GS}$, que é maior que
 
 $$I_{ref} = \frac{5 - V_{GS}}{R}.$$
 
-M2 tem a mesma tensão porta-fonte, e, se está na saturação, a mesma corrente: $I_{out} = I_{ref}$ (com transistores de mesma razão $W/L$; com razões diferentes, $I_{out} = I_{ref}\,(W/L)_2/(W/L)_1$). O MOSFET não tem corrente de porta, e portanto, ao contrário do espelho bipolar, **não há erro de $2/\beta$**: a cópia é exata no modelo. M2 permanece na saturação enquanto $V_{DS2} \ge V_{GS} - V_t$.
+M2 tem a mesma tensão porta-fonte, e, se está na saturação, a mesma corrente: $I_{out} = I_{ref}$ (com transistores de mesma razão $W/L$; com razões diferentes, $I_{out} = I_{ref}\thinspace(W/L)_2/(W/L)_1$). O MOSFET não tem corrente de porta, e portanto, ao contrário do espelho bipolar, **não há erro de $2/\beta$**: a cópia é exata no modelo. M2 permanece na saturação enquanto $V_{DS2} \ge V_{GS} - V_t$.
 
 ## Resultados esperados
 
-No estado inicial, a tensão de porta é a solução de $0{,}01\,(V_{GS} - 1{,}5)^2 = (5 - V_{GS})/500$, que é $V_{GS} = 2{,}2426\ \text{V}$, com $I_{ref} = 5{,}515\ \text{mA}$; a saída fornece os mesmos $5{,}515\ \text{mA}$ com $4{,}4485\ \text{V}$ no dreno ($V_{DS} = 4{,}45\ \text{V} \gg V_{ov} = 0{,}74\ \text{V}$). Curto-circuitando a carga, o dreno sobe a $5\ \text{V}$ e a corrente **não muda**. Fechando a chave de $100\ \Omega$ da referência, a resistência passa a $500 \parallel 100 = 83{,}3\ \Omega$, a referência sobe para $23{,}575\ \text{mA}$ ($V_{GS} = 3{,}0354\ \text{V}$) e a saída a acompanha: $23{,}575\ \text{mA}$, agora com $2{,}6425\ \text{V}$ no dreno, ainda acima de $V_{ov} = 1{,}535\ \text{V}$. As verificações conferem as correntes e a tensão de saída nos três estados (tolerância de $0{,}5\%$).
+No estado inicial, a tensão de porta é a solução de $0{,}01\thinspace(V_{GS} - 1{,}5)^2 = (5 - V_{GS})/500$, que é $V_{GS} = 2{,}2426\ \text{V}$, com $I_{ref} = 5{,}515\ \text{mA}$; a saída fornece os mesmos $5{,}515\ \text{mA}$ com $4{,}4485\ \text{V}$ no dreno ($V_{DS} = 4{,}45\ \text{V} \gg V_{ov} = 0{,}74\ \text{V}$). Curto-circuitando a carga, o dreno sobe a $5\ \text{V}$ e a corrente **não muda**. Fechando a chave de $100\ \Omega$ da referência, a resistência passa a $500 \parallel 100 = 83{,}3\ \Omega$, a referência sobe para $23{,}575\ \text{mA}$ ($V_{GS} = 3{,}0354\ \text{V}$) e a saída a acompanha: $23{,}575\ \text{mA}$, agora com $2{,}6425\ \text{V}$ no dreno, ainda acima de $V_{ov} = 1{,}535\ \text{V}$. As verificações conferem as correntes e a tensão de saída nos três estados (tolerância de $0{,}5\%$).
 
 ## O que observar
 

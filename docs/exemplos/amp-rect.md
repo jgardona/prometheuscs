@@ -46,13 +46,13 @@ Quando a entrada é **positiva**, a saída do operacional vai para baixo e condu
 
 Quando a entrada é **negativa**, a saída do operacional vai para cima e conduz o outro diodo, que alimenta o resistor de realimentação; o circuito é então um amplificador inversor:
 
-$$V_\text{out} = -\frac{R_f}{R_1}\,V_\text{in} = -V_\text{in} \qquad (V_\text{in} < 0).$$
+$$V_\text{out} = -\frac{R_f}{R_1}\thinspace V_\text{in} = -V_\text{in} \qquad (V_\text{in} < 0).$$
 
 A queda do diodo ($\approx 0{,}6\ \text{V}$) fica *dentro da malha de realimentação*: a saída do operacional ajusta-se à queda necessária, de modo que o erro visto na saída do circuito é a queda dividida pelo ganho de malha aberta, desprezível. Por isso o circuito retifica mesmo sinais de $0{,}5\ \text{V}$, que um diodo simples bloquearia.
 
 ## Resultados esperados
 
-$$V_\text{out} = \begin{cases} -V_\text{in}, & V_\text{in} < 0,\\ 0, & V_\text{in} \ge 0. \end{cases}$$
+$$V_\text{out} = \begin{cases} -V_\text{in}, & V_\text{in} < 0,\cr 0, & V_\text{in} \ge 0. \end{cases}$$
 
 | Instante | $V_\text{in}$ | $V_\text{out}$ |
 |----------|---------------:|----------------:|

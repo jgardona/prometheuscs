@@ -41,9 +41,9 @@ Um indutor de $1\ \text{H}$, um resistor de $516{,}4\ \Omega$ e um capacitor de 
 
 ## Teoria
 
-A malha RLC livre obedece a $L\,\ddot q + R\,\dot q + q/C = 0$, ou, para a tensão do capacitor,
+A malha RLC livre obedece a $L\thinspace\ddot q + R\thinspace\dot q + q/C = 0$, ou, para a tensão do capacitor,
 
-$$\ddot v_C + 2\alpha\,\dot v_C + \omega_0^2\,v_C = 0,\qquad \alpha = \frac{R}{2L},\quad \omega_0 = \frac{1}{\sqrt{LC}}.$$
+$$\ddot v_C + 2\alpha\thinspace\dot v_C + \omega_0^2\thinspace v_C = 0,\qquad \alpha = \frac{R}{2L},\quad \omega_0 = \frac{1}{\sqrt{LC}}.$$
 
 O comportamento depende de $\zeta = \alpha/\omega_0 = \dfrac{R}{2}\sqrt{C/L}$:
 
@@ -51,7 +51,7 @@ O comportamento depende de $\zeta = \alpha/\omega_0 = \dfrac{R}{2}\sqrt{C/L}$:
 - $\zeta > 1$: **superamortecido**, soma de duas exponenciais decrescentes;
 - $\zeta = 1$: **criticamente amortecido**, $R = R_c = 2\sqrt{L/C}$, o caso limite, em que a solução é
 
-$$v_C(t) = e^{-\alpha t}\bigl[v_0 + (\dot v_0 + \alpha v_0)\,t\bigr].$$
+$$v_C(t) = e^{-\alpha t}\bigl[v_0 + (\dot v_0 + \alpha v_0)\thinspace t\bigr].$$
 
 O amortecimento crítico é o que leva a energia a zero mais depressa sem cruzar o zero mais de uma vez; é o ajuste usado, por exemplo, em amortecedores e em instrumentos de ponteiro.
 

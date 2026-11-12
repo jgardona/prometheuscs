@@ -46,7 +46,7 @@ O Zener fixa a tensão da base em $V_Z$, e o emissor segue a base menos a queda 
 
 $$V_{saida} = V_Z - V_{BE},\qquad V_{BE} = V_T\ln\frac{I_E}{I_s}\ \ (I_s = 10^{-13}\ \text{A}\text{ no modelo padrão}).$$
 
-A corrente da carga ($\approx 9{,}7\ \text{mA}$) é fornecida pelo transistor; o Zener só precisa da corrente de base e da que passa pelo resistor de $10\ \text{k}\Omega$. A resistência de saída é $r_{sai} \approx r_Z\,\|\,(R_b/\beta)$, pequena, de modo que a saída é uma referência "forte".
+A corrente da carga ($\approx 9{,}7\ \text{mA}$) é fornecida pelo transistor; o Zener só precisa da corrente de base e da que passa pelo resistor de $10\ \text{k}\Omega$. A resistência de saída é $r_{sai} \approx r_Z\thinspace\|\thinspace(R_b/\beta)$, pequena, de modo que a saída é uma referência "forte".
 
 ## Resultados esperados
 

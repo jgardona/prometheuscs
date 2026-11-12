@@ -40,9 +40,9 @@ Uma fonte de onda triangular de $40\ \text{Hz}$ e $5\ \text{V}$ de pico liga-se,
 
 ## Teoria
 
-Pelo terra virtual, a corrente no capacitor, $C\,dV_\text{in}/dt$, passa toda pelo resistor de realimentação:
+Pelo terra virtual, a corrente no capacitor, $C\thinspace dV_\text{in}/dt$, passa toda pelo resistor de realimentação:
 
-$$V_\text{out} = -R\,C\,\frac{dV_\text{in}}{dt}, \qquad RC = 5\ \text{k}\Omega\cdot 2\ \mu\text{F} = 10\ \text{ms}.$$
+$$V_\text{out} = -R\thinspace C\thinspace\frac{dV_\text{in}}{dt}, \qquad RC = 5\ \text{k}\Omega\cdot 2\ \mu\text{F} = 10\ \text{ms}.$$
 
 Uma triangular de pico $V_p = 5\ \text{V}$ e frequência $f = 40\ \text{Hz}$ tem inclinação constante de módulo $4V_p f = 800\ \text{V/s}$ em cada meio ciclo. A saída é, portanto, uma quadrada de amplitude
 
@@ -57,7 +57,7 @@ Em $t = 10\ \text{ms}$ a entrada está subindo ($2{,}996\ \text{V}$) e a saída 
 ## O que observar
 
 - A saída é uma onda quadrada, que muda de sinal nos picos da triangular.
-- Troque a triangular por uma senoide: a saída será uma cossenoide $-RC\,\omega V_p\cos\omega t$, adiantada de $90^\circ$ e invertida.
+- Troque a triangular por uma senoide: a saída será uma cossenoide $-RC\thinspace\omega V_p\cos\omega t$, adiantada de $90^\circ$ e invertida.
 - Aumentar a frequência aumenta a amplitude de saída na mesma proporção: o derivador amplifica o ruído de alta frequência.
 
 ## Limites do modelo

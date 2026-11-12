@@ -22,7 +22,7 @@ Mostrar como a realimentação negativa transforma o amplificador operacional, d
 ![Esquema do circuito](img/opampfeedback.svg)
 <!-- esquema:fim -->
 
-O mesmo amplificador operacional do exemplo anterior ($A = 100\,000$, saída entre $-15\ \text{V}$ e $+15\ \text{V}$) tem a entrada não inversora ligada a uma fonte ajustável "+ Voltage" (3,3 V ao abrir). Um fio liga a saída diretamente à entrada inversora: é a realimentação negativa. Um elemento de saída mostra a tensão de saída.
+O mesmo amplificador operacional do exemplo anterior ($A = 100\thinspace000$, saída entre $-15\ \text{V}$ e $+15\ \text{V}$) tem a entrada não inversora ligada a uma fonte ajustável "+ Voltage" (3,3 V ao abrir). Um fio liga a saída diretamente à entrada inversora: é a realimentação negativa. Um elemento de saída mostra a tensão de saída.
 
 <!-- componentes:inicio -->
 | N.º | Tipo | Elemento | Valores |
@@ -36,7 +36,7 @@ O mesmo amplificador operacional do exemplo anterior ($A = 100\,000$, saída ent
 
 Com a saída ligada à entrada inversora, $V_- = V_\text{out}$ e a equação do amplificador fica
 
-$$V_\text{out} = A\,(V_+ - V_\text{out}) \quad\Longrightarrow\quad V_\text{out} = \frac{A}{1+A}\,V_+ .$$
+$$V_\text{out} = A\thinspace(V_+ - V_\text{out}) \quad\Longrightarrow\quad V_\text{out} = \frac{A}{1+A}\thinspace V_+ .$$
 
 Se $A$ é muito grande, $V_\text{out} \approx V_+$: o circuito é um **seguidor de tensão**. O erro relativo é $1/(1+A)$, da ordem de $10^{-5}$ aqui. A ideia por trás é o *curto-circuito virtual*: com realimentação negativa e ganho alto, a diferença entre as entradas é forçada a quase zero, $V_+ - V_- = V_\text{out}/A \approx 0$.
 
@@ -44,7 +44,7 @@ Se $A$ é muito grande, $V_\text{out} \approx V_+$: o circuito é um **seguidor 
 
 Com $V_+ = 3{,}3\ \text{V}$:
 
-$$V_\text{out} = \frac{10^5}{10^5 + 1}\,3{,}3\ \text{V} \approx 3{,}299967\ \text{V},$$
+$$V_\text{out} = \frac{10^5}{10^5 + 1}\thinspace3{,}3\ \text{V} \approx 3{,}299967\ \text{V},$$
 
 ou seja, $33\ \mu\text{V}$ abaixo da entrada, que é o que o simulador mostra ($3{,}299967\ \text{V}$). A verificação confere a saída contra $3{,}3\ \text{V}$ com tolerância absoluta de $0{,}1\ \text{mV}$.
 

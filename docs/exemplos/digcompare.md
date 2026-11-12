@@ -62,11 +62,11 @@ As entradas lógicas numéricas são $A_1$ (elemento 0) e $A_0$ (elemento 3), à
 
 Dois bits são iguais quando a sua XOR é $0$; seja $e_i = \overline{A_i \oplus B_i}$. Então
 
-$$(A = B) = e_1\,e_0 = \overline{(A_1 \oplus B_1) + (A_0 \oplus B_0)},$$
+$$(A = B) = e_1\thinspace e_0 = \overline{(A_1 \oplus B_1) + (A_0 \oplus B_0)},$$
 
 que o circuito faz com uma OR das duas XORs seguida de um inversor. A comparação de magnitude começa pelo bit mais significativo, como na comparação de números decimais: $A < B$ se $A_1 < B_1$, ou se $A_1 = B_1$ e $A_0 < B_0$:
 
-$$(A < B) = \overline{A_1}\,B_1 + e_1\,\overline{A_0}\,B_0,$$
+$$(A < B) = \overline{A_1}\thinspace B_1 + e_1\thinspace\overline{A_0}\thinspace B_0,$$
 
 feita no circuito na forma NAND-NAND. A terceira saída não precisa de lógica própria: $A > B$ é verdadeiro quando nenhuma das outras duas é, e uma porta NOR dá $(A > B) = \overline{(A = B) + (A < B)}$. Exatamente uma das três saídas está sempre em $1$. Comparadores integrados (como o 7485) seguem a mesma ideia e têm entradas para ligar vários em cascata.
 

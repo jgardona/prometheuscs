@@ -45,7 +45,7 @@ O SCR (retificador controlado de silício, ou tiristor) é um dispositivo de qua
 
 O gatilho só recebe corrente quando a fonte é positiva. O SCR dispara no ponto em que a corrente de gatilho atinge $10\ \text{mA}$:
 
-$$V_s\sin\alpha = V_D + I_{trig}\,(R_{pot} + R_{gate}) = 0{,}57 + 0{,}010\,(1452 + 50) = 15{,}6\ \text{V},$$
+$$V_s\sin\alpha = V_D + I_{trig}\thinspace(R_{pot} + R_{gate}) = 0{,}57 + 0{,}010\thinspace(1452 + 50) = 15{,}6\ \text{V},$$
 
 onde $V_D = 0{,}57\ \text{V}$ é a queda do diodo com $10\ \text{mA}$. Isso dá $\sin\alpha = 15{,}6/20 = 0{,}78$ e o ângulo de disparo $\alpha = 51^\circ$, $3{,}6\ \text{ms}$ depois do início do semiciclo positivo. A partir daí o SCR conduz até o fim do semiciclo e a carga recebe a tensão da fonte menos a queda de $0{,}64\ \text{V}$. O valor eficaz na carga seria, sem a queda,
 

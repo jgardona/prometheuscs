@@ -46,9 +46,9 @@ Um 555 alimentado com $5\ \text{V}$ tem um resistor de $1\ \text{k}\Omega$ da al
 
 ## Teoria
 
-Enquanto o trem de $60\ \text{Hz}$ chega, a saída da porta OR fica em nível baixo durante metade de cada ciclo ($8{,}33\ \text{ms}$): o transistor descarrega o capacitor, o pino *tr* dispara o 555 e a saída fica **alta**. Na outra metade do ciclo o capacitor carrega pelo resistor, com constante de tempo $RC = 1\ \text{k}\Omega\cdot 10\ \mu\text{F} = 10\ \text{ms}$, mas em $8{,}33\ \text{ms}$ só chega a $5\,(1 - e^{-0{,}833}) = 2{,}83\ \text{V}$, abaixo do limiar de $2V_{CC}/3 = 3{,}33\ \text{V}$. Se o trem é interrompido (aqui, a entrada manual fixa a saída da porta OR em nível alto), o capacitor carrega sem ser descarregado, e em
+Enquanto o trem de $60\ \text{Hz}$ chega, a saída da porta OR fica em nível baixo durante metade de cada ciclo ($8{,}33\ \text{ms}$): o transistor descarrega o capacitor, o pino *tr* dispara o 555 e a saída fica **alta**. Na outra metade do ciclo o capacitor carrega pelo resistor, com constante de tempo $RC = 1\ \text{k}\Omega\cdot 10\ \mu\text{F} = 10\ \text{ms}$, mas em $8{,}33\ \text{ms}$ só chega a $5\thinspace(1 - e^{-0{,}833}) = 2{,}83\ \text{V}$, abaixo do limiar de $2V_{CC}/3 = 3{,}33\ \text{V}$. Se o trem é interrompido (aqui, a entrada manual fixa a saída da porta OR em nível alto), o capacitor carrega sem ser descarregado, e em
 
-$$T = RC\,\ln 3 \approx 11\ \text{ms}$$
+$$T = RC\thinspace\ln 3 \approx 11\ \text{ms}$$
 
 ele chega ao limiar superior: a saída cai a nível baixo, sinalizando o pulso faltante. O tempo $T$ deve ser maior que a parte alta do ciclo normal ($8{,}33\ \text{ms}$, para que o circuito não dispare em falso) e menor que o tempo máximo tolerado de falta.
 

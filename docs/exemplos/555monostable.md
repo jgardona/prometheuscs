@@ -45,7 +45,7 @@ Um 555 alimentado com $5\ \text{V}$ tem um resistor de $1\ \text{k}\Omega$ da al
 
 No estado de repouso o transistor de descarga está ligado e mantém o capacitor em $0\ \text{V}$; a saída está baixa. Quando *tr* cai abaixo de $V_{CC}/3$, o latch interno é ativado: a saída sobe e o transistor de descarga é cortado, de modo que o capacitor carrega pelo resistor $R$ em direção a $V_{CC}$. Quando a tensão do capacitor chega a $2V_{CC}/3$, o comparador de limiar zera o latch: a saída desce e o capacitor é descarregado. O tempo em que a saída fica alta é
 
-$$T = RC\,\ln\frac{V_{CC}}{V_{CC} - 2V_{CC}/3} = RC\ln 3 \approx 1{,}1\,RC = 1{,}1\cdot 1\ \text{k}\Omega\cdot 10\ \mu\text{F} = 11\ \text{ms}.$$
+$$T = RC\thinspace\ln\frac{V_{CC}}{V_{CC} - 2V_{CC}/3} = RC\ln 3 \approx 1{,}1\thinspace RC = 1{,}1\cdot 1\ \text{k}\Omega\cdot 10\ \mu\text{F} = 11\ \text{ms}.$$
 
 O capacitor de acoplamento e o resistor de $100\ \Omega$ dão um pulso de disparo de curta duração (constante de tempo de $1\ \text{ms}$), e é preciso que ele termine **antes** do fim do pulso de saída; do contrário, o 555 seria disparado de novo.
 

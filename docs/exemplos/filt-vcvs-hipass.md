@@ -48,13 +48,13 @@ A fonte é um gerador de varredura logarítmica (*sweep*) de $5\ \text{V}$ de pi
 
 No Sallen-Key passa-altas com $R_1 = R_2 = R$ e $C_1 = C_2 = C$,
 
-$$H(s) = \frac{K\,(sRC)^2}{1 + (3-K)\,sRC + (sRC)^2}, \qquad f_0 = \frac{1}{2\pi RC} = \frac{1}{2\pi\cdot 10\ \text{k}\Omega\cdot 53\ \text{nF}} \approx 300\ \text{Hz}, \quad Q = \frac{1}{3-K} = 0{,}707.$$
+$$H(s) = \frac{K\thinspace(sRC)^2}{1 + (3-K)\thinspace sRC + (sRC)^2}, \qquad f_0 = \frac{1}{2\pi RC} = \frac{1}{2\pi\cdot 10\ \text{k}\Omega\cdot 53\ \text{nF}} \approx 300\ \text{Hz}, \quad Q = \frac{1}{3-K} = 0{,}707.$$
 
 O módulo é
 
 $$|H(f)| = \frac{K}{\sqrt{1 + (f_0/f)^4}},$$
 
-que vale $K\,(f/f_0)^2$ muito abaixo de $f_0$ (subida de $40\ \text{dB}$ por década), $K/\sqrt 2 = 1{,}12$ em $f_0$ e tende a $K = 1{,}586$ em altas frequências.
+que vale $K\thinspace(f/f_0)^2$ muito abaixo de $f_0$ (subida de $40\ \text{dB}$ por década), $K/\sqrt 2 = 1{,}12$ em $f_0$ e tende a $K = 1{,}586$ em altas frequências.
 
 ## Resultados esperados
 

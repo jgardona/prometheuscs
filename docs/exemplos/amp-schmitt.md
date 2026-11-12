@@ -48,7 +48,7 @@ A entrada ligada à entrada inversora é uma senoide lenta de $40\ \text{Hz}$ e 
 A tensão na entrada não inversora depende do estado da saída, $V_\text{out} = \pm V_\text{sat}$ ($V_\text{sat} = 15\ \text{V}$). Pelo teorema de Millman, com $R_a = 10\ \text{k}\Omega$ (a $10\ \text{V}$), $R_b = 10\ \text{k}\Omega$ (à terra) e $R_f = 100\ \text{k}\Omega$ (à saída):
 
 $$V_+ = \frac{\dfrac{10}{R_a} + \dfrac{V_\text{out}}{R_f}}{\dfrac{1}{R_a}+\dfrac{1}{R_b}+\dfrac{1}{R_f}}
-= \begin{cases} \dfrac{1\ \text{mA} + 0{,}15\ \text{mA}}{0{,}21\ \text{mS}} = 5{,}476\ \text{V} & (V_\text{out} = +15\ \text{V}),\\[3mm] \dfrac{1\ \text{mA} - 0{,}15\ \text{mA}}{0{,}21\ \text{mS}} = 4{,}048\ \text{V} & (V_\text{out} = -15\ \text{V}).\end{cases}$$
+= \begin{cases} \dfrac{1\ \text{mA} + 0{,}15\ \text{mA}}{0{,}21\ \text{mS}} = 5{,}476\ \text{V} & (V_\text{out} = +15\ \text{V}),\cr \dfrac{1\ \text{mA} - 0{,}15\ \text{mA}}{0{,}21\ \text{mS}} = 4{,}048\ \text{V} & (V_\text{out} = -15\ \text{V}).\end{cases}$$
 
 Como a entrada do sinal está na entrada **inversora**, a saída vai a $+15\ \text{V}$ quando $V_\text{in} < V_+$ e a $-15\ \text{V}$ quando $V_\text{in} > V_+$. Com a saída em $+15\ \text{V}$ a entrada precisa subir acima do **limiar superior** $5{,}476\ \text{V}$ para derrubar a saída; com a saída em $-15\ \text{V}$ ela precisa descer abaixo do **limiar inferior** $4{,}048\ \text{V}$ para a saída voltar. A largura da histerese é $5{,}476 - 4{,}048 = 1{,}429\ \text{V}$.
 

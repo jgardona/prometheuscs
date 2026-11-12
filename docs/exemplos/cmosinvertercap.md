@@ -48,7 +48,7 @@ A capacitância da porta precisa ser carregada pela fonte do sinal: o resistor d
 
 Além do atraso, $C_{gd}$ liga diretamente a entrada à saída. Quando a entrada dá um degrau, uma fração da variação aparece na saída pelo divisor capacitivo antes de o transistor reagir (*feedthrough*): uma subida na entrada empurra a saída para cima e uma descida a empurra para baixo, para além dos trilhos, até que os transistores recuperem o controle.
 
-A energia por transição é $E \approx Q\,V_{DD}$, em que $Q$ é a carga tirada da alimentação (carga das capacitâncias mais a corrente de curto-circuito durante a comutação).
+A energia por transição é $E \approx Q\thinspace V_{DD}$, em que $Q$ é a carga tirada da alimentação (carga das capacitâncias mais a corrente de curto-circuito durante a comutação).
 
 ## Resultados esperados
 

@@ -45,11 +45,11 @@ Dois JFETs idênticos e dois resistores de $1{,}1\ \text{k}\Omega$ ficam entre f
 
 O JFET de canal N do simulador (modelo *default-jfet*) tem tensão de corte $V_T = -4\ \text{V}$ e $\beta = 1{,}25\ \text{mA/V}^2$, sem modulação de canal ($\lambda = 0$). Em saturação,
 
-$$I_D = \frac{\beta}{2}\,(V_{GS} - V_T)^2 = I_{DSS}\left(1 - \frac{V_{GS}}{V_T}\right)^2,\qquad I_{DSS} = \frac{\beta}{2}V_T^2 = 10\ \text{mA},$$
+$$I_D = \frac{\beta}{2}\thinspace(V_{GS} - V_T)^2 = I_{DSS}\left(1 - \frac{V_{GS}}{V_T}\right)^2,\qquad I_{DSS} = \frac{\beta}{2}V_T^2 = 10\ \text{mA},$$
 
 e, na região ôhmica ($V_{DS} < V_{GS} - V_T$), $I_D = \beta\bigl[(V_{GS}-V_T)V_{DS} - V_{DS}^2/2\bigr]$.
 
-Cada JFET, com o resistor de $1{,}1\ \text{k}\Omega$ na fonte, satisfaz $I_D = 0{,}625\ \text{mA/V}^2\,(4 - 1100\,I_D)^2$, cuja solução física é $I_D = 2{,}007\ \text{mA}$ ($V_{GS} = -2{,}21\ \text{V}$). Os dois estágios têm o mesmo ponto de operação, e portanto a mesma queda $V_{GS}$; com as fontes simétricas, os deslocamentos de tensão dos dois se cancelam e a saída tem componente contínua nula. O ganho em pequenos sinais é $g_m R/(1 + g_m R)$ com $g_m = \beta(V_{GS} - V_T) = 2{,}24\ \text{mS}$, e a saída tem ganho próximo de $1$.
+Cada JFET, com o resistor de $1{,}1\ \text{k}\Omega$ na fonte, satisfaz $I_D = 0{,}625\ \text{mA/V}^2\thinspace(4 - 1100\thinspace I_D)^2$, cuja solução física é $I_D = 2{,}007\ \text{mA}$ ($V_{GS} = -2{,}21\ \text{V}$). Os dois estágios têm o mesmo ponto de operação, e portanto a mesma queda $V_{GS}$; com as fontes simétricas, os deslocamentos de tensão dos dois se cancelam e a saída tem componente contínua nula. O ganho em pequenos sinais é $g_m R/(1 + g_m R)$ com $g_m = \beta(V_{GS} - V_T) = 2{,}24\ \text{mS}$, e a saída tem ganho próximo de $1$.
 
 ## Resultados esperados
 

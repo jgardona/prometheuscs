@@ -45,21 +45,21 @@ Cada exemplo desta família tem dois circuitos lado a lado, idênticos exceto po
 
 ## Teoria
 
-Indutores em série são atravessados pela mesma corrente, e as tensões se somam: $v = L_1\,\dfrac{di}{dt} + L_2\,\dfrac{di}{dt}$. Logo
+Indutores em série são atravessados pela mesma corrente, e as tensões se somam: $v = L_1\thinspace\dfrac{di}{dt} + L_2\thinspace\dfrac{di}{dt}$. Logo
 
 $$L_{eq} = L_1 + L_2 + \dots = \sum_k L_k .$$
 
-A tensão se divide em proporção à indutância: $v_k = v\,\dfrac{L_k}{L_{eq}}$.
+A tensão se divide em proporção à indutância: $v_k = v\thinspace\dfrac{L_k}{L_{eq}}$.
 
 O circuito é um RL em série com constante de tempo $\tau = L_{eq}/R$. Ligada a fonte $V$ em $t=0$, com corrente inicial nula,
 
-$$i(t) = \frac{V}{R}\left(1 - e^{-t/\tau}\right),\qquad v_L(t) = V\,e^{-t/\tau}.$$
+$$i(t) = \frac{V}{R}\left(1 - e^{-t/\tau}\right),\qquad v_L(t) = V\thinspace e^{-t/\tau}.$$
 
 ## Resultados esperados
 
 Com $V = 5\ \text{V}$, $R = 100\ \Omega$ e $L_{eq} = 1\ \text{H}$: $\tau = 1/100 = 10\ \text{ms}$ e a corrente final é $V/R = 50\ \text{mA}$. Em $t = \tau$:
 
-$$i = 50\,(1 - e^{-1}) = 31{,}6\ \text{mA},\qquad v_L = 5\,e^{-1} = 1{,}839\ \text{V}.$$
+$$i = 50\thinspace(1 - e^{-1}) = 31{,}6\ \text{mA},\qquad v_L = 5\thinspace e^{-1} = 1{,}839\ \text{V}.$$
 
 A tensão de $1{,}839\ \text{V}$ se divide em $0{,}1/1 \to 0{,}184\ \text{V}$ no indutor de $0{,}1\ \text{H}$ e $0{,}9/1 \to 1{,}655\ \text{V}$ no de $0{,}9\ \text{H}$. As verificações conferem a corrente (nos dois circuitos) e as duas tensões, em $t = 10\ \text{ms}$, com tolerância de 2% e 3%.
 

@@ -68,7 +68,7 @@ Mostrar que qualquer rede linear de resistores e fontes, vista de dois terminais
 
 Ligando a mesma carga aos dois, a tensão e a corrente na carga são idênticas. Para uma carga $R_L$:
 
-$$I_L = \frac{V_{th}}{R_{th}+R_L},\qquad V_L = V_{th}\,\frac{R_L}{R_{th}+R_L}.$$
+$$I_L = \frac{V_{th}}{R_{th}+R_L},\qquad V_L = V_{th}\thinspace\frac{R_L}{R_{th}+R_L}.$$
 
 Por superposição, a rede responde linearmente a qualquer fonte de teste, de modo que a igualdade para um sinal senoidal de 40 Hz prova a equivalência.
 

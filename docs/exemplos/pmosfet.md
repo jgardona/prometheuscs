@@ -40,9 +40,9 @@ A **fonte** do transistor está ligada a $+5\ \text{V}$, e a **tensão de porta*
 O PMOS segue as mesmas equações do NMOS, com todas as tensões e correntes trocadas de sinal: usam-se $V_{SG} = V_S - V_G$ e $V_{SD} = V_S - V_D$, com o limiar $|V_t| = 1{,}5\ \text{V}$. Com $V_{ov} = V_{SG} - |V_t|$ (modelo de lei quadrática de [n-MOSFET](nmosfet.md), $\beta = 0{,}02\ \text{A/V}^2$, $\lambda = 0$):
 
 $$I_D = \begin{cases}
-\approx 0 & V_{SG} < |V_t|\\
-\beta\left(V_{ov}\,V_{SD} - \tfrac12 V_{SD}^2\right) & V_{SD} < V_{ov} \quad \text{(triodo)}\\
-\tfrac12\beta\,V_{ov}^2 & V_{SD} \ge V_{ov} \quad \text{(saturação)}
+\approx 0 & V_{SG} < |V_t|\cr
+\beta\left(V_{ov}\thinspace V_{SD} - \tfrac12 V_{SD}^2\right) & V_{SD} < V_{ov} \quad \text{(triodo)}\cr
+\tfrac12\beta\thinspace V_{ov}^2 & V_{SD} \ge V_{ov} \quad \text{(saturação)}
 \end{cases}$$
 
 ## Resultados esperados

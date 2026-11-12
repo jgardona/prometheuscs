@@ -15,7 +15,7 @@ verificacoes:
 
 ## Objetivo
 
-Mostrar como uma fonte de corrente controlada simula um resistor cujo valor é controlado por uma tensão: a expressão $v(\text{vd})/(1000\,(1+v(r)))$ é a de um resistor de $1\ \text{k}\Omega\,(1 + v_r)$, em que `vd` é um voltímetro sobre o \"resistor\" e `r` um nó rotulado com a tensão de controle.
+Mostrar como uma fonte de corrente controlada simula um resistor cujo valor é controlado por uma tensão: a expressão $v(\text{vd})/(1000\thinspace(1+v(r)))$ é a de um resistor de $1\ \text{k}\Omega\thinspace(1 + v_r)$, em que `vd` é um voltímetro sobre o \"resistor\" e `r` um nó rotulado com a tensão de controle.
 
 ## O circuito
 
@@ -40,13 +40,13 @@ Uma fonte de $5\ \text{V}$ alimenta a fonte de corrente controlada, ligada entre
 
 As fontes controladas de dois terminais (o losango) são definidas por uma **expressão** que lê o resto do circuito **pelo nome**: $v(\text{nome})$ é a tensão de um nó rotulado ou sobre um voltímetro com rótulo, $i(\text{nome})$ a corrente de um amperímetro com rótulo, e $\text{dvdt}$ / $\text{didt}$ as suas taxas de variação. O resultado é a tensão (fonte de tensão controlada, com o $+$ no segundo terminal) ou a corrente (fonte de corrente controlada, no sentido da seta) que a fonte impõe. Com $v(\text{vd})$ a tensão sobre o "resistor" e $v(r) = v_r$ a tensão de controle, a corrente é
 
-$$I = \frac{v(\text{vd})}{1000\,(1 + v_r)}\ \Omega^{-1},$$
+$$I = \frac{v(\text{vd})}{1000\thinspace(1 + v_r)}\ \Omega^{-1},$$
 
-o que equivale a uma resistência $R = 1\ \text{k}\Omega\,(1 + v_r)$ controlada pela tensão do nó `r`. Com $v_r = 1\ \text{V}$, $R = 2\ \text{k}\Omega$; com $v_r = 5\ \text{V}$, $R = 6\ \text{k}\Omega$.
+o que equivale a uma resistência $R = 1\ \text{k}\Omega\thinspace(1 + v_r)$ controlada pela tensão do nó `r`. Com $v_r = 1\ \text{V}$, $R = 2\ \text{k}\Omega$; com $v_r = 5\ \text{V}$, $R = 6\ \text{k}\Omega$.
 
 ## Resultados esperados
 
-| Instante | $v_r$ | $R = 1\ \text{k}\Omega\,(1+v_r)$ | Corrente a $5\ \text{V}$ |
+| Instante | $v_r$ | $R = 1\ \text{k}\Omega\thinspace(1+v_r)$ | Corrente a $5\ \text{V}$ |
 |----------|----:|-------------------------------:|---------------------:|
 | $t = 10\ \text{ms}$ (meio ciclo alto) | $5\ \text{V}$ | $6\ \text{k}\Omega$ | $0{,}8333\ \text{mA}$ |
 | $t = 20\ \text{ms}$ (meio ciclo baixo) | $1\ \text{V}$ | $2\ \text{k}\Omega$ | $2{,}5\ \text{mA}$ |

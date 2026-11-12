@@ -52,7 +52,7 @@ Uma fonte senoidal de $40\ \text{Hz}$, com $3\ \text{V}$ de amplitude sobre $3\ 
 
 ## Teoria
 
-Num transistor bipolar, a corrente de coletor é $I_C = I_S\,e^{V_{BE}/V_T}$, ou seja,
+Num transistor bipolar, a corrente de coletor é $I_C = I_S\thinspace e^{V_{BE}/V_T}$, ou seja,
 
 $$V_{BE} = V_T \ln\frac{I_C}{I_S}, \qquad V_T = \frac{kT}{q}\approx 25\ \text{mV}.$$
 
@@ -64,11 +64,11 @@ $$V_x = -V_T \ln\frac{I_\text{in}}{I_S} + V_T \ln\frac{I_\text{ref}}{I_S} = V_T 
 
 O segundo operacional multiplica por $1 + R_a/R_b = 16$:
 
-$$V_\text{out} = 16\,V_T \ln\frac{I_\text{ref}}{I_\text{in}} = K\,\ln\frac{10\ \text{mA}}{V_\text{in}/1\ \text{k}\Omega}.$$
+$$V_\text{out} = 16\thinspace V_T \ln\frac{I_\text{ref}}{I_\text{in}} = K\thinspace\ln\frac{10\ \text{mA}}{V_\text{in}/1\ \text{k}\Omega}.$$
 
 ## Resultados esperados
 
-Ajustando $K$ aos valores simulados na faixa de 3 a 6 V obtém-se $K \approx 0{,}41\ \text{V}$ (isto é, $16\,V_T$ com $V_T \approx 25{,}5\ \text{mV}$ no modelo). Com esse $K$:
+Ajustando $K$ aos valores simulados na faixa de 3 a 6 V obtém-se $K \approx 0{,}41\ \text{V}$ (isto é, $16\thinspace V_T$ com $V_T \approx 25{,}5\ \text{mV}$ no modelo). Com esse $K$:
 
 | $V_\text{in}$ | $K\ln(10/V_\text{in})$ | Saída do simulador |
 |---------------:|------------------------:|-------------------:|

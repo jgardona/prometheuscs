@@ -44,9 +44,9 @@ O MOSFET é comandado por uma fonte de onda quadrada de $1\ \text{kHz}$ (períod
 
 **Chave ligada**: a fonte $V_{in}$ fica sobre o indutor, que armazena energia ($i_L$ sobe com $V_{in}/L$), e o diodo está cortado. **Chave desligada**: o indutor entrega a corrente ao capacitor e à carga pelo diodo, em sentido tal que a saída fica **negativa** em relação à terra; a tensão sobre o indutor é $V_{out}$.
 
-$$V_{in}\,D\,T = -V_{out}\,(1 - D)\,T \quad\Longrightarrow\quad V_{out} = -\frac{D}{1-D}\,V_{in}.$$
+$$V_{in}\thinspace D\thinspace T = -V_{out}\thinspace(1 - D)\thinspace T \quad\Longrightarrow\quad V_{out} = -\frac{D}{1-D}\thinspace V_{in}.$$
 
-Para $D < 0{,}5$ o módulo da saída é menor que $V_{in}$ (abaixador); para $D > 0{,}5$ é maior (elevador). A ondulação de corrente é $\Delta i_L = V_{in}\,D\,T/L$.
+Para $D < 0{,}5$ o módulo da saída é menor que $V_{in}$ (abaixador); para $D > 0{,}5$ é maior (elevador). A ondulação de corrente é $\Delta i_L = V_{in}\thinspace D\thinspace T/L$.
 
 ## Resultados esperados
 
@@ -54,7 +54,7 @@ As tensões do exemplo ainda **derivam devagar** depois de $0{,}1\ \text{s}$ (da
 
 | Grandeza | Teoria | Simulador |
 |----------|-------:|----------:|
-| Tensão de saída (média) | $-\dfrac{0{,}56}{0{,}44}\,5 = -6{,}36\ \text{V}$ (com a queda do diodo, mais próxima de $-5{,}8\ \text{V}$) | $-5{,}679\ \text{V}$ (em $t = 0{,}1\ \text{s}$: $-5{,}84\ \text{V}$) |
+| Tensão de saída (média) | $-\dfrac{0{,}56}{0{,}44}\thinspace5 = -6{,}36\ \text{V}$ (com a queda do diodo, mais próxima de $-5{,}8\ \text{V}$) | $-5{,}679\ \text{V}$ (em $t = 0{,}1\ \text{s}$: $-5{,}84\ \text{V}$) |
 | Ondulação de corrente $\Delta i_L$ | $5\cdot 0{,}56\cdot 1\ \text{ms}/1\ \text{H} = 2{,}8\ \text{mA}$ | $2{,}73\ \text{mA}$ (de $-14{,}3$ a $-11{,}5\ \text{mA}$) |
 
 A saída é negativa e, com $D = 56\%$, ligeiramente maior em módulo que a entrada. O sinal negativo da corrente do indutor é o da convenção do simulador. As verificações conferem a tensão média e os extremos da corrente.

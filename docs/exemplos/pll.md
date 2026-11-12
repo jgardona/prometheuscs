@@ -47,13 +47,13 @@ A entrada é uma onda quadrada de $60\ \text{Hz}$ ($0$ a $5\ \text{V}$). Uma por
 
 O VCO do simulador é um oscilador de relaxação com três pinos externos: a tensão de controle $V_i$ alimenta, pelo resistor $R_1$, uma corrente $V_i/R_1$, somada a uma corrente fixa $V_\text{ref}/R_2$ (com $V_\text{ref} = 5\ \text{V}$, pelo resistor $R_2$), que carrega e descarrega o capacitor externo $C$ entre $0{,}5$ e $4{,}5\ \text{V}$ ($\Delta V = 4\ \text{V}$), invertendo o sentido da corrente a cada limite. A saída é uma onda quadrada de $0$ a $5\ \text{V}$ com frequência
 
-$$f_\text{VCO} = \frac{I}{2\,C\,\Delta V} = \frac{V_i/R_1 + 5/R_2}{8\,C}.$$
+$$f_\text{VCO} = \frac{I}{2\thinspace C\thinspace\Delta V} = \frac{V_i/R_1 + 5/R_2}{8\thinspace C}.$$
 
-**Malha.** O detector XOR produz uma tensão média $V_{DD}\,|\varphi|/\pi$ proporcional à defasagem $\varphi$ entre a entrada e o VCO; o filtro entrega esse valor médio como $V_i$; o VCO ajusta a frequência a $f_\text{VCO}(V_i)$. Em **regime travado** ($f_\text{VCO} = f_\text{ent}$), o $V_i$ necessário para essa frequência fixa a defasagem:
+**Malha.** O detector XOR produz uma tensão média $V_{DD}\thinspace|\varphi|/\pi$ proporcional à defasagem $\varphi$ entre a entrada e o VCO; o filtro entrega esse valor médio como $V_i$; o VCO ajusta a frequência a $f_\text{VCO}(V_i)$. Em **regime travado** ($f_\text{VCO} = f_\text{ent}$), o $V_i$ necessário para essa frequência fixa a defasagem:
 
-$$V_i = \frac{8\,C\,f_\text{ent} - 5/R_2}{1/R_1} = R_1\left(8\cdot 1\ \mu\text{F}\cdot 60\ \text{Hz} - 50\ \mu\text{A}\right) = 4\ \text{k}\Omega\cdot 430\ \mu\text{A} = 1{,}72\ \text{V},$$
+$$V_i = \frac{8\thinspace C\thinspace f_\text{ent} - 5/R_2}{1/R_1} = R_1\left(8\cdot 1\ \mu\text{F}\cdot 60\ \text{Hz} - 50\ \mu\text{A}\right) = 4\ \text{k}\Omega\cdot 430\ \mu\text{A} = 1{,}72\ \text{V},$$
 
-$$\varphi = \pi\,\frac{V_i}{V_{DD}} = \pi\cdot\frac{1{,}72}{5} \approx 62^\circ.$$
+$$\varphi = \pi\thinspace\frac{V_i}{V_{DD}} = \pi\cdot\frac{1{,}72}{5} \approx 62^\circ.$$
 
 Um PLL de tipo I precisa, portanto, de um **erro de fase constante** ($\varphi \ne 0$) para produzir a tensão de controle que mantém o VCO na frequência certa; o erro cresce quando a frequência de entrada se afasta da frequência central do VCO.
 

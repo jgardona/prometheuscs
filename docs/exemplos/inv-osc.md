@@ -46,9 +46,9 @@ Dois inversores lógicos (alimentação de $5\ \text{V}$, limiar de $2{,}5\ \tex
 
 A saída do primeiro inversor é sempre o oposto da saída do segundo. O capacitor $C$ liga a saída $v_o$ ao nó do resistor $R$ (o de $400\ \Omega$, que vai à saída do primeiro inversor, igual a $\overline{v_o}$), e a entrada do primeiro inversor, ligada ao nó pelo resistor de $4\ \text{k}\Omega$, segue a tensão desse nó: como a entrada do inversor não consome corrente, esse resistor não cai tensão e não altera a frequência. Cada transição da saída é transmitida pelo capacitor à entrada do primeiro inversor, que então decai exponencialmente, com $\tau = RC$, em direção ao seu valor de repouso (o trilho oposto à saída); quando cruza o limiar $V_{DD}/2$, a saída muda e o ciclo se repete.
 
-Com limiares em $V_{DD}/2$, o período é $T = 2\,RC\,\ln 3$ e a frequência é
+Com limiares em $V_{DD}/2$, o período é $T = 2\thinspace RC\thinspace\ln 3$ e a frequência é
 
-$$f = \frac{1}{2\,RC\,\ln 3} = \frac{1}{2{,}197\,RC} = \frac{1}{2{,}197 \cdot 400\ \Omega \cdot 40\ \mu\text{F}} = 28{,}44\ \text{Hz}.$$
+$$f = \frac{1}{2\thinspace RC\thinspace\ln 3} = \frac{1}{2{,}197\thinspace RC} = \frac{1}{2{,}197 \cdot 400\ \Omega \cdot 40\ \mu\text{F}} = 28{,}44\ \text{Hz}.$$
 
 Por causa do acoplamento capacitivo, a tensão na entrada do primeiro inversor excede os trilhos, indo de $-V_{DD}/2$ a $+3V_{DD}/2$.
 

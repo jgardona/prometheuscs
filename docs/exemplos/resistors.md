@@ -54,15 +54,15 @@ Para dois resistores em paralelo, $R_p = \dfrac{R_1 R_2}{R_1+R_2}$.
 
 Com $R_t$ e $R_b$ os blocos de cima e de baixo, a corrente total é $I = V/(R_t+R_b)$, e a tensão se divide em proporção às resistências (divisor de tensão):
 
-$$V_t = V\,\frac{R_t}{R_t+R_b}, \qquad V_b = V\,\frac{R_b}{R_t+R_b}.$$
+$$V_t = V\thinspace\frac{R_t}{R_t+R_b}, \qquad V_b = V\thinspace\frac{R_b}{R_t+R_b}.$$
 
-Dentro de um bloco em paralelo a corrente se divide em proporção às condutâncias (divisor de corrente): $I_k = I\,\dfrac{G_k}{\sum_j G_j}$.
+Dentro de um bloco em paralelo a corrente se divide em proporção às condutâncias (divisor de corrente): $I_k = I\thinspace\dfrac{G_k}{\sum_j G_j}$.
 
 ## Resultados esperados
 
-Na posição inicial: $R_t = 100\,\|\,800 = \dfrac{100\cdot 800}{900} = 88{,}89\ \Omega$ e $R_b = 200\ \Omega$, logo $R_{eq} = 288{,}89\ \Omega$ e
+Na posição inicial: $R_t = 100\thinspace\|\thinspace800 = \dfrac{100\cdot 800}{900} = 88{,}89\ \Omega$ e $R_b = 200\ \Omega$, logo $R_{eq} = 288{,}89\ \Omega$ e
 
-$$I = \frac{5}{288{,}89} = 17{,}31\ \text{mA},\qquad V_b = 5\,\frac{200}{288{,}89} = 3{,}462\ \text{V},\qquad V_t = 1{,}538\ \text{V}.$$
+$$I = \frac{5}{288{,}89} = 17{,}31\ \text{mA},\qquad V_b = 5\thinspace\frac{200}{288{,}89} = 3{,}462\ \text{V},\qquad V_t = 1{,}538\ \text{V}.$$
 
 A corrente se divide em cima em $I_{100} = V_t/100 = 15{,}38\ \text{mA}$ e $I_{800} = V_t/800 = 1{,}923\ \text{mA}$ (soma: $17{,}31\ \text{mA}$). As verificações conferem a corrente total, essas duas correntes e a tensão do resistor de $200\ \Omega$.
 

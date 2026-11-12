@@ -47,15 +47,15 @@ Como no gerador triangular, um comparador com histerese (operacional com resisto
 
 A tensão na entrada não inversora do comparador é a média ponderada da saída quadrada ($\pm V_\text{sat}$) e da saída do integrador, e o comparador muda de estado quando ela passa por zero, ou seja, quando o integrador chega a
 
-$$\mp\,\frac{40\ \text{k}\Omega}{100\ \text{k}\Omega}\,V_\text{sat} = \mp\,6\ \text{V}.$$
+$$\mp\thinspace\frac{40\ \text{k}\Omega}{100\ \text{k}\Omega}\thinspace V_\text{sat} = \mp\thinspace6\ \text{V}.$$
 
 Como a saída vai de $-6$ a $+6\ \text{V}$, o integrador percorre $\Delta V = 12\ \text{V}$. Quando o comparador está em $-15\ \text{V}$, só conduz o diodo que passa pelo resistor de $40\ \text{k}\Omega$ e a corrente é pequena; quando está em $+15\ \text{V}$, só conduz o outro diodo, com $1{,}5\ \text{k}\Omega$, e a corrente é grande. Com diodos ideais, as correntes são $V_\text{sat}/R_\text{lento}$ e $V_\text{sat}/R_\text{rápido}$ e os tempos de subida e de descida são
 
-$$t_\text{lento} = \frac{\Delta V\,C\,R_\text{lento}}{V_\text{sat}}, \qquad t_\text{rápido} = \frac{\Delta V\,C\,R_\text{rápido}}{V_\text{sat}}.$$
+$$t_\text{lento} = \frac{\Delta V\thinspace C\thinspace R_\text{lento}}{V_\text{sat}}, \qquad t_\text{rápido} = \frac{\Delta V\thinspace C\thinspace R_\text{rápido}}{V_\text{sat}}.$$
 
 Com $\Delta V = 12\ \text{V}$, $C = 200\ \text{nF}$ e $V_\text{sat} = 15\ \text{V}$:
 
-$$T = t_\text{lento} + t_\text{rápido} = \frac{12\cdot 0{,}2\ \mu\text{F}\,(40\ \text{k}\Omega + 1{,}5\ \text{k}\Omega)}{15\ \text{V}} \approx 6{,}64\ \text{ms}, \quad f \approx 150{,}6\ \text{Hz}.$$
+$$T = t_\text{lento} + t_\text{rápido} = \frac{12\cdot 0{,}2\ \mu\text{F}\thinspace(40\ \text{k}\Omega + 1{,}5\ \text{k}\Omega)}{15\ \text{V}} \approx 6{,}64\ \text{ms}, \quad f \approx 150{,}6\ \text{Hz}.$$
 
 Os diodos reais caem $0{,}4$ a $0{,}7\ \text{V}$, o que reduz as correntes e alonga os tempos.
 

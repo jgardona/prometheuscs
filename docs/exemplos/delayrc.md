@@ -21,7 +21,7 @@ verificacoes:
 
 ## Objetivo
 
-Mostrar como se faz um **atraso** num sinal digital com dois inversores CMOS e uma rede RC: o primeiro inversor carrega ou descarrega um capacitor através de um resistor; o segundo só troca de estado quando a tensão do capacitor cruza o seu limiar, atrasando a transição de $\approx 0{,}69\,RC$.
+Mostrar como se faz um **atraso** num sinal digital com dois inversores CMOS e uma rede RC: o primeiro inversor carrega ou descarrega um capacitor através de um resistor; o segundo só troca de estado quando a tensão do capacitor cruza o seu limiar, atrasando a transição de $\approx 0{,}69\thinspace RC$.
 
 ## O circuito
 
@@ -51,15 +51,15 @@ Dois [inversores CMOS](cmosinverter.md) (modelo padrão, sem diodo de corpo) est
 
 ## Teoria
 
-Após uma transição da entrada, a saída do primeiro inversor vai de um trilho ao outro (praticamente de forma instantânea) e o capacitor se carrega ou descarrega exponencialmente em direção a esse trilho: $v_C(t) = V_f + (V_i - V_f)\,e^{-t/\tau}$, com $\tau = (R + R_{on})C$, onde $R_{on} \approx 14\ \Omega$ é a resistência do transistor que conduz ($1/(\beta(V_{DD} - V_t))$). O segundo inversor troca de estado quando $v_C$ cruza o seu limiar de $V_{DD}/2 = 2{,}5\ \text{V}$, depois de
+Após uma transição da entrada, a saída do primeiro inversor vai de um trilho ao outro (praticamente de forma instantânea) e o capacitor se carrega ou descarrega exponencialmente em direção a esse trilho: $v_C(t) = V_f + (V_i - V_f)\thinspace e^{-t/\tau}$, com $\tau = (R + R_{on})C$, onde $R_{on} \approx 14\ \Omega$ é a resistência do transistor que conduz ($1/(\beta(V_{DD} - V_t))$). O segundo inversor troca de estado quando $v_C$ cruza o seu limiar de $V_{DD}/2 = 2{,}5\ \text{V}$, depois de
 
-$$t_d = \tau\,\ln\frac{V_i - V_f}{V_{th} - V_f}.$$
+$$t_d = \tau\thinspace\ln\frac{V_i - V_f}{V_{th} - V_f}.$$
 
-Partindo de um trilho ($V_i = V_{DD}$, $V_f = 0$) e com $V_{th} = V_{DD}/2$, $t_d = \tau\ln 2 = 0{,}693\,\tau$.
+Partindo de um trilho ($V_i = V_{DD}$, $V_f = 0$) e com $V_{th} = V_{DD}/2$, $t_d = \tau\ln 2 = 0{,}693\thinspace\tau$.
 
 ## Resultados esperados
 
-Com $\tau = (1500 + 14{,}3) \cdot 10\ \text{nF} = 15{,}14\ \mu\text{s}$: ao abrir o exemplo o capacitor, que começava em $\approx 5\ \text{V}$ ($4{,}973\ \text{V}$ no primeiro passo), cai e cruza $2{,}5\ \text{V}$ em $15{,}14 \cdot \ln(4{,}973/2{,}5) = 10{,}42\ \mu\text{s}$; o simulador dá $10{,}42\ \mu\text{s}$, e a saída sobe no mesmo instante ($10{,}418\ \mu\text{s}$): o atraso do buffer é de cerca de $10{,}4\ \mu\text{s}$. Em $10\ \mu\text{s}$, o capacitor está em $2{,}570\ \text{V}$ e a saída ainda baixa ($0{,}54\ \text{V}$, em transição); em $12\ \mu\text{s}$, o capacitor está em $2{,}252\ \text{V}$ e a saída em $4{,}75\ \text{V}$. Alternando a entrada em $50\ \mu\text{s}$ (quando o capacitor já desceu a $0{,}183\ \text{V}$), o capacitor sobe e cruza $2{,}5\ \text{V}$ em $59{,}94\ \mu\text{s}$, um atraso de $9{,}94\ \mu\text{s}$ (a fórmula dá $15{,}14 \cdot \ln\!\big((5 - 0{,}183)/2{,}5\big) = 9{,}93\ \mu\text{s}$), menor que $0{,}693\,RC$ porque partia de $0{,}18\ \text{V}$ e não de zero; a saída cai no mesmo instante. As verificações conferem o capacitor e a saída antes e depois das duas transições (tolerância de $0{,}5\%$ a $1\%$).
+Com $\tau = (1500 + 14{,}3) \cdot 10\ \text{nF} = 15{,}14\ \mu\text{s}$: ao abrir o exemplo o capacitor, que começava em $\approx 5\ \text{V}$ ($4{,}973\ \text{V}$ no primeiro passo), cai e cruza $2{,}5\ \text{V}$ em $15{,}14 \cdot \ln(4{,}973/2{,}5) = 10{,}42\ \mu\text{s}$; o simulador dá $10{,}42\ \mu\text{s}$, e a saída sobe no mesmo instante ($10{,}418\ \mu\text{s}$): o atraso do buffer é de cerca de $10{,}4\ \mu\text{s}$. Em $10\ \mu\text{s}$, o capacitor está em $2{,}570\ \text{V}$ e a saída ainda baixa ($0{,}54\ \text{V}$, em transição); em $12\ \mu\text{s}$, o capacitor está em $2{,}252\ \text{V}$ e a saída em $4{,}75\ \text{V}$. Alternando a entrada em $50\ \mu\text{s}$ (quando o capacitor já desceu a $0{,}183\ \text{V}$), o capacitor sobe e cruza $2{,}5\ \text{V}$ em $59{,}94\ \mu\text{s}$, um atraso de $9{,}94\ \mu\text{s}$ (a fórmula dá $15{,}14 \cdot \ln\negthinspace\big((5 - 0{,}183)/2{,}5\big) = 9{,}93\ \mu\text{s}$), menor que $0{,}693\thinspace RC$ porque partia de $0{,}18\ \text{V}$ e não de zero; a saída cai no mesmo instante. As verificações conferem o capacitor e a saída antes e depois das duas transições (tolerância de $0{,}5\%$ a $1\%$).
 
 ## O que observar
 

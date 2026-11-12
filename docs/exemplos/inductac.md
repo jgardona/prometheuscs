@@ -43,7 +43,7 @@ A parte imaginária é a **reatância**: $X_L=\omega L$ (cresce com a frequênci
 
 Para o circuito RL série,
 
-$$|Z| = \sqrt{R^2 + X_L^2},\qquad I_{pico} = \frac{V_{pico}}{|Z|},\qquad V_{L,pico} = I_{pico}\,X_L,\qquad \varphi = \arctan\frac{X_L}{R}$$
+$$|Z| = \sqrt{R^2 + X_L^2},\qquad I_{pico} = \frac{V_{pico}}{|Z|},\qquad V_{L,pico} = I_{pico}\thinspace X_L,\qquad \varphi = \arctan\frac{X_L}{R}$$
 
 em que $\varphi$ é o atraso da corrente em relação à tensão da fonte; $\tau = L/R$ é a constante de tempo do transitório.
 

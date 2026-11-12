@@ -42,13 +42,13 @@ Dois ramos idênticos, cada um com um resistor de $10\ \Omega$ em série com um 
 
 Num indutor com núcleo ferromagnético, o fluxo satura quando a corrente é alta, e a indutância efetiva cai. O simulador usa
 
-$$L(i) = \frac{L_0}{1 + (i/I_{sat})^2},\qquad v = L(i)\,\frac{di}{dt},$$
+$$L(i) = \frac{L_0}{1 + (i/I_{sat})^2},\qquad v = L(i)\thinspace\frac{di}{dt},$$
 
 de modo que $L(i) = L_0/2$ quando $i = I_{sat}$ e $L \to 0$ para $i \gg I_{sat}$.
 
-**Indutor linear.** A equação $V = R\,i + L_0\,di/dt$ tem a solução $i(t) = \dfrac{V}{R}\left(1 - e^{-t/\tau}\right)$ com $\tau = L_0/R = 10\ \text{ms}$.
+**Indutor linear.** A equação $V = R\thinspace i + L_0\thinspace di/dt$ tem a solução $i(t) = \dfrac{V}{R}\left(1 - e^{-t/\tau}\right)$ com $\tau = L_0/R = 10\ \text{ms}$.
 
-**Indutor saturável.** A equação $V - R\,i = L(i)\,di/dt$ não tem solução tão simples, mas se integra numericamente. A corrente final é a mesma, $V/R = 1\ \text{A}$ (em regime, $di/dt = 0$ e o indutor não importa), mas o caminho é outro: assim que a corrente passa de $I_{sat}$, a indutância despenca e a corrente "dispara".
+**Indutor saturável.** A equação $V - R\thinspace i = L(i)\thinspace di/dt$ não tem solução tão simples, mas se integra numericamente. A corrente final é a mesma, $V/R = 1\ \text{A}$ (em regime, $di/dt = 0$ e o indutor não importa), mas o caminho é outro: assim que a corrente passa de $I_{sat}$, a indutância despenca e a corrente "dispara".
 
 ## Resultados esperados
 

@@ -38,9 +38,9 @@ Uma fonte senoidal de $40\ \text{Hz}$ e $5\ \text{V}$ de pico está ligada ao n�
 
 ## Teoria
 
-As fontes controladas de dois terminais (o losango) são definidas por uma **expressão** que lê o resto do circuito **pelo nome**: $v(\text{nome})$ é a tensão de um nó rotulado ou sobre um voltímetro com rótulo, $i(\text{nome})$ a corrente de um amperímetro com rótulo, e $\text{dvdt}$ / $\text{didt}$ as suas taxas de variação. O resultado é a tensão (fonte de tensão controlada, com o $+$ no segundo terminal) ou a corrente (fonte de corrente controlada, no sentido da seta) que a fonte impõe. A saída é o valor absoluto da entrada: $V_\text{out} = |5\sin(2\pi\cdot 40\,t)|$. Para um senoide de pico $V_p$, o valor médio da retificação de onda completa e o valor eficaz são
+As fontes controladas de dois terminais (o losango) são definidas por uma **expressão** que lê o resto do circuito **pelo nome**: $v(\text{nome})$ é a tensão de um nó rotulado ou sobre um voltímetro com rótulo, $i(\text{nome})$ a corrente de um amperímetro com rótulo, e $\text{dvdt}$ / $\text{didt}$ as suas taxas de variação. O resultado é a tensão (fonte de tensão controlada, com o $+$ no segundo terminal) ou a corrente (fonte de corrente controlada, no sentido da seta) que a fonte impõe. A saída é o valor absoluto da entrada: $V_\text{out} = |5\sin(2\pi\cdot 40\thinspace t)|$. Para um senoide de pico $V_p$, o valor médio da retificação de onda completa e o valor eficaz são
 
-$$\overline{V} = \frac{2}{\pi}\,V_p = 3{,}183\ \text{V}, \qquad V_\text{rms} = \frac{V_p}{\sqrt 2} = 3{,}536\ \text{V},$$
+$$\overline{V} = \frac{2}{\pi}\thinspace V_p = 3{,}183\ \text{V}, \qquad V_\text{rms} = \frac{V_p}{\sqrt 2} = 3{,}536\ \text{V},$$
 
 e o valor eficaz é igual ao da entrada (a retificação não muda a potência).
 

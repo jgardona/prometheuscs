@@ -45,7 +45,7 @@ Um 555 alimentado com $5\ \text{V}$ é um astável com dois resistores de $300\ 
 
 O pino de controle fixa o limiar superior em $V_c$ e o inferior em $V_c/2$. O capacitor carrega por $R_A + R_B$ de $V_c/2$ a $V_c$ e descarrega por $R_B$ (mais os $10\ \Omega$ do transistor) de $V_c$ a $V_c/2$:
 
-$$t_h = (R_A + R_B)\,C\,\ln\frac{V_{CC} - V_c/2}{V_{CC} - V_c}, \qquad t_l = (R_B + 10\ \Omega)\,C\,\ln 2 = 0{,}64\ \text{ms}.$$
+$$t_h = (R_A + R_B)\thinspace C\thinspace\ln\frac{V_{CC} - V_c/2}{V_{CC} - V_c}, \qquad t_l = (R_B + 10\ \Omega)\thinspace C\thinspace\ln 2 = 0{,}64\ \text{ms}.$$
 
 O tempo baixo $t_l$ é **constante**, e o tempo alto $t_h$ cresce com $V_c$ (e tende ao infinito quando $V_c \to V_{CC}$, quando o capacitor deixa de alcançar o limiar). O ciclo de trabalho $D = t_h/(t_h + t_l)$ cresce, portanto, com a tensão de controle: o 555 converte uma tensão em largura de pulso.
 

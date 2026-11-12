@@ -46,9 +46,9 @@ O MOSFET é comandado por uma fonte de onda quadrada de $1\ \text{kHz}$ (períod
 
 A tensão média nula sobre o indutor dá
 
-$$V_{in}\,D\,T = (V_{out} - V_{in})\,(1-D)\,T \quad\Longrightarrow\quad V_{out} = \frac{V_{in}}{1 - D}.$$
+$$V_{in}\thinspace D\thinspace T = (V_{out} - V_{in})\thinspace(1-D)\thinspace T \quad\Longrightarrow\quad V_{out} = \frac{V_{in}}{1 - D}.$$
 
-A ondulação de corrente é $\Delta i_L = V_{in}\,D\,T/L$, e a de tensão de saída, $\Delta V_{out} \approx I_\text{saída}\,D\,T/C$. Com a queda do diodo, $V_{out} \approx V_{in}/(1-D) - V_D$.
+A ondulação de corrente é $\Delta i_L = V_{in}\thinspace D\thinspace T/L$, e a de tensão de saída, $\Delta V_{out} \approx I_\text{saída}\thinspace D\thinspace T/C$. Com a queda do diodo, $V_{out} \approx V_{in}/(1-D) - V_D$.
 
 ## Resultados esperados
 

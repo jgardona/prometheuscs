@@ -52,9 +52,9 @@ $$V_X = V_Y,\qquad I_Y = 0,\qquad I_Z = \pm I_X,$$
 
 isto é, a tensão em $Y$ (de entrada de alta impedância) é copiada em $X$ (de baixa impedância), e a corrente que flui em $X$ é copiada para $Z$ (saída de alta impedância), com o mesmo sinal no CCII$+$ e o oposto no CCII$-$. O elemento do simulador tem ganho de corrente $\pm 1$.
 
-$V_X = V_Y = v_{in}$, e a corrente no capacitor em $X$ é $I_X = C\,dv_{in}/dt$, copiada em $Z$. Numa onda triangular de $5\ \text{V}$ de pico e $40\ \text{Hz}$ a inclinação vale $dv/dt = \pm 4\cdot 5\ \text{V}\cdot 40\ \text{Hz} = \pm 800\ \text{V/s}$, então
+$V_X = V_Y = v_{in}$, e a corrente no capacitor em $X$ é $I_X = C\thinspace dv_{in}/dt$, copiada em $Z$. Numa onda triangular de $5\ \text{V}$ de pico e $40\ \text{Hz}$ a inclinação vale $dv/dt = \pm 4\cdot 5\ \text{V}\cdot 40\ \text{Hz} = \pm 800\ \text{V/s}$, então
 
-$$I_Z = C\,\frac{dv}{dt} = 10\ \mu\text{F}\cdot 800\ \text{V/s} = 8\ \text{mA}\quad\Rightarrow\quad V_Z = 8\ \text{mA}\cdot 100\ \Omega = 0{,}8\ \text{V}.$$
+$$I_Z = C\thinspace\frac{dv}{dt} = 10\ \mu\text{F}\cdot 800\ \text{V/s} = 8\ \text{mA}\quad\Rightarrow\quad V_Z = 8\ \text{mA}\cdot 100\ \Omega = 0{,}8\ \text{V}.$$
 
 A derivada de uma triangular é uma onda quadrada.
 

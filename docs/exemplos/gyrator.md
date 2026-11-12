@@ -46,15 +46,15 @@ Duas montagens recebem a mesma onda quadrada de $20\ \text{Hz}$ e $\pm 5\ \text{
 
 A entrada do seguidor é a tensão da fonte filtrada por um passa-altas $RC$ ($R = 20\ \text{k}\Omega$, $C = 250\ \text{nF}$):
 
-$$V_M = V\,\frac{sRC}{1 + sRC}.$$
+$$V_M = V\thinspace\frac{sRC}{1 + sRC}.$$
 
 O seguidor copia $V_M$ para o outro terminal do resistor $R_g = 1\ \text{k}\Omega$ que sai da fonte, e a corrente de entrada é
 
-$$I = \frac{V - V_M}{R_g} = \frac{V}{R_g\,(1 + sRC)} \quad\Longrightarrow\quad Z_\text{in} = \frac{V}{I} = R_g + s\,R_g R C.$$
+$$I = \frac{V - V_M}{R_g} = \frac{V}{R_g\thinspace(1 + sRC)} \quad\Longrightarrow\quad Z_\text{in} = \frac{V}{I} = R_g + s\thinspace R_g R C.$$
 
 Isso é a impedância de um resistor $R_g$ em série com um indutor
 
-$$L = R_g\,R\,C = 1\ \text{k}\Omega\cdot 20\ \text{k}\Omega\cdot 250\ \text{nF} = 5\ \text{H}.$$
+$$L = R_g\thinspace R\thinspace C = 1\ \text{k}\Omega\cdot 20\ \text{k}\Omega\cdot 250\ \text{nF} = 5\ \text{H}.$$
 
 O girador "inverte" a impedância do capacitor em uma indutância, sem usar nenhum enrolamento: é como se obtém um indutor grande em circuitos integrados.
 

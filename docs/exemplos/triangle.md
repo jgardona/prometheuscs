@@ -45,11 +45,11 @@ O primeiro amplificador operacional é um disparador de Schmitt: sua entrada inv
 
 O comparador troca de estado quando a tensão em sua entrada não inversora passa por $0\ \text{V}$. Essa tensão é a média ponderada entre a saída quadrada $\pm V_\text{sat}$ e a triangular $v_t$:
 
-$$v_+ = \frac{R_5\,v_q + R_3\,v_t}{R_3 + R_5} = 0 \quad\Longrightarrow\quad v_t = \mp\,\frac{R_5}{R_3}\,V_\text{sat} = \mp\,0{,}4\cdot 15 = \mp 6\ \text{V}.$$
+$$v_+ = \frac{R_5\thinspace v_q + R_3\thinspace v_t}{R_3 + R_5} = 0 \quad\Longrightarrow\quad v_t = \mp\thinspace\frac{R_5}{R_3}\thinspace V_\text{sat} = \mp\thinspace0{,}4\cdot 15 = \mp 6\ \text{V}.$$
 
 O integrador, alimentado por uma tensão constante $\pm V_\text{sat}$, produz uma rampa de inclinação $\pm V_\text{sat}/(RC) = 15/(10\ \text{k}\Omega\cdot 400\ \text{nF}) = 3750\ \text{V/s}$. A rampa vai de $-6$ a $+6\ \text{V}$ em $12/3750 = 3{,}2\ \text{ms}$, então o período é $6{,}4\ \text{ms}$ e
 
-$$f = \frac{R_3}{4\,R_5\,R\,C} = \frac{10\ \text{k}\Omega}{4\cdot 4\ \text{k}\Omega\cdot 10\ \text{k}\Omega\cdot 400\ \text{nF}} = 156{,}25\ \text{Hz}.$$
+$$f = \frac{R_3}{4\thinspace R_5\thinspace R\thinspace C} = \frac{10\ \text{k}\Omega}{4\cdot 4\ \text{k}\Omega\cdot 10\ \text{k}\Omega\cdot 400\ \text{nF}} = 156{,}25\ \text{Hz}.$$
 
 ## Resultados esperados
 

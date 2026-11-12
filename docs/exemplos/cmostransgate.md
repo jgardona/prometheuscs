@@ -48,11 +48,11 @@ Um NMOS e um PMOS (modelo padrão com diodo de corpo) têm os dreno e fonte liga
 
 Um NMOS passa bem o nível baixo, mas não passa tensões acima de $V_{DD} - V_t = 3{,}5\ \text{V}$ (corta); um PMOS faz o inverso, só conduzindo acima de $|V_t| = 1{,}5\ \text{V}$. Em paralelo, um deles sempre conduz. Com a porta ligada ($V_{DD}$ no NMOS, $0$ no PMOS), a resistência de cada um no triodo para $V_{DS}$ pequeno é
 
-$$R_n = \frac{1}{\beta\,(V_{DD} - V_{in} - V_t)}, \qquad R_p = \frac{1}{\beta\,(V_{in} - |V_t|)}, \qquad R_{on} = R_n \parallel R_p,$$
+$$R_n = \frac{1}{\beta\thinspace(V_{DD} - V_{in} - V_t)}, \qquad R_p = \frac{1}{\beta\thinspace(V_{in} - |V_t|)}, \qquad R_{on} = R_n \parallel R_p,$$
 
 válidas onde cada transistor conduz. Na faixa em que os dois conduzem ($1{,}5\ \text{V} < V_{in} < 3{,}5\ \text{V}$) a soma das condutâncias é constante:
 
-$$\frac{1}{R_{on}} = \beta\,(V_{DD} - 2V_t) \ \Rightarrow\ R_{on} = \frac{1}{0{,}02 \cdot 2} = 25\ \Omega.$$
+$$\frac{1}{R_{on}} = \beta\thinspace(V_{DD} - 2V_t) \ \Rightarrow\ R_{on} = \frac{1}{0{,}02 \cdot 2} = 25\ \Omega.$$
 
 Nos extremos, só um conduz: $R_{on}(0\ \text{V}) = 1/(0{,}02 \cdot 3{,}5) = 14{,}3\ \Omega$. Por isso $R_{on}$ varia menos que a de um transistor só.
 

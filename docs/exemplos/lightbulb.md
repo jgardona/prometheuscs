@@ -41,7 +41,7 @@ Uma lâmpada de $100\ \text{W}$ e $120\ \text{V}$ (tempos de aquecimento e resfr
 
 A resistência de um filamento de tungstênio cresce com a temperatura: o simulador usa uma relação empírica $R(T)$ em que $R_{nom} = V_n^2/P_n = 144\ \Omega$ é o valor na temperatura de operação. A temperatura do filamento obedece ao balanço de energia
 
-$$C_{th}\,\frac{dT}{dt} = P_{el} - P_{perda}(T),$$
+$$C_{th}\thinspace\frac{dT}{dt} = P_{el} - P_{perda}(T),$$
 
 com tempos característicos de aquecimento e resfriamento de $0{,}4\ \text{s}$. Ao ligar, $T = 300\ \text{K}$ e a resistência é baixa; a corrente é alta e aquece o filamento, o que aumenta a resistência e faz a corrente cair até o regime, em que $P = 100\ \text{W}$ e
 

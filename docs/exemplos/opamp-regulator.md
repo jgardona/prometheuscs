@@ -54,7 +54,7 @@ A entrada não regulada é uma onda triangular de $120\ \text{Hz}$ que vai de $1
 
 A realimentação negativa leva as duas entradas do operacional ao mesmo potencial: a tensão do divisor, $V_\text{out}/2$, iguala a referência $V_Z$:
 
-$$\frac{V_\text{out}}{2} = V_Z \quad\Longrightarrow\quad V_\text{out} = V_Z\left(1 + \frac{R_9}{R_{10}}\right) = 2\,V_Z.$$
+$$\frac{V_\text{out}}{2} = V_Z \quad\Longrightarrow\quad V_\text{out} = V_Z\left(1 + \frac{R_9}{R_{10}}\right) = 2\thinspace V_Z.$$
 
 Se a saída cai (por exemplo, porque a carga pediu mais corrente), a entrada inversora fica abaixo da referência, a saída do operacional sobe, o transistor conduz mais e a tensão de saída volta ao valor certo. Se a entrada não regulada sobe, o transistor conduz menos pela mesma razão. O diodo Zener é alimentado por uma corrente quase constante, de modo que $V_Z$ varia pouco.
 

@@ -40,9 +40,9 @@ Uma fonte de $6{,}7\ \text{V}$ com uma oscilação de $\pm 1\ \text{V}$ ($40\ \t
 
 ## Teoria
 
-O Zener, em ruptura, comporta-se como uma fonte de tensão de resistência pequena $r_Z$. O circuito é então um divisor entre $R_s = 500\ \Omega$ e $r_Z\,\|\,R_L$, e uma variação $\Delta V_{in}$ na entrada produz na saída
+O Zener, em ruptura, comporta-se como uma fonte de tensão de resistência pequena $r_Z$. O circuito é então um divisor entre $R_s = 500\ \Omega$ e $r_Z\thinspace\|\thinspace R_L$, e uma variação $\Delta V_{in}$ na entrada produz na saída
 
-$$\Delta V_{out} \approx \Delta V_{in}\,\frac{r_Z}{R_s + r_Z},$$
+$$\Delta V_{out} \approx \Delta V_{in}\thinspace\frac{r_Z}{R_s + r_Z},$$
 
 muito menor, porque $r_Z \ll R_s$. Em baixa corrente, porém, $r_Z = V_T/i$ é grande (a $0{,}5\ \text{mA}$, $52\ \Omega$) e a regulação é pior. A tensão de saída é a que satisfaz a equação de corrente do nó:
 

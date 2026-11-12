@@ -48,7 +48,7 @@ O transistor bipolar do simulador (modelo "default") segue o modelo de Ebers–M
 
 $$I_C = I_s\left(e^{V_{BE}/V_T} - e^{V_{BC}/V_T}\right) - \frac{I_s}{\beta_R}\left(e^{V_{BC}/V_T} - 1\right),\qquad I_B = \frac{I_s}{\beta}\left(e^{V_{BE}/V_T} - 1\right) + \frac{I_s}{\beta_R}\left(e^{V_{BC}/V_T} - 1\right),$$
 
-com $I_s = 10^{-13}\ \text{A}$, $\beta = 100$, $\beta_R = 1$ e $V_T = 25{,}865\ \text{mV}$; sem efeito Early, sem capacitâncias e sem resistências série. Na **região ativa** ($V_{BE} \approx 0{,}65$ a $0{,}75\ \text{V}$, junção base-coletor com polarização inversa) isso se reduz a $I_C = \beta I_B = I_s\,e^{V_{BE}/V_T}$, com transcondutância $g_m = I_C/V_T$ e resistência de emissor $r_e = V_T/I_E$. O PNP é o complementar, com todas as tensões e correntes invertidas.
+com $I_s = 10^{-13}\ \text{A}$, $\beta = 100$, $\beta_R = 1$ e $V_T = 25{,}865\ \text{mV}$; sem efeito Early, sem capacitâncias e sem resistências série. Na **região ativa** ($V_{BE} \approx 0{,}65$ a $0{,}75\ \text{V}$, junção base-coletor com polarização inversa) isso se reduz a $I_C = \beta I_B = I_s\thinspace e^{V_{BE}/V_T}$, com transcondutância $g_m = I_C/V_T$ e resistência de emissor $r_e = V_T/I_E$. O PNP é o complementar, com todas as tensões e correntes invertidas.
 
 ## Resultados esperados
 
@@ -56,7 +56,7 @@ Com o emissor seguindo a base, $v_E = v_B - V_{BE}$, e como $V_{BE}$ varia só $
 
 $$A_v = \frac{v_e}{v_b} = \frac{R_E}{R_E + r_e} \approx 1,\qquad r_e = \frac{V_T}{I_E}.$$
 
-A impedância de entrada vista pela base é $\approx \beta\,(R_E + r_e)$, bem maior que a do emissor, de modo que o seguidor serve de **buffer**: transforma uma fonte de impedância alta em uma de impedância baixa ($\approx r_e + R_B/\beta$). Não há inversão de fase.
+A impedância de entrada vista pela base é $\approx \beta\thinspace(R_E + r_e)$, bem maior que a do emissor, de modo que o seguidor serve de **buffer**: transforma uma fonte de impedância alta em uma de impedância baixa ($\approx r_e + R_B/\beta$). Não há inversão de fase.
 
 ## O que observar
 

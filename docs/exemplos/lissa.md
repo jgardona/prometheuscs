@@ -61,7 +61,7 @@ Seis fontes senoidais de $5\ \text{V}$ de pico formam três pares. Em cada par, 
 
 Duas senoides $x = A\sin(2\pi f_x t)$ e $y = B\sin(2\pi f_y t + \varphi)$ desenham, no plano $(x, y)$, uma curva fechada quando $f_x/f_y$ é racional. Se $f_x/f_y = p/q$ (frações irredutíveis), a curva se fecha depois de $T = q/f_x = p/f_y$, e o desenho tem $p$ e $q$ pontos de tangência com os lados da caixa que o envolve (em cada eixo).
 
-No par 1, as frequências diferem só de $4\ \text{Hz}$: o desenho parece uma elipse que muda de forma devagar, porque a fase relativa cresce como $\Delta\varphi(t) = 2\pi\,(104 - 100)\,t$. Passa por uma reta ($y = x$) em $t = 0$, por uma circunferência em $\Delta\varphi = \pi/2$ ($t = 62{,}5\ \text{ms}$), por outra reta ($y = -x$) em $\Delta\varphi = \pi$ ($t = 125\ \text{ms}$), e se repete a cada $1/4\ \text{Hz} = 250\ \text{ms}$.
+No par 1, as frequências diferem só de $4\ \text{Hz}$: o desenho parece uma elipse que muda de forma devagar, porque a fase relativa cresce como $\Delta\varphi(t) = 2\pi\thinspace(104 - 100)\thinspace t$. Passa por uma reta ($y = x$) em $t = 0$, por uma circunferência em $\Delta\varphi = \pi/2$ ($t = 62{,}5\ \text{ms}$), por outra reta ($y = -x$) em $\Delta\varphi = \pi$ ($t = 125\ \text{ms}$), e se repete a cada $1/4\ \text{Hz} = 250\ \text{ms}$.
 
 Os pares 2 e 3 têm razões que não são simples, e o desenho fica entrelaçado e denso, fechando em $1\ \text{s}$ (máximo divisor comum de $1\ \text{Hz}$).
 

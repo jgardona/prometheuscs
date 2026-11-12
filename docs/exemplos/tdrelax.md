@@ -45,11 +45,11 @@ A mesma polarização do exemplo anterior (fonte de $1{,}5\ \text{V}$ com diviso
 
 O diodo túnel do simulador tem a corrente
 
-$$I(V) = I_P\,\frac{V}{V_P}\,e^{1 - V/V_P} + I_P\,e^{-V_{PP}/V_T}\left(e^{V/V_T} - 1\right) + I_V\left(e^{V - V_V} - e^{-V_V}\right),$$
+$$I(V) = I_P\thinspace\frac{V}{V_P}\thinspace e^{1 - V/V_P} + I_P\thinspace e^{-V_{PP}/V_T}\left(e^{V/V_T} - 1\right) + I_V\left(e^{V - V_V} - e^{-V_V}\right),$$
 
 com $V_P = 0{,}1\ \text{V}$, $I_P = 4{,}7\ \text{mA}$, $V_V = 0{,}37\ \text{V}$, $I_V = 370\ \mu\text{A}$, $V_T = 26\ \text{mV}$ e $V_{PP} = 0{,}525\ \text{V}$. O primeiro termo é o de tunelamento (pico), o segundo, a corrente de difusão usual (Shockley) e o terceiro, uma corrente excedente que cresce de novo depois do vale. A curva tem um **pico** de $4{,}73\ \text{mA}$ em $0{,}10\ \text{V}$ e um **vale** de $1{,}00\ \text{mA}$ em $0{,}43\ \text{V}$; entre os dois, a inclinação é negativa: é a região de resistência diferencial negativa.
 
-A corrente no indutor é contínua; a tensão no diodo, não. Com $I$ entre $I_V$ e $I_P$ há dois valores possíveis de $V$ (um na rampa de baixa tensão, outro na de alta). A dinâmica é $L\,dI/dt = V_{th} - R_{th}I - V_D(I)$:
+A corrente no indutor é contínua; a tensão no diodo, não. Com $I$ entre $I_V$ e $I_P$ há dois valores possíveis de $V$ (um na rampa de baixa tensão, outro na de alta). A dinâmica é $L\thinspace dI/dt = V_{th} - R_{th}I - V_D(I)$:
 
 - No ramo de baixa tensão ($V_D \approx 0$ a $0{,}1\ \text{V}$) a corrente **sobe**; quando atinge o pico $I_P = 4{,}73\ \text{mA}$ o ramo desaparece e a tensão do diodo **salta** para o ramo de alta tensão ($0{,}52\ \text{V}$ com a mesma corrente).
 - No ramo de alta tensão, $V_D > V_{th} - R_{th}I$ e a corrente **desce**, até o vale, $I_V = 1{,}00\ \text{mA}$, onde o ramo desaparece e a tensão salta de volta para $0{,}009\ \text{V}$.

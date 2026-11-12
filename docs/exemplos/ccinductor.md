@@ -62,7 +62,7 @@ isto é, a tensão em $Y$ (de entrada de alta impedância) é copiada em $X$ (de
 
 O arranjo de dois transportadores com os resistores $R_1$ e $R_2$ e o capacitor $C$ tem impedância de entrada
 
-$$Z_{in} = s\,C R_1 R_2\quad\Rightarrow\quad L_{sim} = C R_1 R_2 = 10\ \mu\text{F}\cdot 100\ \Omega\cdot 100\ \Omega = 0{,}1\ \text{H}.$$
+$$Z_{in} = s\thinspace C R_1 R_2\quad\Rightarrow\quad L_{sim} = C R_1 R_2 = 10\ \mu\text{F}\cdot 100\ \Omega\cdot 100\ \Omega = 0{,}1\ \text{H}.$$
 
 Com o resistor de $50\ \Omega$ em série, a impedância do circuito é $|Z| = \sqrt{50^2 + (2\pi\cdot 40\cdot 0{,}1)^2} = \sqrt{2500 + 25{,}13^2} = 55{,}96\ \Omega$ e a corrente de pico é $5/55{,}96 = 89{,}4\ \text{mA}$.
 

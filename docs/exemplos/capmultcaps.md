@@ -50,7 +50,7 @@ A parte imaginária é a **reatância**: $X_L=\omega L$ (cresce com a frequênci
 
 O capacitor e o resistor formam um divisor de tensão complexo, e a amplitude sobre o capacitor é
 
-$$V_{C} = V\,\frac{X_C}{\sqrt{R^2+X_C^2}}.$$
+$$V_{C} = V\thinspace\frac{X_C}{\sqrt{R^2+X_C^2}}.$$
 
 Quanto menor $C$, maior $X_C$ e mais tensão fica sobre o capacitor.
 

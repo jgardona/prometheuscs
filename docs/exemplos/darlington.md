@@ -44,19 +44,19 @@ O transistor bipolar do simulador (modelo "default") segue o modelo de Ebers–M
 
 $$I_C = I_s\left(e^{V_{BE}/V_T} - e^{V_{BC}/V_T}\right) - \frac{I_s}{\beta_R}\left(e^{V_{BC}/V_T} - 1\right),\qquad I_B = \frac{I_s}{\beta}\left(e^{V_{BE}/V_T} - 1\right) + \frac{I_s}{\beta_R}\left(e^{V_{BC}/V_T} - 1\right),$$
 
-com $I_s = 10^{-13}\ \text{A}$, $\beta = 100$, $\beta_R = 1$ e $V_T = 25{,}865\ \text{mV}$; sem efeito Early, sem capacitâncias e sem resistências série. Na **região ativa** ($V_{BE} \approx 0{,}65$ a $0{,}75\ \text{V}$, junção base-coletor com polarização inversa) isso se reduz a $I_C = \beta I_B = I_s\,e^{V_{BE}/V_T}$, com transcondutância $g_m = I_C/V_T$ e resistência de emissor $r_e = V_T/I_E$. O PNP é o complementar, com todas as tensões e correntes invertidas.
+com $I_s = 10^{-13}\ \text{A}$, $\beta = 100$, $\beta_R = 1$ e $V_T = 25{,}865\ \text{mV}$; sem efeito Early, sem capacitâncias e sem resistências série. Na **região ativa** ($V_{BE} \approx 0{,}65$ a $0{,}75\ \text{V}$, junção base-coletor com polarização inversa) isso se reduz a $I_C = \beta I_B = I_s\thinspace e^{V_{BE}/V_T}$, com transcondutância $g_m = I_C/V_T$ e resistência de emissor $r_e = V_T/I_E$. O PNP é o complementar, com todas as tensões e correntes invertidas.
 
 ## Resultados esperados
 
 A corrente de emissor do primeiro transistor, $I_{E1} = (\beta_1 + 1)I_{B1}$, é a corrente de base do segundo; a corrente total de coletor é
 
-$$I_C \approx \beta_1\beta_2\,I_{B1} = \beta_{eq}\,I_{B1},\qquad \beta_{eq} \approx \beta_1\beta_2 = 10^4.$$
+$$I_C \approx \beta_1\beta_2\thinspace I_{B1} = \beta_{eq}\thinspace I_{B1},\qquad \beta_{eq} \approx \beta_1\beta_2 = 10^4.$$
 
 A tensão de entrada necessária é $V_{BE} \approx 2 \times 0{,}65\ \text{V} = 1{,}3\ \text{V}$ (duas junções em série). A impedância de entrada é muito alta ($\beta_{eq}$ vezes a de emissor), e a de saturação é maior (a saturação do conjunto é $V_{CE(sat)2} + V_{BE}$ do primeiro...). Serve para acionar cargas fortes com corrente de entrada minúscula.
 
 ## O que observar
 
-Com a chave fechada, a corrente de base é de apenas $1{,}84\ \mu\text{A}$ (da fonte de $5\ \text{V}$ por $2\ \text{M}\Omega$, menos $V_{BE}$ total de $1{,}21\ \text{V}$) e a carga recebe $13{,}97\ \text{mA}$: ganho de corrente de $7\,600$ (menor que $10^4$ porque o segundo transistor está perto da saturação, $V_{CE} = 0{,}81\ \text{V}$). Com a chave aberta, a corrente na carga é nula ($\approx 0{,}1\ \mu\text{A}$ de vazamento do modelo). As verificações conferem a corrente da carga com a chave aberta e fechada e a de base, em $t = 10\ \text{ms}$ (tolerância de 1% a 5%; o simulador fica a menos de $0{,}1\%$ da integração independente).
+Com a chave fechada, a corrente de base é de apenas $1{,}84\ \mu\text{A}$ (da fonte de $5\ \text{V}$ por $2\ \text{M}\Omega$, menos $V_{BE}$ total de $1{,}21\ \text{V}$) e a carga recebe $13{,}97\ \text{mA}$: ganho de corrente de $7\thinspace600$ (menor que $10^4$ porque o segundo transistor está perto da saturação, $V_{CE} = 0{,}81\ \text{V}$). Com a chave aberta, a corrente na carga é nula ($\approx 0{,}1\ \mu\text{A}$ de vazamento do modelo). As verificações conferem a corrente da carga com a chave aberta e fechada e a de base, em $t = 10\ \text{ms}$ (tolerância de 1% a 5%; o simulador fica a menos de $0{,}1\%$ da integração independente).
 
 ## Limites do modelo
 

@@ -43,15 +43,15 @@ Mostrar a **corrente de curto-circuito** do inversor CMOS: quando a entrada demo
 
 ## Teoria
 
-A tensão de porta ao descer é $v_G(t) = 5\,e^{-t/\tau}$ e cruza a região de transição $|v_G - 2{,}5\ \text{V}| \lesssim 0{,}5\ \text{V}$ em um tempo da ordem de $\tau$. Enquanto $|V_t| < v_G < V_{DD} - |V_t|$, isto é, de $1{,}5\ \text{V}$ a $3{,}5\ \text{V}$, os dois transistores conduzem e há um caminho direto da alimentação à terra. Pela característica de [Inversor CMOS](cmosinverter.md), a corrente vale $\tfrac12\beta(v_G - V_t)^2$ do NMOS (enquanto ele está saturado) e chega ao máximo de
+A tensão de porta ao descer é $v_G(t) = 5\thinspace e^{-t/\tau}$ e cruza a região de transição $|v_G - 2{,}5\ \text{V}| \lesssim 0{,}5\ \text{V}$ em um tempo da ordem de $\tau$. Enquanto $|V_t| < v_G < V_{DD} - |V_t|$, isto é, de $1{,}5\ \text{V}$ a $3{,}5\ \text{V}$, os dois transistores conduzem e há um caminho direto da alimentação à terra. Pela característica de [Inversor CMOS](cmosinverter.md), a corrente vale $\tfrac12\beta(v_G - V_t)^2$ do NMOS (enquanto ele está saturado) e chega ao máximo de
 
 $$I_{pico} = \tfrac12 \cdot 0{,}02 \cdot (2{,}5 - 1{,}5)^2 = 10\ \text{mA}$$
 
-no limiar, $v_G = 2{,}5\ \text{V}$. A carga que passa nesse caminho é $Q = \int I\,dt$, e a energia perdida por transição é $V_{DD}\,Q$. Quanto mais lenta a entrada, maior a carga.
+no limiar, $v_G = 2{,}5\ \text{V}$. A carga que passa nesse caminho é $Q = \int I\thinspace dt$, e a energia perdida por transição é $V_{DD}\thinspace Q$. Quanto mais lenta a entrada, maior a carga.
 
 ## Resultados esperados
 
-Com a entrada em nível alto, o circuito está em repouso: saída em zero e corrente da alimentação de $50\ \text{nA}$ (fuga). Em $t = 10\ \text{ns}$ a entrada passa a nível baixo, e a porta decai com $\tau = 1\ \text{ns}$: $v_G = 5\,e^{-2} = 0{,}677\ \text{V}$ em $12\ \text{ns}$. A porta cruza $2{,}5\ \text{V}$ em $10{,}693\ \text{ns}$ ($\tau\ln 2 = 0{,}693\ \text{ns}$ depois da transição) e a saída cruza $2{,}5\ \text{V}$ no mesmo instante, em menos de $1\ \text{ps}$ de diferença, já que não há carga capacitiva na saída: a comutação da saída é instantânea no modelo. A alimentação fornece um pico de $10{,}00\ \text{mA}$, o previsto, e a carga total que atravessa o caminho de curto-circuito é de $2{,}7\ \text{pC}$ (energia de $13{,}6\ \text{pJ}$ por transição). A saída termina em $5\ \text{V}$. As verificações conferem a fuga antes da transição, a tensão da porta em $12\ \text{ns}$, o pico de corrente e o nível final da saída (tolerância de $0{,}5\%$ a $1\%$).
+Com a entrada em nível alto, o circuito está em repouso: saída em zero e corrente da alimentação de $50\ \text{nA}$ (fuga). Em $t = 10\ \text{ns}$ a entrada passa a nível baixo, e a porta decai com $\tau = 1\ \text{ns}$: $v_G = 5\thinspace e^{-2} = 0{,}677\ \text{V}$ em $12\ \text{ns}$. A porta cruza $2{,}5\ \text{V}$ em $10{,}693\ \text{ns}$ ($\tau\ln 2 = 0{,}693\ \text{ns}$ depois da transição) e a saída cruza $2{,}5\ \text{V}$ no mesmo instante, em menos de $1\ \text{ps}$ de diferença, já que não há carga capacitiva na saída: a comutação da saída é instantânea no modelo. A alimentação fornece um pico de $10{,}00\ \text{mA}$, o previsto, e a carga total que atravessa o caminho de curto-circuito é de $2{,}7\ \text{pC}$ (energia de $13{,}6\ \text{pJ}$ por transição). A saída termina em $5\ \text{V}$. As verificações conferem a fuga antes da transição, a tensão da porta em $12\ \text{ns}$, o pico de corrente e o nível final da saída (tolerância de $0{,}5\%$ a $1\%$).
 
 ## O que observar
 

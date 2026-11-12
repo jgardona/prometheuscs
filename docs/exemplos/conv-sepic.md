@@ -46,7 +46,7 @@ O MOSFET é comandado por uma fonte de onda quadrada de $1\ \text{kHz}$ (períod
 
 Com a chave ligada, o primeiro indutor $L_1$ é carregado pela entrada, e o segundo, $L_2$, pelo capacitor de acoplamento $C_1$; o diodo está cortado e o capacitor de saída alimenta a carga. Com a chave desligada, ambas as correntes passam pelo diodo para a saída e carregam $C_1$ e $C_\text{out}$. A tensão média em $C_1$ é $V_{in}$ e, em regime permanente,
 
-$$V_{out} = \frac{D}{1-D}\,V_{in}.$$
+$$V_{out} = \frac{D}{1-D}\thinspace V_{in}.$$
 
 Para $D < 0{,}5$ o conversor abaixa a tensão; para $D > 0{,}5$, eleva; em $D = 0{,}5$ a saída iguala a entrada.
 

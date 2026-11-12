@@ -41,11 +41,11 @@ Um JFET tem o dreno em $10\ \text{V}$ e um resistor de $10\ \text{k}\Omega$ da f
 
 O JFET de canal N do simulador (modelo *default-jfet*) tem tensão de corte $V_T = -4\ \text{V}$ e $\beta = 1{,}25\ \text{mA/V}^2$, sem modulação de canal ($\lambda = 0$). Em saturação,
 
-$$I_D = \frac{\beta}{2}\,(V_{GS} - V_T)^2 = I_{DSS}\left(1 - \frac{V_{GS}}{V_T}\right)^2,\qquad I_{DSS} = \frac{\beta}{2}V_T^2 = 10\ \text{mA},$$
+$$I_D = \frac{\beta}{2}\thinspace(V_{GS} - V_T)^2 = I_{DSS}\left(1 - \frac{V_{GS}}{V_T}\right)^2,\qquad I_{DSS} = \frac{\beta}{2}V_T^2 = 10\ \text{mA},$$
 
 e, na região ôhmica ($V_{DS} < V_{GS} - V_T$), $I_D = \beta\bigl[(V_{GS}-V_T)V_{DS} - V_{DS}^2/2\bigr]$.
 
-**Ponto de operação.** Com o gatilho em $0\ \text{V}$ em média, $V_{GS} = -I_D R_S$, e $I_D = 0{,}625\ \text{mA/V}^2\,(4 - 10^4 I_D)^2$ tem duas raízes, $0{,}328\ \text{mA}$ e $0{,}488\ \text{mA}$; só a primeira dá $V_{GS} > V_T$. Assim $I_D = 0{,}328\ \text{mA}$, $V_{GS} = -3{,}28\ \text{V}$ e a tensão contínua na fonte é $V_S = 3{,}28\ \text{V}$.
+**Ponto de operação.** Com o gatilho em $0\ \text{V}$ em média, $V_{GS} = -I_D R_S$, e $I_D = 0{,}625\ \text{mA/V}^2\thinspace(4 - 10^4 I_D)^2$ tem duas raízes, $0{,}328\ \text{mA}$ e $0{,}488\ \text{mA}$; só a primeira dá $V_{GS} > V_T$. Assim $I_D = 0{,}328\ \text{mA}$, $V_{GS} = -3{,}28\ \text{V}$ e a tensão contínua na fonte é $V_S = 3{,}28\ \text{V}$.
 
 **Pequenos sinais.** A transcondutância é $g_m = \beta(V_{GS} - V_T) = 1{,}25\ \text{mS}\cdot 0{,}72 = 0{,}90\ \text{mS}$, e o ganho do seguidor é
 

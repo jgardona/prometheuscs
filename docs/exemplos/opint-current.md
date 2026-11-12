@@ -83,7 +83,7 @@ Com $V_\text{in} = -5\ \text{V}$ a saída ideal seria $+10\ \text{V}$ e a corren
 
 $$I_\text{lim} \approx \frac{V_{BE}}{25\ \Omega} \approx 24\ \text{mA}.$$
 
-Atingido o limite, a saída deixa de ser regida pela realimentação e a tensão cai a $V_\text{out} = V_\text{in} + I_\text{lim}\,(R_f + R_1)$.
+Atingido o limite, a saída deixa de ser regida pela realimentação e a tensão cai a $V_\text{out} = V_\text{in} + I_\text{lim}\thinspace(R_f + R_1)$.
 
 ## Resultados esperados
 

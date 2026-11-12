@@ -47,13 +47,13 @@ A entrada é uma onda quadrada de $120\ \text{Hz}$ ($0$ a $5\ \text{V}$). O comp
 
 O VCO do simulador é um oscilador de relaxação com três pinos externos: a tensão de controle $V_i$ alimenta, pelo resistor $R_1$, uma corrente $V_i/R_1$, somada a uma corrente fixa $V_\text{ref}/R_2$ (com $V_\text{ref} = 5\ \text{V}$, pelo resistor $R_2$), que carrega e descarrega o capacitor externo $C$ entre $0{,}5$ e $4{,}5\ \text{V}$ ($\Delta V = 4\ \text{V}$), invertendo o sentido da corrente a cada limite. A saída é uma onda quadrada de $0$ a $5\ \text{V}$ com frequência
 
-$$f_\text{VCO} = \frac{I}{2\,C\,\Delta V} = \frac{V_i/R_1 + 5/R_2}{8\,C}.$$
+$$f_\text{VCO} = \frac{I}{2\thinspace C\thinspace\Delta V} = \frac{V_i/R_1 + 5/R_2}{8\thinspace C}.$$
 
 Com o comparador de fase e frequência, a saída em alta impedância, depois do filtro, integra o erro: um capacitor de $90\ \mu\text{F}$ guarda a tensão de controle e só se altera quando há erro de fase. O PLL trava, então, com **defasagem nula** (os pulsos do comparador desaparecem), e a tensão de controle $V_i$ fica fixa no valor que dá a frequência de entrada. A malha tem um integrador ideal (o filtro, vendo uma carga de alta impedância) e é de segunda ordem, com amortecimento dado pelo resistor de $1\ \text{k}\Omega$ em série com o capacitor.
 
 Para travar em $f_\text{ent} = 120\ \text{Hz}$:
 
-$$V_i = R_1\left(8\,C\,f_\text{ent} - \frac{5}{R_2}\right) = 3\ \text{k}\Omega\,(960\ \mu\text{A} - 50\ \mu\text{A}) = 2{,}73\ \text{V}.$$
+$$V_i = R_1\left(8\thinspace C\thinspace f_\text{ent} - \frac{5}{R_2}\right) = 3\ \text{k}\Omega\thinspace(960\ \mu\text{A} - 50\ \mu\text{A}) = 2{,}73\ \text{V}.$$
 
 ## Resultados esperados
 

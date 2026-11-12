@@ -38,21 +38,21 @@ Uma fonte de onda quadrada de $\pm 5\ \text{V}$ e $40\ \text{Hz}$ alimenta um ca
 
 ## Teoria
 
-A corrente do capacitor é $i = C\,dv_C/dt$ e a tensão de saída é $v_R = R\,i$. Se $v_C \approx v_{in}$ (a queda no resistor é pequena frente à do capacitor), então
+A corrente do capacitor é $i = C\thinspace dv_C/dt$ e a tensão de saída é $v_R = R\thinspace i$. Se $v_C \approx v_{in}$ (a queda no resistor é pequena frente à do capacitor), então
 
-$$v_{out} = v_R = RC\,\frac{dv_{in}}{dt},$$
+$$v_{out} = v_R = RC\thinspace\frac{dv_{in}}{dt},$$
 
 a derivada do sinal de entrada multiplicada por $RC = 120\cdot 9\ \mu\text{F} = 1{,}08\ \text{ms}$. É um filtro passa-altas de frequência de corte $f_c = \dfrac{1}{2\pi RC} = 147\ \text{Hz}$, e a aproximação vale para as componentes bem abaixo de $f_c$.
 
 **Resposta ao degrau.** Numa borda em que a entrada salta de $-V$ para $+V$, o capacitor não pode mudar sua tensão instantaneamente, e o salto $\Delta V = 2V$ aparece todo sobre o resistor; depois a saída decai exponencialmente:
 
-$$v_R(t) = \Delta V\,e^{-t/RC}.$$
+$$v_R(t) = \Delta V\thinspace e^{-t/RC}.$$
 
 O capacitor então se carrega através do resistor, com constante de tempo $RC$.
 
 ## Resultados esperados
 
-A onda quadrada tem $\Delta V = 10\ \text{V}$ em cada borda, e $RC = 1{,}08\ \text{ms}$ é bem menor que o semiperíodo ($12{,}5\ \text{ms}$). A saída é uma sequência de pulsos positivos (bordas de subida) e negativos (bordas de descida), cada um começando em $\pm 10\ \text{V}$ e decaindo com $\tau = 1{,}08\ \text{ms}$; passado um tempo $\tau$, a saída vale $10\,e^{-1} = 3{,}679\ \text{V}$, e ao fim do semiperíodo ($10{,}8\tau$) já é praticamente nula. As verificações conferem a tensão $\tau$ depois de uma borda de subida ($+3{,}679\ \text{V}$) e de uma de descida ($-3{,}679\ \text{V}$), o valor quase nulo no fim do semiperíodo, e o pico e o vale ($\pm 10\ \text{V}$, com tolerância de 1%: o passo de simulação de $5\ \mu\text{s}$ faz o pico lido ficar cerca de 0,2% abaixo).
+A onda quadrada tem $\Delta V = 10\ \text{V}$ em cada borda, e $RC = 1{,}08\ \text{ms}$ é bem menor que o semiperíodo ($12{,}5\ \text{ms}$). A saída é uma sequência de pulsos positivos (bordas de subida) e negativos (bordas de descida), cada um começando em $\pm 10\ \text{V}$ e decaindo com $\tau = 1{,}08\ \text{ms}$; passado um tempo $\tau$, a saída vale $10\thinspace e^{-1} = 3{,}679\ \text{V}$, e ao fim do semiperíodo ($10{,}8\tau$) já é praticamente nula. As verificações conferem a tensão $\tau$ depois de uma borda de subida ($+3{,}679\ \text{V}$) e de uma de descida ($-3{,}679\ \text{V}$), o valor quase nulo no fim do semiperíodo, e o pico e o vale ($\pm 10\ \text{V}$, com tolerância de 1%: o passo de simulação de $5\ \mu\text{s}$ faz o pico lido ficar cerca de 0,2% abaixo).
 
 ## O que observar
 

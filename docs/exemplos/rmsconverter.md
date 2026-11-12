@@ -29,7 +29,7 @@ Mostrar um conversor de **valor eficaz verdadeiro** (*true RMS*): um circuito cu
 ![Esquema do circuito](img/rmsconverter.svg)
 <!-- esquema:fim -->
 
-O circuito reúne, em linhas gerais, amplificadores operacionais ideais (ganho de $100\,000$, saída de $\pm 15\ \text{V}$), diodos, transistores NPN ($\beta = 100$), resistores de $1\ \text{k}\Omega$ a $100\ \text{k}\Omega$ e capacitores de $15\ \text{pF}$ a $1\ \mu\text{F}$. Há na entrada uma parte de **retificação de precisão** (dois amplificadores, dois diodos e resistores de $100\ \text{k}\Omega$ e $50\ \text{k}\Omega$), um grupo de transistores que faz o cálculo **translinear** (a relação exponencial entre corrente e tensão do transistor é usada para elevar ao quadrado e extrair a raiz) e um **filtro** de $1\ \mu\text{F}$ com resistor de $100\ \text{k}\Omega$ que faz a média. Duas fontes de $\pm 1{,}2\ \text{V}$ ligadas às pontas de um potenciômetro de $10\ \text{k}\Omega$ ("trimmer 1") injetam, por um resistor de $100\ \text{k}\Omega$, uma tensão de ajuste: é o ajuste de calibração do conversor. A saída é um osciloscópio de tensão contínua.
+O circuito reúne, em linhas gerais, amplificadores operacionais ideais (ganho de $100\thinspace000$, saída de $\pm 15\ \text{V}$), diodos, transistores NPN ($\beta = 100$), resistores de $1\ \text{k}\Omega$ a $100\ \text{k}\Omega$ e capacitores de $15\ \text{pF}$ a $1\ \mu\text{F}$. Há na entrada uma parte de **retificação de precisão** (dois amplificadores, dois diodos e resistores de $100\ \text{k}\Omega$ e $50\ \text{k}\Omega$), um grupo de transistores que faz o cálculo **translinear** (a relação exponencial entre corrente e tensão do transistor é usada para elevar ao quadrado e extrair a raiz) e um **filtro** de $1\ \mu\text{F}$ com resistor de $100\ \text{k}\Omega$ que faz a média. Duas fontes de $\pm 1{,}2\ \text{V}$ ligadas às pontas de um potenciômetro de $10\ \text{k}\Omega$ ("trimmer 1") injetam, por um resistor de $100\ \text{k}\Omega$, uma tensão de ajuste: é o ajuste de calibração do conversor. A saída é um osciloscópio de tensão contínua.
 
 <!-- componentes:inicio -->
 | N.º | Tipo | Elemento | Valores |
@@ -82,7 +82,7 @@ O circuito reúne, em linhas gerais, amplificadores operacionais ideais (ganho d
 
 O valor eficaz de um sinal periódico $v(t)$ de período $T$ é
 
-$$V_{rms} = \sqrt{\frac{1}{T}\int_0^T v^2(t)\,dt}.$$
+$$V_{rms} = \sqrt{\frac{1}{T}\int_0^T v^2(t)\thinspace dt}.$$
 
 Para uma senoide de pico $V_p$ vale $V_p/\sqrt{2}$; para outras formas de onda, outro número. Um voltímetro que responde ao valor **médio** retificado ($2V_p/\pi$ para uma senoide) e é calibrado para exibir $V_p/\sqrt{2}$ erra para qualquer outra forma (razão de $1{,}11$ entre os dois, o *fator de forma* da senoide).
 
@@ -104,7 +104,7 @@ Na tela, a saída sobe a partir de zero em alguns décimos de segundo e se fixa 
 
 ## Limites do modelo
 
-- Os amplificadores operacionais são ideais (ganho finito de $100\,000$ e saída limitada a $\pm 15\ \text{V}$, sem largura de banda); os transistores não têm capacitâncias, e por isso o circuito não mostra o limite de frequência de um conversor real.
+- Os amplificadores operacionais são ideais (ganho finito de $100\thinspace000$ e saída limitada a $\pm 15\ \text{V}$, sem largura de banda); os transistores não têm capacitâncias, e por isso o circuito não mostra o limite de frequência de um conversor real.
 - A descrição dos blocos é feita em linhas gerais: o exemplo é grande, e este documento não deduz a função de cada transistor.
 - A diferença de $1\%$ entre a saída e o valor eficaz ideal (e a ondulação de $1\%$ a $2f$) depende da calibração do trimmer e do filtro; um conversor real traz um erro adicional que depende da temperatura.
 - Os valores de ondulação e das componentes de Fourier são medidas do simulador; as verificações automáticas cobrem o nível, os extremos e a subida.

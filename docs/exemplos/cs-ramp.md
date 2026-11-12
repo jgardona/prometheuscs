@@ -39,7 +39,7 @@ Uma fonte de tensão controlada com a expressão $\text{pwl}(t, 0, 0, 0{,}1, 5)$
 
 As fontes controladas de dois terminais (o losango) são definidas por uma **expressão** que lê o resto do circuito **pelo nome**: $v(\text{nome})$ é a tensão de um nó rotulado ou sobre um voltímetro com rótulo, $i(\text{nome})$ a corrente de um amperímetro com rótulo, e $\text{dvdt}$ / $\text{didt}$ as suas taxas de variação. O resultado é a tensão (fonte de tensão controlada, com o $+$ no segundo terminal) ou a corrente (fonte de corrente controlada, no sentido da seta) que a fonte impõe. A função $\text{pwl}(x, x_1, y_1, x_2, y_2, \ldots)$ interpola linearmente entre os pontos $(x_k, y_k)$ e mantém o último valor depois do último ponto. Com $x = t$ e os pontos $(0, 0)$ e $(0{,}1\ \text{s}, 5\ \text{V})$,
 
-$$V(t) = \begin{cases} 50\ \text{V/s}\cdot t, & 0 \le t \le 0{,}1\ \text{s},\\ 5\ \text{V}, & t > 0{,}1\ \text{s}.\end{cases}$$
+$$V(t) = \begin{cases} 50\ \text{V/s}\cdot t, & 0 \le t \le 0{,}1\ \text{s},\cr 5\ \text{V}, & t > 0{,}1\ \text{s}.\end{cases}$$
 
 A corrente no resistor é $V/R$.
 

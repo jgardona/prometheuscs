@@ -53,7 +53,7 @@ A entrada é uma senoide de $40\ \text{Hz}$ e $5\ \text{V}$ de pico. Um amplific
 
 A malha é um controle liga-desliga: o erro $e = V_\text{in} - V_\text{dec}$ é levado ao disparador de Schmitt, que inverte o sinal da corrente de integração sempre que $|e|$ passa de $0{,}1\ \text{V}$. O integrador, alimentado com $\pm 15\ \text{V}$ por $1\ \text{k}\Omega$, sobe ou desce com inclinação
 
-$$S = \frac{15\ \text{V}}{R\,C} = \frac{15}{1\ \text{k}\Omega \cdot 5{,}8\ \mu\text{F}} \approx 2586\ \text{V/s},$$
+$$S = \frac{15\ \text{V}}{R\thinspace C} = \frac{15}{1\ \text{k}\Omega \cdot 5{,}8\ \mu\text{F}} \approx 2586\ \text{V/s},$$
 
 e a saída do integrador "persegue" a entrada, oscilando em torno dela dentro da faixa de $\pm 0{,}1\ \text{V}$. Se a entrada subir, a saída do integrador fica mais tempo subindo que descendo: a **densidade** (ciclo de trabalho) do fluxo de bits mede a inclinação do sinal. O erro de rastreamento é pequeno enquanto a inclinação da entrada ($\le 2\pi f V_p = 1257\ \text{V/s}$) for menor que $S$.
 

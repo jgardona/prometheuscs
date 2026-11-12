@@ -162,7 +162,7 @@ O exemplo abre com $A = 1$ e $B = 63$.
 
 No bit $i$, um vai-um é **gerado** se $g_i = 1$ e **propagado** (o que chega passa adiante) se $p_i = 1$. Para um bloco de bits $i{:}j$, os mesmos conceitos combinam-se pelo **operador de prefixo**
 
-$$(G, P)_{i:k} \circ (G, P)_{k-1:j} = \left(G_{i:k} + P_{i:k}\,G_{k-1:j},\ \ P_{i:k}\,P_{k-1:j}\right),$$
+$$(G, P)_{i:k} \circ (G, P)_{k-1:j} = \left(G_{i:k} + P_{i:k}\thinspace G_{k-1:j},\ \ P_{i:k}\thinspace P_{k-1:j}\right),$$
 
 que é associativo. O vai-um que entra no bit $i$ é $c_i = G_{i-1:0}$ (sem vai-um de entrada), e a soma é $S_i = p_i \oplus c_i$. Calcular todos os $G_{i:0}$ é um problema de **prefixos paralelos**, resolvido por uma árvore:
 

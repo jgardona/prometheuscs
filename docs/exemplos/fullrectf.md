@@ -51,7 +51,7 @@ sem resistência série. Para uma corrente $i \gg I_s$ a tensão é $v = nV_T\ln
 
 O capacitor se carrega até o pico (menos duas quedas de diodo) durante a curta condução dos diodos, e se descarrega na carga entre os picos, com $\tau = RC = 430\cdot 102\ \mu\text{F} = 43{,}9\ \text{ms}$. Como a descarga é quase linear (corrente constante $I = V/R$), a ondulação pico a pico é aproximadamente
 
-$$\Delta V \approx \frac{I}{f_r C} = \frac{V_{pico}}{R\,f_r\,C},$$
+$$\Delta V \approx \frac{I}{f_r C} = \frac{V_{pico}}{R\thinspace f_r\thinspace C},$$
 
 em que $f_r = 80\ \text{Hz}$ é a frequência de ondulação (o dobro da da rede, por ser onda completa). É um limite superior, porque o capacitor só descarrega durante parte do período (os diodos reassumem a corrente antes do fim).
 

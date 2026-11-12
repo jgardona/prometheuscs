@@ -45,21 +45,21 @@ Cada exemplo desta família tem dois circuitos lado a lado, idênticos exceto po
 
 ## Teoria
 
-Capacitores em paralelo têm a mesma tensão $v$; a corrente de cada um é $i_k = C_k\,\dfrac{dv}{dt}$, e a corrente total é a soma:
+Capacitores em paralelo têm a mesma tensão $v$; a corrente de cada um é $i_k = C_k\thinspace\dfrac{dv}{dt}$, e a corrente total é a soma:
 
 $$C_{eq} = \sum_k C_k .$$
 
-A corrente se divide em proporção às capacitâncias: $i_k = i\,\dfrac{C_k}{C_{eq}}$ (o maior capacitor leva a maior parte).
+A corrente se divide em proporção às capacitâncias: $i_k = i\thinspace\dfrac{C_k}{C_{eq}}$ (o maior capacitor leva a maior parte).
 
-Carregado por uma fonte $V$ através de $R$, a partir de uma tensão inicial $V_0$: $\tau = R\,C_{eq}$,
+Carregado por uma fonte $V$ através de $R$, a partir de uma tensão inicial $V_0$: $\tau = R\thinspace C_{eq}$,
 
-$$v_C(t) = V - (V - V_0)\,e^{-t/\tau},\qquad i(t) = \frac{V - V_0}{R}\,e^{-t/\tau}.$$
+$$v_C(t) = V - (V - V_0)\thinspace e^{-t/\tau},\qquad i(t) = \frac{V - V_0}{R}\thinspace e^{-t/\tau}.$$
 
 ## Resultados esperados
 
 $C_{eq} = 200 + 100 = 300\ \mu\text{F}$ e $\tau = 100\cdot 300\ \mu\text{F} = 30\ \text{ms}$. Com $V = 5\ \text{V}$ e $V_0 = 0{,}9375\ \text{V}$, em $t = \tau$:
 
-$$v_C = 5 - 4{,}0625\,e^{-1} = 3{,}505\ \text{V},\qquad i = 40{,}63\,e^{-1} = 14{,}95\ \text{mA}.$$
+$$v_C = 5 - 4{,}0625\thinspace e^{-1} = 3{,}505\ \text{V},\qquad i = 40{,}63\thinspace e^{-1} = 14{,}95\ \text{mA}.$$
 
 A corrente do conjunto se divide em $\tfrac23 \to 9{,}96\ \text{mA}$ para o capacitor de $200\ \mu\text{F}$ e $\tfrac13 \to 4{,}98\ \text{mA}$ para o de $100\ \mu\text{F}$. As verificações conferem a tensão e a corrente do capacitor único e as duas correntes parciais, em $t = 30\ \text{ms}$ (o simulador difere da teoria em menos de 0,4%, porque as tensões iniciais salvas dos três capacitores diferem um pouco entre si).
 

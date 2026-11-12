@@ -51,7 +51,7 @@ sem resistência série. Para uma corrente $i \gg I_s$ a tensão é $v = nV_T\ln
 
 Ao abrir a chave em $t_0$, a corrente $I_0$ do indutor se fecha pelo diodo, em vez de forçar uma tensão enorme: com o diodo conduzindo, a tensão no indutor é $-v_D(i)$ e
 
-$$L\,\frac{di}{dt} = -v_D(i) = -nV_T\ln\left(\frac{i}{I_s} + 1\right).$$
+$$L\thinspace\frac{di}{dt} = -v_D(i) = -nV_T\ln\left(\frac{i}{I_s} + 1\right).$$
 
 Como $v_D$ varia pouco ($0{,}65$ a $0{,}60\ \text{V}$ para correntes de $50$ a $18\ \text{mA}$), a corrente cai quase linearmente, $di/dt \approx -v_D/L \approx -0{,}64\ \text{A/s}$, e a energia do indutor se dissipa no diodo em cerca de $80\ \text{ms}$. A tensão na chave é a da fonte mais a queda do diodo, $V + v_D$.
 

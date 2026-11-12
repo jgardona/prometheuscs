@@ -50,7 +50,7 @@ A parte imaginária é a **reatância**: $X_L=\omega L$ (cresce com a frequênci
 
 No divisor RL a tensão sobre o indutor é
 
-$$V_L = V\,\frac{X_L}{\sqrt{R^2+X_L^2}},\qquad X_L = 2\pi f L,$$
+$$V_L = V\thinspace\frac{X_L}{\sqrt{R^2+X_L^2}},\qquad X_L = 2\pi f L,$$
 
 e a corrente, $I = V/\sqrt{R^2+X_L^2}$, se atrasa $\varphi=\arctan(X_L/R)$.
 

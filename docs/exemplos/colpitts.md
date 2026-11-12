@@ -49,7 +49,7 @@ Um oscilador precisa de um amplificador e de uma realimentação positiva com ga
 
 A frequência é a do circuito LC com os dois capacitores em série:
 
-$$C_{eq} = \frac{C_1 C_2}{C_1 + C_2} = 50\ \mu\text{F}, \qquad f_0 = \frac{1}{2\pi\sqrt{L\,C_{eq}}} = \frac{1}{2\pi\sqrt{10\ \text{mH} \cdot 50\ \mu\text{F}}} \approx 225{,}1\ \text{Hz}.$$
+$$C_{eq} = \frac{C_1 C_2}{C_1 + C_2} = 50\ \mu\text{F}, \qquad f_0 = \frac{1}{2\pi\sqrt{L\thinspace C_{eq}}} = \frac{1}{2\pi\sqrt{10\ \text{mH} \cdot 50\ \mu\text{F}}} \approx 225{,}1\ \text{Hz}.$$
 
 A razão $C_1/C_2$ define que fração da tensão do circuito ressonante volta à base; o ganho do transistor deve compensar essa atenuação. Quando a amplitude cresce, o transistor passa a saturar num extremo do ciclo e a cortar no outro, o que reduz o ganho médio a $1$ e **limita a amplitude**; a saída deixa de ser senoidal.
 

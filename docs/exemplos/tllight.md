@@ -46,7 +46,7 @@ Uma fonte de $169{,}7\ \text{V}$ de pico e $60\ \text{Hz}$ (a tensão da rede de
 
 Para uma variação rápida (a chegada do pico da rede com o interruptor fechado) o sistema se comporta como uma linha de transmissão. A onda lançada na linha é
 
-$$V_{\text{lanç}} = V_p\,\frac{Z_0}{R_s + Z_0} = 169{,}7\cdot\frac{300}{310} = 164{,}2\ \text{V}.$$
+$$V_{\text{lanç}} = V_p\thinspace\frac{Z_0}{R_s + Z_0} = 169{,}7\cdot\frac{300}{310} = 164{,}2\ \text{V}.$$
 
 Quando ela chega à lâmpada ($70\ \text{ns}$ depois, a soma dos atrasos), o coeficiente de reflexão é $\Gamma_L = (70 - 300)/(70 + 300) = -0{,}622$, e a tensão na lâmpada é
 

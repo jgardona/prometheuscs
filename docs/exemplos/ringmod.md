@@ -54,13 +54,13 @@ sem resistência série. Para uma corrente $i \gg I_s$ a tensão é $v = nV_T\ln
 
 ## Resultados esperados
 
-Com uma portadora de frequência $f_c$ e amplitude suficiente para ligar e desligar os diodos, o anel multiplica o sinal $s(t)$ (frequência $f_s$) por $\pm 1$, conforme o sinal da portadora: a saída é $s(t)\,\mathrm{sgn}\,c(t)$. A função $\mathrm{sgn}\,c(t)$ é uma onda quadrada, cuja série de Fourier só tem harmônicos ímpares da portadora:
+Com uma portadora de frequência $f_c$ e amplitude suficiente para ligar e desligar os diodos, o anel multiplica o sinal $s(t)$ (frequência $f_s$) por $\pm 1$, conforme o sinal da portadora: a saída é $s(t)\thinspace\mathrm{sgn}\thinspace c(t)$. A função $\mathrm{sgn}\thinspace c(t)$ é uma onda quadrada, cuja série de Fourier só tem harmônicos ímpares da portadora:
 
-$$\mathrm{sgn}\,\cos\omega_c t = \frac{4}{\pi}\left(\cos\omega_c t - \frac{1}{3}\cos 3\omega_c t + \frac{1}{5}\cos 5\omega_c t - \dots\right).$$
+$$\mathrm{sgn}\thinspace\cos\omega_c t = \frac{4}{\pi}\left(\cos\omega_c t - \frac{1}{3}\cos 3\omega_c t + \frac{1}{5}\cos 5\omega_c t - \dots\right).$$
 
 Multiplicando por $\cos\omega_s t$, a saída tem componentes nas frequências
 
-$$f = |f_s \pm (2k+1)\,f_c|,\qquad k = 0, 1, 2, \dots$$
+$$f = |f_s \pm (2k+1)\thinspace f_c|,\qquad k = 0, 1, 2, \dots$$
 
 e **não** tem a portadora $f_c$ nem (idealmente) o sinal $f_s$: os dois são suprimidos pela simetria do anel (o "balanceamento").
 

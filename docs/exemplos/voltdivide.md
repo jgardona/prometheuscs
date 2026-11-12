@@ -47,9 +47,9 @@ Uma fonte de 10 V alimenta dois divisores em paralelo: um com dois resistores ig
 
 Resistores em série conduzem a mesma corrente $I = V/(R_1+R_2+\cdots)$, e a tensão sobre o resistor $k$ é
 
-$$V_k = I\,R_k = V\,\frac{R_k}{R_1+R_2+\cdots+R_n}.$$
+$$V_k = I\thinspace R_k = V\thinspace\frac{R_k}{R_1+R_2+\cdots+R_n}.$$
 
-Para um divisor de dois resistores, a saída tomada sobre $R_2$ é $V_{out} = V\,\dfrac{R_2}{R_1+R_2}$. Isto vale com a saída em vazio; uma carga em paralelo com $R_2$ diminui $V_{out}$ (veja o divisor com potenciômetro).
+Para um divisor de dois resistores, a saída tomada sobre $R_2$ é $V_{out} = V\thinspace\dfrac{R_2}{R_1+R_2}$. Isto vale com a saída em vazio; uma carga em paralelo com $R_2$ diminui $V_{out}$ (veja o divisor com potenciômetro).
 
 ## Resultados esperados
 

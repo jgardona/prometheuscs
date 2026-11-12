@@ -54,7 +54,7 @@ Seja $\tau = RC = 1\ \text{k}\Omega\cdot 1\ \mu\text{F} = 1\ \text{ms}$ e $x = s
 
 A condição de oscilação (ganho de laço igual a 1) leva a
 
-$$a\,x^3 + a\,x^2 + a\,x + 1 = 0 .$$
+$$a\thinspace x^3 + a\thinspace x^2 + a\thinspace x + 1 = 0 .$$
 
 Com $a = 1$ o polinômio é $(x+1)(x^2+1)$, com raízes $x = \pm j$: um par de polos sobre o eixo imaginário, em $\omega = 1/\tau$,
 

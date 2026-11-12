@@ -50,7 +50,7 @@ Um amplificador operacional sem realimentação, de ganho muito alto, atua como 
 
 Comparar o áudio $v_a(t)$ com uma triangular $v_t(t)$ de frequência muito mais alta (a portadora) produz pulsos cujo **ciclo de trabalho** $D(t)$ varia com o áudio. Se $v_t$ vai de $-V_p$ a $+V_p$,
 
-$$D(t) = \frac{1}{2}\left(1 \mp \frac{v_a(t)}{V_p}\right), \qquad \overline{v}_\text{PWM} = V_\text{CC}\,(2D-1) = \mp\,V_\text{CC}\,\frac{v_a}{V_p},$$
+$$D(t) = \frac{1}{2}\left(1 \mp \frac{v_a(t)}{V_p}\right), \qquad \overline{v}_\text{PWM} = V_\text{CC}\thinspace(2D-1) = \mp\thinspace V_\text{CC}\thinspace\frac{v_a}{V_p},$$
 
 onde o sinal superior ($-$) vale para este exemplo, em que o comparador inverte (a saída fica em $-15\ \text{V}$ quando o áudio está acima da triangular). A média da onda PWM sobre um período da portadora é, portanto, proporcional ao áudio. O filtro LC de segunda ordem, com frequência de corte
 

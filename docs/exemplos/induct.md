@@ -38,9 +38,9 @@ Uma fonte de 5 V é ligada, pela chave SPDT, a um indutor de $3\ \text{H}$ em s�
 
 ## Teoria
 
-Num indutor, $v = L\,\dfrac{di}{dt}$. Com a lei das tensões de Kirchhoff, $V = R\,i + L\,\dfrac{di}{dt}$, e, com corrente inicial nula,
+Num indutor, $v = L\thinspace\dfrac{di}{dt}$. Com a lei das tensões de Kirchhoff, $V = R\thinspace i + L\thinspace\dfrac{di}{dt}$, e, com corrente inicial nula,
 
-$$i(t) = \frac{V}{R}\left(1 - e^{-t/\tau}\right),\qquad v_L(t) = V\,e^{-t/\tau},\qquad \tau = \frac{L}{R}.$$
+$$i(t) = \frac{V}{R}\left(1 - e^{-t/\tau}\right),\qquad v_L(t) = V\thinspace e^{-t/\tau},\qquad \tau = \frac{L}{R}.$$
 
 No instante inicial o indutor se opõe à variação da corrente (tensão máxima, corrente nula); no regime permanente ele é um curto-circuito. A energia guardada é $E=\tfrac12 L I^2$.
 

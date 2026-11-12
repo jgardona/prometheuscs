@@ -37,13 +37,13 @@ Uma fonte de 5 V é ligada, por uma chave de duas posições (SPDT), a um capaci
 
 ## Teoria
 
-A tensão e a corrente de um capacitor se relacionam por $i = C\,\dfrac{dv}{dt}$. Pela lei das tensões de Kirchhoff, $V = R\,i + v_C$, de onde
+A tensão e a corrente de um capacitor se relacionam por $i = C\thinspace\dfrac{dv}{dt}$. Pela lei das tensões de Kirchhoff, $V = R\thinspace i + v_C$, de onde
 
-$$RC\,\frac{dv_C}{dt} + v_C = V.$$
+$$RC\thinspace\frac{dv_C}{dt} + v_C = V.$$
 
 Com $v_C(0)=v_0$ a solução é
 
-$$v_C(t) = V - (V - v_0)\,e^{-t/\tau},\qquad i(t) = \frac{V - v_0}{R}\,e^{-t/\tau},\qquad \tau = RC.$$
+$$v_C(t) = V - (V - v_0)\thinspace e^{-t/\tau},\qquad i(t) = \frac{V - v_0}{R}\thinspace e^{-t/\tau},\qquad \tau = RC.$$
 
 Depois de $\tau$ a tensão chegou a 63% do valor final; depois de $5\tau$, a mais de 99%. A energia guardada é $E = \tfrac12 C v_C^2$.
 

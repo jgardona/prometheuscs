@@ -43,7 +43,7 @@ Duas entradas lógicas, $A$ (elemento 13) e $B$ (elemento 14), e quatro portas N
 
 Seja $N = \overline{AB}$ a saída da primeira NAND. As intermediárias dão $\overline{A N}$ e $\overline{B N}$, e a última
 
-$$Y = \overline{\overline{AN} \cdot \overline{BN}} = AN + BN = (A + B)\,\overline{AB} = A\,\overline{B} + \overline{A}\,B = A \oplus B.$$
+$$Y = \overline{\overline{AN} \cdot \overline{BN}} = AN + BN = (A + B)\thinspace\overline{AB} = A\thinspace\overline{B} + \overline{A}\thinspace B = A \oplus B.$$
 
 A saída é $1$ quando as entradas são **diferentes**. A XOR é também a soma de dois bits sem o vai-um, e por isso aparece em todos os somadores ([Half Adder](halfadd.md), [Full Adder](fulladd.md)), além de comparadores e geradores de paridade.
 

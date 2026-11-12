@@ -49,7 +49,7 @@ Uma fonte de $1{,}5\ \text{V}$ (a pilha) alimenta um transformador de dois enrol
 
 **Conversão elevadora.** Essa tensão ultrapassa a da pilha e faz o diodo conduzir: o capacitor de saída é carregado até a tensão em que o LED conduz, que é maior que $1{,}5\ \text{V}$. O capacitor de $10\ \mu\text{F}$ alisa a tensão, e a energia vem da pilha em pulsos de corrente. O rendimento é
 
-$$\eta = \frac{P_{saida}}{P_{entrada}} = \frac{V_{LED}\,\overline{I_{LED}}}{V_{bat}\,\overline{I_{bat}}}.$$
+$$\eta = \frac{P_{saida}}{P_{entrada}} = \frac{V_{LED}\thinspace\overline{I_{LED}}}{V_{bat}\thinspace\overline{I_{bat}}}.$$
 
 A relação quantitativa entre a indutância, a corrente de pico e a frequência de chaveamento depende do acoplamento e do transistor; este documento não a deduz e fica nas medidas do simulador.
 

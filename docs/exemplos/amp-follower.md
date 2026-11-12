@@ -39,7 +39,7 @@ Uma fonte senoidal de $40\ \text{Hz}$ e $5\ \text{V}$ de pico liga-se à entrada
 
 ## Teoria
 
-Como no exemplo de realimentação, $V_\text{out} = \dfrac{A}{1+A}\,V_\text{in} \approx V_\text{in}$. O interesse do circuito está nas **impedâncias**: a entrada não inversora não drena corrente, de modo que a fonte vê uma carga praticamente infinita; a saída, por sua vez, mantém a tensão quando a carga puxa corrente, porque a realimentação corrige qualquer queda (impedância de saída $R_\text{out}/(1+A)$).
+Como no exemplo de realimentação, $V_\text{out} = \dfrac{A}{1+A}\thinspace V_\text{in} \approx V_\text{in}$. O interesse do circuito está nas **impedâncias**: a entrada não inversora não drena corrente, de modo que a fonte vê uma carga praticamente infinita; a saída, por sua vez, mantém a tensão quando a carga puxa corrente, porque a realimentação corrige qualquer queda (impedância de saída $R_\text{out}/(1+A)$).
 
 $$I_L = \frac{V_\text{out}}{R_L}\quad(\text{fornecida pela saída, não pela fonte}).$$
 

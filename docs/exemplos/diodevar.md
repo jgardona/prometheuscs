@@ -45,7 +45,7 @@ A resistência dinâmica (inclinação da curva) é $r_d = \dfrac{dv}{di} = \dfr
 
 ## Resultados esperados
 
-Com $v = 0{,}7169\ \text{V}$: $i = 1{,}714\cdot 10^{-7}\,(e^{0{,}7169/0{,}05173} - 1) = 179{,}0\ \text{mA}$ e $r_d = 0{,}289\ \Omega$. A tabela mostra a curva (cálculo pela equação):
+Com $v = 0{,}7169\ \text{V}$: $i = 1{,}714\cdot 10^{-7}\thinspace(e^{0{,}7169/0{,}05173} - 1) = 179{,}0\ \text{mA}$ e $r_d = 0{,}289\ \Omega$. A tabela mostra a curva (cálculo pela equação):
 
 | $v$ | $i$ |
 |----:|----:|

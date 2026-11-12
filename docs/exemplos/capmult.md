@@ -49,11 +49,11 @@ Duas montagens recebem a mesma onda quadrada de $30\ \text{Hz}$ e $\pm 5\ \text{
 
 Seja $\tau = R_1 C_1 = 100\ \text{k}\Omega\cdot 100\ \text{nF} = 10\ \text{ms}$. O capacitor $C_1$ carrega pela fonte através de $R_1$, e a tensão $V_C$ nele é a da fonte filtrada: $V_C = V/(1 + s\tau)$. O seguidor leva $V_C$ ao outro lado de $R_2$, e a corrente total que a fonte fornece é
 
-$$I = \frac{V - V_C}{R_2} + \frac{V - V_C}{R_1} = V\,\frac{s\tau}{1 + s\tau}\left(\frac{1}{R_2} + \frac{1}{R_1}\right).$$
+$$I = \frac{V - V_C}{R_2} + \frac{V - V_C}{R_1} = V\thinspace\frac{s\tau}{1 + s\tau}\left(\frac{1}{R_2} + \frac{1}{R_1}\right).$$
 
 Como $R_1 \gg R_2$, $1/R_2 + 1/R_1 \approx 1/R_2$ e
 
-$$Y_\text{in} = \frac{I}{V} \approx \frac{s\,\tau/R_2}{1 + s\tau} = \frac{s\,C_\text{eq}}{1 + s\,R_2 C_\text{eq}}\ \ (\text{com } C_\text{eq}R_2 = \tau),\qquad C_\text{eq} = \frac{R_1}{R_2}\,C_1 = 100\cdot 100\ \text{nF} = 10\ \mu\text{F}.$$
+$$Y_\text{in} = \frac{I}{V} \approx \frac{s\thinspace\tau/R_2}{1 + s\tau} = \frac{s\thinspace C_\text{eq}}{1 + s\thinspace R_2 C_\text{eq}}\ \ (\text{com } C_\text{eq}R_2 = \tau),\qquad C_\text{eq} = \frac{R_1}{R_2}\thinspace C_1 = 100\cdot 100\ \text{nF} = 10\ \mu\text{F}.$$
 
 A admitância é a de um capacitor $C_\text{eq} = 10\ \mu\text{F}$ em série com o resistor $R_2 = 1\ \text{k}\Omega$, exatamente a montagem de referência de baixo: o fator multiplicador é a razão $R_1/R_2$.
 

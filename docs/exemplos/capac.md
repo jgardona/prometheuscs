@@ -43,7 +43,7 @@ A parte imaginária é a **reatância**: $X_L=\omega L$ (cresce com a frequênci
 
 Para o circuito RC série,
 
-$$|Z| = \sqrt{R^2 + X_C^2},\qquad I_{pico} = \frac{V_{pico}}{|Z|},\qquad V_{C,pico} = I_{pico}\,X_C,\qquad \varphi = \arctan\frac{X_C}{R}$$
+$$|Z| = \sqrt{R^2 + X_C^2},\qquad I_{pico} = \frac{V_{pico}}{|Z|},\qquad V_{C,pico} = I_{pico}\thinspace X_C,\qquad \varphi = \arctan\frac{X_C}{R}$$
 
 em que $\varphi$ é o quanto a corrente se adianta à tensão da fonte. A constante de tempo $\tau = RC$ determina em quanto tempo o transitório desaparece.
 

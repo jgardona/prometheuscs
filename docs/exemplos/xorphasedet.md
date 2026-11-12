@@ -39,11 +39,11 @@ Duas fontes de onda quadrada de $0$ a $5\ \text{V}$ e ciclo de trabalho de $50\%
 
 A saída de uma XOR é alta quando as duas entradas diferem. Para duas quadradas de ciclo de trabalho de $50\%$ e defasagem $\varphi$ (de $0$ a $\pi$), a saída é alta durante a fração $\varphi/\pi$ do período, e o valor médio é
 
-$$\overline{v_\text{out}} = V_{DD}\,\frac{|\varphi|}{\pi}, \qquad |\varphi| \le \pi.$$
+$$\overline{v_\text{out}} = V_{DD}\thinspace\frac{|\varphi|}{\pi}, \qquad |\varphi| \le \pi.$$
 
 A característica é uma triangular em $\varphi$, com mínimo ($0$) em fase, máximo ($V_{DD}$) em oposição de fase e valor médio $V_{DD}/2$ em quadratura ($\varphi = 90^\circ$). Num PLL o detector de fase é seguido de um filtro passa-baixas que extrai esse valor médio.
 
-Com frequências diferentes, a defasagem cresce linearmente no tempo, $\varphi(t) = 2\pi\,(f_2 - f_1)\,t = 2\pi\cdot 5\ \text{Hz}\cdot t$, e a saída é um sinal de $5\ \text{Hz}$ ao ser filtrado: o **batimento**.
+Com frequências diferentes, a defasagem cresce linearmente no tempo, $\varphi(t) = 2\pi\thinspace(f_2 - f_1)\thinspace t = 2\pi\cdot 5\ \text{Hz}\cdot t$, e a saída é um sinal de $5\ \text{Hz}$ ao ser filtrado: o **batimento**.
 
 ## Resultados esperados
 

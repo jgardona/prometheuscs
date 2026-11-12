@@ -50,13 +50,13 @@ $$\frac{V_2}{V_1} = \frac{1}{n},\qquad \frac{I_2}{I_1} = n,\qquad Z_{refletida} 
 
 e a potência se conserva ($V_1 I_1 = V_2 I_2$). Em regime senoidal, com $R_s$ a resistência em série com a fonte, $Z_1 = R_s + j\omega L_1$ e $Z_2 = R_L + j\omega L_2$, a resolução exata do circuito dá
 
-$$I_1 = \frac{V\,Z_2}{Z_1 Z_2 + \omega^2 M^2},\qquad \frac{V_L}{V} = \frac{j\omega M\,R_L}{Z_1 Z_2 + \omega^2 M^2}.$$
+$$I_1 = \frac{V\thinspace Z_2}{Z_1 Z_2 + \omega^2 M^2},\qquad \frac{V_L}{V} = \frac{j\omega M\thinspace R_L}{Z_1 Z_2 + \omega^2 M^2}.$$
 
 A diferença para o caso ideal vem da indutância de magnetização finita (que consome uma corrente reativa $V/\omega L_1$), da indutância de dispersão $(1-k^2)L_1$ e da resistência série $R_s$.
 
-Com saturação, o simulador usa para cada enrolamento a indutância efetiva $L_{k}(i_k) = L_k/(1 + (i_k/I_k)^2)$, com $I_1 = I_{sat}$ e $I_2 = n\,I_{sat}$, e recalcula $M = k\sqrt{L_{1}(i_1)\,L_{2}(i_2)}$ a cada passo:
+Com saturação, o simulador usa para cada enrolamento a indutância efetiva $L_{k}(i_k) = L_k/(1 + (i_k/I_k)^2)$, com $I_1 = I_{sat}$ e $I_2 = n\thinspace I_{sat}$, e recalcula $M = k\sqrt{L_{1}(i_1)\thinspace L_{2}(i_2)}$ a cada passo:
 
-$$\begin{pmatrix} L_1(i_1) & -M \\ -M & L_2(i_2) \end{pmatrix}\begin{pmatrix}\dot i_1\\ \dot i_2\end{pmatrix} = \begin{pmatrix} v_s - R_s i_1 \\ -R_L i_2\end{pmatrix}.$$
+$$\begin{pmatrix} L_1(i_1) & -M \cr -M & L_2(i_2) \end{pmatrix}\begin{pmatrix}\dot i_1\cr \dot i_2\end{pmatrix} = \begin{pmatrix} v_s - R_s i_1 \cr -R_L i_2\end{pmatrix}.$$
 
 ## Resultados esperados
 

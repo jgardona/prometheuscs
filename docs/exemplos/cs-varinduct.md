@@ -52,8 +52,8 @@ Em resposta ao primeiro semiciclo positivo ($0$ a $50\ \text{ms}$, com a fonte e
 
 | Instante | Corrente (teoria) | Simulador |
 |----------|------------------:|----------:|
-| $t = 10\ \text{ms}$ | $27{,}78\,(1 - e^{-0{,}636}) = 13{,}08\ \text{mA}$ | $13{,}065\ \text{mA}$ |
-| $t = 40\ \text{ms}$ | $27{,}78\,(1 - e^{-2{,}54}) = 25{,}6\ \text{mA}$ | $25{,}6\ \text{mA}$ |
+| $t = 10\ \text{ms}$ | $27{,}78\thinspace(1 - e^{-0{,}636}) = 13{,}08\ \text{mA}$ | $13{,}065\ \text{mA}$ |
+| $t = 40\ \text{ms}$ | $27{,}78\thinspace(1 - e^{-2{,}54}) = 25{,}6\ \text{mA}$ | $25{,}6\ \text{mA}$ |
 
 As verificações conferem as duas correntes (tolerância de 1%).
 

@@ -54,11 +54,11 @@ Um *slider* de $0$ a $5\ \text{V}$ ("frequency", em $1\ \text{V}$ ao abrir) é a
 
 A análise é a do VCO do exemplo anterior: a corrente que o integrador recebe vale $\pm V_c/(200\ \text{k}\Omega)$, e a rampa tem módulo $500\ \text{V/s}$ por volt de $V_c$. A diferença está nos limiares do comparador, que agora são simétricos: o divisor de três resistores de $100\ \text{k}\Omega$ (a $+5\ \text{V}$, a $-5\ \text{V}$ e à saída) dá
 
-$$V_\text{lim} = \pm\,\frac{5}{3}\ \text{V} = \pm\,1{,}667\ \text{V}$$
+$$V_\text{lim} = \pm\thinspace\frac{5}{3}\ \text{V} = \pm\thinspace1{,}667\ \text{V}$$
 
 (com saída em $\pm 5\ \text{V}$). A excursão é $\Delta V = 3{,}333\ \text{V}$ e a frequência é
 
-$$f = \frac{500\,V_c}{2\,\Delta V} = 75\ \frac{\text{Hz}}{\text{V}}\;V_c.$$
+$$f = \frac{500\thinspace V_c}{2\thinspace\Delta V} = 75\ \frac{\text{Hz}}{\text{V}}\thickspace V_c.$$
 
 ## Resultados esperados
 

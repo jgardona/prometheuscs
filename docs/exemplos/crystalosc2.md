@@ -49,9 +49,9 @@ Um NPN ($\beta = 1000$) é polarizado por um divisor ($11\ \text{k}\Omega$ de $+
 
 **O cristal.** O modelo elétrico do cristal (modelo de Butterworth–Van Dyke) é um ramo série $R$–$L$–$C_s$ em paralelo com a capacitância dos eletrodos $C_0$. Ele tem duas frequências de ressonância:
 
-$$f_s = \frac{1}{2\pi\sqrt{L\,C_s}} = \frac{1}{2\pi\sqrt{2{,}5\ \text{mH} \cdot 0{,}1\ \text{pF}}} \approx 10{,}0659\ \text{MHz}, \qquad f_p = f_s\sqrt{1 + \frac{C_s}{C_0}} \approx 10{,}0834\ \text{MHz}.$$
+$$f_s = \frac{1}{2\pi\sqrt{L\thinspace C_s}} = \frac{1}{2\pi\sqrt{2{,}5\ \text{mH} \cdot 0{,}1\ \text{pF}}} \approx 10{,}0659\ \text{MHz}, \qquad f_p = f_s\sqrt{1 + \frac{C_s}{C_0}} \approx 10{,}0834\ \text{MHz}.$$
 
-Entre $f_s$ e $f_p$, que ficam a menos de $0{,}2\%$ uma da outra, o cristal é **indutivo** e se comporta como o indutor de um oscilador Colpitts; a reatância varia muito rapidamente com a frequência e fixa a frequência de oscilação. O fator de qualidade é $Q = \omega_s L/R = 2\pi \cdot 10{,}0659 \cdot 10^6 \cdot 2{,}5 \cdot 10^{-3}/6{,}4 \approx 24\,700$, contra algumas dezenas num circuito LC comum.
+Entre $f_s$ e $f_p$, que ficam a menos de $0{,}2\%$ uma da outra, o cristal é **indutivo** e se comporta como o indutor de um oscilador Colpitts; a reatância varia muito rapidamente com a frequência e fixa a frequência de oscilação. O fator de qualidade é $Q = \omega_s L/R = 2\pi \cdot 10{,}0659 \cdot 10^6 \cdot 2{,}5 \cdot 10^{-3}/6{,}4 \approx 24\thinspace700$, contra algumas dezenas num circuito LC comum.
 
 **Frequência de oscilação.** Com capacitâncias externas $C_L$ em série com o cristal, a frequência vale $f = f_s\sqrt{1 + C_s/(C_0 + C_L)}$, sempre entre $f_s$ e $f_p$.
 

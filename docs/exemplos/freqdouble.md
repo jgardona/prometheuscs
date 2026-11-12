@@ -49,17 +49,17 @@ A entrada é uma onda quadrada de $320\ \text{Hz}$. O comparador de fase e frequ
 
 O VCO do simulador é um oscilador de relaxação com três pinos externos: a tensão de controle $V_i$ alimenta, pelo resistor $R_1$, uma corrente $V_i/R_1$, somada a uma corrente fixa $V_\text{ref}/R_2$ (com $V_\text{ref} = 5\ \text{V}$, pelo resistor $R_2$), que carrega e descarrega o capacitor externo $C$ entre $0{,}5$ e $4{,}5\ \text{V}$ ($\Delta V = 4\ \text{V}$), invertendo o sentido da corrente a cada limite. A saída é uma onda quadrada de $0$ a $5\ \text{V}$ com frequência
 
-$$f_\text{VCO} = \frac{I}{2\,C\,\Delta V} = \frac{V_i/R_1 + 5/R_2}{8\,C}.$$
+$$f_\text{VCO} = \frac{I}{2\thinspace C\thinspace\Delta V} = \frac{V_i/R_1 + 5/R_2}{8\thinspace C}.$$
 
 Em regime travado o comparador vê duas frequências iguais: a da entrada e a do VCO dividida por $2$. Logo
 
-$$f_\text{VCO} = 2\,f_\text{ent} = 640\ \text{Hz}.$$
+$$f_\text{VCO} = 2\thinspace f_\text{ent} = 640\ \text{Hz}.$$
 
 Para isso, a tensão de controle é
 
-$$V_i = R_1\left(8\,C\,f_\text{VCO} - \frac{5}{R_2}\right) = 3\ \text{k}\Omega\,(512\ \mu\text{A} - 50\ \mu\text{A}) = 1{,}39\ \text{V}.$$
+$$V_i = R_1\left(8\thinspace C\thinspace f_\text{VCO} - \frac{5}{R_2}\right) = 3\ \text{k}\Omega\thinspace(512\ \mu\text{A} - 50\ \mu\text{A}) = 1{,}39\ \text{V}.$$
 
-Com um divisor por $N$ a frequência do VCO é $N\,f_\text{ent}$: é o princípio dos sintetizadores de frequência.
+Com um divisor por $N$ a frequência do VCO é $N\thinspace f_\text{ent}$: é o princípio dos sintetizadores de frequência.
 
 ## Resultados esperados
 

@@ -44,9 +44,9 @@ Um resistor de $1\ \text{k}\Omega$ liga a entrada ao terminal inversor de um amp
 
 Pelo terra virtual, a corrente no resistor é $V_\text{in}/R$ e passa toda pelo capacitor:
 
-$$V_\text{out}(t) = V_\text{out}(0) - \frac{1}{RC}\int_0^t V_\text{in}\,d\tau, \qquad RC = 1\ \text{k}\Omega\cdot 5{,}8\ \mu\text{F} = 5{,}8\ \text{ms}.$$
+$$V_\text{out}(t) = V_\text{out}(0) - \frac{1}{RC}\int_0^t V_\text{in}\thinspace d\tau, \qquad RC = 1\ \text{k}\Omega\cdot 5{,}8\ \mu\text{F} = 5{,}8\ \text{ms}.$$
 
-Num trecho em que a entrada é constante, a saída é uma rampa de inclinação $-V_\text{in}/RC$. A entrada soma duas quadradas e assume, a cada $6{,}25\ \text{ms}$, os valores $-3$, $-7$, $+7$ e $+3\ \text{V}$ (em um ciclo de $25\ \text{ms}$). Em cada trecho a saída varia de $-V_\text{in}\,(6{,}25\ \text{ms})/RC$:
+Num trecho em que a entrada é constante, a saída é uma rampa de inclinação $-V_\text{in}/RC$. A entrada soma duas quadradas e assume, a cada $6{,}25\ \text{ms}$, os valores $-3$, $-7$, $+7$ e $+3\ \text{V}$ (em um ciclo de $25\ \text{ms}$). Em cada trecho a saída varia de $-V_\text{in}\thinspace(6{,}25\ \text{ms})/RC$:
 
 | Trecho | $V_\text{in}$ | Variação da saída |
 |--------|-------------:|------------------:|

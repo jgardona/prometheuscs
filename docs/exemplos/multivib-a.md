@@ -57,13 +57,13 @@ O transistor bipolar do simulador (modelo "default") segue o modelo de Ebers–M
 
 $$I_C = I_s\left(e^{V_{BE}/V_T} - e^{V_{BC}/V_T}\right) - \frac{I_s}{\beta_R}\left(e^{V_{BC}/V_T} - 1\right),\qquad I_B = \frac{I_s}{\beta}\left(e^{V_{BE}/V_T} - 1\right) + \frac{I_s}{\beta_R}\left(e^{V_{BC}/V_T} - 1\right),$$
 
-com $I_s = 10^{-13}\ \text{A}$, $\beta = 100$, $\beta_R = 1$ e $V_T = 25{,}865\ \text{mV}$; sem efeito Early, sem capacitâncias e sem resistências série. Na **região ativa** ($V_{BE} \approx 0{,}65$ a $0{,}75\ \text{V}$, junção base-coletor com polarização inversa) isso se reduz a $I_C = \beta I_B = I_s\,e^{V_{BE}/V_T}$, com transcondutância $g_m = I_C/V_T$ e resistência de emissor $r_e = V_T/I_E$. O PNP é o complementar, com todas as tensões e correntes invertidas.
+com $I_s = 10^{-13}\ \text{A}$, $\beta = 100$, $\beta_R = 1$ e $V_T = 25{,}865\ \text{mV}$; sem efeito Early, sem capacitâncias e sem resistências série. Na **região ativa** ($V_{BE} \approx 0{,}65$ a $0{,}75\ \text{V}$, junção base-coletor com polarização inversa) isso se reduz a $I_C = \beta I_B = I_s\thinspace e^{V_{BE}/V_T}$, com transcondutância $g_m = I_C/V_T$ e resistência de emissor $r_e = V_T/I_E$. O PNP é o complementar, com todas as tensões e correntes invertidas.
 
 ## Resultados esperados
 
 Em cada instante um transistor conduz (saturado) e o outro está cortado. O capacitor ligado ao coletor do que acabou de ligar tem sua placa na base do outro empurrada para uma tensão negativa, mantendo-o cortado. Essa base sobe então, por seu resistor de $R_B$, em direção à alimentação, com constante de tempo $R_B C$; quando chega a $V_{BE} \approx 0{,}65\ \text{V}$, o transistor liga, e o ciclo se inverte. O tempo de cada meio ciclo, partindo de uma tensão $-V_{CC}$ na base e subindo para $0$ (se $V_{BE}$ for desprezado), é
 
-$$t = R_B C\,\ln 2 = 0{,}693\,R_B C,\qquad T = 0{,}693\,(R_{B1}C_1 + R_{B2}C_2),\quad f = \frac{1}{T}.$$
+$$t = R_B C\thinspace\ln 2 = 0{,}693\thinspace R_B C,\qquad T = 0{,}693\thinspace(R_{B1}C_1 + R_{B2}C_2),\quad f = \frac{1}{T}.$$
 
 ## O que observar
 

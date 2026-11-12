@@ -46,9 +46,9 @@ A fonte é um gerador de varredura logarítmica (*sweep*) de $5\ \text{V}$ de pi
 
 ## Teoria
 
-Um capacitor $C$ que liga alternadamente dois nós, a uma frequência de relógio $f_\text{clk}$, transporta uma carga média por segundo $Q f_\text{clk} = C\,\Delta V\,f_\text{clk}$, ou seja, comporta-se como um resistor de valor
+Um capacitor $C$ que liga alternadamente dois nós, a uma frequência de relógio $f_\text{clk}$, transporta uma carga média por segundo $Q f_\text{clk} = C\thinspace\Delta V\thinspace f_\text{clk}$, ou seja, comporta-se como um resistor de valor
 
-$$R_\text{eq} = \frac{1}{f_\text{clk}\,C}.$$
+$$R_\text{eq} = \frac{1}{f_\text{clk}\thinspace C}.$$
 
 É a ideia do capacitor chaveado: um resistor "sintonizável" pela frequência do relógio, o que permite construir filtros integrados com constantes de tempo fixadas por razões de capacitâncias, mais precisas que valores absolutos.
 

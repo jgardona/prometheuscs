@@ -40,13 +40,13 @@ Uma carga de $300\ \Omega$ liga $+5\ \text{V}$ ao dreno de um NMOS (modelo padr�
 
 Com a porta em $0\ \text{V}$, $V_{GS} = 0 < V_t = 1{,}5\ \text{V}$: o transistor está cortado e a corrente é a de fuga, $I_D = 10^{-8}\ \text{S} \cdot V_{DS} \approx 50\ \text{nA}$. Com a chave fechada, $V_{GS} = 5\ \text{V}$ e $V_{ov} = 3{,}5\ \text{V}$; a corrente é limitada pela carga e não pelo transistor, de modo que $V_{DS}$ fica pequeno e a região é a de **triodo**, onde
 
-$$I_D = \beta\left(V_{ov}V_{DS} - \tfrac12 V_{DS}^2\right) \approx \beta V_{ov}\,V_{DS} \ \Rightarrow \ R_{on} \approx \frac{1}{\beta V_{ov}} = \frac{1}{0{,}02 \cdot 3{,}5} \approx 14{,}3\ \Omega,$$
+$$I_D = \beta\left(V_{ov}V_{DS} - \tfrac12 V_{DS}^2\right) \approx \beta V_{ov}\thinspace V_{DS} \ \Rightarrow \ R_{on} \approx \frac{1}{\beta V_{ov}} = \frac{1}{0{,}02 \cdot 3{,}5} \approx 14{,}3\ \Omega,$$
 
 para $V_{DS}$ pequeno. A resistência de ligado é a do canal.
 
 ## Resultados esperados
 
-Chave aberta: $I_D = 50\ \text{nA}$ ($5\ \text{V}$ em $300\ \Omega$ dá $16{,}7\ \text{mA}$ se o transistor fosse um curto; a fuga é $3 \cdot 10^{-6}$ disso) e a tensão do dreno fica em $5{,}000\ \text{V}$. Chave fechada: a corrente é $15{,}88\ \text{mA}$ e a tensão do dreno, $0{,}2348\ \text{V}$; a resolução exata da equação de triodo, $(5 - V_{DS})/300 = 0{,}02\,[3{,}5\,V_{DS} - V_{DS}^2/2]$, dá $V_{DS} = 0{,}2348\ \text{V}$, e a resistência efetiva $R = 0{,}2348/0{,}01588 = 14{,}8\ \Omega$, um pouco acima da estimativa de $14{,}3\ \Omega$ porque $V_{DS}$ não é desprezível. As verificações conferem a corrente com a chave aberta e, com a chave fechada, a corrente e a tensão do dreno (tolerância de $1\%$).
+Chave aberta: $I_D = 50\ \text{nA}$ ($5\ \text{V}$ em $300\ \Omega$ dá $16{,}7\ \text{mA}$ se o transistor fosse um curto; a fuga é $3 \cdot 10^{-6}$ disso) e a tensão do dreno fica em $5{,}000\ \text{V}$. Chave fechada: a corrente é $15{,}88\ \text{mA}$ e a tensão do dreno, $0{,}2348\ \text{V}$; a resolução exata da equação de triodo, $(5 - V_{DS})/300 = 0{,}02\thinspace[3{,}5\thinspace V_{DS} - V_{DS}^2/2]$, dá $V_{DS} = 0{,}2348\ \text{V}$, e a resistência efetiva $R = 0{,}2348/0{,}01588 = 14{,}8\ \Omega$, um pouco acima da estimativa de $14{,}3\ \Omega$ porque $V_{DS}$ não é desprezível. As verificações conferem a corrente com a chave aberta e, com a chave fechada, a corrente e a tensão do dreno (tolerância de $1\%$).
 
 ## O que observar
 

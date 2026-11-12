@@ -48,7 +48,7 @@ A fonte é um gerador de varredura logarítmica (*sweep*) de $5\ \text{V}$ de pi
 
 Com $R_1 = R_2 = R$, $C_1 = C_2 = C$ e ganho $K$ do amplificador, a função de transferência do Sallen-Key passa-baixas é
 
-$$H(s) = \frac{K}{1 + (3-K)\,sRC + (sRC)^2}.$$
+$$H(s) = \frac{K}{1 + (3-K)\thinspace sRC + (sRC)^2}.$$
 
 A frequência de corte natural e o fator de qualidade são
 

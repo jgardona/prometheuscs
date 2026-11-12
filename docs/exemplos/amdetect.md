@@ -53,7 +53,7 @@ sem resistência série. Para uma corrente $i \gg I_s$ a tensão é $v = nV_T\ln
 
 **Sintonia.** O circuito ressonante tem frequência $f_0 = \dfrac{1}{2\pi\sqrt{LC}} = \dfrac{1}{2\pi\sqrt{1\ \text{mH}\cdot 2{,}81\ \mu\text{F}}} = 3000\ \text{Hz}$, e seleciona a estação em $3000\ \text{Hz}$, rejeitando as demais (em $2710$ e $2433\ \text{Hz}$).
 
-**Detecção.** Uma portadora modulada em amplitude é $v(t) = A\,[1 + m\,s(t)]\cos\omega_c t$. O diodo deixa passar só os semiciclos positivos, e o filtro RC, com $\tau = 47\ \text{k}\Omega\cdot 0{,}3\ \mu\text{F} = 14\ \text{ms}$ (muito maior que o período da portadora, $0{,}33\ \text{ms}$, e menor que o da modulação), segue a envoltória $A\,[1 + m\,s(t)]$: a saída é o sinal de áudio $s(t)$ somado a uma componente contínua.
+**Detecção.** Uma portadora modulada em amplitude é $v(t) = A\thinspace[1 + m\thinspace s(t)]\cos\omega_c t$. O diodo deixa passar só os semiciclos positivos, e o filtro RC, com $\tau = 47\ \text{k}\Omega\cdot 0{,}3\ \mu\text{F} = 14\ \text{ms}$ (muito maior que o período da portadora, $0{,}33\ \text{ms}$, e menor que o da modulação), segue a envoltória $A\thinspace[1 + m\thinspace s(t)]$: a saída é o sinal de áudio $s(t)$ somado a uma componente contínua.
 
 ## Resultados esperados
 

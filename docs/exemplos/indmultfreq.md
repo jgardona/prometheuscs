@@ -48,7 +48,7 @@ $$Z_R = R,\qquad Z_L = j\omega L,\qquad Z_C = \frac{1}{j\omega C},\qquad \omega 
 
 A parte imaginária é a **reatância**: $X_L=\omega L$ (cresce com a frequência) e $X_C = 1/(\omega C)$ (diminui com ela). A amplitude da corrente e a defasagem entre tensão e corrente seguem de $I = V/Z$.
 
-No divisor RL, $V_L = V\,\dfrac{X_L}{\sqrt{R^2+X_L^2}}$ com $X_L=2\pi f L$. A frequência de corte (onde $X_L=R$) é $f_c = R/(2\pi L) = 79{,}6\ \text{Hz}$.
+No divisor RL, $V_L = V\thinspace\dfrac{X_L}{\sqrt{R^2+X_L^2}}$ com $X_L=2\pi f L$. A frequência de corte (onde $X_L=R$) é $f_c = R/(2\pi L) = 79{,}6\ \text{Hz}$.
 
 ## Resultados esperados
 

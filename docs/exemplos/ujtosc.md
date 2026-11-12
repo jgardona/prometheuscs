@@ -47,7 +47,7 @@ Uma fonte de $10\ \text{V}$ carrega um capacitor de $10\ \text{nF}$ por um resis
 
 O UJT é um dispositivo de resistência negativa: enquanto a tensão do emissor está abaixo da de pico $V_P \approx \eta V_{BB}$ ele não conduz e o capacitor carrega pelo resistor; ao atingir $V_P$ o emissor passa a conduzir, o capacitor descarrega depressa até a tensão de vale $V_V$ e o ciclo recomeça. O tempo de carga de $V_V$ a $V_P$ na constante $RC = 100\ \text{k}\Omega\cdot 10\ \text{nF} = 1\ \text{ms}$ é
 
-$$T \approx RC\,\ln\frac{V_{CC} - V_V}{V_{CC} - V_P}.$$
+$$T \approx RC\thinspace\ln\frac{V_{CC} - V_V}{V_{CC} - V_P}.$$
 
 Com os valores medidos, $V_P = 5{,}96\ \text{V}$ e $V_V = 1{,}73\ \text{V}$: $T = 1\ \text{ms}\cdot\ln(8{,}27/4{,}04) = 0{,}716\ \text{ms}$, isto é, $f = 1397\ \text{Hz}$.
 

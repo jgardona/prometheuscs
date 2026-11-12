@@ -61,9 +61,9 @@ Com o MOSFET conduzindo, o resistor de $49{,}9\ \text{k}\Omega$ à terra drena $
 
 $$\left|\frac{dv}{dt}\right| = \frac{V_c}{200\ \text{k}\Omega\cdot C} = 500\ \frac{\text{V}}{\text{s}}\ \text{por volt de } V_c,$$
 
-tem sentido que depende do estado do MOSFET. O comparador, com os resistores de $100\ \text{k}\Omega$ (realimentação, terra e alimentação de $5\ \text{V}$), tem limiares $(5 + 0)/3 = 1{,}667\ \text{V}$ e $(5 + 5)/3 = 3{,}333\ \text{V}$, de modo que a saída do integrador oscila entre eles ($\Delta V = 1{,}667\ \text{V}$). O período é $2\,\Delta V$ dividido pela inclinação:
+tem sentido que depende do estado do MOSFET. O comparador, com os resistores de $100\ \text{k}\Omega$ (realimentação, terra e alimentação de $5\ \text{V}$), tem limiares $(5 + 0)/3 = 1{,}667\ \text{V}$ e $(5 + 5)/3 = 3{,}333\ \text{V}$, de modo que a saída do integrador oscila entre eles ($\Delta V = 1{,}667\ \text{V}$). O período é $2\thinspace\Delta V$ dividido pela inclinação:
 
-$$f = \frac{500\,V_c}{2\,\Delta V} = 150\ \frac{\text{Hz}}{\text{V}}\;V_c.$$
+$$f = \frac{500\thinspace V_c}{2\thinspace\Delta V} = 150\ \frac{\text{Hz}}{\text{V}}\thickspace V_c.$$
 
 ## Resultados esperados
 

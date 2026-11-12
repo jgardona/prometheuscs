@@ -51,13 +51,13 @@ A parte imaginária é a **reatância**: $X_L=\omega L$ (cresce com a frequênci
 
 Na frequência $f=80\ \text{Hz}$ ($\omega = 502{,}7\ \text{rad/s}$): $X_L=\omega L=173{,}2\ \Omega$ e $X_C = 1/(\omega C) = 173{,}2\ \Omega$. Os dois ramos têm
 
-$$Z_{RL} = 100 + j\,173{,}2 = 200\,\angle{+60^\circ}\ \Omega,\qquad Z_{RC} = 100 - j\,173{,}2 = 200\,\angle{-60^\circ}\ \Omega,$$
+$$Z_{RL} = 100 + j\thinspace173{,}2 = 200\thinspace\angle{+60^\circ}\ \Omega,\qquad Z_{RC} = 100 - j\thinspace173{,}2 = 200\thinspace\angle{-60^\circ}\ \Omega,$$
 
 e o terceiro ramo, $Z=200\ \Omega$ com fase $0^\circ$. Os três módulos são iguais, então as amplitudes das correntes são iguais: $I = 5/200 = 25\ \text{mA}$; mas a corrente do ramo RL atrasa $60^\circ$, a do ramo RC adianta $60^\circ$ e a do resistor está em fase com a tensão.
 
 ## Resultados esperados
 
-As três correntes têm pico de $25\ \text{mA}$. A tensão sobre o indutor e sobre o capacitor tem pico $I\,X = 25\ \text{mA}\cdot173{,}2\ \Omega = 4{,}33\ \text{V}$. As verificações conferem as três correntes e essas duas tensões (de 200 ms a 300 ms).
+As três correntes têm pico de $25\ \text{mA}$. A tensão sobre o indutor e sobre o capacitor tem pico $I\thinspace X = 25\ \text{mA}\cdot173{,}2\ \Omega = 4{,}33\ \text{V}$. As verificações conferem as três correntes e essas duas tensões (de 200 ms a 300 ms).
 
 ## O que observar
 

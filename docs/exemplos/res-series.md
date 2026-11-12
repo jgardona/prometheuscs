@@ -53,7 +53,7 @@ Na **frequência de ressonância** $\omega_0 L = 1/(\omega_0 C)$:
 
 $$f_0 = \frac{1}{2\pi\sqrt{LC}},\qquad Z(\omega_0) = R,\qquad I_{max} = \frac{V}{R}.$$
 
-O **fator de qualidade** $Q = \dfrac{\omega_0 L}{R} = \dfrac{1}{R}\sqrt{\dfrac{L}{C}}$ mede a seletividade; a largura de banda de meia potência é $B = f_0/Q$. Na ressonância a tensão sobre o indutor e a do capacitor valem $Q\,V$ cada uma (em sentidos opostos).
+O **fator de qualidade** $Q = \dfrac{\omega_0 L}{R} = \dfrac{1}{R}\sqrt{\dfrac{L}{C}}$ mede a seletividade; a largura de banda de meia potência é $B = f_0/Q$. Na ressonância a tensão sobre o indutor e a do capacitor valem $Q\thinspace V$ cada uma (em sentidos opostos).
 
 ## Resultados esperados
 

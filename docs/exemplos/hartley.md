@@ -47,7 +47,7 @@ O transistor NPN ($\beta = 100$) tem o emissor ligado à terra e ao ponto entre 
 
 Como no [oscilador Colpitts](colpitts.md), o emissor comum inverte a fase em $180^\circ$ e a tomada dos indutores inverte outros $180^\circ$, o que realimenta o sinal com a fase certa. A frequência é a do circuito LC com os dois indutores em série (os dois elementos do simulador não têm acoplamento mútuo):
 
-$$L = L_1 + L_2 = 2\ \text{H}, \qquad f_0 = \frac{1}{2\pi\sqrt{L\,C}} = \frac{1}{2\pi\sqrt{2\ \text{H} \cdot 633\ \text{nF}}} \approx 141{,}5\ \text{Hz}.$$
+$$L = L_1 + L_2 = 2\ \text{H}, \qquad f_0 = \frac{1}{2\pi\sqrt{L\thinspace C}} = \frac{1}{2\pi\sqrt{2\ \text{H} \cdot 633\ \text{nF}}} \approx 141{,}5\ \text{Hz}.$$
 
 A razão $L_1/L_2$ define a fração do sinal que volta à base. Em grande sinal o transistor satura num extremo do ciclo e corta no outro, o que limita a amplitude.
 

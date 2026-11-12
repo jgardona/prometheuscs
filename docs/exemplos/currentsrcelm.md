@@ -49,7 +49,7 @@ Uma fonte de corrente de $10\ \text{mA}$ alimenta duas redes de resistores em s�
 
 Uma fonte de corrente ideal mantém $I = 10\ \text{mA}$ qualquer que seja a carga; pela lei de Ohm a tensão em seus terminais é
 
-$$V = I\,R_{eq},\qquad R_{eq} = R_{cima} + R_{baixo},$$
+$$V = I\thinspace R_{eq},\qquad R_{eq} = R_{cima} + R_{baixo},$$
 
 com as resistências de cada rede combinadas em paralelo, $\dfrac{1}{R_{rede}} = \sum_k \dfrac{1}{R_k}$ (e $R_{baixo} = 0$ quando o curto-circuito está fechado). Ao contrário de uma fonte de tensão, que **não** pode ser curto-circuitada (a corrente seria infinita), a fonte de corrente fica em perfeita ordem com um curto-circuito ($V = I\cdot R_{cima}$) e é o **circuito aberto** que ela não admite: a tensão tenderia ao infinito (aqui o ramo de $4\ \text{k}\Omega$ está sempre ligado, de modo que a fonte sempre tem caminho).
 
@@ -57,7 +57,7 @@ com as resistências de cada rede combinadas em paralelo, $\dfrac{1}{R_{rede}} =
 
 A tabela mostra a tensão na fonte para cinco posições das chaves (as chaves trocadas em relação à posição inicial são as indicadas):
 
-| trocadas | $R_{cima}$ ($\Omega$) | $R_{baixo}$ ($\Omega$) | $V = I\,R_{eq}$ ($\text{V}$) |
+| trocadas | $R_{cima}$ ($\Omega$) | $R_{baixo}$ ($\Omega$) | $V = I\thinspace R_{eq}$ ($\text{V}$) |
 |:---------|----:|----:|----:|
 | nenhuma | 97.56 | 0.00 | 0.9756 |
 | curto aberto | 97.56 | 150.00 | 2.4756 |

@@ -46,13 +46,13 @@ O transistor bipolar do simulador (modelo "default") segue o modelo de Ebers–M
 
 $$I_C = I_s\left(e^{V_{BE}/V_T} - e^{V_{BC}/V_T}\right) - \frac{I_s}{\beta_R}\left(e^{V_{BC}/V_T} - 1\right),\qquad I_B = \frac{I_s}{\beta}\left(e^{V_{BE}/V_T} - 1\right) + \frac{I_s}{\beta_R}\left(e^{V_{BC}/V_T} - 1\right),$$
 
-com $I_s = 10^{-13}\ \text{A}$, $\beta = 100$, $\beta_R = 1$ e $V_T = 25{,}865\ \text{mV}$; sem efeito Early, sem capacitâncias e sem resistências série. Na **região ativa** ($V_{BE} \approx 0{,}65$ a $0{,}75\ \text{V}$, junção base-coletor com polarização inversa) isso se reduz a $I_C = \beta I_B = I_s\,e^{V_{BE}/V_T}$, com transcondutância $g_m = I_C/V_T$ e resistência de emissor $r_e = V_T/I_E$. O PNP é o complementar, com todas as tensões e correntes invertidas.
+com $I_s = 10^{-13}\ \text{A}$, $\beta = 100$, $\beta_R = 1$ e $V_T = 25{,}865\ \text{mV}$; sem efeito Early, sem capacitâncias e sem resistências série. Na **região ativa** ($V_{BE} \approx 0{,}65$ a $0{,}75\ \text{V}$, junção base-coletor com polarização inversa) isso se reduz a $I_C = \beta I_B = I_s\thinspace e^{V_{BE}/V_T}$, com transcondutância $g_m = I_C/V_T$ e resistência de emissor $r_e = V_T/I_E$. O PNP é o complementar, com todas as tensões e correntes invertidas.
 
 ## Resultados esperados
 
-Com a corrente $I$ constante, $v_C(t) = \dfrac{1}{C}\int I\,dt = \dfrac{I}{C}\,t$: uma rampa de inclinação $I/C$. Com o resistor de carga $R$ em paralelo com o capacitor, a rampa se encurva e tende, exponencialmente, a $IR$:
+Com a corrente $I$ constante, $v_C(t) = \dfrac{1}{C}\int I\thinspace dt = \dfrac{I}{C}\thinspace t$: uma rampa de inclinação $I/C$. Com o resistor de carga $R$ em paralelo com o capacitor, a rampa se encurva e tende, exponencialmente, a $IR$:
 
-$$v_C(t) = I R\left(1 - e^{-t/RC}\right) \approx \frac{I}{C}\,t\quad (t \ll RC).$$
+$$v_C(t) = I R\left(1 - e^{-t/RC}\right) \approx \frac{I}{C}\thinspace t\quad (t \ll RC).$$
 
 A rampa termina quando o transistor satura (a tensão de coletor cai a $V_E + V_{CE(sat)}$), com a tensão no capacitor perto de $V_{CC} - 1{,}5\ \text{V}$.
 

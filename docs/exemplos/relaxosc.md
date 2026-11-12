@@ -47,7 +47,7 @@ A realimentação positiva faz a entrada não inversora ficar em $\pm\beta V_\te
 
 O capacitor vai de $-\beta V_\text{sat}$ a $+\beta V_\text{sat}$ com constante de tempo $RC$, então o semiperíodo é
 
-$$t_h = RC\,\ln\frac{V_\text{sat} + \beta V_\text{sat}}{V_\text{sat} - \beta V_\text{sat}} = RC\,\ln\frac{1+\beta}{1-\beta}, \qquad T = 2RC\ln\frac{1+\beta}{1-\beta}.$$
+$$t_h = RC\thinspace\ln\frac{V_\text{sat} + \beta V_\text{sat}}{V_\text{sat} - \beta V_\text{sat}} = RC\thinspace\ln\frac{1+\beta}{1-\beta}, \qquad T = 2RC\ln\frac{1+\beta}{1-\beta}.$$
 
 Com $R = 10\ \text{k}\Omega$, $C = 400\ \text{nF}$ e $\beta = 0{,}5$,
 

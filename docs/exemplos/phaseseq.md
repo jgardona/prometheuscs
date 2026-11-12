@@ -74,7 +74,7 @@ Duas fontes senoidais de $5\ \text{V}$ de pico e $40\ \text{Hz}$, ligadas em sé
 
 ## Teoria
 
-Um sistema de quatro fases com defasagem de $90^\circ$ entre elas, $v_k = A\sin(\omega t - k\,90^\circ)$, é a soma de uma componente de "sequência positiva" e outra de "sequência negativa". Uma **rede de sequência de fase** (ou filtro polifásico) é uma rede RC cuja resposta à sequência desejada é bem maior que à indesejada, o que é usado para gerar sinais em quadratura a partir de um par de sinais em oposição de fase em receptores de rádio.
+Um sistema de quatro fases com defasagem de $90^\circ$ entre elas, $v_k = A\sin(\omega t - k\thinspace90^\circ)$, é a soma de uma componente de "sequência positiva" e outra de "sequência negativa". Uma **rede de sequência de fase** (ou filtro polifásico) é uma rede RC cuja resposta à sequência desejada é bem maior que à indesejada, o que é usado para gerar sinais em quadratura a partir de um par de sinais em oposição de fase em receptores de rádio.
 
 Cada seção RC de constante $\tau = RC$ tem sua frequência característica $f_k = 1/(2\pi R C_k)$; para $R = 100\ \Omega$ e $C = 40$, $20$, $10$ e $5\ \mu\text{F}$ elas valem $39{,}8$, $79{,}6$, $159$ e $318\ \text{Hz}$, e as seções em cascata dão uma faixa de frequências em que a defasagem é quase exatamente $90^\circ$ (a fonte aqui tem $40\ \text{Hz}$, junto da primeira).
 

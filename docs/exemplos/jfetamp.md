@@ -47,15 +47,15 @@ O dreno é alimentado com $10\ \text{V}$ por um resistor de $1{,}675\ \text{k}\O
 
 O JFET de canal N do simulador (modelo *default-jfet*) tem tensão de corte $V_T = -4\ \text{V}$ e $\beta = 1{,}25\ \text{mA/V}^2$, sem modulação de canal ($\lambda = 0$). Em saturação,
 
-$$I_D = \frac{\beta}{2}\,(V_{GS} - V_T)^2 = I_{DSS}\left(1 - \frac{V_{GS}}{V_T}\right)^2,\qquad I_{DSS} = \frac{\beta}{2}V_T^2 = 10\ \text{mA},$$
+$$I_D = \frac{\beta}{2}\thinspace(V_{GS} - V_T)^2 = I_{DSS}\left(1 - \frac{V_{GS}}{V_T}\right)^2,\qquad I_{DSS} = \frac{\beta}{2}V_T^2 = 10\ \text{mA},$$
 
 e, na região ôhmica ($V_{DS} < V_{GS} - V_T$), $I_D = \beta\bigl[(V_{GS}-V_T)V_{DS} - V_{DS}^2/2\bigr]$.
 
-**Polarização.** Com o gatilho em $0\ \text{V}$, $I_D = 0{,}625\ \text{mA/V}^2\,(4 - 1675\,I_D)^2$, cuja solução física é $I_D = 1{,}472\ \text{mA}$, $V_{GS} = -2{,}47\ \text{V}$. A tensão contínua na fonte é $V_S = 2{,}47\ \text{V}$ e $g_m = \beta(V_{GS} - V_T) = 1{,}92\ \text{mS}$.
+**Polarização.** Com o gatilho em $0\ \text{V}$, $I_D = 0{,}625\ \text{mA/V}^2\thinspace(4 - 1675\thinspace I_D)^2$, cuja solução física é $I_D = 1{,}472\ \text{mA}$, $V_{GS} = -2{,}47\ \text{V}$. A tensão contínua na fonte é $V_S = 2{,}47\ \text{V}$ e $g_m = \beta(V_{GS} - V_T) = 1{,}92\ \text{mS}$.
 
 **Pequenos sinais.** Com o capacitor de desacoplamento em curto para o sinal, o ganho é
 
-$$A_v = -g_m\,(R_D \parallel R_L) = -1{,}92\ \text{mS}\cdot(1{,}675\ \text{k}\Omega \parallel 50\ \text{k}\Omega) = -3{,}1.$$
+$$A_v = -g_m\thinspace(R_D \parallel R_L) = -1{,}92\ \text{mS}\cdot(1{,}675\ \text{k}\Omega \parallel 50\ \text{k}\Omega) = -3{,}1.$$
 
 ## Resultados esperados
 

@@ -47,13 +47,13 @@ Um NMOS (modelo padrão, sem diodo de corpo) tem o dreno ligado a $+10\ \text{V}
 
 ## Teoria
 
-**Polarização.** Com a porta em $0\ \text{V}$ em corrente contínua, a tensão da fonte é $V_S = -10 + 4\,\text{k}\Omega \cdot I_D$, de modo que $V_{GS} = 10 - 4000 I_D$. Na saturação ($\beta = 0{,}02\ \text{A/V}^2$, $V_t = 1{,}5\ \text{V}$, modelo de [n-MOSFET](nmosfet.md)), $I_D = 0{,}01\,(8{,}5 - 4000 I_D)^2$, de solução
+**Polarização.** Com a porta em $0\ \text{V}$ em corrente contínua, a tensão da fonte é $V_S = -10 + 4\thinspace\text{k}\Omega \cdot I_D$, de modo que $V_{GS} = 10 - 4000 I_D$. Na saturação ($\beta = 0{,}02\ \text{A/V}^2$, $V_t = 1{,}5\ \text{V}$, modelo de [n-MOSFET](nmosfet.md)), $I_D = 0{,}01\thinspace(8{,}5 - 4000 I_D)^2$, de solução
 
-$$I_D = 2{,}013\ \text{mA},\quad V_{GS} = 1{,}95\ \text{V},\quad V_{ov} = 0{,}45\ \text{V},\quad V_D = 10 - 4\,\text{k}\Omega \cdot I_D = 1{,}95\ \text{V}, \quad V_{DS} = 3{,}9\ \text{V} \ge V_{ov}.$$
+$$I_D = 2{,}013\ \text{mA},\quad V_{GS} = 1{,}95\ \text{V},\quad V_{ov} = 0{,}45\ \text{V},\quad V_D = 10 - 4\thinspace\text{k}\Omega \cdot I_D = 1{,}95\ \text{V}, \quad V_{DS} = 3{,}9\ \text{V} \ge V_{ov}.$$
 
 **Pequenos sinais.** A transcondutância é $g_m = \beta V_{ov} = 9{,}0\ \text{mS}$. Com o resistor de fonte totalmente curto-circuitado pelo capacitor de passagem, o ganho de tensão na faixa média é
 
-$$A_v = -g_m\,(R_D \parallel R_L) = -9{,}0\ \text{mS} \cdot (4\ \text{k}\Omega \parallel 50\ \text{k}\Omega) = -9{,}0\ \text{mS} \cdot 3{,}70\ \text{k}\Omega \approx -33{,}3.$$
+$$A_v = -g_m\thinspace(R_D \parallel R_L) = -9{,}0\ \text{mS} \cdot (4\ \text{k}\Omega \parallel 50\ \text{k}\Omega) = -9{,}0\ \text{mS} \cdot 3{,}70\ \text{k}\Omega \approx -33{,}3.$$
 
 Sem o capacitor de passagem, o resistor de fonte degeneraria o ganho para $-g_m R_L'/(1 + g_m R_S) = -33{,}3/37 \approx -0{,}90$ (o simulador, sem o capacitor, dá $0{,}898$ em módulo). A $40\ \text{Hz}$ o capacitor de $100\ \mu\text{F}$ tem reatância de $39{,}8\ \Omega$, não desprezível diante de $1/g_m = 111\ \Omega$, e a degeneração residual reduz o módulo do ganho e acrescenta uma defasagem:
 

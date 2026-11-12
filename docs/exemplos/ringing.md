@@ -39,7 +39,7 @@ Um resistor de $100\ \Omega$ em série com a entrada e, em paralelo para a terra
 
 O tanque ligado a uma fonte por um resistor $R$ tem a equação
 
-$$\frac{d^2 v}{dt^2} + 2\alpha\,\frac{dv}{dt} + \omega_0^2\,v = \frac{1}{RC}\frac{du}{dt},\qquad \alpha = \frac{1}{2RC},\quad \omega_0=\frac{1}{\sqrt{LC}},\quad Q = R\sqrt{\frac CL}.$$
+$$\frac{d^2 v}{dt^2} + 2\alpha\thinspace\frac{dv}{dt} + \omega_0^2\thinspace v = \frac{1}{RC}\frac{du}{dt},\qquad \alpha = \frac{1}{2RC},\quad \omega_0=\frac{1}{\sqrt{LC}},\quad Q = R\sqrt{\frac CL}.$$
 
 Depois de cada degrau da entrada a saída oscila na frequência amortecida $\omega_d=\sqrt{\omega_0^2-\alpha^2}$ com envoltória $e^{-\alpha t}$. Como o espectro de uma onda quadrada de 100 Hz tem harmônicos de ordem ímpar, o 11.º (1100 Hz) e o 9.º (900 Hz) caem perto de $f_0$ e são fortemente realçados.
 

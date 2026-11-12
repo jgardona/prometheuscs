@@ -56,7 +56,7 @@ O conversor tem duas fases por ciclo:
 1. **Carga:** $C_1$ é ligado entre $+V_{in}$ e a terra e se carrega a $V_{in}$ (as duas chaves de entrada).
 2. **Transferência:** as chaves se invertem e $C_1$ é ligado com a polaridade trocada entre a terra e o reservatório: a placa positiva vai à terra e a negativa ao nó de saída, de modo que $C_1$ transfere a sua carga ao reservatório, que fica em $V_{out} \approx -V_{in}$.
 
-Sem carga, $V_{out} = -V_{in}$; com corrente de saída $I$, aparece uma queda $V_{in} - |V_{out}| = I\,R_{out}$, onde, para um conversor de duas fases com capacitores iguais, no limite de chaveamento lento $R_{out} \approx 1/(f\,C_1) = 250\ \Omega$, mais os termos das resistências de ligado das chaves. A ondulação da saída é de $\Delta V \approx I/(f\,C_2)$.
+Sem carga, $V_{out} = -V_{in}$; com corrente de saída $I$, aparece uma queda $V_{in} - |V_{out}| = I\thinspace R_{out}$, onde, para um conversor de duas fases com capacitores iguais, no limite de chaveamento lento $R_{out} \approx 1/(f\thinspace C_1) = 250\ \Omega$, mais os termos das resistências de ligado das chaves. A ondulação da saída é de $\Delta V \approx I/(f\thinspace C_2)$.
 
 ## Resultados esperados
 

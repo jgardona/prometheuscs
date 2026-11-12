@@ -42,9 +42,9 @@ Uma fonte senoidal de $40\ \text{Hz}$ e $5\ \text{V}$ de pico alimenta, por um r
 
 Como o ganho de malha aberta $A$ é enorme, a realimentação negativa força a diferença entre as entradas a ser quase zero. A entrada não inversora está no terra, então a inversora fica em $0\ \text{V}$ (terra virtual), embora não esteja ligada ao terra. A corrente de entrada, $i = V_\text{in}/R_1$, não pode entrar no operacional (impedância de entrada ideal) e passa toda por $R_f$:
 
-$$V_\text{out} = 0 - R_f\,i = -\frac{R_f}{R_1}\,V_\text{in}.$$
+$$V_\text{out} = 0 - R_f\thinspace i = -\frac{R_f}{R_1}\thinspace V_\text{in}.$$
 
-Com ganho finito $A$, o valor exato é $-\dfrac{R_f}{R_1}\,\dfrac{1}{1 + (1+R_f/R_1)/A}$, praticamente igual ao ideal quando $A = 10^5$. A impedância de entrada do circuito é $R_1$, porque a entrada inversora é um terra virtual.
+Com ganho finito $A$, o valor exato é $-\dfrac{R_f}{R_1}\thinspace\dfrac{1}{1 + (1+R_f/R_1)/A}$, praticamente igual ao ideal quando $A = 10^5$. A impedância de entrada do circuito é $R_1$, porque a entrada inversora é um terra virtual.
 
 ## Resultados esperados
 

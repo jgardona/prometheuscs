@@ -59,7 +59,7 @@ Os osciloscópios mostram os dois lados.
 
 ## Teoria
 
-Um girador ideal tem $v_1 = R\,i_2$ e $v_2 = -R\,i_1$. A impedância vista numa porta quando a outra tem a impedância $Z_L$ é
+Um girador ideal tem $v_1 = R\thinspace i_2$ e $v_2 = -R\thinspace i_1$. A impedância vista numa porta quando a outra tem a impedância $Z_L$ é
 
 $$Z_{in} = \frac{R^2}{Z_L}.$$
 

@@ -49,7 +49,7 @@ A entrada é a soma de duas fontes senoidais em série: $5\ \text{V}$ de pico a 
 
 Com a realimentação pela tensão do capacitor, o primeiro operacional ajusta a sua saída para que o capacitor fique igual à entrada, **enquanto** a entrada estiver acima da tensão armazenada: o diodo conduz e o capacitor carrega. Quando a entrada cai abaixo da tensão do capacitor, a saída do operacional vai ao limite negativo, o diodo fica reverso e o capacitor mantém a carga. A tensão guardada, portanto, acompanha o **máximo** do sinal:
 
-$$V_C(t) = \max_{\tau \le t}\, V_\text{in}(\tau)\quad\text{(menos a queda por fuga).}$$
+$$V_C(t) = \max_{\tau \le t}\thinspace V_\text{in}(\tau)\quad\text{(menos a queda por fuga).}$$
 
 O diodo não entra no erro, porque está dentro da malha de realimentação. O seguidor impede que a carga de saída descarregue o capacitor. A única perda vem da corrente reversa do diodo, que descarrega o capacitor devagar, com taxa $dV/dt = I_\text{rev}/C$.
 

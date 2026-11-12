@@ -44,7 +44,7 @@ Um 555 alimentado com $5\ \text{V}$ tem o capacitor de $250\ \text{pF}$ nos pino
 
 Se $R_a$ é a parte do potenciômetro que carrega e $R_b$ a que descarrega, com $R_a + R_b = R_\text{pot}$,
 
-$$t_h = 0{,}693\,R_a\,C,\quad t_l = 0{,}693\,R_b\,C,\quad T = 0{,}693\,R_\text{pot}\,C,\quad D = \frac{R_a}{R_\text{pot}}.$$
+$$t_h = 0{,}693\thinspace R_a\thinspace C,\quad t_l = 0{,}693\thinspace R_b\thinspace C,\quad T = 0{,}693\thinspace R_\text{pot}\thinspace C,\quad D = \frac{R_a}{R_\text{pot}}.$$
 
 A **soma** $R_a + R_b$ não depende da posição do cursor: o período fica constante e só a divisão entre nível alto e baixo muda. Com $R_\text{pot} = 100\ \text{k}\Omega$ e $C = 250\ \text{pF}$,
 
