@@ -103,6 +103,12 @@ Then add the tests the element needs: a text and XML round trip, a stamping chec
 number you can work out by hand (see `tests/solver_basic.rs`), and, for a family, the
 `#[cfg(feature = "...")]` on every test that needs it.
 
+If the component comes with an example circuit, add the example to `assets/setuplist.txt` and
+document it: `cargo run --release --bin exdocs -- skeleton <example.txt>` creates
+`docs/exemplos/<example>.md`, which you fill in (in Portuguese, with the checks of the
+simulator's values in the front matter), and `exdocs sync` and `exdocs check` must then pass
+(`tests/example_docs.rs` runs the same checks). See section 14 of `docs/arquitetura.md`.
+
 ## 4. Removing a component or a family
 
 Disable the family's feature in `Cargo.toml`, or delete its file, its `mod` line, its

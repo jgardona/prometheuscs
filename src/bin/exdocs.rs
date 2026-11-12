@@ -205,7 +205,7 @@ fn skeleton(root: &Path, file: &str) -> Result<ExitCode, String> {
         "---".to_string(),
         format!("exemplo: {file}"),
         format!("titulo: {title}"),
-        format!("categoria: {}", path.join(" > ")),
+        format!("categoria: {}", exdocs::category_label(&path)),
         "sem-verificacao: PENDENTE".to_string(),
         "---".to_string(),
         String::new(),

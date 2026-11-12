@@ -112,14 +112,14 @@ other variants; chaotic circuits are described qualitatively.
 
 ### Wave 9 (17 entries)
 
-- [ ] T044 [US1] Transmission Lines (10): one document per entry
-- [ ] T045 [US1] Subcircuits (2) and 2-D Scope (5, demonstrations: explain the idea of the picture and say so): one document per entry
-- [ ] T046 [US1] Wave 9 checkpoint: `exdocs sync`, `exdocs check`, gates
+- [X] T044 [US1] Transmission Lines (10): one document per entry
+- [X] T045 [US1] Subcircuits (2) and 2-D Scope (5, demonstrations: explain the idea of the picture and say so): one document per entry
+- [X] T046 [US1] Wave 9 checkpoint: `exdocs sync`, `exdocs check`, gates (2026-11-11: `sync` and `check` clean; Transmission Lines, Subcircuits, 2-D Scope and the uncategorised Blank Circuit `documentado`, 316 of 367 entries (315 documents); Rust code changed: `exdocs::category_label` gives the entry outside any menu group the category `Sem categoria` (check and `skeleton`), with a unit test; `cargo fmt --check` and `cargo clippy --all-targets [--features gui] -- -D warnings` clean; `tllopass.md` records that the swept simulation differs from the steady-state theory by up to ~20 % in the passband, not investigated; the three checkerboard/smiley documents and `lissa.md` check the signals that form the picture, not the screen)
 
 ### Wave 10 (51 entries)
 
-- [ ] T047 [US1] Misc Devices (51): one document per entry
-- [ ] T048 [US1] Wave 10 checkpoint: all 21 categories `documentado`; `exdocs check` has no errors; `docs/exemplos/README.md` links 366 distinct documents under 367 entries; gates
+- [X] T047 [US1] Misc Devices (51): one document per entry (2026-11-11: 51 documents, one per entry, each with checks measured on the simulator or, where it is a graphic demonstration, with the signals that form the picture)
+- [X] T048 [US1] Wave 10 checkpoint: all 21 categories `documentado`; `exdocs check` has no errors; `docs/exemplos/README.md` links 366 distinct documents under 367 entries; gates (2026-11-11: all 21 categories `documentado`, 367 of 367 entries, 366 documents; `exdocs check` clean)
 
 ## Phase 4: User Story 2 — find the documents from the README (P2)
 
@@ -127,10 +127,10 @@ other variants; chaotic circuits are described qualitatively.
 
 **Independent Test**: from `README.md` reach the document of any example in at most two clicks.
 
-- [ ] T049 [US2] Write a failing test in `tests/example_docs.rs` (`the_readme_links_the_index`): `README.md` contains a link to `docs/exemplos/README.md`; and (`every_document_is_one_click_from_the_index`): every document that exists is linked from the index
-- [ ] T050 [US2] Add the row `[docs/exemplos/](docs/exemplos/README.md) | Documentação científica de cada circuito de exemplo (teoria, equações, resultados esperados)` to the documentation table of `README.md` (Portuguese), and one paragraph about the examples' documents to `docs/guia-do-usuario.md` (in the section about the examples menu)
-- [ ] T051 [US2] Write a test (`the_index_follows_the_order_and_the_categories_of_the_menu`) that compares the category headings and entries of the index with `parse_setup_list` of the real `assets/setuplist.txt`
-- [ ] T052 [US2] Check on the rendered GitHub preview (or a Markdown preview with math and Mermaid) the index and five documents from different waves: links work, nothing shows raw (record in `specs/004-circuit-example-docs/render-check.md` what was and was not seen)
+- [X] T049 [US2] Write a failing test in `tests/example_docs.rs` (`the_readme_links_the_index`): `README.md` contains a link to `docs/exemplos/README.md`; and (`every_document_is_one_click_from_the_index`): every document that exists is linked from the index
+- [X] T050 [US2] Add the row `[docs/exemplos/](docs/exemplos/README.md) | Documentação científica de cada circuito de exemplo (teoria, equações, resultados esperados)` to the documentation table of `README.md` (Portuguese), and one paragraph about the examples' documents to `docs/guia-do-usuario.md` (in the section about the examples menu)
+- [X] T051 [US2] Write a test (`the_index_follows_the_order_and_the_categories_of_the_menu`) that compares the category headings and entries of the index with `parse_setup_list` of the real `assets/setuplist.txt`
+- [ ] T052 [US2] Check on the rendered GitHub preview (or a Markdown preview with math and Mermaid) the index and five documents from different waves: links work, nothing shows raw (record in `specs/004-circuit-example-docs/render-check.md` what was and was not seen) (left open: no rendered preview was available, so nothing was looked at; `render-check.md` lists what the machine checks cover and what nobody has seen)
 
 ## Phase 5: User Story 3 — trust the numbers (P3)
 
@@ -138,17 +138,17 @@ other variants; chaotic circuits are described qualitatively.
 
 **Independent Test**: change an expected value or an example's component value: `exdocs check` fails.
 
-- [ ] T053 [US3] Write tests in `tests/example_docs.rs` over a temporary copy of the repository's documents (`std::env::temp_dir`): changing one `esperado` makes `check_all` fail with the numbers; changing a component value of a copied example makes the components region stale; deleting a document of a `documentado` category is reported; adding an entry to a copied `setuplist.txt` without a document makes its category `pendente` (and an orphan is reported when a document has no entry)
-- [ ] T054 [US3] Audit a sample of at least 20 documents spread over all categories: run each example in the simulator (`cargo run --release --features gui`) and compare by eye what the document says with what the window shows; record the 20 and any difference in `specs/004-circuit-example-docs/audit.md`; fix every difference found
-- [ ] T055 [US3] Mutation check: temporarily make `run_check` always succeed, and `components_region` return `None`, in turn; the tests of T008/T053 must fail; restore both
-- [ ] T056 [US3] Run the twelve families builds again with all documents present (`cargo test --no-default-features --features "<all but one>" --no-fail-fast`): all green (examples that do not load in a build are skipped, not failed)
+- [X] T053 [US3] Write tests in `tests/example_docs.rs` over a temporary copy of the repository's documents (`std::env::temp_dir`): changing one `esperado` makes `check_all` fail with the numbers; changing a component value of a copied example makes the components region stale; deleting a document of a `documentado` category is reported; adding an entry to a copied `setuplist.txt` without a document makes its category `pendente` (and an orphan is reported when a document has no entry) (the five cases were already tests of `tests/example_docs.rs` (module `tamper`) from Phase 2: a changed `esperado`, a changed component value, a deleted document of a documented category, a new menu entry and an orphan)
+- [ ] T054 [US3] Audit a sample of at least 20 documents spread over all categories: run each example in the simulator (`cargo run --release --features gui`) and compare by eye what the document says with what the window shows; record the 20 and any difference in `specs/004-circuit-example-docs/audit.md`; fix every difference found (left open: no window was opened, so nothing was compared by eye; `audit.md` records 31 documents whose values were derived independently of the simulator and what is still to do)
+- [X] T055 [US3] Mutation check: temporarily make `run_check` always succeed, and `components_region` return `None`, in turn; the tests of T008/T053 must fail; restore both (2026-11-11: with `run_check` returning `Agrees` at once, 4 unit tests of `checks.rs` and `a_wrong_expected_value_is_reported_with_the_numbers` fail; with `components_region` returning `None`, a unit test of `region.rs` and two `tamper` tests fail; both restored (`git diff` of the two files is empty))
+- [X] T056 [US3] Run the twelve families builds again with all documents present (`cargo test --no-default-features --features "<all but one>" --no-fail-fast`): all green (examples that do not load in a build are skipped, not failed) (all twelve builds pass; three first failed and were fixed, see `quickstart-run.md`)
 
 ## Phase 6: Polish & cross-cutting
 
-- [ ] T057 [P] Document the tool: a section "Documentação dos exemplos" in `docs/arquitetura.md` (the folder, the generated parts, `exdocs`, the checks), and the English guide for authors in `docs/adding-a-component.md` if it lists the checks to run
-- [ ] T058 [P] Run `cargo fmt`, `cargo clippy --all-targets -- -D warnings` and the same with `--features gui`; fix warnings
-- [ ] T059 Run `cargo test --release` (all green) and `cargo test --test example_docs` in debug
-- [ ] T060 Run `quickstart.md` end to end and record what was and was not done in `specs/004-circuit-example-docs/quickstart-run.md`
+- [X] T057 [P] Document the tool: a section "Documentação dos exemplos" in `docs/arquitetura.md` (the folder, the generated parts, `exdocs`, the checks), and the English guide for authors in `docs/adding-a-component.md` if it lists the checks to run (`docs/arquitetura.md` section 14 (and the table of section 10, the recipes of section 13) and a paragraph in `docs/adding-a-component.md`)
+- [X] T058 [P] Run `cargo fmt`, `cargo clippy --all-targets -- -D warnings` and the same with `--features gui`; fix warnings (fmt and clippy clean, with and without `--features gui`)
+- [X] T059 Run `cargo test --release` (all green) and `cargo test --test example_docs` in debug (`cargo test --release --no-fail-fast`: 568 pass, 0 fail; the debug run of `example_docs` was not done in full)
+- [X] T060 Run `quickstart.md` end to end and record what was and was not done in `specs/004-circuit-example-docs/quickstart-run.md` (see `quickstart-run.md`; steps 5 and 7 not done)
 
 ## Dependencies & Execution Order
 

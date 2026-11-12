@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="257" height="385" viewBox="0 0 257 385">
+<path d="M0 0 L257 0 L257 385 L0 385 Z" fill="#000000" stroke="none"/>
+<path d="M40 228 L40 168" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 252 L40 312" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M8 228 L8 252" fill="none" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+<path d="M8 252 L72 252" fill="none" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+<path d="M72 252 L72 228" fill="none" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+<path d="M72 228 L8 228" fill="none" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+<path d="M48 235 L40 235" fill="none" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 235 L40 245" fill="none" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 245 L32 245" fill="none" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+<text x="82" y="244" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">Q1</text>
+<path d="M40 168 L40 136" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 104 L40 72" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 136 L24 104" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+<path d="M40 72 L40 57" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="30" y="45" font-size="12" text-anchor="start" dominant-baseline="central" fill="#ffffff">+5V</text>
+<path d="M40 312 L40 344" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M50 344 L30 344" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M46 349 L34 349" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M42 354 L38 354" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M216 72 L216 57" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<text x="206" y="45" font-size="12" text-anchor="start" dominant-baseline="central" fill="#ffffff">+5V</text>
+<path d="M216 72 L216 176" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M216 312 L216 208" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M216 176 L216 208" fill="none" stroke="#c0c0c0" stroke-width="3" stroke-linecap="round"/>
+<text x="226" y="171" font-size="12" text-anchor="start" dominant-baseline="alphabetic" fill="#ffffff">Q1</text>
+<path d="M216 312 L216 344" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M226 344 L206 344" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M222 349 L210 349" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+<path d="M218 354 L214 354" fill="none" stroke="#807f7f" stroke-width="3" stroke-linecap="round"/>
+</svg>

@@ -4,7 +4,7 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 
 > Este índice é gerado por `cargo run --release --bin exdocs -- sync`; não o edite à mão.
 
-**Situação:** 299 de 367 entradas do menu documentadas (298 documentos).
+**Situação:** 367 de 367 entradas do menu documentadas (366 documentos).
 
 | Categoria | Situação |
 |-----------|----------|
@@ -24,15 +24,15 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 | Analog/Digital | documentado |
 | Power Converters | documentado |
 | Phase-Locked Loops | documentado |
-| Transmission Lines | pendente (0 de 10) |
+| Transmission Lines | documentado |
 | Controlled Sources | documentado |
-| Subcircuits | pendente (0 de 2) |
-| Misc Devices | pendente (0 de 51) |
-| 2-D Scope | pendente (0 de 4) |
+| Subcircuits | documentado |
+| Misc Devices | documentado |
+| 2-D Scope | documentado |
 
-## Sem categoria — pendente (0 de 1)
+## Sem categoria — documentado
 
-- Blank Circuit — *pendente*
+- [Blank Circuit](blank.md)
 
 ## Basics — documentado
 
@@ -443,18 +443,18 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 - [Type II PLL (fast)](pll2a.md)
 - [Frequency Doubler](freqdouble.md)
 
-## Transmission Lines — pendente (0 de 10)
+## Transmission Lines — documentado
 
-- Simple TL — *pendente*
-- Standing Wave — *pendente*
-- Termination — *pendente*
-- Mismatched lines (Pulse) — *pendente*
-- Mismatched lines (Standing Wave) — *pendente*
-- Impedance Matching (L-Section) — *pendente*
-- Impedance Matching (Shunt Stub) — *pendente*
-- Stub Frequency Response — *pendente*
-- Low-Pass Filter — *pendente*
-- Light Switch — *pendente*
+- [Simple TL](tl.md)
+- [Standing Wave](tlstand.md)
+- [Termination](tlterm.md)
+- [Mismatched lines (Pulse)](tlmismatch.md)
+- [Mismatched lines (Standing Wave)](tlmis1.md)
+- [Impedance Matching (L-Section)](tlmatch1.md)
+- [Impedance Matching (Shunt Stub)](tlmatch2.md)
+- [Stub Frequency Response](tlfreq.md)
+- [Low-Pass Filter](tllopass.md)
+- [Light Switch](tllight.md)
 
 ## Controlled Sources — documentado
 
@@ -471,102 +471,102 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 - [CCVS Variable Inductor](cs-varinduct.md)
 - [VCCS Variable Capacitor](cs-varicap.md)
 
-## Subcircuits — pendente (0 de 2)
+## Subcircuits — documentado
 
-- Full Rectifier — *pendente*
-- Full Adder (nested) — *pendente*
+- [Full Rectifier](fullrect-sc.md)
+- [Full Adder (nested)](adder4-sc.md)
 
-## Misc Devices — pendente (0 de 51)
+## Misc Devices — documentado
 
-- LED Array — *pendente*
-- DIAC/TRIAC Dimmer — *pendente*
-- Unijunction Oscillator — *pendente*
-- 3-Phase Motor — *pendente*
-- Latching Relay — *pendente*
-- Gyrator — *pendente*
+- [LED Array](ledarray.md)
+- [DIAC/TRIAC Dimmer](triacdimmer.md)
+- [Unijunction Oscillator](ujtosc.md)
+- [3-Phase Motor](3motor.md)
+- [Latching Relay](latchingrelay.md)
+- [Gyrator](gyratorelm.md)
 
-### JFETs — pendente (0 de 7)
+### JFETs — documentado
 
-- JFET Current Source — *pendente*
-- JFET Follower — *pendente*
-- JFET Follower w/zero offset — *pendente*
-- Common-Source Amplifier — *pendente*
-- Volume Control — *pendente*
-- Lambda Diode — *pendente*
-- Lambda Diode Oscillator — *pendente*
+- [JFET Current Source](jfetcurrentsrc.md)
+- [JFET Follower](jfetfollower.md)
+- [JFET Follower w/zero offset](jfetfollower-nooff.md)
+- [Common-Source Amplifier](jfetamp.md)
+- [Volume Control](volume.md)
+- [Lambda Diode](lambda-diode.md)
+- [Lambda Diode Oscillator](lambda-diode-osc.md)
 
-### Tunnel Diodes — pendente (0 de 3)
+### Tunnel Diodes — documentado
 
-- I/V Curve — *pendente*
-- LC Oscillator — *pendente*
-- Relaxation Oscillator — *pendente*
+- [I/V Curve](tdiode.md)
+- [LC Oscillator](tdosc.md)
+- [Relaxation Oscillator](tdrelax.md)
 
-### Memristors — pendente (0 de 7)
+### Memristors — documentado
 
-- Memristor — *pendente*
-- Sine Wave — *pendente*
-- Square Wave — *pendente*
-- Triangle Wave — *pendente*
-- Hard-Switching 1 — *pendente*
-- Hard-Switching 2 — *pendente*
-- Crossbar Memory — *pendente*
+- [Memristor](mr.md)
+- [Sine Wave](mr-sine.md)
+- [Square Wave](mr-square.md)
+- [Triangle Wave](mr-triangle.md)
+- [Hard-Switching 1](mr-sine2.md)
+- [Hard-Switching 2](mr-sine3.md)
+- [Crossbar Memory](mr-crossbar.md)
 
-### Triodes — pendente (0 de 2)
+### Triodes — documentado
 
-- Triode — *pendente*
-- Amplifier — *pendente*
+- [Triode](triode.md)
+- [Amplifier](triodeamp.md)
 
-### Silicon-Controlled Rectifiers — pendente (0 de 2)
+### Silicon-Controlled Rectifiers — documentado
 
-- SCR — *pendente*
-- AC Trigger — *pendente*
+- [SCR](scr.md)
+- [AC Trigger](scractrig.md)
 
-### Current Conveyor — pendente (0 de 10)
+### Current Conveyor — documentado
 
-- CCII+ — *pendente*
-- CCII- — *pendente*
-- Inductor Simulator — *pendente*
-- CCII+ Implementation — *pendente*
-- CCII- Implementation — *pendente*
-- Current Amplifier — *pendente*
-- VCCS — *pendente*
-- Current Differentiator — *pendente*
-- Current Integrator — *pendente*
-- Current-Controlled Voltage Source — *pendente*
+- [CCII+](cc2.md)
+- [CCII-](cc2n.md)
+- [Inductor Simulator](ccinductor.md)
+- [CCII+ Implementation](cc2imp.md)
+- [CCII- Implementation](cc2impn.md)
+- [Current Amplifier](cciamp.md)
+- [VCCS](ccvccs.md)
+- [Current Differentiator](ccdiff.md)
+- [Current Integrator](ccint.md)
+- [Current-Controlled Voltage Source](ccitov.md)
 
-### Spark Gap — pendente (0 de 3)
+### Spark Gap — documentado
 
-- Sawtooth Generator — *pendente*
-- Tesla Coil — *pendente*
-- Marx Generator — *pendente*
+- [Sawtooth Generator](spark-sawtooth.md)
+- [Tesla Coil](tesla.md)
+- [Marx Generator](spark-marx.md)
 
-### Operational Transconductance Amplifier (OTA) — pendente (0 de 4)
+### Operational Transconductance Amplifier (OTA) — documentado
 
-- OTA Voltage Controlled Amplifier (VCA) — *pendente*
-- OTA Single Stage VCF (low pass) — *pendente*
-- OTA Ring Modulator — *pendente*
-- LM137000 Gain Oddity — *pendente*
+- [OTA Voltage Controlled Amplifier (VCA)](ota-vca.md)
+- [OTA Single Stage VCF (low pass)](ota-vcf-single.md)
+- [OTA Ring Modulator](ota-ringmod.md)
+- [LM137000 Gain Oddity](ota-gain.md)
 
-### Light Bulb — pendente (0 de 2)
+### Light Bulb — documentado
 
-- Light Bulb — *pendente*
-- Wien Bridge Oscillator — *pendente*
+- [Light Bulb](lightbulb.md)
+- [Wien Bridge Oscillator](wienbridge.md)
 
-### Varactor — pendente (0 de 2)
+### Varactor — documentado
 
-- Varactor — *pendente*
-- VCO — *pendente*
+- [Varactor](varactor.md)
+- [VCO](varactorvco.md)
 
-### Norton Amplifier — pendente (0 de 3)
+### Norton Amplifier — documentado
 
-- Norton Inverting Amplifier — *pendente*
-- Norton Noninverting Amplifier — *pendente*
-- Norton Sawtooth Oscillator — *pendente*
+- [Norton Inverting Amplifier](norton-invert.md)
+- [Norton Noninverting Amplifier](norton-noninvert.md)
+- [Norton Sawtooth Oscillator](norton-saw.md)
 
-## 2-D Scope — pendente (0 de 4)
+## 2-D Scope — documentado
 
-- Lissajous Figures — *pendente*
-- Checkerboard — *pendente*
-- Color Checkerboard — *pendente*
-- Smiley — *pendente*
+- [Lissajous Figures](lissa.md)
+- [Checkerboard](plot2d-checker.md)
+- [Color Checkerboard](plot2d-color.md)
+- [Smiley](plot2d-smile.md)
 
