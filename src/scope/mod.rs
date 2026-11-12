@@ -162,11 +162,16 @@ pub struct Trigger {
     sweep: Option<Sweep>,
 }
 
+/// One plot of a [`Sweep`]: minimum, maximum and last value of each sample, and how many
+/// samples are valid.
+type SweepPlot = (Vec<f64>, Vec<f64>, Vec<f64>, usize);
+
 /// A copy of a scope's plots taken once a triggered sweep has been captured in full.
 #[derive(Clone, Debug)]
 struct Sweep {
-    /// Per plot: minimum and maximum of each sample, oldest first, and how many are valid.
-    plots: Vec<(Vec<f64>, Vec<f64>, usize)>,
+    /// Per plot: minimum, maximum and last value of each sample, oldest first, and how many
+    /// are valid.
+    plots: Vec<SweepPlot>,
     /// Samples from the trigger sample to the newest one when the copy was taken.
     back: usize,
     /// Time of the trigger.
@@ -287,6 +292,8 @@ pub struct ScopePlot {
     pub units: i32,
     min: Vec<f64>,
     max: Vec<f64>,
+    /// The newest value of each sample: where the signal was when the sample ended.
+    last: Vec<f64>,
     ptr: usize,
     last_update: f64,
     /// Samples recorded since the history was emptied (the one being filled included).
@@ -315,6 +322,7 @@ impl ScopePlot {
             units,
             min: vec![0.0; POINTS],
             max: vec![0.0; POINTS],
+            last: vec![0.0; POINTS],
             ptr: 0,
             last_update: 0.0,
             filled: 0,
@@ -336,6 +344,7 @@ impl ScopePlot {
     fn clear(&mut self, t: f64) {
         self.min.fill(0.0);
         self.max.fill(0.0);
+        self.last.fill(0.0);
         self.ptr = 0;
         self.last_update = t;
         self.filled = 0;
@@ -345,14 +354,14 @@ impl ScopePlot {
         self.ac_count = 0;
     }
 
-    /// The minimum and maximum of each sample, oldest first.
-    fn ordered(&self) -> (Vec<f64>, Vec<f64>) {
-        (1..=POINTS)
-            .map(|i| {
-                let k = (self.ptr + i) % POINTS;
-                (self.min[k], self.max[k])
-            })
-            .unzip()
+    /// The minimum, maximum and last value of each sample, oldest first.
+    fn ordered(&self) -> (Vec<f64>, Vec<f64>, Vec<f64>) {
+        let at = |i: usize| (self.ptr + i) % POINTS;
+        (
+            (1..=POINTS).map(|i| self.min[at(i)]).collect(),
+            (1..=POINTS).map(|i| self.max[at(i)]).collect(),
+            (1..=POINTS).map(|i| self.last[at(i)]).collect(),
+        )
     }
 }
 
@@ -991,6 +1000,7 @@ impl Scope {
                 // from the zero the buffer holds
                 p.min[p.ptr] = v;
                 p.max[p.ptr] = v;
+                p.last[p.ptr] = v;
                 p.filled = 1;
                 p.total = 1;
                 p.last_update = t;
@@ -1001,10 +1011,12 @@ impl Scope {
             if v > p.max[p.ptr] {
                 p.max[p.ptr] = v;
             }
+            p.last[p.ptr] = v;
             if t - p.last_update >= period {
                 p.ptr = (p.ptr + 1) % POINTS;
                 p.min[p.ptr] = v;
                 p.max[p.ptr] = v;
+                p.last[p.ptr] = v;
                 p.filled = (p.filled + 1).min(POINTS);
                 p.total += 1;
                 p.last_update += period;
@@ -1028,8 +1040,8 @@ impl Scope {
                     .plots
                     .iter()
                     .map(|p| {
-                        let (min, max) = p.ordered();
-                        (min, max, p.filled)
+                        let (min, max, last) = p.ordered();
+                        (min, max, last, p.filled)
                     })
                     .collect(),
                 back: self
@@ -1055,8 +1067,11 @@ impl Scope {
             .iter()
             .enumerate()
             .map(|(n, p)| {
-                let ((min, max), valid) = match held {
-                    Some(s) => ((s.plots[n].0.clone(), s.plots[n].1.clone()), s.plots[n].2),
+                let ((min, max, last), valid) = match held {
+                    Some(s) => {
+                        let (a, b, c, filled) = &s.plots[n];
+                        ((a.clone(), b.clone(), c.clone()), *filled)
+                    }
                     None => (p.ordered(), p.filled),
                 };
                 let title = elements.get(p.elm).and_then(|e| e.elm_type()).unwrap_or_default();
@@ -1070,6 +1085,7 @@ impl Scope {
                     title,
                     min,
                     max,
+                    last,
                     valid,
                     man_scale,
                     man_pos: p.man_pos,
@@ -1164,6 +1180,8 @@ pub struct PlotView {
     pub min: Vec<f64>,
     /// Largest value in each sample.
     pub max: Vec<f64>,
+    /// The value at the end of each sample (the newest one recorded in it).
+    pub last: Vec<f64>,
     /// How many of the newest samples hold recorded data; the older ones are empty.
     pub valid: usize,
     /// Units per division in manual mode.
@@ -1342,6 +1360,90 @@ mod tests {
     }
 
     #[test]
+    fn each_sample_keeps_the_value_it_ended_on() {
+        // a ramp, four steps per sample: every sample ends on its fourth value
+        let mut el = signal(0.0);
+        let mut sc = scope_on(&el);
+        let dt = 1e-5;
+        sc.speed = 4;
+        for n in 0..40 {
+            set(&mut el, f64::from(n));
+            sc.time_step(&el, f64::from(n) * dt, dt);
+        }
+        let p = &sc.plots[0];
+        let (min, max, last) = p.ordered();
+        let valid = p.filled;
+        for k in POINTS - valid..POINTS {
+            assert!(min[k] <= last[k] && last[k] <= max[k], "sample {k}: {min:?}");
+        }
+        // the newest sample is the one being filled: its last value is the newest value
+        assert_eq!(last[POINTS - 1], 39.0);
+        // a finished sample ends on the value before the next one starts: max of a rising ramp
+        assert_eq!(last[POINTS - 2], max[POINTS - 2]);
+        sc.reset(0.0);
+        assert!(sc.plots[0].last.iter().all(|v| *v == 0.0));
+    }
+
+    #[test]
+    fn the_stored_extremes_are_those_of_the_raw_values() {
+        // a 100 Hz sine of 3 V, 10 us steps, 16 steps a sample: min and max of every finished
+        // sample are what an independent pass over the raw values gives
+        let (dt, steps) = (1e-5_f64, 16);
+        let mut el = signal(0.0);
+        let mut sc = scope_on(&el);
+        sc.speed = steps;
+        let raw: Vec<f64> = (0..400 * steps as usize)
+            .map(|n| 3.0 * (std::f64::consts::TAU * 100.0 * n as f64 * dt).sin())
+            .collect();
+        for (n, v) in raw.iter().enumerate() {
+            set(&mut el, *v);
+            sc.time_step(&el, n as f64 * dt, dt);
+        }
+        let (min, max, _) = sc.plots[0].ordered();
+        let valid = sc.plots[0].filled;
+        let finished = POINTS - valid..POINTS - 1;
+        let lowest = min[finished.clone()].iter().copied().fold(f64::MAX, f64::min);
+        let highest = max[finished].iter().copied().fold(f64::MIN, f64::max);
+        let (raw_low, raw_high) =
+            raw.iter().fold((f64::MAX, f64::MIN), |(a, b), v| (a.min(*v), b.max(*v)));
+        // 400 samples is 4 periods and a bit: the extremes of the sine are in there
+        assert!((lowest - raw_low).abs() < 1e-9 && (highest - raw_high).abs() < 1e-9);
+        // and no sample is narrower than the values it holds
+        for k in POINTS - valid..POINTS {
+            assert!(min[k] <= max[k]);
+        }
+    }
+
+    #[test]
+    fn a_held_sweep_keeps_the_end_values_of_its_samples() {
+        let dt = 1e-5;
+        let mut el = signal(0.0);
+        let mut sc = scope_on(&el);
+        sc.speed = 4;
+        sc.trigger.mode = TRIGGER_NORMAL;
+        sc.trigger.level = 2.5;
+        for n in 0..3 * POINTS {
+            // a ramp with a pulse now and then to fire the trigger
+            set(&mut el, if n % 997 == 0 { 5.0 } else { (n % 7) as f64 * 0.1 });
+            sc.time_step(&el, n as f64 * dt, dt);
+        }
+        let v = sc.view(&el, dt, 0.0);
+        assert!(v.trigger.is_some_and(|t| t.triggered), "no sweep was captured");
+        let p = &v.plots[0];
+        assert_eq!(p.last.len(), POINTS);
+        assert!(
+            p.min
+                .iter()
+                .zip(&p.max)
+                .zip(&p.last)
+                .skip(POINTS - p.valid)
+                .all(|((a, b), c)| a <= c && c <= b)
+        );
+        // asking again gives the same held data
+        assert_eq!(sc.view(&el, dt, 0.0).plots[0].last, p.last);
+    }
+
+    #[test]
     fn reset_empties_the_ac_filter() {
         let el = signal(5.0);
         let mut sc = scope_on(&el);
@@ -1404,7 +1506,7 @@ mod tests {
         sc.trigger.mode = TRIGGER_NORMAL;
         sc.trigger.level = 2.5;
         let t = std::cell::Cell::new(0.0);
-        let mut run = |sc: &mut Scope, el: &mut Vec<Box<dyn Element>>, v: f64, n: usize| {
+        let run = |sc: &mut Scope, el: &mut Vec<Box<dyn Element>>, v: f64, n: usize| {
             set(el, v);
             for _ in 0..n {
                 sc.time_step(el, t.get(), dt);

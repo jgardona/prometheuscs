@@ -786,6 +786,43 @@ pub fn draw_scope(
     g.restore();
 }
 
+/// The vertices of the curve of `p` over the samples `from..to`, as `(position, value)`: the
+/// position is in samples, so the centre of sample `k` is `k + 0.5` and its end is `k + 1`.
+///
+/// The curve goes through the value each sample ended on, which lies on the signal. A sample adds
+/// a vertex at its centre only for the part of its range that those end values do not explain: a
+/// crest or trough inside the sample, noise, a glitch. A rising or falling sample adds nothing,
+/// so a smooth signal gives a smooth curve that still reaches its true peaks, while detail keeps
+/// its full height. `flat` is the span below which a range counts as zero.
+fn curve_points(p: &PlotView, from: usize, to: usize, flat: f64) -> Vec<(f64, f64)> {
+    let mut out = Vec::with_capacity(to.saturating_sub(from) + 1);
+    let mut prev = None;
+    for k in from..to {
+        let (lov, hiv, end) = (p.min[k], p.max[k], p.last[k]);
+        let before = prev.unwrap_or(end);
+        if prev.is_none() {
+            out.push((k as f64, end));
+        }
+        let (below, above) = (before.min(end), before.max(end));
+        let centre = k as f64 + 0.5;
+        let up = hiv - above > flat;
+        let down = below - lov > flat;
+        let (near, far) =
+            if (before - hiv).abs() <= (before - lov).abs() { (hiv, lov) } else { (lov, hiv) };
+        match (up, down) {
+            // noise: the sample is a vertical stroke of its own, from the side nearer to where
+            // the curve comes from
+            (true, true) => out.extend([(centre, near), (centre, far)]),
+            (true, false) => out.push((centre, hiv)),
+            (false, true) => out.push((centre, lov)),
+            (false, false) => {}
+        }
+        out.push((k as f64 + 1.0, end));
+        prev = Some(end);
+    }
+    out
+}
+
 fn draw_scope_inside(
     g: &mut dyn Painter,
     view: &ScopeView,
@@ -944,22 +981,12 @@ fn draw_scope_inside(
         g.begin_path();
         // only what was recorded is drawn: after the history is emptied the left stays blank
         let first_valid = lo.max(p.min.len().saturating_sub(p.valid));
-        let mut began = false;
-        for k in first_valid..hi {
-            let (lov, hiv) = (p.min[k], p.max[k]);
-            let cx = x + ((k as isize - start) as f64 + 0.5) * dx;
-            if began {
-                g.line_to(cx, place(p, hiv));
+        for (n, (at, v)) in curve_points(p, first_valid, hi, flat).into_iter().enumerate() {
+            let (cx, cy) = (x + (at - start as f64) * dx, place(p, v));
+            if n == 0 {
+                g.move_to(cx, cy);
             } else {
-                g.move_to(cx, place(p, hiv));
-                began = true;
-            }
-            // the span of the sample is a vertical stroke of its own; the line goes on from
-            // the top of it, as in the original, instead of zigzagging from top to bottom
-            // (which overshoots wherever the signal is steep, and shows when the line is thick)
-            if (hiv - lov).abs() > flat {
-                g.line_to(cx, place(p, lov));
-                g.move_to(cx, place(p, hiv));
+                g.line_to(cx, cy);
             }
         }
         g.stroke();
@@ -1681,6 +1708,7 @@ mod tests {
                 value: 0,
                 title: "R1".into(),
                 min: max.clone(),
+                last: max.clone(),
                 max,
                 valid: POINTS,
                 man_scale: 0.5,
@@ -1699,6 +1727,373 @@ mod tests {
             max_scale: false,
             trigger: None,
         }
+    }
+
+    // ---- the curve of a plot against time (spec 007) ----------------------------------------
+
+    /// One sample as the recorder keeps it: minimum, maximum and the value it ended on.
+    type Sample = (f64, f64, f64);
+
+    /// A view of `samples` (oldest first, the newest at the right edge) with the history full.
+    fn samples_view(samples: &[Sample]) -> ScopeView {
+        let mut v = view(&[]);
+        let n = samples.len().min(POINTS);
+        let (mut lo, mut hi, mut last) = (vec![0.0; POINTS], vec![0.0; POINTS], vec![0.0; POINTS]);
+        for (i, s) in samples[samples.len() - n..].iter().enumerate() {
+            (lo[POINTS - n + i], hi[POINTS - n + i], last[POINTS - n + i]) = *s;
+        }
+        let p = &mut v.plots[0];
+        (p.min, p.max, p.last, p.valid) = (lo, hi, last, n);
+        v
+    }
+
+    /// What the recorder keeps of `values` when `steps` of them make a sample.
+    fn record(values: impl Iterator<Item = f64>, steps: usize) -> Vec<Sample> {
+        let values: Vec<f64> = values.collect();
+        values
+            .chunks(steps)
+            .map(|c| {
+                let lo = c.iter().copied().fold(f64::INFINITY, f64::min);
+                let hi = c.iter().copied().fold(f64::NEG_INFINITY, f64::max);
+                (lo, hi, c[c.len() - 1])
+            })
+            .collect()
+    }
+
+    /// A sine of `amp` volts with `spp` samples per period (`steps` values per sample).
+    fn recorded_sine(amp: f64, spp: f64, phase: f64, samples: usize, steps: usize) -> Vec<Sample> {
+        let n = samples * steps;
+        let w = std::f64::consts::TAU / (spp * steps as f64);
+        record((0..n).map(|k| amp * (w * k as f64 + phase).sin()), steps)
+    }
+
+    /// The points of the curve the scope draws for `v` (the path with the most points), in
+    /// pixels, in a scope 400 wide and 200 high.
+    fn drawn(v: &ScopeView) -> Vec<(f64, f64)> {
+        let mut g = SvgPainter::new(400.0, 200.0);
+        draw_scopes(
+            &mut g,
+            std::slice::from_ref(v),
+            &mut ScopeScales::default(),
+            400.0,
+            200.0,
+            false,
+            None,
+        );
+        let svg = g.finish();
+        let mut best: Vec<(f64, f64)> = Vec::new();
+        for line in
+            svg.lines().filter(|l| l.starts_with("<path d=\"M") && l.contains("fill=\"none\""))
+        {
+            let d = &line[9..line.find('"').map_or(0, |_| line[9..].find('"').unwrap_or(0) + 9)];
+            let nums: Vec<f64> = d
+                .split(['M', 'L', ' '])
+                .filter(|t| !t.is_empty())
+                .filter_map(|t| t.parse().ok())
+                .collect();
+            let pts: Vec<(f64, f64)> =
+                nums.as_chunks::<2>().0.iter().map(|c| (c[0], c[1])).collect();
+            if pts.len() > best.len() {
+                best = pts;
+            }
+        }
+        best
+    }
+
+    /// How many times a series changes direction (changes below `eps` are ignored).
+    fn reversals(ys: &[f64], eps: f64) -> usize {
+        let mut dir = 0.0_f64;
+        let mut n = 0;
+        for w in ys.windows(2) {
+            let d = w[1] - w[0];
+            if d.abs() < eps {
+                continue;
+            }
+            if dir != 0.0 && d.signum() != dir {
+                n += 1;
+            }
+            dir = d.signum();
+        }
+        n
+    }
+
+    /// Pixel rows of +1 and -1 in a scope whose largest value is 1 and which goes negative:
+    /// drawn from a square wave of those two levels.
+    fn rows_of_plus_and_minus_one() -> (f64, f64) {
+        let pts = drawn(&samples_view(
+            &vec![(1.0, 1.0, 1.0); 100]
+                .into_iter()
+                .chain(vec![(-1.0, -1.0, -1.0); 100])
+                .collect::<Vec<_>>(),
+        ));
+        let ys: Vec<f64> = pts.iter().map(|p| p.1).collect();
+        (ys.iter().copied().fold(f64::INFINITY, f64::min), ys.iter().copied().fold(0.0, f64::max))
+    }
+
+    /// The direction changes of the curve and of the values the samples ended on, over the
+    /// samples `from..to` (the ends of the window are left out, where a turn is cut in half).
+    /// A needle on every sloping sample (the old drawing) adds hundreds.
+    fn curve_and_reference_reversals(v: &ScopeView, from: usize, to: usize) -> (usize, usize) {
+        let (a, b) = (from as f64, to as f64);
+        let ys: Vec<f64> =
+            drawn(v).iter().filter(|p| p.0 >= a + 1.0 && p.0 <= b).map(|p| p.1).collect();
+        // the reference is in values, the curve in rows: the rows run the other way, which
+        // does not change how often the direction changes
+        let last = &v.plots[0].last[POINTS - 400..];
+        (reversals(&ys, 0.005), reversals(&last[from..to], 1e-6))
+    }
+
+    #[test]
+    fn noise_keeps_its_full_extent() {
+        let (up, down) = rows_of_plus_and_minus_one();
+        // every sample swings from -1 to 1 and ends on +-0.5
+        let s: Vec<Sample> =
+            (0..300).map(|k| (-1.0, 1.0, if k % 2 == 0 { 0.5 } else { -0.5 })).collect();
+        let pts = drawn(&samples_view(&s));
+        let near = |row: f64| pts.iter().filter(|p| (p.1 - row).abs() < 0.6).count();
+        assert!(
+            near(up) >= 250 && near(down) >= 250,
+            "{} {} of {}",
+            near(up),
+            near(down),
+            pts.len()
+        );
+    }
+
+    #[test]
+    fn a_one_sample_glitch_keeps_its_height() {
+        let (up, _) = rows_of_plus_and_minus_one();
+        let mut s = vec![(-1.0, -1.0, -1.0); 300];
+        s[0] = (1.0, 1.0, 1.0); // fixes the scale: the largest value is 1
+        let flat = drawn(&samples_view(&s));
+        s[200] = (-1.0, 1.0, -1.0);
+        let pts = drawn(&samples_view(&s));
+        let top = |p: &[(f64, f64)]| p.iter().map(|q| q.1).fold(f64::INFINITY, f64::min);
+        assert!((top(&pts) - up).abs() < 0.6, "{} {up}", top(&pts));
+        assert!(pts.iter().any(|q| (q.1 - up).abs() < 0.6 && q.0 > 100.0), "{pts:?}");
+        assert!(top(&flat) <= up + 0.6);
+    }
+
+    #[test]
+    fn a_square_wave_edge_stays_one_sample_wide() {
+        let (up, down) = rows_of_plus_and_minus_one();
+        // 80 samples per period; the edge falls inside a sample (min -1, max 1)
+        let s: Vec<Sample> = (0..400)
+            .map(|k| match k % 80 {
+                0 => (-1.0, 1.0, 1.0),
+                40 => (-1.0, 1.0, -1.0),
+                m if m < 40 => (1.0, 1.0, 1.0),
+                _ => (-1.0, -1.0, -1.0),
+            })
+            .collect();
+        let pts = drawn(&samples_view(&s));
+        for p in &pts {
+            assert!(p.1 >= up - 0.6 && p.1 <= down + 0.6, "overshoot at {p:?} ({up}..{down})");
+        }
+        for w in pts.windows(2) {
+            if (w[1].1 - w[0].1).abs() > 0.5 * (down - up) {
+                assert!(w[1].0 - w[0].0 <= 1.01, "edge wider than a sample: {w:?}");
+            }
+        }
+    }
+
+    #[test]
+    fn a_constant_signal_is_a_straight_line() {
+        let pts = drawn(&samples_view(&[(2.0, 2.0, 2.0); 300]));
+        assert!(pts.len() > 100);
+        assert!(pts.iter().all(|p| (p.1 - pts[0].1).abs() < 1e-9), "{pts:?}");
+    }
+
+    #[test]
+    fn a_sine_is_drawn_without_needles_and_with_even_crests() {
+        // the Summing Amplifier: 64 steps per sample, 15.6 samples per period
+        let v = samples_view(&recorded_sine(5.0, 15.6, 0.3, 400, 64));
+        let (drawn_n, wanted) = curve_and_reference_reversals(&v, 10, 390);
+        assert!(
+            drawn_n.abs_diff(wanted) <= 2,
+            "needles on the slopes: {drawn_n} turns, {wanted} wanted"
+        );
+        let ys: Vec<f64> = drawn(&v).iter().filter(|p| p.0 >= 2.0).map(|p| p.1).collect();
+        // the same crest height from one period to the next
+        let tops: Vec<f64> =
+            ys.windows(3).filter(|w| w[1] < w[0] && w[1] < w[2]).map(|w| w[1]).collect();
+        let (lo, hi) = tops.iter().fold((f64::MAX, f64::MIN), |(a, b), t| (a.min(*t), b.max(*t)));
+        assert!(tops.len() > 20 && hi - lo <= 1.0, "crests {lo}..{hi} ({})", tops.len());
+    }
+
+    #[test]
+    fn crests_stay_even_at_every_time_scale() {
+        for spp in [6.0, 10.0, 15.6, 26.0, 40.0, 100.0] {
+            for k in 0..8 {
+                let phase = f64::from(k) * 0.8;
+                let v = samples_view(&recorded_sine(5.0, spp, phase, 400, 64));
+                let (drawn_n, wanted) = curve_and_reference_reversals(&v, 10, 390);
+                assert!(
+                    drawn_n.abs_diff(wanted) <= 2,
+                    "spp {spp}, phase {phase}: {drawn_n} turns, {wanted} wanted"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn a_sum_of_two_sines_has_a_smooth_envelope() {
+        // 200 Hz sine (5 V) and a 20 Hz square wave (2 V), 320 us a sample, 5 us a step
+        let n = 400 * 64;
+        let values = (0..n).map(|k| {
+            let t = k as f64 * 5e-6;
+            let square = if (t * 20.0).fract() < 0.5 { 2.0 } else { -2.0 };
+            5.0 * (std::f64::consts::TAU * 200.0 * t).sin() + square
+        });
+        let v = samples_view(&record(values, 64));
+        let (drawn_n, wanted) = curve_and_reference_reversals(&v, 10, 390);
+        assert!(drawn_n.abs_diff(wanted) <= 2, "{drawn_n} turns, {wanted} wanted");
+    }
+
+    #[test]
+    fn the_curve_of_no_samples_or_one_sample_is_short() {
+        let v = samples_view(&[]);
+        assert!(curve_points(&v.plots[0], 0, 0, 1e-9).is_empty());
+        let v = samples_view(&[(1.0, 1.0, 1.0)]);
+        let n = POINTS - 1;
+        assert_eq!(
+            curve_points(&v.plots[0], n, POINTS, 1e-9),
+            [(n as f64, 1.0), (POINTS as f64, 1.0)]
+        );
+    }
+
+    #[test]
+    fn the_curve_follows_the_end_values_and_adds_only_what_they_do_not_explain() {
+        let v = samples_view(&[
+            (0.0, 0.0, 0.0),
+            // a ramp: the sample spans exactly from the earlier end to its own
+            (0.0, 1.0, 1.0),
+            // a crest inside the sample
+            (0.9, 2.0, 0.9),
+            // below the flat threshold: no vertex for it
+            (0.9, 0.9 + 1e-12, 0.9),
+            // noise on both sides, coming from 0.9: it starts at the nearer end of the stroke
+            (-1.0, 3.0, 0.5),
+        ]);
+        let n = POINTS - 5;
+        let pts = curve_points(&v.plots[0], n, POINTS, 1e-9);
+        let at = |k: f64| n as f64 + k;
+        assert_eq!(
+            pts,
+            [
+                // the start of the first sample, then its end
+                (at(0.0), 0.0),
+                (at(1.0), 0.0),
+                // the ramp adds nothing
+                (at(2.0), 1.0),
+                // the crest inside the third sample, then its end
+                (at(2.5), 2.0),
+                (at(3.0), 0.9),
+                // the flat one adds nothing
+                (at(4.0), 0.9),
+                // noise: from the nearer side of the stroke (-1, since 0.9 is closer to it)
+                (at(4.5), -1.0),
+                (at(4.5), 3.0),
+                (at(5.0), 0.5),
+            ]
+        );
+    }
+
+    #[test]
+    fn a_held_view_is_drawn_like_a_live_one_and_does_not_change() {
+        let mut v = samples_view(&recorded_sine(5.0, 15.6, 0.0, 400, 64));
+        v.trigger = Some(crate::scope::TriggerView {
+            mode: crate::scope::TRIGGER_NORMAL,
+            edge: crate::scope::TRIGGER_EDGE_RISING,
+            level: 0.0,
+            state: crate::scope::TriggerState::Triggered,
+            waiting: false,
+            triggered: true,
+            back: 200,
+            time: 0.0,
+        });
+        let (a, b) = (drawn(&v), drawn(&v));
+        assert_eq!(a, b);
+        let ys: Vec<f64> = a.iter().filter(|p| p.0 >= 2.0).map(|p| p.1).collect();
+        // no needles: far fewer turns than one per sample
+        assert!(reversals(&ys, 0.005) < 80, "{}", reversals(&ys, 0.005));
+    }
+
+    #[test]
+    fn the_selected_plot_and_several_plots_use_the_same_curve() {
+        let mut v = samples_view(&recorded_sine(5.0, 15.6, 0.0, 400, 64));
+        let mut second = v.plots[0].clone();
+        second.units = crate::scope::UNITS_A;
+        v.plots.push(second);
+        let spot = ScopeSpot {
+            x: 0.0,
+            y: 0.0,
+            w: 400.0,
+            h: 200.0,
+            slot: 0,
+            cursor: None,
+            cursor_y: None,
+            selected: Some(1),
+            measure_from: None,
+            glow: false,
+            transparent: false,
+        };
+        let mut g = SvgPainter::new(400.0, 200.0);
+        draw_scope(&mut g, &v, &mut ScaleState { values: v.scale, negative: false }, &spot, false);
+        let svg = g.finish();
+        // both plots drawn, the selected one with the heavier line, none with needles
+        assert!(svg.contains("stroke-width=\"3\""));
+        for line in svg.lines().filter(|l| l.contains("fill=\"none\"")) {
+            let verticals = line.matches(" L").count();
+            if verticals > 300 {
+                let d = line.split('"').nth(1).unwrap_or("");
+                let ys: Vec<f64> = d
+                    .split(['M', 'L'])
+                    .filter_map(|t| t.split_whitespace().nth(1)?.parse().ok())
+                    .collect();
+                assert!(reversals(&ys[2..], 0.005) < 80, "{}", reversals(&ys, 0.005));
+            }
+        }
+    }
+
+    #[test]
+    fn a_smaller_scope_in_the_circuit_draws_the_same_curve() {
+        // an undocked scope is smaller: fewer samples are shown, still without needles
+        let v = samples_view(&recorded_sine(5.0, 15.6, 0.0, 400, 64));
+        let spot = ScopeSpot {
+            x: 20.0,
+            y: 30.0,
+            w: 150.0,
+            h: 90.0,
+            slot: 0,
+            cursor: None,
+            cursor_y: None,
+            selected: None,
+            measure_from: None,
+            glow: false,
+            transparent: true,
+        };
+        let mut g = SvgPainter::new(400.0, 200.0);
+        draw_scope(&mut g, &v, &mut ScaleState { values: v.scale, negative: false }, &spot, false);
+        let svg = g.finish();
+        let longest = svg
+            .lines()
+            .filter(|l| l.contains("fill=\"none\""))
+            .max_by_key(|l| l.len())
+            .unwrap_or("");
+        let ys: Vec<f64> = longest
+            .split('"')
+            .nth(1)
+            .unwrap_or("")
+            .split(['M', 'L'])
+            .filter_map(|t| t.split_whitespace().nth(1)?.parse().ok())
+            .collect();
+        assert!(
+            ys.len() > 100 && reversals(&ys[2..], 0.005) < 25,
+            "{} {}",
+            ys.len(),
+            reversals(&ys, 0.005)
+        );
     }
 
     #[test]

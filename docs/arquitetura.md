@@ -287,11 +287,15 @@ taxas de variação. O contrato completo está em
 - `Scope`: velocidade (passos por amostra), flags do arquivo, posição (coluna), escalas, lista
   de `ScopePlot`, gatilho (`Trigger`), modos (`xy`, `plot_xy`, `fft`), eixos do X/Y
   (`XyAxes`) e, se em X/Y, a imagem (`Trace`).
-- `ScopePlot`: o componente e o valor plotado (`VAL_*`), as unidades, dois buffers circulares de
-  2048 pontos (**mínimo e máximo** de cada amostra, porque vários passos cabem numa amostra), o
-  filtro do acoplamento CA, a escala manual.
-- `Scope::time_step` roda a cada passo da simulação: acumula mínimos e máximos, alimenta o
-  gatilho e, em X/Y, pinta a imagem.
+- `ScopePlot`: o componente e o valor plotado (`VAL_*`), as unidades, três buffers circulares de
+  2048 pontos (**mínimo, máximo e último valor** de cada amostra, porque vários passos cabem numa
+  amostra), o filtro do acoplamento CA, a escala manual.
+- `Scope::time_step` roda a cada passo da simulação: acumula mínimos, máximos e o último valor,
+  alimenta o gatilho e, em X/Y, pinta a imagem.
+- A curva no tempo passa pelo último valor de cada amostra (que está sobre o sinal) e só ganha
+  um vértice a mais onde o mínimo ou o máximo da amostra não é explicado pelos valores finais
+  vizinhos (crista, ruído, pico isolado): uma senoide sai lisa e o detalhe real não se perde
+  (`curve_points` em `render/scopes.rs`).
 - `Scope::view` produz um `ScopeView`, a cópia imutável que a interface desenha. É isso que
   viaja nos snapshots.
 - `Scope::from_line`/`from_xml` e `to_xml` leem e gravam o formato do original, com os mesmos
