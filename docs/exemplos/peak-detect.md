@@ -45,6 +45,20 @@ A entrada é a soma de duas fontes senoidais em série: $5\ \text{V}$ de pico a 
 | 24 | `TextElm` | text | Text = reset; Size = 20; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $V_C$ | tensão no capacitor | tensão entre os terminais do capacitor | V |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+| $I_{\text{rev}}$ | corrente reversa | corrente que passa pelo diodo bloqueado | A |
+
 ## Teoria
 
 Com a realimentação pela tensão do capacitor, o primeiro operacional ajusta a sua saída para que o capacitor fique igual à entrada, **enquanto** a entrada estiver acima da tensão armazenada: o diodo conduz e o capacitor carrega. Quando a entrada cai abaixo da tensão do capacitor, a saída do operacional vai ao limite negativo, o diodo fica reverso e o capacitor mantém a carga. A tensão guardada, portanto, acompanha o **máximo** do sinal:

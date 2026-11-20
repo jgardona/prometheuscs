@@ -42,6 +42,25 @@ Mostrar o que as capacitâncias dos transistores acrescentam ao [inversor CMOS](
 | 12 | `ResistorElm` | resistor | Resistance (ohms) = 5 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $E$ | energia | energia armazenada ou dissipada | J |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $\beta$ | parâmetro de transcondutância | constante da lei quadrática do MOSFET: $I_D = \tfrac12\beta(V_{GS}-V_t)^2$ | A/V² |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $C_{\text{gs}}$ | capacitância porta-fonte | capacitância parasita entre a porta e a fonte | F |
+| $C_{\text{gd}}$ | capacitância porta-dreno | capacitância parasita entre a porta e o dreno | F |
+| $Q$ | carga elétrica | quantidade de carga acumulada | C |
+| $V_{DD}$ | tensão de alimentação | tensão contínua que alimenta o circuito (a ligada aos drenos dos transistores) | V |
+| $C_{\text{db}}$ | capacitância dreno-corpo | capacitância de junção entre o dreno e o corpo | F |
+| $C_{\text{sb}}$ | capacitância fonte-corpo | capacitância de junção entre a fonte e o corpo | F |
+
 ## Teoria
 
 A capacitância da porta precisa ser carregada pela fonte do sinal: o resistor de entrada e as quatro capacitâncias de $10\ \text{pF}$ formam uma constante de tempo da ordem de $\tau \approx R(C_{gs} + C_{gd})_{total} \approx 5\ \Omega \cdot 40\ \text{pF} = 0{,}2\ \text{ns}$ (a capacitância porta-dreno age com o seu valor multiplicado pelo ganho do estágio, o **efeito Miller**).

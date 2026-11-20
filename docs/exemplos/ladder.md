@@ -78,6 +78,19 @@ Uma escada LC com $21$ seções: cada seção tem um indutor de $10\ \text{mH}$ 
 | 75 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $N$ | número de seções | quantidade de seções iguais da escada | — |
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $Z_0$ | impedância característica | razão entre tensão e corrente de uma onda que percorre a linha | Ω |
+| $f_c$ | frequência de corte | frequência em que o ganho cai a $1/\sqrt{2}$ do valor da banda passante (−3 dB) | Hz |
+
 ## Teoria
 
 Uma seção LC é um modelo de um trecho curto de uma linha de transmissão. Numa escada com $N$ seções de $L$ e $C$:

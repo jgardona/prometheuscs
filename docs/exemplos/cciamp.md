@@ -40,6 +40,26 @@ Uma fonte de corrente de $10\ \text{mA}$ passa por um potenciômetro de $100\ \O
 | 10 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $Y$ | terminal Y | entrada de tensão do conversor de corrente (corrente nula no ideal) | — |
+| $X$ | terminal X | entrada de corrente do conversor de corrente, que copia a tensão de $Y$ | — |
+| $Z$ | impedância | oposição de um elemento à corrente alternada, na frequência considerada | Ω |
+| $V_X$ | tensão em X | tensão do terminal $X$, que segue $V_Y$ | V |
+| $V_Y$ | tensão em Y | tensão do terminal $Y$ do conversor de corrente | V |
+| $I_Y$ | corrente em Y | corrente que entra no terminal $Y$ (nula no conversor ideal) | A |
+| $I_Z$ | corrente em Z | corrente que sai do terminal $Z$, igual a $\pm I_X$ | A |
+| $I_X$ | corrente em X | corrente que entra no terminal $X$ do conversor de corrente | A |
+| $I_{\text{in}}$ | corrente de entrada | corrente que entra no circuito pela entrada | A |
+| $R_m$ | transresistência | razão entre a tensão de saída e a corrente de entrada | Ω |
+| $R_X$ | resistência em X | resistor ligado ao terminal $X$ | Ω |
+| $V_Z$ | tensão zener | tensão em que o diodo zener regula | V |
+| $R_Z$ | resistência em Z | resistor ligado ao terminal $Z$ | Ω |
+
 ## Teoria
 
 O **transportador de corrente** de segunda geração (CCII, *second-generation current conveyor*) tem três terminais: $X$, $Y$ e $Z$. Idealmente,

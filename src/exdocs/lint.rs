@@ -27,7 +27,7 @@ pub fn lint_document(doc: &str, dir: &Path) -> Vec<String> {
     out
 }
 
-fn strip_front_matter(doc: &str) -> &str {
+pub(crate) fn strip_front_matter(doc: &str) -> &str {
     let Some(rest) = doc.strip_prefix("---\n") else { return doc };
     match rest.find("\n---\n") {
         Some(i) => &rest[i + 5..],
@@ -36,7 +36,7 @@ fn strip_front_matter(doc: &str) -> &str {
 }
 
 /// The text outside fenced code (code lines become empty lines) and the Mermaid blocks.
-fn split_fences(body: &str) -> (String, Vec<String>) {
+pub(crate) fn split_fences(body: &str) -> (String, Vec<String>) {
     let mut text = String::new();
     let mut blocks = Vec::new();
     let mut fence: Option<(String, Vec<&str>)> = None;
@@ -104,7 +104,7 @@ fn sections(text: &str, out: &mut Vec<String>) {
 }
 
 /// `text` without inline code spans.
-fn without_code_spans(text: &str) -> String {
+pub(crate) fn without_code_spans(text: &str) -> String {
     let mut out = String::with_capacity(text.len());
     let mut in_code = false;
     for c in text.chars() {

@@ -42,6 +42,16 @@ Os mesmos componentes do exemplo inversor ($500\ \text{k}\Omega$ e $100\ \text{k
 | 12 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $R_f$ | resistência de realimentação | resistor que liga a saída à entrada inversora | Ω |
+| $R_{\text{in}}$ | resistência de entrada | resistência vista pela fonte olhando para a entrada do circuito | Ω |
+| $A_v$ | ganho de tensão | razão entre a tensão de saída e a de entrada | — |
+
 ## Teoria
 
 O amplificador de Norton (como o LM3900) é um **amplificador de diferença de corrente**: a saída responde à diferença entre as correntes que entram nas duas entradas, uma das quais é um espelho de corrente. Com um resistor de realimentação $R_f$ e um de entrada $R_{in}$, o ganho de tensão ideal é $\mp R_f/R_{in}$. A polarização usa uma corrente de referência no espelho (aqui, por um resistor de $500\ \text{k}\Omega$ ligado a $6\ \text{V}$).

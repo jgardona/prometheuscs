@@ -50,6 +50,24 @@ A entrada é um gerador de ruído branco (valores aleatórios uniformes entre $-
 | 43 | `RailElm` | noise gen | Max Voltage = 5; Waveform = Noise; DC Offset (V) = 0; Internal Resistance (ohms) = 0; Show Voltage = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $C_1$ | capacitância do capacitor 1 | capacitância do capacitor chamado $C_1$ no circuito | F |
+| $C_2$ | capacitância do capacitor 2 | capacitância do capacitor chamado $C_2$ no circuito | F |
+| $R_1$ | resistência do resistor 1 | resistência do resistor chamado $R_1$ no circuito | Ω |
+| $R_2$ | resistência do resistor 2 | resistência do resistor chamado $R_2$ no circuito | Ω |
+| $f_0$ | frequência de ressonância | frequência em que o circuito responde ao máximo | Hz |
+| $Q$ | fator de qualidade | mede o quão seletivo é um circuito ressonante: $f_0/B$, razão entre a frequência central e a largura de banda | — |
+| $f_c$ | frequência de corte | frequência em que o ganho cai a $1/\sqrt{2}$ do valor da banda passante (−3 dB) | Hz |
+| $H_{\text{pa}}$ | resposta passa-altas | função de transferência do filtro passa-altas | — |
+| $H_{\text{pb}}$ | resposta passa-baixas | função de transferência do filtro passa-baixas | — |
+| $V_{\text{rms},\text{in}}$ | tensão eficaz de entrada | valor eficaz da tensão de entrada | V |
+| $V_{\text{rms},\text{out}}$ | tensão eficaz de saída | valor eficaz da tensão de saída | V |
+
 ## Teoria
 
 Para uma seção Sallen-Key passa-altas de ganho unitário, com capacitores $C_1$ e $C_2$ em série e resistores $R_1$ (à saída) e $R_2$ (à terra),

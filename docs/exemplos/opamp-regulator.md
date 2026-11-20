@@ -50,6 +50,18 @@ A entrada não regulada é uma onda triangular de $120\ \text{Hz}$ que vai de $1
 | 24 | `ResistorElm` | resistor | Resistance (ohms) = 100 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $V_Z$ | tensão zener | tensão em que o diodo zener regula | V |
+| $R_9$ | resistência do resistor 9 | resistência do resistor chamado $R_9$ no circuito | Ω |
+| $R_{10}$ | resistência do resistor 10 | resistência do resistor chamado $R_{10}$ no circuito | Ω |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+
 ## Teoria
 
 A realimentação negativa leva as duas entradas do operacional ao mesmo potencial: a tensão do divisor, $V_\text{out}/2$, iguala a referência $V_Z$:

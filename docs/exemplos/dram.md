@@ -73,6 +73,19 @@ Mostrar a célula de **RAM dinâmica** (DRAM): um bit guardado como carga num ca
 | 71 | `LogicInputElm` | logic input | Momentary Switch = sim; High Logic Voltage = 5; Low Voltage = 0; Numeric = não; Ternary = não; Keyboard Shortcut =  |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $\beta$ | parâmetro de transcondutância | constante da lei quadrática do MOSFET: $I_D = \tfrac12\beta(V_{GS}-V_t)^2$ | A/V² |
+| $G$ | condutância | inverso da resistência, $1/R$ | S |
+| $V_{DD}$ | tensão de alimentação | tensão contínua que alimenta o circuito (a ligada aos drenos dos transistores) | V |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+
 ## Teoria
 
 A célula 1T1C é a menor célula de memória possível, o que dá às DRAMs a maior densidade. O preço:

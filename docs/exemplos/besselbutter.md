@@ -67,6 +67,16 @@ Duas escadas LC de cinco indutores e cinco capacitores, com carga de $50\ \Omega
 | 40 | `RailElm` | square wave gen | Max Voltage = 5; Waveform = Square Wave; DC Offset (V) = 0; Internal Resistance (ohms) = 0; Show Voltage = não; Specify As = Frequency/Duty Cycle; Frequency (Hz) = 80; Phase Offset (degrees) = 0; Duty Cycle = 50; Rise/Fall Time (s) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $\tau_g$ | atraso de grupo | $-d\varphi/d\omega$: atraso que o filtro impõe ao envelope do sinal | s |
+| $\omega$ | frequência angular | $2\pi f$: a frequência medida em radianos por segundo | rad/s |
+| $\varphi$ | fase | ângulo de defasagem de um sinal em relação a uma referência | rad |
+
 ## Teoria
 
 A resposta a um degrau depende da **fase** do filtro, não só do módulo. Um filtro de **Butterworth** privilegia a planura do módulo, e seus polos próximos do eixo imaginário produzem **sobressinal** e oscilação ("ringing"). Um filtro de **Bessel** (Thomson) privilegia a linearidade da fase, isto é, um **atraso de grupo** constante,

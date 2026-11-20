@@ -43,6 +43,25 @@ Um NPN com $\beta = 1000$ tem o coletor ligado a $+10\ \text{V}$ por um resistor
 | 7 | `RailElm` | A/C source | Max Voltage = 5; Waveform = A/C; DC Offset (V) = 655m; Internal Resistance (ohms) = 0; Show Voltage = não; Frequency (Hz) = 40; Phase Offset (degrees) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $v_s$ | tensão instantânea da fonte | tensão do sinal da fonte de entrada em cada instante | V |
+| $V_{BE}$ | tensão base-emissor | tensão entre a base e o emissor | V |
+| $V_E$ | tensão do terminal emissor | tensão do emissor em relação à terra | V |
+| $I_E$ | corrente de emissor | corrente que sai pelo emissor do transistor bipolar | A |
+| $I_C$ | corrente de coletor | corrente que entra pelo coletor do transistor bipolar | A |
+| $V_C$ | tensão do terminal coletor | tensão do coletor em relação à terra | V |
+| $v_o$ | tensão instantânea de saída | tensão da saída em cada instante | V |
+| $V_p$ | tensão de pico | valor máximo atingido por uma senoide | V |
+
 ## Teoria
 
 Seja $v_s$ a senoide de $5\ \text{V}$ (sem o nível contínuo). Com a queda $V_{BE} \approx 0{,}655\ \text{V}$ compensada, a tensão do emissor é $V_E \approx v_s$ e a corrente de emissor é

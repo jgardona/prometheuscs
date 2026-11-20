@@ -37,6 +37,21 @@ O transistor de baixo (o *acionador*, $V_t = 1{,}5\ \text{V}$, $\beta = 0{,}02\ 
 | 10 | `LogicOutputElm` | logic output | Threshold = 2.5; Current Required = não; Numeric = não; Ternary = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $\beta$ | parâmetro de transcondutância | constante da lei quadrática do MOSFET: $I_D = \tfrac12\beta(V_{GS}-V_t)^2$ | A/V² |
+| $V_{GS}$ | tensão porta-fonte | tensão entre a porta e a fonte | V |
+| $V_{DS}$ | tensão dreno-fonte | tensão entre o dreno e a fonte | V |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $V_{t,L}$ | tensão de limiar da carga | tensão de limiar do transistor de carga | V |
+| $V_{DD}$ | tensão de alimentação | tensão contínua que alimenta o circuito (a ligada aos drenos dos transistores) | V |
+
 ## Teoria
 
 Como $V_{GS} = V_{DS}$, a carga está sempre na **saturação** (ou cortada), e conduz

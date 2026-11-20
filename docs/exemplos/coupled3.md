@@ -67,6 +67,24 @@ Três cópias, uma sobre a outra, de uma cadeia de três indutores de $1\ \text{
 | 32 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $m$ | índice do modo | número que identifica o modo de oscilação | — |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $k$ | índice | número inteiro que numera os termos de um somatório, os bits ou os elementos de um conjunto | — |
+| $N$ | número de malhas | quantidade de malhas LC acopladas | — |
+| $\omega_k$ | frequência angular do modo k | frequência angular natural do modo de índice $k$ | rad/s |
+| $\omega_0$ | frequência angular natural | frequência angular em que o circuito ressoa, $1/\sqrt{LC}$ | rad/s |
+| $a_{k,m}$ | amplitude do modo m na malha k | amplitude da corrente da malha $k$ no modo $m$ | A |
+| $\lambda$ | modulação do comprimento do canal | parâmetro que dá à corrente de saturação do MOSFET uma pequena inclinação com $V_{DS}$ ($0$: sem inclinação) | 1/V |
+
 ## Teoria
 
 Para $N$ malhas LC iguais acopladas em cadeia, as frequências dos modos normais são

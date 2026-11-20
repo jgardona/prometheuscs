@@ -50,6 +50,22 @@ Duas portas de transmissão (NMOS e PMOS em paralelo, com diodos de corpo) ligam
 | 37 | `NMosfetElm` | MOSFET | Model = default-body; Swap D/S = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $S$ | seleção do multiplexador | sinal de seleção: com $S=1$ a saída segue $v_1$ e com $S=0$ segue $v_2$ | — |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $R_{\text{on}}$ | resistência de condução | resistência de uma chave ou de um transistor quando conduz | Ω |
+| $v_{\text{out}}$ | tensão instantânea de saída | sinal que o circuito entrega à saída | V |
+| $v_1$ | tensão instantânea 1 | tensão instantânea chamada $v_1$ no circuito | V |
+| $v_2$ | tensão instantânea 2 | tensão instantânea chamada $v_2$ no circuito | V |
+| $R_L$ | resistência de carga | resistor ligado à saída, que consome a energia do circuito | Ω |
+| $\beta$ | parâmetro de transcondutância | constante da lei quadrática do MOSFET: $I_D = \tfrac12\beta(V_{GS}-V_t)^2$ | A/V² |
+
 ## Teoria
 
 Cada porta de transmissão funciona como em [Porta de transmissão CMOS](cmostransgate.md): ligada, tem resistência $R_{on} \approx 25\ \Omega$ (entre $14$ e $25\ \Omega$); desligada, tem só a fuga. A seleção $S$ liga uma porta e, pelo inversor, a complementar $\bar S$ liga a outra: a saída é $v_{out} = S\thinspace v_1 + \bar S\thinspace v_2$ com um divisor de tensão com a carga, $v_{out} = v\thinspace R_L/(R_L + R_{on})$, de modo que o ganho é $1000/1025 = 0{,}976$ no pior caso.

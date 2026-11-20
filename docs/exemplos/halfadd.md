@@ -40,6 +40,17 @@ Duas entradas lógicas numéricas, $A$ (elemento 2) e $B$ (elemento 3), vão a u
 | 13 | `LogicOutputElm` | logic output | Threshold = 2.5; Current Required = não; Numeric = sim; Ternary = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $C$ | entrada lógica C | terceira entrada ou sinal de relógio do circuito lógico | — |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+| $S$ | sinal lógico S | entrada de seleção, de ajuste (*set*) ou de soma, conforme o circuito | — |
+
 ## Teoria
 
 Somar dois bits dá um número de $0$ a $2$, que precisa de dois bits para ser escrito: $A + B = 2C + S$. A tabela da soma é a da [XOR](xor.md) e a do vai-um é a da AND:

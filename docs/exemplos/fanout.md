@@ -96,6 +96,23 @@ O exemplo abre com as duas entradas em $0$.
 | 84 | `NTransistorElm` | transistor | Beta/hFE = 100; Swap E/C = não; Draw Circle = não; Model = default |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $N$ | número de portas ligadas | quantidade de entradas que a saída da porta aciona | — |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $I_B$ | corrente de base | corrente que entra pela base do transistor bipolar | A |
+| $V_{OH}$ | tensão de saída em nível alto | tensão da saída no nível lógico alto | V |
+| $R_C$ | resistência de coletor | resistor externo ligado ao coletor | Ω |
+| $I_{\text{in}}$ | corrente de entrada | corrente que entra no circuito pela entrada | A |
+| $I_{IL}$ | corrente de entrada em nível baixo | corrente que a entrada da porta fornece no nível baixo | A |
+| $I_{IH}$ | corrente de entrada em nível alto | corrente que a entrada da porta puxa no nível alto | A |
+| $I_{OL}$ | corrente de saída em nível baixo | corrente que a saída da porta absorve no nível baixo | A |
+| $I_{OH}$ | corrente de saída em nível alto | corrente que a saída da porta fornece no nível alto | A |
+
 ## Teoria
 
 Cada entrada TTL ligada a uma saída lhe impõe uma corrente, e o sentido dessa corrente depende do nível:

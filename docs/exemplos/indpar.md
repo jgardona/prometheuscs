@@ -43,6 +43,24 @@ Cada exemplo desta família tem dois circuitos lado a lado, idênticos exceto po
 | 21 | `InductorElm` | inductor | Inductance (H) = 833.3m; Trapezoidal Approximation = sim; Initial Current (on Reset) (A) = 0; Saturation Current (A) (0=none) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $L_1$ | indutância do indutor 1 | indutância do indutor chamado $L_1$ no circuito | H |
+| $L_2$ | indutância do indutor 2 | indutância do indutor chamado $L_2$ no circuito | H |
+| $i_k$ | corrente da fase k | corrente da fase de índice $k$ | A |
+| $L_k$ | indutância do indutor k | indutância do indutor de índice $k$ | H |
+| $L_{\text{eq}}$ | indutância equivalente | indutância de um conjunto de indutores visto como um só | H |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $v_L$ | tensão no indutor | tensão entre os terminais do indutor | V |
+
 ## Teoria
 
 Indutores em paralelo têm a mesma tensão $v$, e a corrente de cada um é $i_k = \dfrac{1}{L_k}\displaystyle\int v\thinspace dt$ (com correntes iniciais nulas). A corrente total é a soma, então

@@ -40,6 +40,20 @@ O MOSFET é comandado por uma fonte de onda quadrada de $1\ \text{kHz}$ (períod
 | 14 | `VoltageElm` | square wave gen | Max Voltage = 5; Waveform = Square Wave; DC Offset (V) = 5; Internal Resistance (ohms) = 0; Show Voltage = não; Specify As = Frequency/Duty Cycle; Frequency (Hz) = 1k; Phase Offset (degrees) = 0; Duty Cycle = 56; Rise/Fall Time (s) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $D$ | ciclo de trabalho | fração do período em que a saída fica em nível alto | — |
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+| $i_L$ | corrente no indutor | corrente que passa pelo indutor | A |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+
 ## Teoria
 
 **Chave ligada**: a fonte $V_{in}$ fica sobre o indutor, que armazena energia ($i_L$ sobe com $V_{in}/L$), e o diodo está cortado. **Chave desligada**: o indutor entrega a corrente ao capacitor e à carga pelo diodo, em sentido tal que a saída fica **negativa** em relação à terra; a tensão sobre o indutor é $V_{out}$.

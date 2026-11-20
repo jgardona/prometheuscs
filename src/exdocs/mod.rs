@@ -13,6 +13,7 @@ pub mod front;
 pub mod index;
 pub mod lint;
 pub mod region;
+pub mod symbols;
 
 use crate::app::examples::{ExampleItem, ExampleList, parse_setup_list};
 use crate::elements::registry::Registry;
@@ -105,6 +106,74 @@ fn expected_navigation(ctx: &Context, file: &str) -> Option<String> {
     ))
 }
 
+/// The documents that already have the section of symbols.
+fn documents_with_symbols(ctx: &Context) -> BTreeSet<String> {
+    ctx.stems
+        .iter()
+        .filter(|stem| {
+            std::fs::read_to_string(ctx.docs.join(format!("{stem}.md")))
+                .is_ok_and(|doc| doc.contains(&format!("\n## {}\n", symbols::SECTION)))
+        })
+        .cloned()
+        .collect()
+}
+
+/// Everything wrong with the symbols sections and the glossary under `root`, one
+/// `file: message` per problem. `only` limits the documents checked (the glossary is then
+/// not checked).
+pub fn check_symbols(root: &Path, only: Option<&str>) -> Vec<String> {
+    let ctx = match load(root) {
+        Ok(c) => c,
+        Err(e) => return vec![e],
+    };
+    let glossary_text = std::fs::read_to_string(root.join(symbols::GLOSSARY)).unwrap_or_default();
+    let (glossary, parse_problems) = symbols::parse_glossary(&glossary_text);
+    let mut problems = Vec::new();
+    let mut infos = BTreeMap::new();
+    for stem in &ctx.stems {
+        if only.is_some_and(|o| o != stem) {
+            continue;
+        }
+        let Ok(doc) = std::fs::read_to_string(ctx.docs.join(format!("{stem}.md"))) else {
+            continue;
+        };
+        let (found, info) = symbols::check_document(&doc, &glossary, symbols::REQUIRE_SECTION);
+        problems.extend(found.into_iter().map(|m| format!("{DOCS_DIR}/{stem}.md: {m}")));
+        infos.insert(stem.clone(), info);
+    }
+    if only.is_none() {
+        problems.extend(symbols::check_glossary(&glossary, parse_problems, &infos));
+    }
+    problems
+}
+
+/// What a document uses and what it lacks, for the author of its symbols section: the symbols of
+/// its math, the fields of its components table, and the problems of `check_symbols` for it.
+///
+/// # Errors
+/// The document cannot be read.
+pub fn symbols_report(root: &Path, stem: &str) -> Result<String, String> {
+    let path = root.join(DOCS_DIR).join(format!("{stem}.md"));
+    let doc = std::fs::read_to_string(&path).map_err(|e| format!("{}: {e}", path.display()))?;
+    let body = lint::strip_front_matter(&doc);
+    let (text, _) = lint::split_fences(&symbols::without_section(body));
+    let mut out = String::from("símbolos usados em fórmulas:\n");
+    for s in symbols::used_symbols(&text) {
+        out.push_str(&format!("  {s}\n"));
+    }
+    out.push_str("campos da tabela de componentes:\n");
+    for f in
+        region::get_region(&doc, "componentes").map(symbols::component_fields).unwrap_or_default()
+    {
+        out.push_str(&format!("  {f}\n"));
+    }
+    out.push_str("problemas:\n");
+    for p in check_symbols(root, Some(stem)) {
+        out.push_str(&format!("  {p}\n"));
+    }
+    Ok(out)
+}
+
 /// Writes the generated parts under `root` (the repository root): the index and the regions of
 /// every document. Returns the files that changed.
 pub fn sync_all(root: &Path) -> Result<Vec<String>, String> {
@@ -142,7 +211,8 @@ pub fn sync_all(root: &Path) -> Result<Vec<String>, String> {
         }
         write_if_changed(&path, &doc, &mut changed, root)?;
     }
-    let text = index::render_index(&ctx.list, &ctx.stems);
+    let with_symbols = documents_with_symbols(&ctx);
+    let text = index::render_index(&ctx.list, &ctx.stems, &with_symbols);
     write_if_changed(&ctx.docs.join("README.md"), &text, &mut changed, root)?;
     Ok(changed)
 }
@@ -260,13 +330,14 @@ pub fn check_all(root: &Path) -> Vec<String> {
             }
         }
     }
-    let want = index::render_index(&ctx.list, &ctx.stems);
+    let want = index::render_index(&ctx.list, &ctx.stems, &documents_with_symbols(&ctx));
     match std::fs::read_to_string(ctx.docs.join("README.md")) {
         Ok(have) if have == want => {}
         _ => problems.push(format!(
             "{DOCS_DIR}/README.md: o índice está desatualizado (rode `exdocs sync`)"
         )),
     }
+    problems.extend(check_symbols(root, None));
     problems
 }
 

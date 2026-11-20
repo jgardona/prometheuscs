@@ -52,6 +52,20 @@ A entrada soma dois sinais senoidais de $1\ \text{V}$ de pico: um de $40\ \text{
 | 41 | `RailElm` | voltage source | Voltage = 5; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $H$ | função de transferência | razão entre a saída e a entrada de um filtro, em função da frequência | — |
+| $R_{\text{res}}$ | resistência em série | resistor externo em série com o capacitor do filtro | Ω |
+| $R_{\text{on}}$ | resistência de condução | resistência de uma chave ou de um transistor quando conduz | Ω |
+| $f_c$ | frequência de corte | frequência em que o ganho cai a $1/\sqrt{2}$ do valor da banda passante (−3 dB) | Hz |
+
 ## Teoria
 
 A resistência em série com o capacitor é $R = R_{res} + R_{on}$, com $R_{on} \approx 25\ \Omega$ da porta de transmissão (com a entrada perto de $2{,}5\ \text{V}$, os dois transistores conduzem; veja a fórmula em [Porta de transmissão CMOS](cmostransgate.md)). O circuito é um passa-baixas de primeira ordem:

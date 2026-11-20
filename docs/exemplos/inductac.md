@@ -33,6 +33,31 @@ Uma fonte alternada de 5 V de pico e 40 Hz alimenta um resistor de $180\ \Omega$
 | 3 | `InductorElm` | inductor | Inductance (H) = 1; Trapezoidal Approximation = sim; Initial Current (on Reset) (A) = 0; Saturation Current (A) (0=none) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $Z$ | impedância | oposição de um elemento à corrente alternada, na frequência considerada | Ω |
+| $Z_R$ | impedância do resistor | $R$ | Ω |
+| $Z_L$ | impedância do indutor | $j\omega L$ | Ω |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $\omega$ | frequência angular | $2\pi f$: a frequência medida em radianos por segundo | rad/s |
+| $Z_C$ | impedância do capacitor | $1/(j\omega C)$ | Ω |
+| $X_L$ | reatância indutiva | oposição de um indutor à corrente alternada, $\omega L$ | Ω |
+| $X_C$ | reatância capacitiva | oposição de um capacitor à corrente alternada, $1/(\omega C)$ | Ω |
+| $I_{\text{pico}}$ | corrente de pico | maior valor que a corrente atinge no ciclo | A |
+| $V_{\text{pico}}$ | tensão de pico | valor máximo atingido pela tensão | V |
+| $V_{L,\text{pico}}$ | tensão de pico no indutor | valor máximo da tensão sobre o indutor | V |
+| $\varphi$ | fase | ângulo de defasagem de um sinal em relação a uma referência | rad |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+
 ## Teoria
 
 Em regime permanente senoidal, tensões e correntes são fasores e cada elemento tem uma **impedância**:

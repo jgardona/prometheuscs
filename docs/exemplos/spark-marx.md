@@ -63,6 +63,16 @@ Cinco capacitores de $24\ \text{nF}$ são carregados, por resistores de $1\ \tex
 | 32 | `ResistorElm` | resistor | Resistance (ohms) = 2M |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $N$ | número de estágios | quantidade de estágios iguais ligados em cascata | — |
+| $V_0$ | tensão inicial | valor da tensão no instante inicial | V |
+
 ## Teoria
 
 O centelhador (*spark gap*) do simulador é uma chave controlada pela tensão: com resistência de **abertura** muito alta ($1\ \text{G}\Omega$) até que a tensão entre os terminais atinja a **tensão de ruptura**; a partir daí ele passa a ter a resistência de **condução**, e só volta a abrir quando a corrente cai abaixo da **corrente de manutenção**.

@@ -49,6 +49,15 @@ Quatro amplificadores operacionais formam uma cadeia de integradores e somadores
 | 36 | `OutputElm` | output | Show Voltage = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+
 ## Teoria
 
 Um sistema contínuo precisa de **pelo menos três** variáveis de estado e de uma não linearidade para ser caótico. Aqui as variáveis são as tensões nos capacitores dos integradores, e a não linearidade vem do limite de saída dos operacionais (quando um deles satura em $\pm 15\ \text{V}$, a sua realimentação muda). Em cada região (nenhum operacional saturado, um saturado, etc.), o sistema é linear e tem uma dinâmica (autovalores) diferente; a trajetória é "dobrada" cada vez que passa de uma região para outra.

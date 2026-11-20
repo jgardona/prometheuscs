@@ -40,6 +40,19 @@ Uma fonte senoidal de $5\ \text{V}$ e $187\ \text{MHz}$, com resistência intern
 | 10 | `TransLineElm` | transmission line | Delay (s) = 10n; Impedance (ohms) = 500 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $\theta$ | ângulo | ângulo de fase ou de condução | rad |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $V_{\text{max}}$ | limite superior da saída | maior tensão que a saída pode atingir | V |
+| $V_{\text{min}}$ | limite inferior da saída | menor tensão que a saída pode atingir | V |
+
 ## Teoria
 
 A linha de $500\ \Omega$ está casada com sua carga, então só viaja nela a onda progressiva. Para a linha de $75\ \Omega$ a carga equivalente é de $500\ \Omega$:

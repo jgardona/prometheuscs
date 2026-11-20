@@ -42,6 +42,17 @@ A lâmpada de $150\ \Omega$ continua ligada a $120\ \text{V}$ eficazes, mas agor
 | 17 | `Switch2Elm` | switch (SPDT) | Momentary Switch = não; Group Number (for linking) = 0; # of Throws = 2; Keyboard Shortcut = ; On Resistance (ohms) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $C$ | entrada lógica C | terceira entrada ou sinal de relógio do circuito lógico | — |
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+
 ## Teoria
 
 A chave de quatro vias só tem dois estados: ou liga os viajantes direto ou os cruza. Cada troca de estado de **qualquer** das três chaves inverte o estado da lâmpada (cada uma é um ponto de comando equivalente). Em termos lógicos, a lâmpada acesa corresponde a uma paridade fixa do número de chaves trocadas em relação à posição inicial:

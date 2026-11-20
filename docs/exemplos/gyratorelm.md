@@ -57,6 +57,24 @@ Os osciloscópios mostram os dois lados.
 | 22 | `ResistorElm` | resistor | Resistance (ohms) = 1k |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $s$ | variável de Laplace | frequência complexa; no regime senoidal, $s = j\omega$ | 1/s |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $v_1$ | tensão instantânea 1 | tensão instantânea chamada $v_1$ no circuito | V |
+| $i_2$ | corrente instantânea 2 | corrente instantânea chamada $i_2$ no circuito | A |
+| $v_2$ | tensão instantânea 2 | tensão instantânea chamada $v_2$ no circuito | V |
+| $i_1$ | corrente instantânea 1 | corrente instantânea chamada $i_1$ no circuito | A |
+| $Z_L$ | impedância de carga | impedância ligada ao fim da linha ou à saída | Ω |
+| $Z_{\text{in}}$ | impedância de entrada | impedância vista pela fonte olhando para a entrada do circuito | Ω |
+
 ## Teoria
 
 Um girador ideal tem $v_1 = R\thinspace i_2$ e $v_2 = -R\thinspace i_1$. A impedância vista numa porta quando a outra tem a impedância $Z_L$ é

@@ -61,6 +61,18 @@ Os 4 bits de cada conversor formam, juntos, o endereço de 8 bits de uma ROM de 
 | 34 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $R$ | canal vermelho | bit de cor vermelho da palavra lida da ROM | — |
+| $X$ | coordenada X | coordenada horizontal do ponto desenhado na tela bidimensional | — |
+| $Y$ | coordenada Y | coordenada vertical do ponto desenhado na tela bidimensional | — |
+| $G$ | canal verde | bit de cor verde da palavra lida da ROM | — |
+| $B$ | canal azul | bit de cor azul da palavra lida da ROM | — |
+
 ## Teoria
 
 A ROM é uma tabela de $16\times 16$ pontos. Lendo o conteúdo da ROM em linhas de 16, o código de cor de cada ponto é:

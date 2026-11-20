@@ -48,6 +48,29 @@ Três relés têm seus contatos normalmente abertos ligados **em série**: a fon
 | 19 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $R_b$ | resistência de base | resistor externo ligado à base | Ω |
+| $i_b$ | corrente da bobina | corrente que passa pela bobina do relé | A |
+| $\tau_b$ | constante de tempo da bobina | $L/R_b$: tempo com que a corrente da bobina cresce | s |
+| $I_{\text{on}}$ | corrente de operação | corrente da bobina acima da qual o relé opera | A |
+| $I_{\text{off}}$ | corrente de soltura | corrente da bobina abaixo da qual o relé solta | A |
+| $R_{\text{on}}$ | resistência de condução | resistência de uma chave ou de um transistor quando conduz | Ω |
+| $R_{\text{off}}$ | resistência de corte | resistência de uma chave ou de um transistor quando não conduz | Ω |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+| $Y$ | saída lógica Y | saída do circuito lógico | — |
+| $k$ | índice | número inteiro que numera os termos de um somatório, os bits ou os elementos de um conjunto | — |
+| $V_{\text{saida}}$ | tensão de saída | tensão que o circuito entrega à saída | V |
+
 ## Teoria
 
 Um relé é uma chave operada por um eletroímã. Seu modelo no simulador tem duas partes:

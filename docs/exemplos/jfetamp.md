@@ -43,6 +43,25 @@ O dreno é alimentado com $10\ \text{V}$ por um resistor de $1{,}675\ \text{k}\O
 | 12 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $\lambda$ | modulação do comprimento do canal | parâmetro que dá à corrente de saturação do MOSFET uma pequena inclinação com $V_{DS}$ ($0$: sem inclinação) | 1/V |
+| $I_D$ | corrente de dreno | corrente que entra pelo dreno do transistor de efeito de campo | A |
+| $V_{GS}$ | tensão porta-fonte | tensão entre a porta e a fonte | V |
+| $I_{DSS}$ | corrente de dreno de saturação | corrente de dreno com $V_{GS}=0$ | A |
+| $V_{DS}$ | tensão dreno-fonte | tensão entre o dreno e a fonte | V |
+| $V_S$ | tensão do terminal fonte | tensão do terminal fonte (*source*) em relação à terra | V |
+| $g_m$ | transcondutância | quanto a corrente de saída varia por volt na entrada, $\partial I_D/\partial V_{GS}$ | S |
+| $A_v$ | ganho de tensão | razão entre a tensão de saída e a de entrada | — |
+| $R_D$ | resistência de dreno | resistor ligado entre a alimentação e o dreno | Ω |
+| $R_L$ | resistência de carga | resistor ligado à saída, que consome a energia do circuito | Ω |
+
 ## Teoria
 
 O JFET de canal N do simulador (modelo *default-jfet*) tem tensão de corte $V_T = -4\ \text{V}$ e $\beta = 1{,}25\ \text{mA/V}^2$, sem modulação de canal ($\lambda = 0$). Em saturação,

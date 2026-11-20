@@ -72,6 +72,20 @@ O circuito é o amplificador operacional clássico de $20$ transistores ($13$ NP
 | 106 | `TextElm` | text | Text = -; Size = 24; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $A$ | ganho | razão entre a saída e a entrada de um amplificador | — |
+| $V_{BE}$ | tensão base-emissor | tensão entre a base e o emissor | V |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $R_f$ | resistência de realimentação | resistor que liga a saída à entrada inversora | Ω |
+| $R_1$ | resistência do resistor 1 | resistência do resistor chamado $R_1$ no circuito | Ω |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+
 ## Teoria
 
 Como no amplificador inversor ideal, o terra virtual na entrada inversora dá

@@ -45,6 +45,24 @@ Um NPN ($\beta = 1000$) é polarizado por um divisor ($11\ \text{k}\Omega$ de $+
 | 18 | `CrystalElm` | crystal | Parallel Capacitance = 28.7p; Series Capacitance (F) = 0.1p; Inductance (H) = 2.5m; Resistance (Ω) = 6.4; Show Frequency = sim |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $C_s$ | capacitância em série do cristal | capacitância $C_s$ do ramo ressonante em série do cristal | F |
+| $C_0$ | capacitância paralela do cristal | capacitância $C_0$ dos eletrodos, em paralelo com o ramo em série | F |
+| $f_s$ | frequência de ressonância série | frequência em que o ramo em série $L C_s$ ressoa | Hz |
+| $f_p$ | frequência de ressonância paralela | frequência em que o cristal ressoa em paralelo, um pouco acima de $f_s$ | Hz |
+| $Q$ | fator de qualidade | mede o quão seletivo é um circuito ressonante: $f_0/B$, razão entre a frequência central e a largura de banda | — |
+| $\omega_s$ | frequência angular de ressonância série | $2\pi f_s$ | rad/s |
+| $C_L$ | capacitância de carga | capacitor ligado à saída, que o circuito precisa carregar | F |
+
 ## Teoria
 
 **O cristal.** O modelo elétrico do cristal (modelo de Butterworth–Van Dyke) é um ramo série $R$–$L$–$C_s$ em paralelo com a capacitância dos eletrodos $C_0$. Ele tem duas frequências de ressonância:

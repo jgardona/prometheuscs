@@ -39,6 +39,17 @@ Duas entradas lógicas, $A$ (elemento 13) e $B$ (elemento 14), e quatro portas N
 | 14 | `LogicInputElm` | logic input | Momentary Switch = não; High Logic Voltage = 5; Low Voltage = 0; Numeric = não; Ternary = não; Keyboard Shortcut =  |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $N$ | saída da NAND intermediária | nó $N$ interno, saída da NAND das duas entradas | — |
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+| $Y$ | saída lógica Y | saída do circuito lógico | — |
+
 ## Teoria
 
 Seja $N = \overline{AB}$ a saída da primeira NAND. As intermediárias dão $\overline{A N}$ e $\overline{B N}$, e a última

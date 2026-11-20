@@ -36,6 +36,27 @@ Um resistor de $100\ \Omega$ em série com a entrada e, para a terra, um indutor
 | 5 | `SweepElm` | sweep (log) | Min Frequency (Hz) = 20; Max Frequency (Hz) = 60; Sweep Time (s) = 500m; Logarithmic = sim; Max Voltage = 5; Bidirectional = sim |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $f_0$ | frequência de ressonância | frequência em que o circuito responde ao máximo | Hz |
+| $H$ | função de transferência | razão entre a saída e a entrada de um filtro, em função da frequência | — |
+| $f_{\text{min}}$ | frequência mínima | menor frequência da varredura | Hz |
+| $f_{\text{max}}$ | frequência máxima | maior frequência da varredura | Hz |
+| $Q$ | fator de qualidade | mede o quão seletivo é um circuito ressonante: $f_0/B$, razão entre a frequência central e a largura de banda | — |
+| $Z$ | impedância | oposição de um elemento à corrente alternada, na frequência considerada | Ω |
+| $\omega$ | frequência angular | $2\pi f$: a frequência medida em radianos por segundo | rad/s |
+| $\omega_0$ | frequência angular natural | frequência angular em que o circuito ressoa, $1/\sqrt{LC}$ | rad/s |
+| $V_{\text{out},\text{pico}}$ | tensão de pico na saída | valor máximo da tensão de saída | V |
+
 ## Teoria
 
 A impedância do ramo LC série é $Z = j\left(\omega L - \dfrac{1}{\omega C}\right)$, nula em $\omega_0 = 1/\sqrt{LC}$. A função de transferência é

@@ -61,6 +61,16 @@ Mostrar o conversor analógico-digital mais rápido: uma escada de resistores ge
 | 64 | `DecimalDisplayElm` | decimal display | High Logic Voltage = 5; Bit Order = MSB First; # of Bits = 3; Display Mode = Decimal |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $n$ | número inteiro n | quantidade ou índice inteiro definido no texto (ordem do filtro, número de bits, de nós ou de espiras) | — |
+| $k$ | índice | número inteiro que numera os termos de um somatório, os bits ou os elementos de um conjunto | — |
+
 ## Teoria
 
 Os comparadores cujos limiares estão abaixo da entrada saem em $1$, os outros em $0$: a saída da fileira é um **código termômetro** com $k$ uns, onde $k$ é o número de limiares ultrapassados. Com limiares em $0{,}5, 1{,}5, \dots, 6{,}5\ \text{V}$ (os resistores de meio valor nas pontas deslocam a escada de meio degrau), o código é o valor da entrada **arredondado** ao volt mais próximo, de $0$ a $7$.

@@ -43,6 +43,26 @@ Duas fontes de corrente, de $1\ \text{mA}$ e de $2\ \text{mA}$, são ligadas por
 | 13 | `RailElm` | voltage source | Voltage = 5; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $X$ | terminal X | entrada de corrente do conversor de corrente, que copia a tensão de $Y$ | — |
+| $Z$ | impedância | oposição de um elemento à corrente alternada, na frequência considerada | Ω |
+| $Y$ | terminal Y | entrada de tensão do conversor de corrente (corrente nula no ideal) | — |
+| $V_X$ | tensão em X | tensão do terminal $X$, que segue $V_Y$ | V |
+| $V_Y$ | tensão em Y | tensão do terminal $Y$ do conversor de corrente | V |
+| $I_Y$ | corrente em Y | corrente que entra no terminal $Y$ (nula no conversor ideal) | A |
+| $I_Z$ | corrente em Z | corrente que sai do terminal $Z$, igual a $\pm I_X$ | A |
+| $I_X$ | corrente em X | corrente que entra no terminal $X$ do conversor de corrente | A |
+| $I_1$ | corrente 1 | corrente chamada $I_1$ no circuito | A |
+| $I_2$ | corrente 2 | corrente chamada $I_2$ no circuito | A |
+| $V_Z$ | tensão zener | tensão em que o diodo zener regula | V |
+| $R_Z$ | resistência em Z | resistor ligado ao terminal $Z$ | Ω |
+| $V_{\text{saída}}$ | tensão de saída | tensão que o circuito entrega à saída | V |
+
 ## Teoria
 
 O **transportador de corrente** de segunda geração (CCII, *second-generation current conveyor*) tem três terminais: $X$, $Y$ e $Z$. Idealmente,

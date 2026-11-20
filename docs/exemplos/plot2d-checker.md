@@ -59,6 +59,21 @@ onde $a_0$ é o bit menos significativo do conversor do eixo Y, e $b_3\dots b_0$
 | 24 | `RoutedWireElm` | wire | Show Current = não; Show Voltage = não; Show Bus Value = não; Show Bus Value (Hex) = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $X$ | coordenada X | coordenada horizontal do ponto desenhado na tela bidimensional | — |
+| $Y$ | coordenada Y | coordenada vertical do ponto desenhado na tela bidimensional | — |
+| $B$ | brilho | brilho do ponto desenhado na tela bidimensional | — |
+| $a_0$ | bit a0 | bit menos significativo do número $a$ | — |
+| $b_0$ | bit 0 | bit menos significativo do número | — |
+| $b_3$ | bit 3 | bit de peso $2^3$ do número | — |
+| $b_2$ | bit 2 | bit de peso $2^2$ do número | — |
+| $b_1$ | bit 1 | bit de peso $2^1$ do número | — |
+
 ## Teoria
 
 Com 16 níveis em cada eixo, a tela fica dividida em $16\times 16$ células. O bit menos significativo de cada conversor muda de valor a cada célula (a cada degrau de $0{,}3125\ \text{V}$): ao longo de uma linha o do eixo X alterna $16$ vezes, e o do eixo Y alterna a cada $12{,}5$ linhas ($12\ \text{kHz}/60\ \text{Hz} = 200$ linhas por quadro, dividido em 16 faixas). O XOR dos dois bits vale $1$ quando as paridades da coluna e da linha diferem: é um tabuleiro de xadrez de $16\times 16$ casas.

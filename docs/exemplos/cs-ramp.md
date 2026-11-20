@@ -35,6 +35,25 @@ Uma fonte de tensão controlada com a expressão $\text{pwl}(t, 0, 0, 0{,}1, 5)$
 | 3 | `ControlledVoltageElm` | Controlled Voltage Source | Output Voltage = pwl(t,0,0,.1,5) |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $x$ | variável de entrada x | argumento $x$ da função que define a saída da fonte controlada | — |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $x_1$ | abscissa do ponto 1 | valor de $x$ do primeiro ponto da função linear por partes | — |
+| $y_1$ | ordenada do ponto 1 | valor de $y$ do primeiro ponto da função linear por partes | — |
+| $x_2$ | abscissa do ponto 2 | valor de $x$ do segundo ponto da função linear por partes | — |
+| $y_2$ | ordenada do ponto 2 | valor de $y$ do segundo ponto da função linear por partes | — |
+| $x_k$ | abscissa do ponto k | valor de $x$ do ponto de índice $k$ | — |
+| $y_k$ | ordenada do ponto k | valor de $y$ do ponto de índice $k$ | — |
+
 ## Teoria
 
 As fontes controladas de dois terminais (o losango) são definidas por uma **expressão** que lê o resto do circuito **pelo nome**: $v(\text{nome})$ é a tensão de um nó rotulado ou sobre um voltímetro com rótulo, $i(\text{nome})$ a corrente de um amperímetro com rótulo, e $\text{dvdt}$ / $\text{didt}$ as suas taxas de variação. O resultado é a tensão (fonte de tensão controlada, com o $+$ no segundo terminal) ou a corrente (fonte de corrente controlada, no sentido da seta) que a fonte impõe. A função $\text{pwl}(x, x_1, y_1, x_2, y_2, \ldots)$ interpola linearmente entre os pontos $(x_k, y_k)$ e mantém o último valor depois do último ponto. Com $x = t$ e os pontos $(0, 0)$ e $(0{,}1\ \text{s}, 5\ \text{V})$,

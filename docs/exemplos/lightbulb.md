@@ -37,6 +37,25 @@ Uma lâmpada de $100\ \text{W}$ e $120\ \text{V}$ (tempos de aquecimento e resfr
 | 3 | `SwitchElm` | switch (SPST) | Momentary Switch = não; IEC Symbol = não; Label (for linking) = ; Keyboard Shortcut = ; On Resistance (ohms) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $P$ | potência | energia transformada por unidade de tempo | W |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $T$ | temperatura do filamento | temperatura do filamento da lâmpada | K |
+| $R_{\text{nom}}$ | resistência nominal | resistência do filamento na temperatura de operação | Ω |
+| $V_n$ | tensão nominal | tensão para a qual a lâmpada é especificada | V |
+| $P_n$ | potência nominal | potência da lâmpada na tensão nominal | W |
+| $C_{\text{th}}$ | capacitância térmica | calor necessário para elevar a temperatura do filamento de um grau | J/K |
+| $P_{\text{el}}$ | potência elétrica | potência elétrica entregue ao filamento | W |
+| $P_{\text{perda}}$ | potência perdida | potência dissipada como calor na linha | W |
+| $I_{\text{ef}}$ | corrente eficaz | valor eficaz da corrente | A |
+
 ## Teoria
 
 A resistência de um filamento de tungstênio cresce com a temperatura: o simulador usa uma relação empírica $R(T)$ em que $R_{nom} = V_n^2/P_n = 144\ \Omega$ é o valor na temperatura de operação. A temperatura do filamento obedece ao balanço de energia

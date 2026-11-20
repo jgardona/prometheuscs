@@ -46,6 +46,24 @@ Um amplificador operacional sem realimentação, de ganho muito alto, atua como 
 | 19 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0; Label =  |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $D$ | ciclo de trabalho | fração do período em que a saída fica em nível alto | — |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $v_a$ | tensão instantânea do áudio | sinal de áudio a amplificar, em cada instante | V |
+| $v_t$ | tensão instantânea da triangular | onda triangular de alta frequência em cada instante | V |
+| $V_p$ | tensão de pico | valor máximo atingido por uma senoide | V |
+| $V_{CC}$ | tensão de alimentação do coletor | tensão contínua que alimenta o circuito pelo coletor | V |
+| $f_c$ | frequência de corte | frequência em que o ganho cai a $1/\sqrt{2}$ do valor da banda passante (−3 dB) | Hz |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+
 ## Teoria
 
 Comparar o áudio $v_a(t)$ com uma triangular $v_t(t)$ de frequência muito mais alta (a portadora) produz pulsos cujo **ciclo de trabalho** $D(t)$ varia com o áudio. Se $v_t$ vai de $-V_p$ a $+V_p$,

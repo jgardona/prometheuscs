@@ -34,6 +34,28 @@ Um memristor ($R_{on} = 100\ \Omega$, $R_{off} = 16\ \text{k}\Omega$, $D = 10\ \
 | 3 | `VarRailElm` | voltage source | Min Voltage = -5; Max Voltage = 5; Slider Text = Voltage |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $x$ | estado x do memristor | $w/D$: fração da espessura que está dopada (de $0$ a $1$) | — |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $D$ | espessura total do filme | espessura $D$ do filme fino do memristor | m |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $R_{\text{off}}$ | resistência de corte | resistência de uma chave ou de um transistor quando não conduz | Ω |
+| $R_{\text{on}}$ | resistência de condução | resistência de uma chave ou de um transistor quando conduz | Ω |
+| $k$ | constante de deriva do memristor | constante que relaciona a velocidade da fronteira dopada à corrente, $dx/dt = k\thinspace i$ | 1/(A·s) |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $w$ | largura da região dopada | largura da região dopada do memristor | m |
+| $\mu$ | mobilidade | mobilidade dos íons no memristor | m²/(s·V) |
+| $\varphi$ | fase | ângulo de defasagem de um sinal em relação a uma referência | rad |
+| $\varphi_0$ | fluxo inicial | valor inicial do fluxo magnético do memristor | Wb |
+| $t_c$ | tempo crítico | tempo em que a resistência chega ao limite | s |
+
 ## Teoria
 
 O memristor do simulador é o modelo de deriva linear da HP: um filme de espessura total $D$, com uma região dopada de largura $w$, tem resistência

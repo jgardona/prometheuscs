@@ -49,6 +49,23 @@ Quatro flip-flops D disparados pela borda de subida, em cadeia: a entrada série
 | 23 | `LogicOutputElm` | logic output | Threshold = 2.5; Current Required = não; Numeric = não; Ternary = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $D$ | entrada de dados D | entrada de dados do flip-flop ou do circuito lógico | — |
+| $Q$ | saída Q | saída de um flip-flop ou latch, que guarda o bit armazenado | — |
+| $Q_0$ | sinal lógico Q0 | sinal lógico $Q_0$ (bit ou elemento de índice 0) do circuito | — |
+| $Q_3$ | sinal lógico Q3 | sinal lógico $Q_3$ (bit ou elemento de índice 3) do circuito | — |
+| $D_{\text{in}}$ | entrada serial | bit que entra pelo primeiro flip-flop do registrador de deslocamento | — |
+| $Q_k$ | fator de qualidade da seção k | fator de qualidade da seção de índice $k$ do filtro | — |
+| $k$ | índice | número inteiro que numera os termos de um somatório, os bits ou os elementos de um conjunto | — |
+| $Q_{k-1}$ | saída do flip-flop k−1 | saída $Q$ do flip-flop anterior, que entra no flip-flop $k$ | — |
+| $Q_1$ | sinal lógico Q1 | sinal lógico $Q_1$ (bit ou elemento de índice 1) do circuito | — |
+| $Q_2$ | sinal lógico Q2 | sinal lógico $Q_2$ (bit ou elemento de índice 2) do circuito | — |
+
 ## Teoria
 
 Na borda de subida, todos os flip-flops copiam ao mesmo tempo o seu $D$, que é a saída do vizinho **antes** da borda; por isso cada bit avança exatamente uma posição por pulso:

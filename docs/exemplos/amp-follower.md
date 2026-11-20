@@ -37,6 +37,20 @@ Uma fonte senoidal de $40\ \text{Hz}$ e $5\ \text{V}$ de pico liga-se à entrada
 | 11 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $A$ | ganho | razão entre a saída e a entrada de um amplificador | — |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+| $R_{\text{out}}$ | resistência de saída | resistência vista pela carga olhando para a saída do circuito | Ω |
+| $I_L$ | corrente na carga | corrente que passa pela carga | A |
+| $R_L$ | resistência de carga | resistor ligado à saída, que consome a energia do circuito | Ω |
+
 ## Teoria
 
 Como no exemplo de realimentação, $V_\text{out} = \dfrac{A}{1+A}\thinspace V_\text{in} \approx V_\text{in}$. O interesse do circuito está nas **impedâncias**: a entrada não inversora não drena corrente, de modo que a fonte vê uma carga praticamente infinita; a saída, por sua vez, mantém a tensão quando a carga puxa corrente, porque a realimentação corrige qualquer queda (impedância de saída $R_\text{out}/(1+A)$).

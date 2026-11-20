@@ -53,6 +53,26 @@ Um sinal de $20\ \text{Hz}$ ($1\ \text{V}$ de pico) e outro de $20\ \text{kHz}$ 
 | 35 | `RailElm` | voltage source | Voltage = 9; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $H$ | função de transferência | razão entre a saída e a entrada de um filtro, em função da frequência | — |
+| $I_{ABC}$ | corrente de controle | corrente que controla o ganho do amplificador de transcondutância | A |
+| $I_{\text{out}}$ | corrente de saída | corrente que o circuito entrega à saída ou à carga | A |
+| $g_m$ | transcondutância | quanto a corrente de saída varia por volt na entrada, $\partial I_D/\partial V_{GS}$ | S |
+| $V_+$ | tensão da entrada não inversora | tensão do terminal $+$ do amplificador operacional | V |
+| $V_-$ | tensão da entrada inversora | tensão do terminal $-$ do amplificador operacional | V |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $V_o$ | tensão de saída | tensão da saída do circuito | V |
+| $V_i$ | tensão de entrada | tensão da entrada do circuito | V |
+| $f_c$ | frequência de corte | frequência em que o ganho cai a $1/\sqrt{2}$ do valor da banda passante (−3 dB) | Hz |
+
 ## Teoria
 
 O **amplificador operacional de transcondutância** (OTA, aqui no estilo do LM13700) é uma fonte de corrente controlada por tensão: a corrente de saída é proporcional à tensão diferencial de entrada,

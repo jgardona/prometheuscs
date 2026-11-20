@@ -41,6 +41,16 @@ Três linhas de $10\ \text{ns}$ cada são ligadas em cascata: $75\ \Omega$, $500
 | 11 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $Z_1$ | impedância 1 | impedância chamada $Z_1$ no circuito | Ω |
+| $Z_2$ | impedância 2 | impedância chamada $Z_2$ no circuito | Ω |
+
 ## Teoria
 
 Numa junção entre as impedâncias $Z_1$ (de onde a onda vem) e $Z_2$:

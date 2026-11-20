@@ -35,6 +35,18 @@ Um flip-flop D disparado pela borda de subida tem $\overline{Q}$ ligado a $D$. O
 | 5 | `LogicOutputElm` | logic output | Threshold = 2.5; Current Required = não; Numeric = não; Ternary = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $D$ | entrada de dados D | entrada de dados do flip-flop ou do circuito lógico | — |
+| $n$ | número inteiro n | quantidade ou índice inteiro definido no texto (ordem do filtro, número de bits, de nós ou de espiras) | — |
+| $Q$ | saída Q | saída de um flip-flop ou latch, que guarda o bit armazenado | — |
+| $f_{\text{out}}$ | frequência de saída | frequência do sinal que o circuito entrega | Hz |
+| $f_{\text{clk}}$ | frequência do relógio | frequência com que as chaves são acionadas | Hz |
+
 ## Teoria
 
 Com $D = \overline{Q}$, a cada borda de subida $Q^{+} = \overline{Q}$: o flip-flop funciona como um flip-flop T sempre habilitado. A saída completa um período a cada **dois** períodos do relógio:

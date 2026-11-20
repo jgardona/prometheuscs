@@ -29,7 +29,7 @@ Mostrar a TD4 lendo a porta de **entrada**: o programa lê as quatro chaves, som
 ![Esquema do circuito](img/td4-add2.svg)
 <!-- esquema:fim -->
 
-A mesma CPU do [TD4 LED Strobe](td4.md); só o programa da ROM muda. A porta de entrada são as quatro chaves *In*, de cima para baixo os bits 3 a 0 (elementos 78 a 81). O exemplo abre com $In = 0001$.
+A mesma CPU do [TD4 LED Strobe](td4.md); só o programa da ROM muda. A porta de entrada são as quatro chaves *In*, de cima para baixo os bits 3 a 0 (elementos 78 a 81). O exemplo abre com $\text{In} = 0001$.
 
 <!-- componentes:inicio -->
 | N.º | Tipo | Elemento | Valores |
@@ -115,6 +115,10 @@ A mesma CPU do [TD4 LED Strobe](td4.md); só o programa da ROM muda. A porta de 
 | 108 | `LogicInputElm` | logic input | Momentary Switch = não; High Logic Voltage = 5; Low Voltage = 0; Numeric = não; Ternary = não; Keyboard Shortcut =  |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Este documento não usa símbolos em fórmulas; o significado dos símbolos dos outros exemplos está no [glossário](../glossario-simbolos.md).
+
 ## Teoria
 
 | Endereço | Código | Instrução |
@@ -124,15 +128,15 @@ A mesma CPU do [TD4 LED Strobe](td4.md); só o programa da ROM muda. A porta de 
 | 2 | `90` | `OUT B` |
 | 3 | `F0` | `JMP 0` |
 
-A saída é $(In + 2) \bmod 16$, atualizada a cada volta do laço de quatro instruções ($4\ \text{ms}$). Mudando as chaves, o novo valor aparece na saída na volta seguinte.
+A saída é $(\text{In} + 2) \bmod 16$, atualizada a cada volta do laço de quatro instruções ($4\ \text{ms}$). Mudando as chaves, o novo valor aparece na saída na volta seguinte.
 
 ## Resultados esperados
 
-O simulador dá, com $In = 1$, a saída $3$ ($0011$); com $In = 9$ ($1001$, a chave do bit 3 ligada), a saída $11$ ($1011$); com $In = 0$, a saída $2$ ($0010$).
+O simulador dá, com $\text{In} = 1$, a saída $3$ ($0011$); com $\text{In} = 9$ ($1001$, a chave do bit 3 ligada), a saída $11$ ($1011$); com $\text{In} = 0$, a saída $2$ ($0010$).
 
 ## O que observar
 
-Mude as chaves e veja os LEDs acompanharem com até uma volta do laço de atraso. Experimente $In = 14$ ou $15$: a soma passa de $15$ e o resultado dá a volta ($0$ ou $1$).
+Mude as chaves e veja os LEDs acompanharem com até uma volta do laço de atraso. Experimente $\text{In} = 14$ ou $15$: a soma passa de $15$ e o resultado dá a volta ($0$ ou $1$).
 
 ## Limites do modelo
 

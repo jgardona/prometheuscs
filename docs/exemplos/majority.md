@@ -40,6 +40,20 @@ Três entradas lógicas, $A$ (elemento 0), $B$ (elemento 1) e $C$ (elemento 2), 
 | 21 | `LogicOutputElm` | logic output | Threshold = 2.5; Current Required = não; Numeric = não; Ternary = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $M$ | saída maioria | saída da função maioria: vale $1$ se ao menos duas entradas valem $1$ | — |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+| $X$ | entrada X | uma das três entradas X da função maioria | — |
+| $Y$ | entrada Y | uma das três entradas Y da função maioria | — |
+| $Z$ | entrada Z | uma das três entradas Z da função maioria | — |
+
 ## Teoria
 
 A maioria é a soma dos produtos de cada par:

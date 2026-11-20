@@ -37,6 +37,20 @@ Uma fonte de onda triangular de $40\ \text{Hz}$ e $5\ \text{V}$ de pico (com fas
 | 5 | `LabeledNodeElm` | Labeled Node | Text = in; Internal Node = não; Rotate Text When Vertical = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $v_{\text{in}}$ | tensão instantânea de entrada | sinal aplicado à entrada do circuito | V |
+| $V_p$ | tensão de pico | valor máximo atingido por uma senoide | V |
+
 ## Teoria
 
 As fontes controladas de dois terminais (o losango) são definidas por uma **expressão** que lê o resto do circuito **pelo nome**: $v(\text{nome})$ é a tensão de um nó rotulado ou sobre um voltímetro com rótulo, $i(\text{nome})$ a corrente de um amperímetro com rótulo, e $\text{dvdt}$ / $\text{didt}$ as suas taxas de variação. O resultado é a tensão (fonte de tensão controlada, com o $+$ no segundo terminal) ou a corrente (fonte de corrente controlada, no sentido da seta) que a fonte impõe. A saída é $V_\text{out} = 0{,}01\ \text{s}\cdot \dfrac{dv_\text{in}}{dt}$, limitada a $\pm 15\ \text{V}$. Uma triangular de pico $V_p = 5\ \text{V}$ e frequência $f = 40\ \text{Hz}$ tem inclinação constante de módulo $4V_pf = 800\ \text{V/s}$ em cada meio ciclo, e portanto a saída é uma onda quadrada de amplitude

@@ -45,6 +45,32 @@ Um NMOS (modelo padrão, sem diodo de corpo) tem o dreno ligado a $+10\ \text{V}
 | 12 | `RailElm` | voltage source | Voltage = -10; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $V_S$ | tensão do terminal fonte | tensão do terminal fonte (*source*) em relação à terra | V |
+| $I_D$ | corrente de dreno | corrente que entra pelo dreno do transistor de efeito de campo | A |
+| $V_{GS}$ | tensão porta-fonte | tensão entre a porta e a fonte | V |
+| $\beta$ | parâmetro de transcondutância | constante da lei quadrática do MOSFET: $I_D = \tfrac12\beta(V_{GS}-V_t)^2$ | A/V² |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $V_{\text{ov}}$ | tensão de sobrecarga | $V_{GS} - V_t$: quanto a porta passa do limiar | V |
+| $V_D$ | tensão do terminal dreno | tensão do dreno em relação à terra | V |
+| $V_{DS}$ | tensão dreno-fonte | tensão entre o dreno e a fonte | V |
+| $g_m$ | transcondutância | quanto a corrente de saída varia por volt na entrada, $\partial I_D/\partial V_{GS}$ | S |
+| $A_v$ | ganho de tensão | razão entre a tensão de saída e a de entrada | — |
+| $R_D$ | resistência de dreno | resistor ligado entre a alimentação e o dreno | Ω |
+| $R_L$ | resistência de carga | resistor ligado à saída, que consome a energia do circuito | Ω |
+| $R_S$ | resistência de fonte | resistor ligado entre a fonte e a terra | Ω |
+| $Z_S$ | impedância de fonte | impedância do ramo de fonte: $R_S$ em paralelo com o capacitor de desvio | Ω |
+| $\omega$ | frequência angular | $2\pi f$: a frequência medida em radianos por segundo | rad/s |
+| $\varphi$ | fase | ângulo de defasagem de um sinal em relação a uma referência | rad |
+| $r_o$ | resistência de saída | resistência incremental vista pelo dreno (ou coletor) | Ω |
+| $\lambda$ | modulação do comprimento do canal | parâmetro que dá à corrente de saturação do MOSFET uma pequena inclinação com $V_{DS}$ ($0$: sem inclinação) | 1/V |
+
 ## Teoria
 
 **Polarização.** Com a porta em $0\ \text{V}$ em corrente contínua, a tensão da fonte é $V_S = -10 + 4\thinspace\text{k}\Omega \cdot I_D$, de modo que $V_{GS} = 10 - 4000 I_D$. Na saturação ($\beta = 0{,}02\ \text{A/V}^2$, $V_t = 1{,}5\ \text{V}$, modelo de [n-MOSFET](nmosfet.md)), $I_D = 0{,}01\thinspace(8{,}5 - 4000 I_D)^2$, de solução

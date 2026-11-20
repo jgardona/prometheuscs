@@ -39,6 +39,22 @@ Uma fonte de $5\ \text{V}$ alimenta dois ramos em paralelo; cada ramo é um divi
 | 9 | `AmmeterElm` | Ammeter | Value = Current; Scale = Auto; Circular Symbol = não; Label =  |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $R_1$ | resistência do resistor 1 | resistência do resistor chamado $R_1$ no circuito | Ω |
+| $R_3$ | resistência do resistor 3 | resistência do resistor chamado $R_3$ no circuito | Ω |
+| $R_2$ | resistência do resistor 2 | resistência do resistor chamado $R_2$ no circuito | Ω |
+| $R_4$ | resistência do resistor 4 | resistência do resistor chamado $R_4$ no circuito | Ω |
+| $V_A$ | tensão de Early | mede a inclinação das curvas $I_C \times V_{CE}$: $r_o = V_A/I_C$ | V |
+| $V_B$ | tensão do terminal base | tensão da base em relação à terra | V |
+| $R_g$ | resistência do medidor | resistência interna do medidor ligado à ponte | Ω |
+| $I_g$ | corrente no medidor | corrente que passa pelo medidor ligado à ponte | A |
+
 ## Teoria
 
 O ponto médio de cada ramo tem a tensão

@@ -39,6 +39,27 @@ o osciloscópio que mostra a tensão de saída ao longo do tempo mostra, na prá
 | 4 | `SweepElm` | sweep (log) | Min Frequency (Hz) = 20; Max Frequency (Hz) = 1k; Sweep Time (s) = 100m; Logarithmic = sim; Max Voltage = 5; Bidirectional = sim |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $H$ | função de transferência | razão entre a saída e a entrada de um filtro, em função da frequência | — |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $f_c$ | frequência de corte | frequência em que o ganho cai a $1/\sqrt{2}$ do valor da banda passante (−3 dB) | Hz |
+| $f_{\text{min}}$ | frequência mínima | menor frequência da varredura | Hz |
+| $f_{\text{max}}$ | frequência máxima | maior frequência da varredura | Hz |
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $\omega$ | frequência angular | $2\pi f$: a frequência medida em radianos por segundo | rad/s |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+| $\varphi$ | fase | ângulo de defasagem de um sinal em relação a uma referência | rad |
+| $V_{\text{out},\text{pico}}$ | tensão de pico na saída | valor máximo da tensão de saída | V |
+
 ## Teoria
 
 A saída é o divisor $R$ / $(R + 1/j\omega C)$:

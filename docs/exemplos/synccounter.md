@@ -44,6 +44,23 @@ Quatro flip-flops JK disparados pela borda de descida recebem o mesmo relógio, 
 | 42 | `DecimalDisplayElm` | decimal display | High Logic Voltage = 5; Bit Order = MSB First; # of Bits = 4; Display Mode = Decimal |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $J$ | entrada J | entrada de ajuste do flip-flop JK | — |
+| $K$ | entrada K | entrada de limpeza do flip-flop JK | — |
+| $Q_0$ | sinal lógico Q0 | sinal lógico $Q_0$ (bit ou elemento de índice 0) do circuito | — |
+| $Q_1$ | sinal lógico Q1 | sinal lógico $Q_1$ (bit ou elemento de índice 1) do circuito | — |
+| $Q_2$ | sinal lógico Q2 | sinal lógico $Q_2$ (bit ou elemento de índice 2) do circuito | — |
+| $k$ | índice | número inteiro que numera os termos de um somatório, os bits ou os elementos de um conjunto | — |
+| $T_0$ | sinal lógico T0 | sinal lógico $T_0$ (bit ou elemento de índice 0) do circuito | — |
+| $T_1$ | sinal lógico T1 | sinal lógico $T_1$ (bit ou elemento de índice 1) do circuito | — |
+| $T_2$ | sinal lógico T2 | sinal lógico $T_2$ (bit ou elemento de índice 2) do circuito | — |
+| $T_3$ | sinal lógico T3 | sinal lógico $T_3$ (bit ou elemento de índice 3) do circuito | — |
+
 ## Teoria
 
 Na contagem binária, o bit $k$ inverte exatamente quando todos os bits abaixo dele valem $1$. As ANDs calculam essa condição, e o [flip-flop JK](jkff.md) com $J = K = 1$ inverte, com $J = K = 0$ guarda:

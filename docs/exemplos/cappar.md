@@ -43,6 +43,26 @@ Cada exemplo desta família tem dois circuitos lado a lado, idênticos exceto po
 | 21 | `CapacitorElm` | capacitor | Capacitance (F) = 100μ; Trapezoidal Approximation = sim; Initial Voltage (on Reset) = 1m; Series Resistance = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $C_1$ | capacitância do capacitor 1 | capacitância do capacitor chamado $C_1$ no circuito | F |
+| $C_2$ | capacitância do capacitor 2 | capacitância do capacitor chamado $C_2$ no circuito | F |
+| $V_0$ | tensão inicial | valor da tensão no instante inicial | V |
+| $i_k$ | corrente da fase k | corrente da fase de índice $k$ | A |
+| $C_k$ | capacitância do estágio k | capacitor de índice $k$ do conjunto | F |
+| $C_{\text{eq}}$ | capacitância equivalente | capacitância de um conjunto de capacitores visto como um só | F |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $v_C$ | tensão no capacitor | tensão entre os terminais do capacitor | V |
+
 ## Teoria
 
 Capacitores em paralelo têm a mesma tensão $v$; a corrente de cada um é $i_k = C_k\thinspace\dfrac{dv}{dt}$, e a corrente total é a soma:

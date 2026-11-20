@@ -37,6 +37,22 @@ Uma fonte de onda quadrada de $20\ \text{Hz}$ e $\pm 5\ \text{V}$ alimenta, por 
 | 9 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = sim; Series Resistance (0 = infinite) = 10M; Label = a |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $a$ | nó a | ponto de ligação identificado como $a$ no circuito | — |
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $b$ | nó b | o outro nó entre os quais se mede a resistência equivalente | — |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $v_b$ | tensão de base de pequeno sinal | variação da tensão da base em torno do ponto de operação | V |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+
 ## Teoria
 
 As fontes controladas de dois terminais (o losango) são definidas por uma **expressão** que lê o resto do circuito **pelo nome**: $v(\text{nome})$ é a tensão de um nó rotulado ou sobre um voltímetro com rótulo, $i(\text{nome})$ a corrente de um amperímetro com rótulo, e $\text{dvdt}$ / $\text{didt}$ as suas taxas de variação. O resultado é a tensão (fonte de tensão controlada, com o $+$ no segundo terminal) ou a corrente (fonte de corrente controlada, no sentido da seta) que a fonte impõe. Aqui a corrente é proporcional à derivada da tensão $v$ lida pelo voltímetro `a`:

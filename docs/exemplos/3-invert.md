@@ -46,6 +46,18 @@ A saída ternária é o elemento 15. O exemplo abre com a entrada em $2$.
 | 18 | `LogicInputElm` | logic input | Momentary Switch = não; High Logic Voltage = 5; Low Voltage = 0; Numeric = sim; Ternary = sim; Keyboard Shortcut =  |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $x$ | entrada ternária x | valor lógico de entrada ($0$, $1$ ou $2$) de uma função ternária | — |
+| $F_{\text{xyz}}$ | função ternária Fxyz | notação das funções ternárias de uma entrada: $x$, $y$, $z$ são as saídas para as entradas $0$, $1$, $2$ | — |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $F_{210}$ | função ternária F210 | função ternária de uma entrada que dá $2$, $1$, $0$ para as entradas $0$, $1$, $2$ | — |
+| $V_{SG}$ | tensão fonte-porta | tensão entre a fonte e a porta (referência do PMOS) | V |
+
 ## Teoria
 
 Uma função ternária de uma entrada é dada pela lista das saídas para as entradas $0$, $1$ e $2$; o complemento é $F_{210}$, isto é, $\overline{x} = 2 - x$. No circuito:

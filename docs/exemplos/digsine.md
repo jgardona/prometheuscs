@@ -52,6 +52,14 @@ Oito flip-flops D em anel torcido (um [contador Johnson](johnsonctr.md)) recebem
 | 59 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $f_{\text{out}}$ | frequência de saída | frequência do sinal que o circuito entrega | Hz |
+
 ## Teoria
 
 Um contador Johnson de 8 estágios tem $16$ estados e um ciclo de $16$ períodos do relógio:

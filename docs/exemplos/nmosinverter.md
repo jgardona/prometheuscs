@@ -38,6 +38,21 @@ O dreno do NMOS (modelo padrão digital: $V_t = 1{,}5\ \text{V}$, $\beta = 0{,}0
 | 5 | `NMosfetElm` | MOSFET | Model = default-digital; Swap D/S = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $\beta$ | parâmetro de transcondutância | constante da lei quadrática do MOSFET: $I_D = \tfrac12\beta(V_{GS}-V_t)^2$ | A/V² |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $V_{GS}$ | tensão porta-fonte | tensão entre a porta e a fonte | V |
+| $V_{DS}$ | tensão dreno-fonte | tensão entre o dreno e a fonte | V |
+| $R_{\text{on}}$ | resistência de condução | resistência de uma chave ou de um transistor quando conduz | Ω |
+| $V_{OL}$ | tensão de saída em nível baixo | tensão da saída no nível lógico baixo | V |
+| $R_L$ | resistência de carga | resistor ligado à saída, que consome a energia do circuito | Ω |
+
 ## Teoria
 
 Com a entrada em $0$, $V_{GS} = 0 < V_t$ e o transistor corta: a saída vai a $5\ \text{V}$, menos a pequena queda da corrente de fuga no resistor. Com a entrada em $5\ \text{V}$, o transistor conduz no **triodo**; para $V_{DS}$ pequeno ele é um resistor

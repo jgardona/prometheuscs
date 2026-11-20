@@ -40,6 +40,22 @@ O MOSFET é comandado por uma fonte de onda quadrada de $1\ \text{kHz}$ (períod
 | 13 | `PolarCapacitorElm` | capacitor (polarized) | Capacitance (F) = 10μ; Trapezoidal Approximation = sim; Initial Voltage (on Reset) = 1m; Series Resistance = 0; Max Reverse Voltage = 1 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $D$ | ciclo de trabalho | fração do período em que a saída fica em nível alto | — |
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+| $i_L$ | corrente no indutor | corrente que passa pelo indutor | A |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+
 ## Teoria
 
 **Chave ligada** ($t < DT$): o MOSFET conduz, o diodo está cortado e a tensão de entrada $V_{in}$ é aplicada ao indutor em série com a saída; a corrente $i_L$ sobe com inclinação $(V_{in} - V_{out})/L$. **Chave desligada**: o indutor mantém a corrente pelo diodo, e a tensão sobre ele é $-V_{out}$, de modo que $i_L$ desce com inclinação $-V_{out}/L$.

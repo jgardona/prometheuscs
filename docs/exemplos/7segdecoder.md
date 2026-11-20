@@ -66,6 +66,23 @@ Quatro entradas lógicas numéricas, da esquerda para a direita $D_3$ (elemento 
 | 132 | `NandGateElm` | NAND gate | # of Inputs = 4; High Logic Voltage = 5; Schmitt Inputs = não; Invert Inputs = não; Propagation Delay (s) = 0; DeMorgan's Symbol = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $s$ | variável de Laplace | frequência complexa; no regime senoidal, $s = j\omega$ | 1/s |
+| $g$ | segmento g | um dos sete segmentos do mostrador | — |
+| $a$ | segmento a | primeiro dos sete segmentos do mostrador | — |
+| $k$ | índice | número inteiro que numera os termos de um somatório, os bits ou os elementos de um conjunto | — |
+| $D_3$ | sinal lógico D3 | sinal lógico $D_3$ (bit ou elemento de índice 3) do circuito | — |
+| $D_2$ | entrada de dados 2 | segunda entrada de dados do multiplexador | — |
+| $D_1$ | entrada de dados 1 | primeira entrada de dados do multiplexador | — |
+| $D_0$ | sinal lógico D0 | sinal lógico $D_0$ (bit ou elemento de índice 0) do circuito | — |
+| $m_k$ | mintermo k | termo produto do valor $k$ da entrada | — |
+| $Z_s$ | conjunto de apagados | conjunto de valores para os quais o segmento fica apagado | — |
+
 ## Teoria
 
 O circuito é um [decodificador](decoder.md) de 4 para 16 seguido de uma porta por segmento. Seja $m_k$ o mintermo do valor $k$ (a NAND do valor $k$ dá $\overline{m_k}$). Cada segmento acende **exceto** nos valores do seu conjunto de apagados $Z_s$:

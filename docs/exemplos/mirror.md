@@ -48,6 +48,28 @@ Dois transistores PNP idênticos ($\beta = 1000$) têm as bases ligadas entre si
 | 22 | `TextElm` | text | Text = Q2; Size = 16; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $V_{BE}$ | tensão base-emissor | tensão entre a base e o emissor | V |
+| $V_{BC}$ | tensão base-coletor | tensão entre a base e o coletor | V |
+| $I_C$ | corrente de coletor | corrente que entra pelo coletor do transistor bipolar | A |
+| $I_s$ | corrente de saturação | corrente reversa de um diodo ou de uma junção | A |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $\beta_R$ | ganho de corrente reverso | $\beta$ do transistor ligado ao contrário (coletor e emissor trocados) | — |
+| $I_B$ | corrente de base | corrente que entra pela base do transistor bipolar | A |
+| $g_m$ | transcondutância | quanto a corrente de saída varia por volt na entrada, $\partial I_D/\partial V_{GS}$ | S |
+| $r_e$ | resistência de emissor | resistência dinâmica do emissor, $V_T/I_E$ | Ω |
+| $I_E$ | corrente de emissor | corrente que sai pelo emissor do transistor bipolar | A |
+| $I_{C2}$ | corrente de coletor 2 | corrente que entra pelo coletor do transistor bipolar (do elemento de número 2) | A |
+| $I_{C1}$ | corrente de coletor 1 | corrente que entra pelo coletor do transistor bipolar (do elemento de número 1) | A |
+| $I_{\text{ref}}$ | corrente de referência | corrente de entrada que o espelho de corrente copia | A |
+| $I_{\text{out}}$ | corrente de saída | corrente que o circuito entrega à saída ou à carga | A |
+
 ## Teoria
 
 O transistor bipolar do simulador (modelo "default") segue o modelo de Ebers–Moll, com $V_{BE}$ e $V_{BC}$ as tensões base-emissor e base-coletor (para um NPN):

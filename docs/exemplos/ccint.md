@@ -43,6 +43,27 @@ Uma onda quadrada de $\pm 5\ \text{V}$ e $40\ \text{Hz}$ alimenta, por um resist
 | 12 | `ResistorElm` | resistor | Resistance (ohms) = 1k |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $X$ | terminal X | entrada de corrente do conversor de corrente, que copia a tensão de $Y$ | — |
+| $Z$ | impedância | oposição de um elemento à corrente alternada, na frequência considerada | Ω |
+| $Y$ | terminal Y | entrada de tensão do conversor de corrente (corrente nula no ideal) | — |
+| $V_X$ | tensão em X | tensão do terminal $X$, que segue $V_Y$ | V |
+| $V_Y$ | tensão em Y | tensão do terminal $Y$ do conversor de corrente | V |
+| $I_Y$ | corrente em Y | corrente que entra no terminal $Y$ (nula no conversor ideal) | A |
+| $I_Z$ | corrente em Z | corrente que sai do terminal $Z$, igual a $\pm I_X$ | A |
+| $I_X$ | corrente em X | corrente que entra no terminal $X$ do conversor de corrente | A |
+| $v_{\text{in}}$ | tensão instantânea de entrada | sinal aplicado à entrada do circuito | V |
+| $v_C$ | tensão no capacitor | tensão entre os terminais do capacitor | V |
+
 ## Teoria
 
 O **transportador de corrente** de segunda geração (CCII, *second-generation current conveyor*) tem três terminais: $X$, $Y$ e $Z$. Idealmente,

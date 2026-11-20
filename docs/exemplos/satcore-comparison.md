@@ -40,6 +40,23 @@ Dois circuitos iguais, cada um com uma fonte senoidal de $60\ \text{Hz}$, um res
 | 9 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $I_{\text{sat}}$ | corrente de saturação do núcleo | corrente em que o núcleo do indutor satura | A |
+| $L_0$ | indutância sem saturação | indutância do indutor com corrente pequena | H |
+| $Z$ | impedância | oposição de um elemento à corrente alternada, na frequência considerada | Ω |
+| $\omega$ | frequência angular | $2\pi f$: a frequência medida em radianos por segundo | rad/s |
+| $V_p$ | tensão de pico | valor máximo atingido por uma senoide | V |
+
 ## Teoria
 
 Com um indutor linear de $L_0 = 100\ \text{mH}$, a impedância a $60\ \text{Hz}$ é $|Z| = |R + j\omega L_0| = |10 + j37{,}7| = 39{,}0\ \Omega$ e a corrente de pico vale $V_p/39{,}0$. Com o indutor saturável, a indutância efetiva

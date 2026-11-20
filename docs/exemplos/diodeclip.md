@@ -38,6 +38,26 @@ Uma onda triangular de $\pm 10\ \text{V}$ e $40\ \text{Hz}$ alimenta um resistor
 | 5 | `RailElm` | triangle gen | Max Voltage = 10; Waveform = Triangle; DC Offset (V) = 0; Internal Resistance (ohms) = 0; Show Voltage = não; Frequency (Hz) = 40; Phase Offset (degrees) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $n$ | fator de idealidade | expoente do diodo na equação de Shockley, $i = I_s(e^{v/(nV_T)}-1)$ | — |
+| $I_s$ | corrente de saturação | corrente reversa de um diodo ou de uma junção | A |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $V_{\text{ref}}$ | tensão de referência | tensão fixa com que a entrada é comparada | V |
+| $v_D$ | tensão instantânea no diodo | tensão entre o ânodo e o cátodo do diodo em cada instante | V |
+| $v_R$ | tensão no resistor | tensão entre os terminais do resistor | V |
+| $V_{\text{saida},\text{max}}$ | tensão de saída máxima | maior valor que a tensão de saída atinge | V |
+| $R_2$ | resistência do resistor 2 | resistência do resistor chamado $R_2$ no circuito | Ω |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+| $V_{\text{saida}}$ | tensão de saída | tensão que o circuito entrega à saída | V |
+| $R_1$ | resistência do resistor 1 | resistência do resistor chamado $R_1$ no circuito | Ω |
+
 ## Teoria
 
 O diodo do simulador (modelo "default") segue a equação de Shockley,

@@ -45,6 +45,24 @@ Duas montagens recebem a mesma onda quadrada de $30\ \text{Hz}$ e $\pm 5\ \text{
 | 20 | `TextElm` | text | Text = R3; Size = 24; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $s$ | variável de Laplace | frequência complexa; no regime senoidal, $s = j\omega$ | 1/s |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $R_1$ | resistência do resistor 1 | resistência do resistor chamado $R_1$ no circuito | Ω |
+| $C_1$ | capacitância do capacitor 1 | capacitância do capacitor chamado $C_1$ no circuito | F |
+| $R_2$ | resistência do resistor 2 | resistência do resistor chamado $R_2$ no circuito | Ω |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $V_C$ | tensão no capacitor | tensão entre os terminais do capacitor | V |
+| $Y_{\text{in}}$ | admitância de entrada | inverso da impedância de entrada, $I/V$ | S |
+| $C_{\text{eq}}$ | capacitância equivalente | capacitância de um conjunto de capacitores visto como um só | F |
+
 ## Teoria
 
 Seja $\tau = R_1 C_1 = 100\ \text{k}\Omega\cdot 100\ \text{nF} = 10\ \text{ms}$. O capacitor $C_1$ carrega pela fonte através de $R_1$, e a tensão $V_C$ nele é a da fonte filtrada: $V_C = V/(1 + s\tau)$. O seguidor leva $V_C$ ao outro lado de $R_2$, e a corrente total que a fonte fornece é

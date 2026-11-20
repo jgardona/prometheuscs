@@ -65,6 +65,24 @@ Uma onda triangular de $5\ \text{V}$ de pico e $80\ \text{Hz}$ passa por um divi
 | 50 | `OutputElm` | output | Show Voltage = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $n$ | índice do harmônico | ordem do harmônico de um sinal periódico (1 é a fundamental) | — |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $I_s$ | corrente de saturação | corrente reversa de um diodo ou de uma junção | A |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $v_D$ | tensão instantânea no diodo | tensão entre o ânodo e o cátodo do diodo em cada instante | V |
+| $V_3$ | amplitude do 3º harmônico | amplitude do harmônico de ordem 3 da saída | V |
+| $V_5$ | amplitude do 5º harmônico | amplitude do harmônico de ordem 5 da saída | V |
+| $V_7$ | amplitude do 7º harmônico | amplitude do harmônico de ordem 7 da saída | V |
+| $V_1$ | amplitude da fundamental | amplitude do primeiro harmônico da saída | V |
+| $V_n$ | amplitude do harmônico n | amplitude do harmônico de ordem $n$ (para a triangular, $V_1/n^2$) | V |
+
 ## Teoria
 
 O diodo do simulador (modelo "default") segue a equação de Shockley,

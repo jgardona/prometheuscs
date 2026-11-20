@@ -49,6 +49,21 @@ A entrada é uma senoide de $40\ \text{Hz}$ e $5\ \text{V}$ de pico. Um amplific
 | 25 | `LabeledNodeElm` | Labeled Node | Text = encoded; Internal Node = não; Rotate Text When Vertical = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $S$ | inclinação da rampa | taxa de variação da saída do integrador, $15\ \text{V}/(RC)$ | V/s |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+| $V_{\text{dec}}$ | tensão decodificada | tensão obtida pela integração da saída, que acompanha a entrada | V |
+| $V_p$ | tensão de pico | valor máximo atingido por uma senoide | V |
+
 ## Teoria
 
 A malha é um controle liga-desliga: o erro $e = V_\text{in} - V_\text{dec}$ é levado ao disparador de Schmitt, que inverte o sinal da corrente de integração sempre que $|e|$ passa de $0{,}1\ \text{V}$. O integrador, alimentado com $\pm 15\ \text{V}$ por $1\ \text{k}\Omega$, sobe ou desce com inclinação

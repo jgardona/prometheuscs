@@ -57,6 +57,16 @@ Mostrar o flip-flop **JK**, que resolve o estado proibido do SR: com $J = K = 1$
 | 52 | `TextElm` | text | Text = JK=11: Toggle; Size = 12; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $J$ | entrada J | entrada de ajuste do flip-flop JK | — |
+| $K$ | entrada K | entrada de limpeza do flip-flop JK | — |
+| $Q$ | saída Q | saída de um flip-flop ou latch, que guarda o bit armazenado | — |
+
 ## Teoria
 
 A realimentação garante que só a entrada capaz de mudar o estado chegue ao latch: $J$ só age quando $Q = 0$ e $K$ só age quando $Q = 1$. Na borda de descida do relógio:

@@ -42,6 +42,18 @@ Dois PMOS (modelo padrão digital, $|V_t| = 1{,}5\ \text{V}$, $\beta = 0{,}02\ \
 | 17 | `LogicInputElm` | logic input | Momentary Switch = não; High Logic Voltage = 5; Low Voltage = 0; Numeric = não; Ternary = não; Keyboard Shortcut =  |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $\beta$ | parâmetro de transcondutância | constante da lei quadrática do MOSFET: $I_D = \tfrac12\beta(V_{GS}-V_t)^2$ | A/V² |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+| $Y$ | saída lógica Y | saída do circuito lógico | — |
+
 ## Teoria
 
 A rede de baixo conduz quando $A$ **e** $B$ estão altos (série de NMOS); a rede de cima conduz quando $A$ **ou** $B$ está baixo (paralelo de PMOS). Pelas leis de De Morgan, essas duas condições são complementares: sempre exatamente uma das redes conduz, e

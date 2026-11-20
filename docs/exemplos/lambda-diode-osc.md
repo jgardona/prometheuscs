@@ -40,6 +40,16 @@ Em paralelo com o diodo lambda (dois JFETs complementares, como no exemplo anter
 | 13 | `PJfetElm` | JFET | Model = default-jfet; Swap D/S = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $f_0$ | frequência de ressonância | frequência em que o circuito responde ao máximo | Hz |
+
 ## Teoria
 
 Um circuito LC com perdas tem oscilação que se amortece: a resistência dissipa energia. Um elemento de resistência diferencial negativa, que entrega energia quando polarizado na região descendente da curva, repõe essa energia. A oscilação começa quando a condutância negativa do diodo supera a condutância de perdas do circuito e cresce até a amplitude em que os trechos de resistência positiva e negativa da curva do diodo, ao longo do ciclo, se equilibram.

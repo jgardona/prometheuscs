@@ -39,6 +39,27 @@ Uma fonte senoidal de $5\ \text{V}$ de pico e $500\ \text{Hz}$ alimenta um capac
 | 7 | `OutputElm` | output | Show Voltage = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $n$ | fator de idealidade | expoente do diodo na equação de Shockley, $i = I_s(e^{v/(nV_T)}-1)$ | — |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $I_s$ | corrente de saturação | corrente reversa de um diodo ou de uma junção | A |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $V_C$ | tensão no capacitor | tensão entre os terminais do capacitor | V |
+| $V_p$ | tensão de pico | valor máximo atingido por uma senoide | V |
+| $V_D$ | tensão no diodo | tensão entre o ânodo e o cátodo do diodo | V |
+| $v_{\text{saida}}$ | tensão instantânea de saída | tensão da saída em cada instante | V |
+| $v_{\text{in}}$ | tensão instantânea de entrada | sinal aplicado à entrada do circuito | V |
+
 ## Teoria
 
 O diodo do simulador (modelo "default") segue a equação de Shockley,

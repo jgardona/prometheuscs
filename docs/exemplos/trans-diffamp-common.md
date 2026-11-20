@@ -51,6 +51,29 @@ Mostrar como o amplificador diferencial trata um sinal de **modo comum**, aplica
 | 19 | `TextElm` | text | Text = in 2; Size = 14; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $v_1$ | tensão instantânea 1 | tensão instantânea chamada $v_1$ no circuito | V |
+| $v_2$ | tensão instantânea 2 | tensão instantânea chamada $v_2$ no circuito | V |
+| $v_{\text{cm}}$ | tensão de modo comum | média das duas entradas do par diferencial, $(v_1 + v_2)/2$ | V |
+| $v_d$ | tensão diferencial | diferença entre as duas entradas do par diferencial, $v_1 - v_2$ | V |
+| $I_T$ | corrente da cauda | corrente total que o par diferencial tira da cauda | A |
+| $R_T$ | resistência da cauda | resistor comum aos emissores do par diferencial, que fixa a corrente da cauda | Ω |
+| $A_{\text{cm}}$ | ganho de modo comum | razão entre a saída e a tensão de modo comum de entrada | — |
+| $v_o$ | tensão instantânea de saída | tensão da saída em cada instante | V |
+| $R_C$ | resistência de coletor | resistor externo ligado ao coletor | Ω |
+| $R_E$ | resistência de emissor | resistor externo ligado ao emissor | Ω |
+| $r_e$ | resistência de emissor | resistência dinâmica do emissor, $V_T/I_E$ | Ω |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $I_E$ | corrente de emissor | corrente que sai pelo emissor do transistor bipolar | A |
+| $A_d$ | ganho diferencial | razão entre a saída e a tensão diferencial de entrada | — |
+
 ## Teoria
 
 Com $v_1 = v_2 = v_{cm}$ a entrada diferencial é $v_d = 0$ e só o ganho de modo comum atua (o transistor segue o modelo de Ebers–Moll de [Transistor NPN](npn.md)). Os emissores acompanham a base e a corrente da cauda varia com a tensão do nó dos emissores:

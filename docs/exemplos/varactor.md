@@ -44,6 +44,21 @@ Três circuitos iguais, cada um com uma fonte senoidal de $1\ \text{V}$ de pico 
 | 11 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $C_0$ | capacitância paralela do cristal | capacitância $C_0$ dos eletrodos, em paralelo com o ramo em série | F |
+| $\phi$ | fase | ângulo de defasagem de um sinal em relação a uma referência | rad |
+| $V_R$ | tensão no resistor | tensão sobre o resistor | V |
+| $V_s$ | tensão da fonte | tensão da fonte de alimentação alternada | V |
+| $\omega$ | frequência angular | $2\pi f$: a frequência medida em radianos por segundo | rad/s |
+
 ## Teoria
 
 A capacitância de junção reversa do modelo é

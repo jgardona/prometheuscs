@@ -36,6 +36,21 @@ Uma fonte de 5 V é ligada às duas extremidades de um potenciômetro de $1\ \te
 | 6 | `OutputElm` | output | Show Voltage = sim; Scale = Auto |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $x$ | posição do cursor | fração do curso do potenciômetro, de $0$ a $1$ | — |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $R_L$ | resistência de carga | resistor ligado à saída, que consome a energia do circuito | Ω |
+| $R_b$ | resistência de base | resistor externo ligado à base | Ω |
+| $R_a$ | resistência do trecho a | resistência entre uma extremidade e o cursor do potenciômetro | Ω |
+
 ## Teoria
 
 Entre as extremidades do potenciômetro passa a corrente $I=V/R$, e a tensão no cursor, medida em vazio a partir da extremidade inferior, é

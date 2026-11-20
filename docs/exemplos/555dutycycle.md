@@ -40,6 +40,22 @@ Um 555 alimentado com $5\ \text{V}$ tem o capacitor de $250\ \text{pF}$ nos pino
 | 14 | `DiodeElm` | diode | Model = default |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $D$ | ciclo de trabalho | fração do período em que a saída fica em nível alto | — |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $R_a$ | resistência do trecho a | resistência entre uma extremidade e o cursor do potenciômetro | Ω |
+| $R_b$ | resistência de base | resistor externo ligado à base | Ω |
+| $R_{\text{pot}}$ | resistência do potenciômetro | resistência total do potenciômetro | Ω |
+| $t_h$ | tempo em nível alto | duração do semiciclo em que a saída fica em nível alto | s |
+| $t_l$ | tempo em nível baixo | duração do semiciclo em que a saída fica em nível baixo | s |
+| $V_{CC}$ | tensão de alimentação do coletor | tensão contínua que alimenta o circuito pelo coletor | V |
+
 ## Teoria
 
 Se $R_a$ é a parte do potenciômetro que carrega e $R_b$ a que descarrega, com $R_a + R_b = R_\text{pot}$,

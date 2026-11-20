@@ -42,6 +42,17 @@ A rede ($120\ \text{V}$ eficazes, $60\ \text{Hz}$, pico de $169{,}7\ \text{V}$) 
 | 8 | `LampElm` | lamp | Nominal Power = 100; Nominal Voltage = 120; Warmup Time (s) = 400m; Cooldown Time (s) = 400m |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $\alpha$ | fator de amortecimento | $R/(2L)$: taxa com que a oscilação decai, como $e^{-\alpha t}$ | 1/s |
+| $V_{\text{ef}}$ | tensão eficaz | valor eficaz (RMS) da tensão | V |
+| $V_{\text{rede}}$ | tensão da rede | tensão eficaz da rede elétrica | V |
+| $V_p$ | tensão de pico | valor máximo atingido por uma senoide | V |
+
 ## Teoria
 
 O capacitor carrega pelo resistor seguindo a rede, com atraso de fase. Quando a tensão do capacitor atinge a de disparo do DIAC ($30\ \text{V}$), o DIAC passa a conduzir e descarrega um pulso de corrente no gatilho do TRIAC. O TRIAC, uma vez disparado, continua conduzindo até que a corrente caia abaixo da de manutenção, isto é, até o fim do semiciclo. A lâmpada recebe então a rede só do ângulo de disparo $\alpha$ até $\pi$.

@@ -43,6 +43,19 @@ O transistor NPN ($\beta = 100$) tem o emissor ligado à terra e ao ponto entre 
 | 17 | `TextElm` | text | Text = L2; Size = 16; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $L_1$ | indutância do indutor 1 | indutância do indutor chamado $L_1$ no circuito | H |
+| $L_2$ | indutância do indutor 2 | indutância do indutor chamado $L_2$ no circuito | H |
+| $f_0$ | frequência de ressonância | frequência em que o circuito responde ao máximo | Hz |
+
 ## Teoria
 
 Como no [oscilador Colpitts](colpitts.md), o emissor comum inverte a fase em $180^\circ$ e a tomada dos indutores inverte outros $180^\circ$, o que realimenta o sinal com a fase certa. A frequência é a do circuito LC com os dois indutores em série (os dois elementos do simulador não têm acoplamento mútuo):

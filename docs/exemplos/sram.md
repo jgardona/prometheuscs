@@ -68,6 +68,17 @@ O exemplo abre com *row select* $= 1$, *data in* $= 1$ e as duas células sem da
 | 87 | `TextElm` | text | Text = row select; Size = 24; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $D$ | entrada de dados D | entrada de dados do flip-flop ou do circuito lógico | — |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $\beta$ | parâmetro de transcondutância | constante da lei quadrática do MOSFET: $I_D = \tfrac12\beta(V_{GS}-V_t)^2$ | A/V² |
+| $V_{DD}$ | tensão de alimentação | tensão contínua que alimenta o circuito (a ligada aos drenos dos transistores) | V |
+
 ## Teoria
 
 **Guardar:** dois inversores em anel têm dois estados estáveis, como no [CMOS Flip-Flop](cmosff.md); sem acesso, a célula não consome corrente além das fugas.

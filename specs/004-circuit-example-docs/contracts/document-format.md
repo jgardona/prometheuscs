@@ -23,6 +23,7 @@ sem-verificacao:            # only when there is nothing to check; then the reas
 <!-- componentes:inicio -->
 (generated table)
 <!-- componentes:fim -->
+## Símbolos e parâmetros      <!-- added by spec 008 -->
 ## Teoria
 ## Resultados esperados
 ## O que observar
@@ -37,7 +38,7 @@ Rules checked by `exdocs check` and `tests/example_docs.rs`:
    the other category links to the same document.
 1. The front matter has `exemplo`, `titulo`, `categoria` and exactly one of `verificacoes` (not
    empty) or `sem-verificacao` (a reason); `exemplo` is the entry of the menu this file is for.
-2. The seven sections are present, in this order, each with text.
+2. The seven sections (and, since spec 008, `Símbolos e parâmetros` between `O circuito` and `Teoria`) are present, in this order, each with text.
 3. The navigation region (index, previous and next of the same category) and the component region exist and are identical to what the tool generates (the component region is skipped when the example
    does not load in this build).
 4. `$$` delimiters are balanced; `$` delimiters are balanced in each paragraph; no
@@ -60,3 +61,7 @@ input combination or of a sequence of button presses.
 
 A document without an entry in the menu, or an entry in a "documentado" category without a
 document, is an error (FR-009).
+
+Spec 008 (`specs/008-example-parameter-glossary/contracts/`) adds the section `Símbolos e parâmetros`
+to every document, the glossary `docs/glossario-simbolos.md`, and the checks 9–13 that tie them to
+the symbols used in the equations and to the fields of the components tables.

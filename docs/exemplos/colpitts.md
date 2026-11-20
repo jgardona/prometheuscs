@@ -43,6 +43,19 @@ O transistor NPN ($\beta = 100$) tem o emissor ligado à terra, a alimentação 
 | 17 | `TextElm` | text | Text = C2; Size = 16; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $C_1$ | capacitância do capacitor 1 | capacitância do capacitor chamado $C_1$ no circuito | F |
+| $C_2$ | capacitância do capacitor 2 | capacitância do capacitor chamado $C_2$ no circuito | F |
+| $C_{\text{eq}}$ | capacitância equivalente | capacitância de um conjunto de capacitores visto como um só | F |
+| $f_0$ | frequência de ressonância | frequência em que o circuito responde ao máximo | Hz |
+
 ## Teoria
 
 Um oscilador precisa de um amplificador e de uma realimentação positiva com ganho de malha de módulo igual ou maior que $1$ e fase total de $0^\circ$ (critério de Barkhausen). O estágio de emissor comum inverte a fase em $180^\circ$; o divisor capacitivo $C_1$–$C_2$ do circuito ressonante inverte mais $180^\circ$ na frequência de ressonância, e o sinal que chega à base é reforçado a cada ciclo.

@@ -50,6 +50,28 @@ A entrada é um gerador de ruído branco (valores aleatórios uniformes entre $-
 | 43 | `AudioOutputElm` | audio output | Duration (s) = 1; Sampling Rate = 8000 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $n$ | número inteiro n | quantidade ou índice inteiro definido no texto (ordem do filtro, número de bits, de nós ou de espiras) | — |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $H$ | função de transferência | razão entre a saída e a entrada de um filtro, em função da frequência | — |
+| $k$ | índice | número inteiro que numera os termos de um somatório, os bits ou os elementos de um conjunto | — |
+| $f_c$ | frequência de corte | frequência em que o ganho cai a $1/\sqrt{2}$ do valor da banda passante (−3 dB) | Hz |
+| $Q$ | fator de qualidade | mede o quão seletivo é um circuito ressonante: $f_0/B$, razão entre a frequência central e a largura de banda | — |
+| $Q_k$ | fator de qualidade da seção k | fator de qualidade da seção de índice $k$ do filtro | — |
+| $\theta_k$ | ângulo k | ângulo $(2k-1)\pi/(2n)$ do polo de índice $k$ | rad |
+| $C_f$ | capacitor de realimentação | capacitor entre a saída e a entrada inversora | F |
+| $C_g$ | capacitor à terra | capacitor ligado entre a entrada e a terra | F |
+| $f_0$ | frequência de ressonância | frequência em que o circuito responde ao máximo | Hz |
+| $f_N$ | frequência de Nyquist | metade da frequência de amostragem | Hz |
+| $V_{\text{rms},\text{in}}$ | tensão eficaz de entrada | valor eficaz da tensão de entrada | V |
+| $V_{\text{rms},\text{out}}$ | tensão eficaz de saída | valor eficaz da tensão de saída | V |
+
 ## Teoria
 
 Um filtro de Butterworth de ordem $n$ tem

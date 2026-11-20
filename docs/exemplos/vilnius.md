@@ -41,6 +41,15 @@ O circuito tem um amplificador operacional, resistores de $1\ \text{k}\Omega$ e 
 | 19 | `PotElm` | potentiometer | Resistance (ohms) = 10k; Slider Text = Resistance; Show Values = não; Group Number (for linking) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+
 ## Teoria
 
 Osciladores caóticos com um amplificador operacional costumam ser uma realimentação ativa em torno de um ressonador de segunda ordem. Ao se aumentar o parâmetro de controle (aqui, a resistência ajustável), o circuito passa em geral de um equilíbrio estável a um ciclo limite (bifurcação de Hopf), a ciclos de período duplo e, em seguida, ao caos (**cascata de dobramento de período**). O diodo, que só conduz acima de um limiar, é o elemento não linear.

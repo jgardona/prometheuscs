@@ -49,6 +49,19 @@ Três amplificadores operacionais integradores (resistores de $100\ \Omega$ e ca
 | 34 | `OutputElm` | output | Show Voltage = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $x$ | variável do circuito | tensão do circuito, cuja terceira derivada é dada por $J$ | V |
+| $J$ | função de jerk | função que dá a terceira derivada de $x$ em termos de $x$, $\dot x$ e $\ddot x$ | — |
+| $A$ | parâmetro de amortecimento | coeficiente do termo $\ddot x$ no sistema de jerk | — |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $G$ | função não linear | função $G(x)$ do circuito, que produz o comportamento caótico | — |
+
 ## Teoria
 
 Um sistema de terceira ordem pode ser escrito como

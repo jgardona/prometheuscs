@@ -39,6 +39,23 @@ Uma onda quadrada de $\pm 5\ \text{V}$ e $40\ \text{Hz}$ alimenta um capacitor d
 | 6 | `ResistorElm` | resistor | Resistance (ohms) = 100 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $n$ | fator de idealidade | expoente do diodo na equação de Shockley, $i = I_s(e^{v/(nV_T)}-1)$ | — |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $I_s$ | corrente de saturação | corrente reversa de um diodo ou de uma junção | A |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $v_D$ | tensão instantânea no diodo | tensão entre o ânodo e o cátodo do diodo em cada instante | V |
+
 ## Teoria
 
 O diodo do simulador (modelo "default") segue a equação de Shockley,

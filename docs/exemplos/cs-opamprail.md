@@ -40,6 +40,20 @@ O mesmo amplificador não inversor do exemplo anterior (ganho $\approx 3$, entra
 | 13 | `RailElm` | voltage source | Voltage = -10; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $x$ | variável de entrada x | argumento $x$ da função que define a saída da fonte controlada | — |
+| $c$ | limite superior c | limite superior da faixa a que a função $\text{clamp}$ restringe a saída | V |
+| $a$ | nó a | ponto de ligação identificado como $a$ no circuito | — |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $b$ | nó b | o outro nó entre os quais se mede a resistência equivalente | — |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $V_+$ | tensão da entrada não inversora | tensão do terminal $+$ do amplificador operacional | V |
+
 ## Teoria
 
 As fontes controladas deste simulador são definidas por uma **expressão** sobre as entradas, que se chamam $a$, $b$, $c$, ... (as tensões ou correntes nos terminais de controle). O resultado é a tensão (VCVS, CCVS) ou a corrente (VCCS, CCCS) que a fonte impõe na saída. A função $\text{clamp}(x, d, c)$ devolve $x$ se $d \le x \le c$, $d$ se $x < d$ e $c$ se $x > c$. Aqui, o ganho de $1000$ é aplicado à diferença entre as entradas e o resultado é limitado a $[-10, +10]\ \text{V}$. Enquanto o limite não é atingido, o circuito se comporta como o anterior ($V_\text{out} = 2{,}991\thinspace V_+$). Quando $2{,}991\thinspace V_+ > 10\ \text{V}$, isto é, $|V_+| > 3{,}34\ \text{V}$, a saída satura e a realimentação perde o efeito (o circuito passa a ser um comparador): a senoide é achatada nos picos.

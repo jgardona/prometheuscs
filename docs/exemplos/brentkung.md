@@ -158,6 +158,41 @@ O exemplo abre com $A = 1$ e $B = 63$.
 | 323 | `CustomCompositeElm` | subcircuit (operator) | Model Name = operator; High Logic Voltage (0=default) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $n$ | número inteiro n | quantidade ou índice inteiro definido no texto (ordem do filtro, número de bits, de nós ou de espiras) | — |
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $P$ | propagação | indica se um grupo de bits propaga o vai-um recebido | — |
+| $A_7$ | sinal lógico A7 | sinal lógico $A_7$ (bit ou elemento de índice 7) do circuito | — |
+| $A_0$ | sinal lógico A0 | sinal lógico $A_0$ (bit ou elemento de índice 0) do circuito | — |
+| $B_7$ | sinal lógico B7 | sinal lógico $B_7$ (bit ou elemento de índice 7) do circuito | — |
+| $B_0$ | sinal lógico B0 | sinal lógico $B_0$ (bit ou elemento de índice 0) do circuito | — |
+| $g_i$ | geração do bit i | $A_i B_i$: o bit $i$ gera um vai-um sozinho | — |
+| $A_i$ | sinal lógico Ai | sinal lógico $A_i$ (bit ou elemento de índice i) do circuito | — |
+| $B_i$ | sinal lógico Bi | sinal lógico $B_i$ (bit ou elemento de índice i) do circuito | — |
+| $p_i$ | propagação do bit i | $A_i \oplus B_i$: o bit $i$ propaga o vai-um recebido | — |
+| $G$ | geração | indica se um grupo de bits gera um vai-um sozinho | — |
+| $S_i$ | bit i da soma | bit de índice $i$ do resultado da soma | — |
+| $G_{i-1:0}$ | vai-um para o bit i | vai-um que chega ao bit $i$ vindo dos bits $i-1$ a $0$ | — |
+| $G_{7:0}$ | vai-um final | vai-um que sai do bit $7$, o nono bit da soma | — |
+| $g_1$ | sinal lógico g1 | sinal lógico $g_1$ (bit ou elemento de índice 1) do circuito | — |
+| $p_1$ | sinal lógico p1 | sinal lógico $p_1$ (bit ou elemento de índice 1) do circuito | — |
+| $g_0$ | sinal lógico g0 | sinal lógico $g_0$ (bit ou elemento de índice 0) do circuito | — |
+| $p_0$ | sinal lógico p0 | sinal lógico $p_0$ (bit ou elemento de índice 0) do circuito | — |
+| $G_{i:k}$ | geração do grupo i:k | indica se os bits de $k$ a $i$ geram um vai-um sozinhos | — |
+| $P_{i:k}$ | propagação do grupo i:k | indica se os bits de $k$ a $i$ propagam um vai-um recebido | — |
+| $G_{k-1:j}$ | geração do grupo k−1:j | indica se os bits de $j$ a $k-1$ geram um vai-um sozinhos | — |
+| $P_{k-1:j}$ | propagação do grupo k−1:j | indica se os bits de $j$ a $k-1$ propagam um vai-um recebido | — |
+| $c_i$ | vai-um do bit i | bit de transporte que entra no bit de índice $i$ | — |
+| $G_{i:0}$ | vai-um do bit i | vai-um que sai do bit $i$, considerando os bits $i$ a $0$ | — |
+| $g_{-1}$ | geração do bit −1 | vai-um de entrada tratado como um bit extra da árvore | — |
+
 ## Teoria
 
 No bit $i$, um vai-um é **gerado** se $g_i = 1$ e **propagado** (o que chega passa adiante) se $p_i = 1$. Para um bloco de bits $i{:}j$, os mesmos conceitos combinam-se pelo **operador de prefixo**

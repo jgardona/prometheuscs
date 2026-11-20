@@ -35,6 +35,23 @@ Uma fonte de 5 V é ligada, por uma chave de duas posições (SPDT), a um capaci
 | 6 | `ResistorElm` | resistor | Resistance (ohms) = 100 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $E$ | energia | energia armazenada ou dissipada | J |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $v_C$ | tensão no capacitor | tensão entre os terminais do capacitor | V |
+| $v_0$ | tensão inicial | valor da tensão no instante inicial | V |
+
 ## Teoria
 
 A tensão e a corrente de um capacitor se relacionam por $i = C\thinspace\dfrac{dv}{dt}$. Pela lei das tensões de Kirchhoff, $V = R\thinspace i + v_C$, de onde

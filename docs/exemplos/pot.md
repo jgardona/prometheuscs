@@ -33,6 +33,20 @@ Duas fontes de 5 V têm os polos negativos ligados às duas extremidades de um p
 | 5 | `PotElm` | potentiometer | Resistance (ohms) = 1k; Slider Text = Resistance; Show Values = sim; Group Number (for linking) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $x$ | posição do cursor | fração do curso do potenciômetro, de $0$ a $1$ | — |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $R_a$ | resistência do trecho a | resistência entre uma extremidade e o cursor do potenciômetro | Ω |
+| $R_b$ | resistência de base | resistor externo ligado à base | Ω |
+| $I_a$ | corrente no trecho a | corrente no trecho $a$ do potenciômetro | A |
+| $I_b$ | corrente no trecho b | corrente no trecho $b$ do potenciômetro | A |
+
 ## Teoria
 
 Um potenciômetro de resistência total $R$ com o cursor na posição $x\in[0,1]$ tem, entre uma extremidade e o cursor, $R_a = xR$ e, entre o cursor e a outra extremidade, $R_b=(1-x)R$, de modo que $R_a+R_b=R$. Cada fonte de tensão $V$ ligada a um trecho produz a corrente

@@ -45,6 +45,29 @@ Três fontes senoidais de $169{,}7\ \text{V}$ de pico ($120\ \text{V}$ eficazes)
 | 18 | `TextElm` | text | Text = 3 Phase Wye-to-Wye Balanced Resistive Load; Size = 24; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $p$ | índice p | índice inteiro do somatório ou do harmônico | — |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $v_A$ | tensão da fase A | tensão da fase A de um sistema trifásico | V |
+| $V_p$ | tensão de pico | valor máximo atingido por uma senoide | V |
+| $\omega$ | frequência angular | $2\pi f$: a frequência medida em radianos por segundo | rad/s |
+| $v_B$ | tensão instantânea da base | tensão da base em relação à terra em cada instante | V |
+| $v_C$ | tensão no capacitor | tensão entre os terminais do capacitor | V |
+| $i_k$ | corrente da fase k | corrente da fase de índice $k$ | A |
+| $v_k$ | tensão da fase k | tensão da fase de índice $k$ | V |
+| $i_N$ | corrente do neutro | soma das correntes das três fases | A |
+| $i_A$ | corrente da fase A | corrente da fase A de um sistema trifásico | A |
+| $i_B$ | corrente da fase B | corrente da fase B de um sistema trifásico | A |
+| $i_C$ | corrente da fase C | corrente da fase C de um sistema trifásico | A |
+| $V_{\text{linha}}$ | tensão de linha | tensão entre duas fases de um sistema trifásico | V |
+| $V_{\text{ef}}$ | tensão eficaz | valor eficaz (RMS) da tensão | V |
+
 ## Teoria
 
 As três tensões de fase são

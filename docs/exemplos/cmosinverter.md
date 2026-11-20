@@ -38,6 +38,28 @@ Um PMOS liga a saída a $+5\ \text{V}$ e um NMOS liga a saída à terra; as port
 | 9 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $\beta$ | parâmetro de transcondutância | constante da lei quadrática do MOSFET: $I_D = \tfrac12\beta(V_{GS}-V_t)^2$ | A/V² |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $\lambda$ | modulação do comprimento do canal | parâmetro que dá à corrente de saturação do MOSFET uma pequena inclinação com $V_{DS}$ ($0$: sem inclinação) | 1/V |
+| $V_{GS,n}$ | tensão porta-fonte do NMOS | tensão entre a porta e a fonte do transistor NMOS | V |
+| $V_{SG,p}$ | tensão fonte-porta do PMOS | tensão entre a fonte e a porta do transistor PMOS | V |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $V_M$ | limiar de comutação | tensão de entrada em que a saída do inversor muda de estado (as duas correntes de saturação se igualam) | V |
+| $\beta_n$ | parâmetro de transcondutância do NMOS | constante $\beta$ da lei quadrática do transistor NMOS | A/V² |
+| $V_{\text{tn}}$ | tensão de limiar do NMOS | tensão porta-fonte a partir da qual o NMOS conduz | V |
+| $\beta_p$ | parâmetro de transcondutância do PMOS | constante $\beta$ da lei quadrática do transistor PMOS | A/V² |
+| $V_{DD}$ | tensão de alimentação | tensão contínua que alimenta o circuito (a ligada aos drenos dos transistores) | V |
+| $V_{\text{tp}}$ | módulo da tensão de limiar do PMOS | tensão fonte-porta a partir da qual o PMOS conduz (o limiar é $-V_{tp}$) | V |
+| $I_{\text{pico}}$ | corrente de pico de curto-circuito | maior corrente da alimentação durante a transição, quando o NMOS e o PMOS conduzem ao mesmo tempo | A |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+| $I_{\text{alim}}$ | corrente de alimentação | corrente que o inversor puxa da fonte $V_{DD}$ | A |
+
 ## Teoria
 
 Com os dois transistores no modelo de lei quadrática de [n-MOSFET](nmosfet.md) ($\beta = 0{,}02\ \text{A/V}^2$, $|V_t| = 1{,}5\ \text{V}$, $\lambda = 0$):

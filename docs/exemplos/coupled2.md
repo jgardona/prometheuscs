@@ -43,6 +43,24 @@ Duas malhas LC, cada uma com um indutor de $1\ \text{H}$ e um capacitor de $1\ \
 | 13 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0; Label =  |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $C_1$ | capacitância do capacitor 1 | capacitância do capacitor chamado $C_1$ no circuito | F |
+| $C_2$ | capacitância do capacitor 2 | capacitância do capacitor chamado $C_2$ no circuito | F |
+| $\omega_1$ | frequência angular inferior | frequência angular de corte inferior da faixa | rad/s |
+| $\omega_a$ | frequência angular do modo a | frequência angular do modo em fase | rad/s |
+| $f_a$ | frequência do modo a | frequência do modo em fase | Hz |
+| $\omega_b$ | frequência angular do modo b | frequência angular do modo em oposição | rad/s |
+| $f_b$ | frequência do modo b | frequência do modo em oposição | Hz |
+| $f_{\text{bat}}$ | frequência de batimento | diferença entre as duas frequências, $f_b - f_a$ | Hz |
+| $T_{\text{bat}}$ | período de batimento | $1/f_\text{bat}$: período do batimento entre duas frequências próximas | s |
+
 ## Teoria
 
 Com $C_1 = 1\ \mu\text{F}$ nos extremos e $C_2 = 20\ \mu\text{F}$ no meio, as duas malhas têm o mesmo $\omega_1 = 1/\sqrt{LC_1} = 1000\ \text{rad/s}$, e o capacitor compartilhado as acopla. Os dois modos normais são:

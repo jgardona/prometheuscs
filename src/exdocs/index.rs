@@ -34,6 +34,12 @@ fn status(items: &[ExampleItem], stems: &BTreeSet<String>) -> String {
     if d == t { "documentado".to_string() } else { format!("pendente ({d} de {t})") }
 }
 
+/// `documentado` when every entry of the category has the symbols section, else how many do.
+fn symbols_status(items: &[ExampleItem], with_symbols: &BTreeSet<String>) -> String {
+    let (d, t) = counts(items, with_symbols);
+    if d == t { "documentado".to_string() } else { format!("pendente ({d} de {t})") }
+}
+
 fn files(items: &[ExampleItem], out: &mut Vec<String>) {
     for item in items {
         match item {
@@ -75,7 +81,11 @@ fn render_group(
 
 /// The text of the index (`docs/exemplos/README.md`): the categories of the menu in its order, each
 /// documented or pending, with the examples that have a document linked.
-pub fn render_index(list: &ExampleList, stems: &BTreeSet<String>) -> String {
+pub fn render_index(
+    list: &ExampleList,
+    stems: &BTreeSet<String>,
+    with_symbols: &BTreeSet<String>,
+) -> String {
     let mut menu_files = Vec::new();
     files(&list.items, &mut menu_files);
     let documents: BTreeSet<String> =
@@ -89,15 +99,24 @@ circuito, a teoria com as equações, os resultados esperados e o que observar n
 documentos são escritos por categoria; uma categoria só aparece como *documentado* quando todos os \
 seus exemplos têm documento.\n\n",
     );
+    out.push_str(
+        "Cada documento tem a seção **Símbolos e parâmetros**, que define os símbolos que usa; o \
+[glossário de símbolos e parâmetros](../glossario-simbolos.md) reúne todos eles e explica os campos \
+das tabelas de componentes.\n\n",
+    );
     out.push_str("> Este índice é gerado por `cargo run --release --bin exdocs -- sync`; não o edite à mão.\n\n");
     out.push_str(&format!(
         "**Situação:** {done} de {total} entradas do menu documentadas ({} documentos).\n\n",
         documents.len()
     ));
-    out.push_str("| Categoria | Situação |\n|-----------|----------|\n");
+    out.push_str("| Categoria | Situação | Símbolos |\n|-----------|----------|----------|\n");
     for item in &list.items {
         if let ExampleItem::Group { title, items } = item {
-            out.push_str(&format!("| {title} | {} |\n", status(items, stems)));
+            out.push_str(&format!(
+                "| {title} | {} | {} |\n",
+                status(items, stems),
+                symbols_status(items, with_symbols)
+            ));
         }
     }
     out.push('\n');
@@ -171,6 +190,10 @@ mod tests {
 
     const MENU: &str = "# c\n+Basics\na.txt Alpha\nb.txt Beta\nc.txt Gamma\n-\n+Filters\n+Sub\nd.txt Delta\ne.txt Eps\n-\nf.txt Phi\n-\n+Logic\nb.txt Beta again\ng.txt Gee\n-\n";
 
+    fn none() -> BTreeSet<String> {
+        BTreeSet::new()
+    }
+
     fn stems(names: &[&str]) -> BTreeSet<String> {
         names.iter().map(|s| (*s).to_string()).collect()
     }
@@ -179,7 +202,7 @@ mod tests {
     fn a_category_is_documented_only_when_every_entry_has_a_document() {
         let l = parse_setup_list(MENU);
         let all = stems(&["a", "b", "c", "d", "e", "f", "g"]);
-        let idx = render_index(&l, &all);
+        let idx = render_index(&l, &all, &none());
         for h in [
             "## Basics — documentado",
             "## Filters — documentado",
@@ -189,7 +212,7 @@ mod tests {
             assert!(idx.contains(h), "{h}\n{idx}");
         }
         let some = stems(&["a", "b", "d"]);
-        let idx = render_index(&l, &some);
+        let idx = render_index(&l, &some, &none());
         assert!(idx.contains("## Basics — pendente (2 de 3)"), "{idx}");
         assert!(idx.contains("### Sub — pendente (1 de 2)"), "{idx}");
         assert!(idx.contains("## Filters — pendente (1 de 3)"), "{idx}");
@@ -200,22 +223,32 @@ mod tests {
     #[test]
     fn only_existing_documents_are_linked_and_the_order_is_the_menu_order() {
         let l = parse_setup_list(MENU);
-        let idx = render_index(&l, &stems(&["a", "c"]));
+        let idx = render_index(&l, &stems(&["a", "c"]), &none());
         assert!(idx.contains("- [Alpha](a.md)"), "{idx}");
         assert!(idx.contains("- Beta — *pendente*"), "{idx}");
         assert!(!idx.contains("](b.md)"), "{idx}");
         let (a, c) = (idx.find("Alpha").unwrap(), idx.find("Gamma").unwrap());
         assert!(a < c);
         // the same file listed twice is linked from both places once it has a document
-        let both = render_index(&l, &stems(&["b"]));
+        let both = render_index(&l, &stems(&["b"]), &none());
         assert_eq!(both.matches("](b.md)").count(), 2, "{both}");
+    }
+
+    #[test]
+    fn the_index_shows_how_many_documents_have_the_symbols_section() {
+        let l = parse_setup_list(MENU);
+        let all = stems(&["a", "b", "c", "d", "e", "f", "g"]);
+        let idx = render_index(&l, &all, &stems(&["a", "b", "c"]));
+        assert!(idx.contains("| Basics | documentado | documentado |"), "{idx}");
+        assert!(idx.contains("| Filters | documentado | pendente (0 de 3) |"), "{idx}");
+        assert!(idx.contains("glossario-simbolos.md"), "{idx}");
     }
 
     #[test]
     fn the_index_is_the_same_on_a_second_run() {
         let l = parse_setup_list(MENU);
         let s = stems(&["a", "d"]);
-        assert_eq!(render_index(&l, &s), render_index(&l, &s));
+        assert_eq!(render_index(&l, &s, &none()), render_index(&l, &s, &none()));
     }
 
     #[test]

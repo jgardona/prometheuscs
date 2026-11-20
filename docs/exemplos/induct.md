@@ -36,6 +36,24 @@ Uma fonte de 5 V é ligada, pela chave SPDT, a um indutor de $3\ \text{H}$ em s�
 | 7 | `InductorElm` | inductor | Inductance (H) = 3; Trapezoidal Approximation = sim; Initial Current (on Reset) (A) = 0; Saturation Current (A) (0=none) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $E$ | energia | energia armazenada ou dissipada | J |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $v_L$ | tensão no indutor | tensão entre os terminais do indutor | V |
+| $I_\infty$ | corrente final | valor para o qual a corrente tende depois do transitório | A |
+
 ## Teoria
 
 Num indutor, $v = L\thinspace\dfrac{di}{dt}$. Com a lei das tensões de Kirchhoff, $V = R\thinspace i + L\thinspace\dfrac{di}{dt}$, e, com corrente inicial nula,

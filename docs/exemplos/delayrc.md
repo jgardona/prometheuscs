@@ -49,6 +49,26 @@ Dois [inversores CMOS](cmosinverter.md) (modelo padrão, sem diodo de corpo) est
 | 21 | `RailElm` | voltage source | Voltage = 5; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $v_C$ | tensão no capacitor | tensão entre os terminais do capacitor | V |
+| $V_f$ | tensão final | tensão do trilho para o qual o capacitor tende | V |
+| $V_i$ | tensão inicial | tensão do capacitor no início da transição | V |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $R_{\text{on}}$ | resistência de condução | resistência de uma chave ou de um transistor quando conduz | Ω |
+| $\beta$ | parâmetro de transcondutância | constante da lei quadrática do MOSFET: $I_D = \tfrac12\beta(V_{GS}-V_t)^2$ | A/V² |
+| $V_{DD}$ | tensão de alimentação | tensão contínua que alimenta o circuito (a ligada aos drenos dos transistores) | V |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $t_d$ | atraso | tempo que a tensão do capacitor leva para cruzar o limiar da porta seguinte | s |
+| $V_{\text{th}}$ | limiar da porta seguinte | tensão em que o inversor seguinte muda de estado | V |
+
 ## Teoria
 
 Após uma transição da entrada, a saída do primeiro inversor vai de um trilho ao outro (praticamente de forma instantânea) e o capacitor se carrega ou descarrega exponencialmente em direção a esse trilho: $v_C(t) = V_f + (V_i - V_f)\thinspace e^{-t/\tau}$, com $\tau = (R + R_{on})C$, onde $R_{on} \approx 14\ \Omega$ é a resistência do transistor que conduz ($1/(\beta(V_{DD} - V_t))$). O segundo inversor troca de estado quando $v_C$ cruza o seu limiar de $V_{DD}/2 = 2{,}5\ \text{V}$, depois de

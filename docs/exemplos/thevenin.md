@@ -59,6 +59,20 @@ Mostrar que qualquer rede linear de resistores e fontes, vista de dois terminais
 | 30 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $V_{\text{th}}$ | tensão de Thévenin | tensão em aberto entre os terminais do circuito | V |
+| $R_{\text{th}}$ | resistência de Thévenin | resistência vista dos terminais com as fontes desligadas | Ω |
+| $I_{\text{cc}}$ | corrente de curto-circuito | corrente quando os terminais são ligados por um fio | A |
+| $R_L$ | resistência de carga | resistor ligado à saída, que consome a energia do circuito | Ω |
+| $I_L$ | corrente na carga | corrente que passa pela carga | A |
+| $V_L$ | tensão no indutor | tensão entre os terminais do indutor | V |
+
 ## Teoria
 
 **Teorema de Thévenin.** Uma rede linear de dois terminais é equivalente a uma fonte de tensão $V_{th}$ em série com uma resistência $R_{th}$, onde:

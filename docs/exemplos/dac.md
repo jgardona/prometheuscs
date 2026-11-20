@@ -46,6 +46,22 @@ Quatro entradas lógicas ($0$ ou $5\ \text{V}$) ligam-se, por resistores de $100
 | 16 | `OutputElm` | output | Show Voltage = sim; Scale = Auto |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $N$ | valor digital N | número inteiro representado pelos bits de entrada do conversor | — |
+| $R_k$ | resistência do resistor k | resistência do resistor de índice $k$ | Ω |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $R_f$ | resistência de realimentação | resistor que liga a saída à entrada inversora | Ω |
+| $b_3$ | bit 3 | bit de peso $2^3$ do número | — |
+| $b_2$ | bit 2 | bit de peso $2^2$ do número | — |
+| $b_1$ | bit 1 | bit de peso $2^1$ do número | — |
+| $b_0$ | bit 0 | bit menos significativo do número | — |
+
 ## Teoria
 
 O nó inversor é uma terra virtual; cada bit em $1$ injeta $5\ \text{V}/R_k$, e as correntes somam-se na realimentação ([Summing Amplifier](amp-sum.md)):

@@ -57,6 +57,24 @@ Seis fontes senoidais de $5\ \text{V}$ de pico formam três pares. Em cada par, 
 | 23 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0; Label =  |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $x$ | sinal x | sinal aplicado ao eixo $x$ do osciloscópio | V |
+| $p$ | índice p | índice inteiro do somatório ou do harmônico | — |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $q$ | carga do elétron | carga elétrica elementar, $1{,}602\cdot 10^{-19}\ \text{C}$ | C |
+| $A$ | amplitude do sinal x | valor de pico da senoide aplicada ao eixo $x$ | V |
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $y$ | coordenada y | valor do sinal aplicado ao eixo $y$ | V |
+| $f_x$ | frequência em x | frequência do sinal aplicado ao eixo $x$ | Hz |
+| $B$ | amplitude do sinal y | valor de pico da senoide aplicada ao eixo $y$ | V |
+| $f_y$ | frequência em y | frequência do sinal aplicado ao eixo $y$ | Hz |
+| $\varphi$ | fase | ângulo de defasagem de um sinal em relação a uma referência | rad |
+
 ## Teoria
 
 Duas senoides $x = A\sin(2\pi f_x t)$ e $y = B\sin(2\pi f_y t + \varphi)$ desenham, no plano $(x, y)$, uma curva fechada quando $f_x/f_y$ é racional. Se $f_x/f_y = p/q$ (frações irredutíveis), a curva se fecha depois de $T = q/f_x = p/f_y$, e o desenho tem $p$ e $q$ pontos de tangência com os lados da caixa que o envolve (em cada eixo).

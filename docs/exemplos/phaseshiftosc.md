@@ -42,6 +42,17 @@ Um amplificador operacional inversor tem resistor de realimentação $R_f = 29\ 
 | 17 | `AudioOutputElm` | audio output | Duration (s) = 1; Sampling Rate = 8000 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $R_f$ | resistência de realimentação | resistor que liga a saída à entrada inversora | Ω |
+| $f_0$ | frequência de ressonância | frequência em que o circuito responde ao máximo | Hz |
+
 ## Teoria
 
 O amplificador inversor já provoca um deslocamento de $180^\circ$. Para oscilar (critério de Barkhausen), a rede de realimentação deve provocar outros $180^\circ$ e o ganho de laço deve ser no mínimo 1. Três seções RC passa-altas iguais atingem $180^\circ$ quando

@@ -47,6 +47,21 @@ A mesma escada LC de dez polos do exemplo do passa-baixas de Butterworth (carga 
 | 19 | `AudioOutputElm` | audio output | Duration (s) = 1; Sampling Rate = 8000 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $n$ | número inteiro n | quantidade ou índice inteiro definido no texto (ordem do filtro, número de bits, de nós ou de espiras) | — |
+| $H$ | função de transferência | razão entre a saída e a entrada de um filtro, em função da frequência | — |
+| $S_{\text{out}}$ | densidade espectral de saída | potência do sinal de saída por unidade de frequência | V²/Hz |
+| $S_{\text{in}}$ | densidade espectral de entrada | potência do sinal de entrada por unidade de frequência | V²/Hz |
+| $f_c$ | frequência de corte | frequência em que o ganho cai a $1/\sqrt{2}$ do valor da banda passante (−3 dB) | Hz |
+| $g_k$ | coeficiente do componente k | valor normalizado do componente de índice $k$ do filtro | — |
+| $k$ | índice | número inteiro que numera os termos de um somatório, os bits ou os elementos de um conjunto | — |
+
 ## Teoria
 
 O ruído branco tem densidade espectral de potência uniforme; a saída de um filtro linear tem densidade $S_{out}(f) = |H(f)|^2 S_{in}(f)$, de modo que o filtro "esculpe" o espectro do ruído e o ouvido percebe só a faixa que passa.

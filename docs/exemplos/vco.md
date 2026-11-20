@@ -51,6 +51,20 @@ A tensão de controle $V_c$ é uma fonte de dente de serra de $10\ \text{Hz}$ qu
 | 31 | `AudioOutputElm` | audio output | Duration (s) = 1; Sampling Rate = 8000 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $V_c$ | tensão de controle | tensão que ajusta a frequência de um oscilador controlado por tensão | V |
+
 ## Teoria
 
 Pelo curto-circuito virtual, a entrada inversora do integrador fica em $V_c/2$. Com o MOSFET cortado, a corrente que chega ao capacitor é

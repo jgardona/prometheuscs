@@ -56,6 +56,19 @@ Mostrar como obter 8 bits com dois conversores de 4 bits: um conversor grosso ac
 | 33 | `DecimalDisplayElm` | decimal display | High Logic Voltage = 5; Bit Order = MSB First; # of Bits = 8; Display Mode = Decimal |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $F$ | parte fracionária | bits menos significativos do resultado da conversão | — |
+| $C$ | valor C | parte de $N = 16C + F$ formada pelos bits mais significativos | — |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+| $V_{DAC}$ | tensão do conversor D/A | tensão que o conversor digital-analógico entrega | V |
+| $N$ | valor digital N | número inteiro representado pelos bits de entrada do conversor | — |
+
 ## Teoria
 
 No modelo do simulador, o código máximo de um conversor de 4 bits ($15$) corresponde à sua referência: o passo do estágio grosso é $24/15 = 1{,}6\ \text{V}$ e o do fino, $1{,}5/15 = 0{,}1\ \text{V}$. O estágio grosso dá $C = \lfloor V_{in}/1{,}6 \rfloor$, o DAC reconstrói $1{,}6\thinspace C$, e o resíduo $V_{in} - 1{,}6\thinspace C$, entre $0$ e $1{,}6\ \text{V}$, vai ao estágio fino, que dá $F = \lfloor \text{resíduo}/0{,}1 \rfloor$ (no máximo $15$). Como $1{,}6\ \text{V} = 16 \times 0{,}1\ \text{V}$, o número $16C + F$ é a entrada medida em passos de $0{,}1\ \text{V}$:

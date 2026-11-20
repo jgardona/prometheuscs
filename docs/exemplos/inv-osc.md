@@ -42,6 +42,20 @@ Dois inversores lógicos (alimentação de $5\ \text{V}$, limiar de $2{,}5\ \tex
 | 9 | `OutputElm` | output | Show Voltage = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $v_o$ | tensão de saída do oscilador | tensão na saída $v_o$ do circuito, onde o capacitor se liga | V |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $V_{DD}$ | tensão de alimentação | tensão contínua que alimenta o circuito (a ligada aos drenos dos transistores) | V |
+
 ## Teoria
 
 A saída do primeiro inversor é sempre o oposto da saída do segundo. O capacitor $C$ liga a saída $v_o$ ao nó do resistor $R$ (o de $400\ \Omega$, que vai à saída do primeiro inversor, igual a $\overline{v_o}$), e a entrada do primeiro inversor, ligada ao nó pelo resistor de $4\ \text{k}\Omega$, segue a tensão desse nó: como a entrada do inversor não consome corrente, esse resistor não cai tensão e não altera a frequência. Cada transição da saída é transmitida pelo capacitor à entrada do primeiro inversor, que então decai exponencialmente, com $\tau = RC$, em direção ao seu valor de repouso (o trilho oposto à saída); quando cruza o limiar $V_{DD}/2$, a saída muda e o ciclo se repete.

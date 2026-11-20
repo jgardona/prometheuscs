@@ -34,6 +34,22 @@ Um gerador de ruído de 5 V alimenta, através de um resistor de $200\ \Omega$, 
 | 11 | `AudioOutputElm` | audio output | Duration (s) = 1; Sampling Rate = 8000 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $B$ | largura de banda | faixa de frequências em que o filtro responde, $f_0/Q$ | Hz |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $Q$ | fator de qualidade | mede o quão seletivo é um circuito ressonante: $f_0/B$, razão entre a frequência central e a largura de banda | — |
+| $H$ | função de transferência | razão entre a saída e a entrada de um filtro, em função da frequência | — |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $\omega$ | frequência angular | $2\pi f$: a frequência medida em radianos por segundo | rad/s |
+| $\omega_0$ | frequência angular natural | frequência angular em que o circuito ressoa, $1/\sqrt{LC}$ | rad/s |
+| $f_0$ | frequência de ressonância | frequência em que o circuito responde ao máximo | Hz |
+
 ## Teoria
 
 O ruído branco tem densidade espectral uniforme: todas as frequências com a mesma potência. O filtro passa-faixa de segunda ordem (tanque com resistor em série) tem

@@ -68,6 +68,18 @@ Cinco flip-flops D disparados pela borda de subida, ligados em registrador de de
 | 123 | `LogicOutputElm` | logic output | Threshold = 2.5; Current Required = não; Numeric = não; Ternary = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $n$ | número inteiro n | quantidade ou índice inteiro definido no texto (ordem do filtro, número de bits, de nós ou de espiras) | — |
+| $D$ | entrada de dados D | entrada de dados do flip-flop ou do circuito lógico | — |
+| $Q$ | saída Q | saída de um flip-flop ou latch, que guarda o bit armazenado | — |
+| $Q_0$ | sinal lógico Q0 | sinal lógico $Q_0$ (bit ou elemento de índice 0) do circuito | — |
+| $Q_4$ | sinal lógico Q4 | sinal lógico $Q_4$ (bit ou elemento de índice 4) do circuito | — |
+
 ## Teoria
 
 Partindo de tudo em $0$, o anel torcido enche-se de $1$ pela esquerda e depois esvazia-se:

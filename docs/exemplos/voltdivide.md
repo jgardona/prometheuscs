@@ -43,6 +43,22 @@ Uma fonte de 10 V alimenta dois divisores em paralelo: um com dois resistores ig
 | 14 | `OutputElm` | output | Show Voltage = sim; Scale = Auto |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $k$ | índice | número inteiro que numera os termos de um somatório, os bits ou os elementos de um conjunto | — |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $R_1$ | resistência do resistor 1 | resistência do resistor chamado $R_1$ no circuito | Ω |
+| $R_2$ | resistência do resistor 2 | resistência do resistor chamado $R_2$ no circuito | Ω |
+| $V_k$ | tensão no resistor k | tensão sobre o resistor de índice $k$ | V |
+| $R_k$ | resistência do resistor k | resistência do resistor de índice $k$ | Ω |
+| $R_n$ | resistência do resistor n | resistência do último resistor do conjunto | Ω |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+
 ## Teoria
 
 Resistores em série conduzem a mesma corrente $I = V/(R_1+R_2+\cdots)$, e a tensão sobre o resistor $k$ é

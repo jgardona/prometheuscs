@@ -41,6 +41,22 @@ Uma fonte senoidal de $5\ \text{V}$ de pico e $200\ \text{Hz}$ (o sinal) passa p
 | 10 | `RailElm` | triangle gen | Max Voltage = 3; Waveform = Triangle; DC Offset (V) = -8; Internal Resistance (ohms) = 0; Show Voltage = não; Frequency (Hz) = 10; Phase Offset (degrees) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $V_{DS}$ | tensão dreno-fonte | tensão entre o dreno e a fonte | V |
+| $V_{GS}$ | tensão porta-fonte | tensão entre a porta e a fonte | V |
+| $G_{\text{ds}}$ | condutância dreno-fonte | $\partial I_D/\partial V_{DS}$: inverso da resistência do canal | S |
+| $I_D$ | corrente de dreno | corrente que entra pelo dreno do transistor de efeito de campo | A |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $v_o$ | tensão instantânea de saída | tensão da saída em cada instante | V |
+| $v_s$ | tensão instantânea da fonte | tensão do sinal da fonte de entrada em cada instante | V |
+| $R_{\text{ds}}$ | resistência dreno-fonte | resistência do canal entre o dreno e a fonte | Ω |
+
 ## Teoria
 
 Com $V_{DS}$ pequeno, o JFET se comporta como um resistor cuja condutância é controlada por $V_{GS}$:

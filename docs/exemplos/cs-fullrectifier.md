@@ -36,6 +36,20 @@ Uma fonte senoidal de $40\ \text{Hz}$ e $5\ \text{V}$ de pico está ligada ao n�
 | 4 | `ControlledVoltageElm` | Controlled Voltage Source | Output Voltage = abs(v(in)) |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $V_p$ | tensão de pico | valor máximo atingido por uma senoide | V |
+| $V_{\text{rms}}$ | tensão eficaz | valor eficaz (RMS): a raiz da média do quadrado da tensão em um período | V |
+
 ## Teoria
 
 As fontes controladas de dois terminais (o losango) são definidas por uma **expressão** que lê o resto do circuito **pelo nome**: $v(\text{nome})$ é a tensão de um nó rotulado ou sobre um voltímetro com rótulo, $i(\text{nome})$ a corrente de um amperímetro com rótulo, e $\text{dvdt}$ / $\text{didt}$ as suas taxas de variação. O resultado é a tensão (fonte de tensão controlada, com o $+$ no segundo terminal) ou a corrente (fonte de corrente controlada, no sentido da seta) que a fonte impõe. A saída é o valor absoluto da entrada: $V_\text{out} = |5\sin(2\pi\cdot 40\thinspace t)|$. Para um senoide de pico $V_p$, o valor médio da retificação de onda completa e o valor eficaz são

@@ -58,6 +58,20 @@ Um transistor NPN com um indutor de $30\ \text{nH}$ e capacitores de poucos pico
 | 31 | `VaractorElm` | varactor | Model = default; Capacitance @ 0V (F) = 4p |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $C_0$ | capacitância paralela do cristal | capacitância $C_0$ dos eletrodos, em paralelo com o ramo em série | F |
+| $C_{\text{tot}}$ | capacitância total | capacitância total do circuito ressonante | F |
+| $\phi$ | fase | ângulo de defasagem de um sinal em relação a uma referência | rad |
+
 ## Teoria
 
 A frequência de um oscilador LC é $f = 1/(2\pi\sqrt{LC_{tot}})$, e $C_{tot}$ inclui a capacitância dos varactores, que diminui com a tensão reversa $V$ como $C(V) = C_0/\sqrt{1 + V/\phi}$ ($\phi = 0{,}806\ \text{V}$). Logo, $f$ **cresce** com $V$; como $f\propto C_{tot}^{-1/2}$ e a faixa de capacitância é limitada pelas capacitâncias fixas do circuito, a faixa de frequências é de poucas dezenas de por cento.

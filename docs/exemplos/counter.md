@@ -46,6 +46,21 @@ Quatro flip-flops JK disparados pela borda de descida, com $J = K = 1$ (ligados 
 | 39 | `DecimalDisplayElm` | decimal display | High Logic Voltage = 5; Bit Order = MSB First; # of Bits = 4; Display Mode = Decimal |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $J$ | entrada J | entrada de ajuste do flip-flop JK | — |
+| $K$ | entrada K | entrada de limpeza do flip-flop JK | — |
+| $Q$ | saída Q | saída de um flip-flop ou latch, que guarda o bit armazenado | — |
+| $Q_0$ | sinal lógico Q0 | sinal lógico $Q_0$ (bit ou elemento de índice 0) do circuito | — |
+| $Q_1$ | sinal lógico Q1 | sinal lógico $Q_1$ (bit ou elemento de índice 1) do circuito | — |
+| $Q_k$ | fator de qualidade da seção k | fator de qualidade da seção de índice $k$ do filtro | — |
+
 ## Teoria
 
 Com $J = K = 1$, cada [flip-flop JK](jkff.md) inverte a saída a cada borda de descida da sua entrada de relógio: divide a frequência por $2$. O bit $Q_0$ inverte a cada borda de descida do relógio; $Q_1$ inverte quando $Q_0$ desce de $1$ para $0$, isto é, quando o bit anterior "dá a volta" — exatamente a regra do vai-um da contagem binária. Com quatro estágios, a contagem vai de $0$ a $2^4 - 1 = 15$ e recomeça, e o bit $Q_k$ tem frequência $f/2^{k+1}$.

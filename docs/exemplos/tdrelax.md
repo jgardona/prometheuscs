@@ -41,6 +41,29 @@ A mesma polarização do exemplo anterior (fonte de $1{,}5\ \text{V}$ com diviso
 | 7 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $I_P$ | corrente de pico | corrente no pico da curva do dispositivo | A |
+| $V_P$ | tensão de pico do dispositivo | tensão em que o dispositivo passa a conduzir (pico da curva) | V |
+| $V_{PP}$ | tensão de pico do diodo | tensão do pico da curva do diodo túnel | V |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $I_V$ | corrente de vale | corrente no vale da curva do dispositivo | A |
+| $V_V$ | tensão de vale | tensão do vale da curva do dispositivo | V |
+| $V_{\text{th}}$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $R_{\text{th}}$ | resistência de Thévenin | resistência vista dos terminais com as fontes desligadas | Ω |
+| $V_D$ | tensão no diodo | tensão entre o ânodo e o cátodo do diodo | V |
+| $V_{\text{baixa}}$ | tensão do ramo baixo | tensão do ramo de tensão baixa da curva | V |
+| $V_{\text{alta}}$ | tensão do ramo alto | tensão do ramo de tensão alta da curva | V |
+
 ## Teoria
 
 O diodo túnel do simulador tem a corrente

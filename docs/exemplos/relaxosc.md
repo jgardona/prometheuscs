@@ -41,6 +41,22 @@ A saída do amplificador operacional alimenta, por um lado, um divisor de $100\ 
 | 11 | `AudioOutputElm` | audio output | Duration (s) = 1; Sampling Rate = 8000 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $\beta$ | fração de realimentação | parte da saída que volta à entrada não inversora ou inversora | — |
+| $V_{\text{sat}}$ | tensão de saturação | valor em que a saída do amplificador fica travada ($\pm V_\text{sat}$) | V |
+| $R_7$ | resistência do resistor 7 | resistência do resistor chamado $R_7$ no circuito | Ω |
+| $R_5$ | resistência do resistor 5 | resistência do resistor chamado $R_5$ no circuito | Ω |
+| $t_h$ | tempo em nível alto | duração do semiciclo em que a saída fica em nível alto | s |
+
 ## Teoria
 
 A realimentação positiva faz a entrada não inversora ficar em $\pm\beta V_\text{sat}$, com $\beta = R_7/(R_5 + R_7) = 0{,}5$ e $V_\text{sat} = 15\ \text{V}$: os limiares são $\pm 7{,}5\ \text{V}$. O capacitor carrega pelo resistor em direção à tensão de saída; quando sua tensão ultrapassa o limiar, a saída troca de sinal, o limiar também troca e o capacitor passa a carregar no sentido oposto.

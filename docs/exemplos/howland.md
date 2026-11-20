@@ -47,6 +47,22 @@ Uma fonte de $-5\ \text{V}$ ($V_\text{in}$) liga-se por um resistor de $5\ \text
 | 21 | `TextElm` | text | Text = load; Size = 24; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+| $R_3$ | resistência do resistor 3 | resistência do resistor chamado $R_3$ no circuito | Ω |
+| $R_4$ | resistência do resistor 4 | resistência do resistor chamado $R_4$ no circuito | Ω |
+| $V_L$ | tensão na carga | tensão sobre a carga da fonte de corrente Howland | V |
+| $R_1$ | resistência do resistor 1 | resistência do resistor chamado $R_1$ no circuito | Ω |
+| $R_2$ | resistência do resistor 2 | resistência do resistor chamado $R_2$ no circuito | Ω |
+| $V_o$ | tensão de saída | tensão da saída do circuito | V |
+| $I_L$ | corrente na carga | corrente que passa pela carga | A |
+| $R_L$ | resistência de carga | resistor ligado à saída, que consome a energia do circuito | Ω |
+
 ## Teoria
 
 Seja $V_L$ a tensão sobre a carga (a mesma da entrada não inversora). Pelo curto-circuito virtual, a entrada inversora também está em $V_L$. A corrente em $R_1$ é a mesma que passa em $R_2$:

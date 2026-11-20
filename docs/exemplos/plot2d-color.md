@@ -54,6 +54,19 @@ Aqui o XOR dos bits menos significativos dos dois conversores, $R$, e o seu inve
 | 27 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $X$ | coordenada X | coordenada horizontal do ponto desenhado na tela bidimensional | — |
+| $Y$ | coordenada Y | coordenada vertical do ponto desenhado na tela bidimensional | — |
+| $B_r$ | brilho | brilho do ponto na tela bidimensional | — |
+| $a_0$ | bit a0 | bit menos significativo do número $a$ | — |
+| $b_0$ | bit 0 | bit menos significativo do número | — |
+
 ## Teoria
 
 Como no exemplo *Checkerboard*, o XOR de $a_0$ e $b_0$ vale $1$ nas casas de um tom do tabuleiro $16\times 16$ e $0$ nas outras. O inversor leva o sinal complementar ao outro canal de cor: onde um está aceso o outro está apagado, e as duas cores se alternam casa a casa. A fração do tempo em que cada canal está aceso é $\tfrac12$ (nível médio $2{,}5\ \text{V}$ nos dois), e o brilho fica aceso $\tfrac{15}{16}$ do tempo (nível médio $4{,}6875\ \text{V}$).

@@ -69,6 +69,24 @@ Dentro, o somador completo tem duas portas XOR, duas AND e uma OR; o somador de 
 | 109 | `TextElm` | text | Text = Result (in hex); Size = 24; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $n$ | número inteiro n | quantidade ou índice inteiro definido no texto (ordem do filtro, número de bits, de nós ou de espiras) | — |
+| $S$ | sinal lógico S | entrada de seleção, de ajuste (*set*) ou de soma, conforme o circuito | — |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+| $C_{\text{in}}$ | vai-um de entrada | bit de transporte que entra no somador | — |
+| $A_0$ | bit 0 da entrada A | bit de índice 0 do número de 4 bits A | — |
+| $A_3$ | bit 3 da entrada A | bit de índice 3 do número de 4 bits A | — |
+| $B_3$ | bit 3 da entrada B | bit de índice 3 do número de 4 bits B | — |
+| $B_0$ | bit 0 da entrada B | bit de índice 0 do número de 4 bits B | — |
+| $C_{\text{out}}$ | vai-um de saída | bit de transporte que sai do somador | — |
+| $S_i$ | bit i da soma | bit de índice $i$ do resultado da soma | — |
+
 ## Teoria
 
 Um somador completo soma três bits $A$, $B$ e $C_{in}$:

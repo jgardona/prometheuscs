@@ -50,6 +50,32 @@ Dois transistores NPN iguais ($\beta = 100$) formam o par diferencial. Cada emis
 | 20 | `TextElm` | text | Text = in 2; Size = 14; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $R_E$ | resistência de emissor | resistor externo ligado ao emissor | Ω |
+| $R_T$ | resistência da cauda | resistor comum aos emissores do par diferencial, que fixa a corrente da cauda | Ω |
+| $R_C$ | resistência de coletor | resistor externo ligado ao coletor | Ω |
+| $v_d$ | tensão diferencial | diferença entre as duas entradas do par diferencial, $v_1 - v_2$ | V |
+| $v_1$ | tensão instantânea 1 | tensão instantânea chamada $v_1$ no circuito | V |
+| $v_2$ | tensão instantânea 2 | tensão instantânea chamada $v_2$ no circuito | V |
+| $v_{\text{cm}}$ | tensão de modo comum | média das duas entradas do par diferencial, $(v_1 + v_2)/2$ | V |
+| $V_{BE}$ | tensão base-emissor | tensão entre a base e o emissor | V |
+| $I_E$ | corrente de emissor | corrente que sai pelo emissor do transistor bipolar | A |
+| $I_T$ | corrente da cauda | corrente total que o par diferencial tira da cauda | A |
+| $V_E$ | tensão do terminal emissor | tensão do emissor em relação à terra | V |
+| $r_e$ | resistência de emissor | resistência dinâmica do emissor, $V_T/I_E$ | Ω |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $A_d$ | ganho diferencial | razão entre a saída e a tensão diferencial de entrada | — |
+| $v_o$ | tensão instantânea de saída | tensão da saída em cada instante | V |
+| $A_{\text{cm}}$ | ganho de modo comum | razão entre a saída e a tensão de modo comum de entrada | — |
+| $I_C$ | corrente de coletor | corrente que entra pelo coletor do transistor bipolar | A |
+
 ## Teoria
 
 O transistor usa o modelo de Ebers–Moll descrito em [Transistor NPN](npn.md). Chamam-se $v_d = v_1 - v_2$ a entrada diferencial e $v_{cm} = (v_1 + v_2)/2$ a de modo comum.

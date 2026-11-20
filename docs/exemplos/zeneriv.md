@@ -35,6 +35,23 @@ Um gerador de onda triangular de $50\ \text{Hz}$ varre a tensão de $-5{,}93\ \t
 | 2 | `ZenerElm` | Zener diode | Model = default-zener |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $n$ | fator de idealidade | expoente do diodo na equação de Shockley, $i = I_s(e^{v/(nV_T)}-1)$ | — |
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $I_s$ | corrente de saturação | corrente reversa de um diodo ou de uma junção | A |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $v_0$ | parâmetro de ruptura do zener | parâmetro $v_0$ do modelo, que desloca o início da ruptura inversa do zener | V |
+| $V_Z$ | tensão zener | tensão em que o diodo zener regula | V |
+| $r_Z$ | resistência dinâmica do zener | inclinação $dv/di$ da curva do zener na região de ruptura | Ω |
+
 ## Teoria
 
 Na polarização direta, o Zener é um diodo comum (equação de Shockley com $I_s = 1{,}714\cdot 10^{-7}\ \text{A}$, $n = 2$, $V_T = 25{,}865\ \text{mV}$). Na inversa, o modelo soma um segundo termo exponencial, bem mais inclinado, que representa a ruptura:

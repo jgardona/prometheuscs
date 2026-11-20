@@ -38,6 +38,32 @@ Uma fonte de $5\ \text{V}$ alimenta uma carga de $300\ \Omega$ no coletor de um 
 | 12 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $V_{BE}$ | tensão base-emissor | tensão entre a base e o emissor | V |
+| $V_{BC}$ | tensão base-coletor | tensão entre a base e o coletor | V |
+| $I_C$ | corrente de coletor | corrente que entra pelo coletor do transistor bipolar | A |
+| $I_s$ | corrente de saturação | corrente reversa de um diodo ou de uma junção | A |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $\beta_R$ | ganho de corrente reverso | $\beta$ do transistor ligado ao contrário (coletor e emissor trocados) | — |
+| $I_B$ | corrente de base | corrente que entra pela base do transistor bipolar | A |
+| $g_m$ | transcondutância | quanto a corrente de saída varia por volt na entrada, $\partial I_D/\partial V_{GS}$ | S |
+| $r_e$ | resistência de emissor | resistência dinâmica do emissor, $V_T/I_E$ | Ω |
+| $I_E$ | corrente de emissor | corrente que sai pelo emissor do transistor bipolar | A |
+| $I_{E1}$ | corrente de emissor 1 | corrente que sai pelo emissor do transistor bipolar (do elemento de número 1) | A |
+| $\beta_1$ | ganho de corrente do transistor 1 | ganho de corrente $\beta$ do transistor de número 1 | — |
+| $I_{B1}$ | corrente de base 1 | corrente que entra pela base do transistor bipolar (do elemento de número 1) | A |
+| $\beta_2$ | ganho de corrente do transistor 2 | ganho de corrente $\beta$ do transistor de número 2 | — |
+| $\beta_{\text{eq}}$ | ganho de corrente equivalente | ganho de corrente do conjunto de transistores (no Darlington, $\beta_1\beta_2$) | — |
+| $V_{CE(\text{sat})2}$ | tensão de saturação do segundo transistor | $V_{CE}$ do transistor de saída do par Darlington quando saturado | V |
+| $V_{CE}$ | tensão coletor-emissor | tensão entre o coletor e o emissor | V |
+
 ## Teoria
 
 O transistor bipolar do simulador (modelo "default") segue o modelo de Ebers–Moll, com $V_{BE}$ e $V_{BC}$ as tensões base-emissor e base-coletor (para um NPN):

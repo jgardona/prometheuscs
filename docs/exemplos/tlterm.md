@@ -61,6 +61,19 @@ Quatro linhas idênticas de $Z_0 = 75\ \Omega$ e atraso $10\ \text{ns}$ recebem 
 | 31 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $Z_0$ | impedância característica | razão entre tensão e corrente de uma onda que percorre a linha | Ω |
+| $R_s$ | resistência em série | resistor em série com a fonte ou com o dispositivo | Ω |
+| $R_L$ | resistência de carga | resistor ligado à saída, que consome a energia do circuito | Ω |
+| $V_{\text{lanç}}$ | tensão lançada | tensão do pulso que entra na linha | V |
+| $V_p$ | tensão de pico | valor máximo atingido por uma senoide | V |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+
 ## Teoria
 
 O pulso lançado na linha tem a tensão do divisor formado por $R_s$ e $Z_0$:

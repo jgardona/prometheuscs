@@ -35,6 +35,18 @@ Duas fontes de tensão ajustáveis por cursor alimentam o triodo: a da grade, de
 | 5 | `TriodeElm` | triode | mu = 93; kg1 = 680 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $V_{GK}$ | tensão grade-cátodo | tensão entre a grade e o cátodo do triodo | V |
+| $V_{PK}$ | tensão placa-cátodo | tensão entre a placa e o cátodo do triodo | V |
+| $\mu$ | mobilidade | mobilidade dos íons no memristor | m²/(s·V) |
+| $K_{g1}$ | parâmetro de corrente do triodo | constante do modelo de corrente de placa | — |
+| $I_P$ | corrente de pico | corrente no pico da curva do dispositivo | A |
+
 ## Teoria
 
 A lei de Child–Langmuir, que o simulador usa para o triodo, dá a corrente de placa

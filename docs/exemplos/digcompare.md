@@ -58,6 +58,24 @@ As entradas lógicas numéricas são $A_1$ (elemento 0) e $A_0$ (elemento 3), à
 | 55 | `TextElm` | text | Text = A>B; Size = 16; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $A_1$ | sinal lógico A1 | sinal lógico $A_1$ (bit ou elemento de índice 1) do circuito | — |
+| $A_0$ | sinal lógico A0 | sinal lógico $A_0$ (bit ou elemento de índice 0) do circuito | — |
+| $B_1$ | sinal lógico B1 | sinal lógico $B_1$ (bit ou elemento de índice 1) do circuito | — |
+| $B_0$ | sinal lógico B0 | sinal lógico $B_0$ (bit ou elemento de índice 0) do circuito | — |
+| $e_i$ | igualdade do bit i | vale $1$ quando os bits $A_i$ e $B_i$ são iguais | — |
+| $A_i$ | sinal lógico Ai | sinal lógico $A_i$ (bit ou elemento de índice i) do circuito | — |
+| $B_i$ | sinal lógico Bi | sinal lógico $B_i$ (bit ou elemento de índice i) do circuito | — |
+| $e_1$ | igualdade do bit 1 | vale $1$ quando os bits $A_1$ e $B_1$ são iguais | — |
+| $e_0$ | igualdade do bit 0 | vale $1$ quando os bits $A_0$ e $B_0$ são iguais | — |
+
 ## Teoria
 
 Dois bits são iguais quando a sua XOR é $0$; seja $e_i = \overline{A_i \oplus B_i}$. Então

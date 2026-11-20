@@ -39,6 +39,24 @@ A entrada lógica (que alterna entre $0$ e $3{,}6\ \text{V}$ com um clique) alim
 | 7 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $R_B$ | resistência de base | resistor externo ligado à base | Ω |
+| $R_C$ | resistência de coletor | resistor externo ligado ao coletor | Ω |
+| $V_{CC}$ | tensão de alimentação do coletor | tensão contínua que alimenta o circuito pelo coletor | V |
+| $I_B$ | corrente de base | corrente que entra pela base do transistor bipolar | A |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+| $V_{BE}$ | tensão base-emissor | tensão entre a base e o emissor | V |
+| $I_C$ | corrente de coletor | corrente que entra pelo coletor do transistor bipolar | A |
+| $V_{CE(\text{sat})}$ | tensão de saturação coletor-emissor | valor pequeno de $V_{CE}$ com o transistor saturado | V |
+| $Y$ | saída lógica Y | saída do circuito lógico | — |
+
 ## Teoria
 
 O transistor trabalha como chave, entre o **corte** e a **saturação** (ver [Transistor como chave](transswitch.md)):

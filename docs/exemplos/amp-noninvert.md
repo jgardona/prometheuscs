@@ -38,6 +38,19 @@ A fonte senoidal de $40\ \text{Hz}$ e $5\ \text{V}$ de pico está ligada diretam
 | 9 | `OutputElm` | output | Show Voltage = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $R_f$ | resistência de realimentação | resistor que liga a saída à entrada inversora | Ω |
+| $R_1$ | resistência do resistor 1 | resistência do resistor chamado $R_1$ no circuito | Ω |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+| $V_-$ | tensão da entrada inversora | tensão do terminal $-$ do amplificador operacional | V |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+
 ## Teoria
 
 A realimentação negativa leva as duas entradas ao mesmo potencial, então a entrada inversora fica em $V_\text{in}$. Essa tensão é a saída dividida por $R_f$ e $R_1$:

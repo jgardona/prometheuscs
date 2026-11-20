@@ -46,6 +46,25 @@ Um contador binário de 4 bits (elemento 13, disparado pela borda de subida) rec
 | 22 | `RailElm` | voltage source | Voltage = 5; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $G$ | código Gray | número em código Gray, em que valores vizinhos diferem em um bit | — |
+| $G_3$ | sinal lógico G3 | sinal lógico $G_3$ (bit ou elemento de índice 3) do circuito | — |
+| $G_2$ | sinal lógico G2 | sinal lógico $G_2$ (bit ou elemento de índice 2) do circuito | — |
+| $G_1$ | sinal lógico G1 | sinal lógico $G_1$ (bit ou elemento de índice 1) do circuito | — |
+| $G_0$ | sinal lógico G0 | sinal lógico $G_0$ (bit ou elemento de índice 0) do circuito | — |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+| $B_3$ | sinal lógico B3 | sinal lógico $B_3$ (bit ou elemento de índice 3) do circuito | — |
+| $G_i$ | sinal lógico Gi | sinal lógico $G_i$ (bit ou elemento de índice i) do circuito | — |
+| $B_i$ | sinal lógico Bi | sinal lógico $B_i$ (bit ou elemento de índice i) do circuito | — |
+| $B_{i+1}$ | bit i+1 do binário | bit de índice $i+1$ do número em binário | — |
+| $k$ | índice | número inteiro que numera os termos de um somatório, os bits ou os elementos de um conjunto | — |
+
 ## Teoria
 
 A conversão de binário $B$ para Gray $G$ é

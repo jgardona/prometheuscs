@@ -48,6 +48,38 @@ A alimentação é de $20\ \text{V}$. Um divisor de $110\ \text{k}\Omega$ e $10\
 | 14 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $V_{BE}$ | tensão base-emissor | tensão entre a base e o emissor | V |
+| $V_{BC}$ | tensão base-coletor | tensão entre a base e o coletor | V |
+| $I_C$ | corrente de coletor | corrente que entra pelo coletor do transistor bipolar | A |
+| $I_s$ | corrente de saturação | corrente reversa de um diodo ou de uma junção | A |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $\beta_R$ | ganho de corrente reverso | $\beta$ do transistor ligado ao contrário (coletor e emissor trocados) | — |
+| $I_B$ | corrente de base | corrente que entra pela base do transistor bipolar | A |
+| $g_m$ | transcondutância | quanto a corrente de saída varia por volt na entrada, $\partial I_D/\partial V_{GS}$ | S |
+| $r_e$ | resistência de emissor | resistência dinâmica do emissor, $V_T/I_E$ | Ω |
+| $I_E$ | corrente de emissor | corrente que sai pelo emissor do transistor bipolar | A |
+| $V_B$ | tensão do terminal base | tensão da base em relação à terra | V |
+| $R_E$ | resistência de emissor | resistor externo ligado ao emissor | Ω |
+| $V_C$ | tensão do terminal coletor | tensão do coletor em relação à terra | V |
+| $V_{CC}$ | tensão de alimentação do coletor | tensão contínua que alimenta o circuito pelo coletor | V |
+| $R_C$ | resistência de coletor | resistor externo ligado ao coletor | Ω |
+| $v_b$ | tensão de base de pequeno sinal | variação da tensão da base em torno do ponto de operação | V |
+| $i_c$ | corrente de coletor de pequeno sinal | variação da corrente do coletor em torno do ponto de operação | A |
+| $v_{\text{be}}$ | tensão base-emissor de pequeno sinal | variação de $V_{BE}$ em torno do ponto de operação | V |
+| $A_v$ | ganho de tensão | razão entre a tensão de saída e a de entrada | — |
+| $v_c$ | tensão de coletor de pequeno sinal | variação da tensão do coletor em torno do ponto de operação | V |
+| $R_L$ | resistência de carga | resistor ligado à saída, que consome a energia do circuito | Ω |
+| $f_c$ | frequência de corte | frequência em que o ganho cai a $1/\sqrt{2}$ do valor da banda passante (−3 dB) | Hz |
+
 ## Teoria
 
 O transistor bipolar do simulador (modelo "default") segue o modelo de Ebers–Moll, com $V_{BE}$ e $V_{BC}$ as tensões base-emissor e base-coletor (para um NPN):

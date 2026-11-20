@@ -56,6 +56,28 @@ Um circuito ressonante paralelo tem um indutor de $100\ \text{mH}$, um capacitor
 | 37 | `TextElm` | text | Text = fo=71.2Hz; Size = 18; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $f_0$ | frequência de ressonância | frequência em que o circuito responde ao máximo | Hz |
+| $Q_u$ | fator de qualidade sem carga | fator de qualidade do circuito ressonante só com a perda $R_p$, $R_p/(\omega_0 L)$ | — |
+| $Q_L$ | fator de qualidade com carga | fator de qualidade do circuito ressonante com a carga $R_L$ em paralelo | — |
+| $U_{\text{out}}$ | amplitude da saída | amplitude da tensão de saída do oscilador | V |
+| $U_{\text{sat}}$ | tensão de saturação | limite da tensão de saída imposto pela saturação do transistor Q2 | V |
+| $R_p$ | resistência de perda | resistor em paralelo que representa as perdas do circuito ressonante | Ω |
+| $R_L$ | resistência de carga | resistor ligado à saída, que consome a energia do circuito | Ω |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $\omega_0$ | frequência angular natural | frequência angular em que o circuito ressoa, $1/\sqrt{LC}$ | rad/s |
+| $V_{BC}$ | tensão base-coletor | tensão entre a base e o coletor | V |
+
 ## Teoria
 
 **Frequência.** Os resistores em paralelo com o circuito ressonante só introduzem perdas; a frequência é praticamente a de ressonância do LC:

@@ -57,6 +57,24 @@ Um gerador de onda quadrada de $200\ \text{kHz}$ (período de $5\ \mu\text{s}$, 
 | 39 | `RailElm` | square wave gen | Max Voltage = 2.5; Waveform = Square Wave; DC Offset (V) = 2.5; Internal Resistance (ohms) = 0; Show Voltage = não; Specify As = Frequency/Duty Cycle; Frequency (Hz) = 200k; Phase Offset (degrees) = 0; Duty Cycle = 50; Rise/Fall Time (s) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $V_{DD}$ | tensão de alimentação | tensão contínua que alimenta o circuito (a ligada aos drenos dos transistores) | V |
+| $V_p$ | tensão de pico do pulso | valor que a tensão atinge no instante da borda de subida | V |
+| $V_{\text{th}}$ | limiar da porta seguinte | tensão em que o inversor seguinte muda de estado | V |
+| $t_w$ | largura do pulso | tempo em que a tensão fica acima do limiar da porta | s |
+| $\tau_{\text{ef}}$ | constante de tempo efetiva | constante de tempo $(R+R_{on})C$ do circuito, com a resistência do canal | s |
+
 ## Teoria
 
 O capacitor em série com o resistor transmite as **variações** de tensão. Numa borda de subida de $0$ a $V_{DD}$, o nó entre eles pula para $\approx V_{DD}$ e decai com $\tau = RC$:

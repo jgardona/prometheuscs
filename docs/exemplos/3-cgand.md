@@ -55,6 +55,18 @@ O exemplo abre com $A = 2$ (elemento 44) e $B = 1$ (elemento 45).
 | 45 | `LogicInputElm` | logic input | Momentary Switch = não; High Logic Voltage = 5; Low Voltage = 0; Numeric = sim; Ternary = sim; Keyboard Shortcut =  |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $x$ | entrada ternária x | valor lógico de entrada ($0$, $1$ ou $2$) de uma função ternária | — |
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+| $Y$ | saída lógica Y | saída do circuito lógico | — |
+
 ## Teoria
 
 Na lógica ternária de Kleene, o E e o OU generalizam-se como mínimo e máximo, e a negação como $\overline{x} = 2 - x$ (ver [Complement (F210)](3-invert.md)). A CGAND é

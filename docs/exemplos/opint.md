@@ -69,6 +69,15 @@ O circuito é o amplificador operacional clássico de $20$ transistores ($13$ NP
 | 101 | `TextElm` | text | Text = +; Size = 24; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $V_{BE}$ | tensão base-emissor | tensão entre a base e o emissor | V |
+
 ## Teoria
 
 O 741 é composto por três blocos:

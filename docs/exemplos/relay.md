@@ -39,6 +39,24 @@ Uma fonte de tensão variável (de $0$ a $5\ \text{V}$, com um *slider* chamado 
 | 9 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $R_b$ | resistência de base | resistor externo ligado à base | Ω |
+| $i_b$ | corrente da bobina | corrente que passa pela bobina do relé | A |
+| $\tau_b$ | constante de tempo da bobina | $L/R_b$: tempo com que a corrente da bobina cresce | s |
+| $I_{\text{on}}$ | corrente de operação | corrente da bobina acima da qual o relé opera | A |
+| $I_{\text{off}}$ | corrente de soltura | corrente da bobina abaixo da qual o relé solta | A |
+| $R_{\text{on}}$ | resistência de condução | resistência de uma chave ou de um transistor quando conduz | Ω |
+| $R_{\text{off}}$ | resistência de corte | resistência de uma chave ou de um transistor quando não conduz | Ω |
+
 ## Teoria
 
 Um relé é uma chave operada por um eletroímã. Seu modelo no simulador tem duas partes:

@@ -69,6 +69,21 @@ O exemplo abre com as duas entradas em $-1{,}4\ \text{V}$.
 | 61 | `TextElm` | text | Text = Q3; Size = 16; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+| $I_E$ | corrente de emissor | corrente que sai pelo emissor do transistor bipolar | A |
+| $V_E$ | tensão do terminal emissor | tensão do emissor em relação à terra | V |
+| $V_{\text{ref}}$ | tensão de referência | tensão fixa com que a entrada é comparada | V |
+| $Y_{NOR}$ | saída NOR | saída da função NOR de duas entradas | — |
+| $Y_{OR}$ | saída OR | saída da função OR de duas entradas | — |
+| $V_{BE}$ | tensão base-emissor | tensão entre a base e o emissor | V |
+
 ## Teoria
 
 O resistor comum dos emissores fixa uma corrente quase constante, $I_E \approx (V_E + 5{,}2)/1{,}18\ \text{k}\Omega \approx 3\ \text{mA}$. O par diferencial a entrega ao lado cuja base estiver mais alta:

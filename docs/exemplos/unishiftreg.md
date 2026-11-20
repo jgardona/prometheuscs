@@ -110,6 +110,19 @@ Quatro flip-flops JK (cada um com um inversor entre $J$ e $K$, para funcionar co
 | 215 | `TextElm` | text | Text = S1; Size = 15; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $J$ | entrada J | entrada de ajuste do flip-flop JK | — |
+| $K$ | entrada K | entrada de limpeza do flip-flop JK | — |
+| $S_1$ | sinal lógico S1 | sinal lógico $S_1$ (bit ou elemento de índice 1) do circuito | — |
+| $S_0$ | sinal lógico S0 | sinal lógico $S_0$ (bit ou elemento de índice 0) do circuito | — |
+| $k$ | índice | número inteiro que numera os termos de um somatório, os bits ou os elementos de um conjunto | — |
+| $Q_k$ | fator de qualidade da seção k | fator de qualidade da seção de índice $k$ do filtro | — |
+
 ## Teoria
 
 Cada multiplexador escolhe, conforme $S_1 S_0$, o que entra no seu flip-flop na próxima borda:

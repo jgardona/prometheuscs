@@ -37,6 +37,27 @@ Uma fonte de $5\ \text{V}$ alimenta, em série, um indutor de $1\ \text{H}$, um 
 | 8 | `ResistorElm` | resistor | Resistance (ohms) = 100 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $E$ | energia | energia armazenada ou dissipada | J |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $\zeta$ | fator de amortecimento relativo | $\alpha/\omega_0$: com $\zeta<1$ o circuito oscila, com $\zeta=1$ é crítico e com $\zeta>1$ não oscila | — |
+| $f_0$ | frequência de ressonância | frequência em que o circuito responde ao máximo | Hz |
+| $I_0$ | corrente inicial | valor da corrente no instante inicial | A |
+| $V_{\text{pico}}$ | tensão de pico | valor máximo atingido pela tensão | V |
+
 ## Teoria
 
 A tensão num indutor é $v = L\thinspace\dfrac{di}{dt}$. Com a chave fechada, a corrente cresce como $i(t) = \dfrac{V}{R}\left(1 - e^{-Rt/L}\right)$ até $V/R = 50\ \text{mA}$ ($\tau = L/R = 10\ \text{ms}$), e o indutor armazena a energia $E = \tfrac12 L I^2 = 1{,}2\ \text{mJ}$.

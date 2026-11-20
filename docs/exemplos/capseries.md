@@ -43,6 +43,26 @@ Cada exemplo desta família tem dois circuitos lado a lado, idênticos exceto po
 | 16 | `VoltageElm` | voltage source | Voltage = 5; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0; Show Voltage = não; Circle Symbol = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $C_1$ | capacitância do capacitor 1 | capacitância do capacitor chamado $C_1$ no circuito | F |
+| $C_2$ | capacitância do capacitor 2 | capacitância do capacitor chamado $C_2$ no circuito | F |
+| $Q$ | carga elétrica | quantidade de carga acumulada | C |
+| $C_{\text{eq}}$ | capacitância equivalente | capacitância de um conjunto de capacitores visto como um só | F |
+| $C_k$ | capacitância do estágio k | capacitor de índice $k$ do conjunto | F |
+| $v_k$ | tensão da fase k | tensão da fase de índice $k$ | V |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $v_C$ | tensão no capacitor | tensão entre os terminais do capacitor | V |
+
 ## Teoria
 
 Capacitores em série são atravessados pela mesma corrente e, portanto, acumulam a mesma carga $Q$. A tensão total é a soma das tensões: $v = \dfrac{Q}{C_1} + \dfrac{Q}{C_2}$, de modo que

@@ -38,6 +38,24 @@ Um NMOS (modelo padrão, sem diodo de corpo) tem a porta ligada a uma fonte de $
 | 9 | `RailElm` | voltage source | Voltage = 3; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $\lambda$ | modulação do comprimento do canal | parâmetro que dá à corrente de saturação do MOSFET uma pequena inclinação com $V_{DS}$ ($0$: sem inclinação) | 1/V |
+| $I_D$ | corrente de dreno | corrente que entra pelo dreno do transistor de efeito de campo | A |
+| $\beta$ | parâmetro de transcondutância | constante da lei quadrática do MOSFET: $I_D = \tfrac12\beta(V_{GS}-V_t)^2$ | A/V² |
+| $V_{GS}$ | tensão porta-fonte | tensão entre a porta e a fonte | V |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $V_{DS}$ | tensão dreno-fonte | tensão entre o dreno e a fonte | V |
+| $V_{\text{ov}}$ | tensão de sobrecarga | $V_{GS} - V_t$: quanto a porta passa do limiar | V |
+| $r_o$ | resistência de saída | resistência incremental vista pelo dreno (ou coletor) | Ω |
+| $V_{DS,\text{min}}$ | tensão dreno-fonte mínima | menor $V_{DS}$ com que a fonte de corrente ainda regula (limite de conformidade) | V |
+
 ## Teoria
 
 Na saturação (modelo de lei quadrática de [n-MOSFET](nmosfet.md), $\lambda = 0$) a corrente de dreno é

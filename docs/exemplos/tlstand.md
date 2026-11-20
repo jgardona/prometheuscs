@@ -38,6 +38,22 @@ Uma fonte senoidal de $5\ \text{V}$ e $1{,}5\ \text{GHz}$ alimenta, por um resis
 | 7 | `RailElm` | A/C source | Max Voltage = 5; Waveform = A/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0; Show Voltage = não; Frequency (Hz) = 1.5G; Phase Offset (degrees) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $x$ | posição do cursor | fração do curso do potenciômetro, de $0$ a $1$ | — |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $Z_0$ | impedância característica | razão entre tensão e corrente de uma onda que percorre a linha | Ω |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $R_L$ | resistência de carga | resistor ligado à saída, que consome a energia do circuito | Ω |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $R_s$ | resistência em série | resistor em série com a fonte ou com o dispositivo | Ω |
+
 ## Teoria
 
 Com $R_L = 0$ o coeficiente de reflexão é $\Gamma = (0 - Z_0)/(0 + Z_0) = -1$: a onda volta com a mesma amplitude e o sinal trocado. A tensão ao longo da linha é

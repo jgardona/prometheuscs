@@ -46,6 +46,26 @@ Dois NMOS iguais (modelo padrão, sem diodo de corpo) têm as portas ligadas ent
 | 21 | `SwitchElm` | switch (SPST) | Momentary Switch = não; IEC Symbol = não; Label (for linking) = ; Keyboard Shortcut = ; On Resistance (ohms) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $W$ | largura do canal | largura do canal do MOSFET; com $L$, define a razão $W/L$ | m |
+| $L$ | comprimento do canal | comprimento do canal do MOSFET; com $W$, define a razão $W/L$ | m |
+| $V_{DS}$ | tensão dreno-fonte | tensão entre o dreno e a fonte | V |
+| $V_{GS}$ | tensão porta-fonte | tensão entre a porta e a fonte | V |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $I_{\text{ref}}$ | corrente de referência | corrente que entra no transistor M1 do espelho e que M2 copia | A |
+| $\beta$ | parâmetro de transcondutância | constante da lei quadrática do MOSFET: $I_D = \tfrac12\beta(V_{GS}-V_t)^2$ | A/V² |
+| $I_{\text{out}}$ | corrente de saída | corrente que o circuito entrega à saída ou à carga | A |
+| $V_{DS2}$ | tensão dreno-fonte de M2 | tensão sobre o transistor M2, que copia a corrente | V |
+| $V_{\text{ov}}$ | tensão de sobrecarga | $V_{GS} - V_t$: quanto a porta passa do limiar | V |
+| $\lambda$ | modulação do comprimento do canal | parâmetro que dá à corrente de saturação do MOSFET uma pequena inclinação com $V_{DS}$ ($0$: sem inclinação) | 1/V |
+| $r_o$ | resistência de saída | resistência incremental vista pelo dreno (ou coletor) | Ω |
+
 ## Teoria
 
 Em M1, a porta está ligada ao dreno, então $V_{DS} = V_{GS}$, que é maior que $V_{GS} - V_t$: M1 está sempre na saturação e a sua corrente é $I_{ref} = \tfrac12\beta(V_{GS} - V_t)^2$ (modelo de [n-MOSFET](nmosfet.md)), determinada pelo resistor:

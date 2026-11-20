@@ -44,6 +44,24 @@ O primeiro operacional (não inversor) tem a entrada inversora ligada à terra p
 | 20 | `AudioOutputElm` | audio output | Duration (s) = 1; Sampling Rate = 8000 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $x$ | frequência normalizada | produto $s\tau$ da variável de Laplace pela constante de tempo | — |
+| $s$ | variável de Laplace | frequência complexa; no regime senoidal, $s = j\omega$ | 1/s |
+| $a$ | razão de resistências | razão $R_{17}/R$ do laço do oscilador | — |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $R_{17}$ | resistência do resistor 17 | resistência do resistor chamado $R_{17}$ no circuito | Ω |
+| $R_{13}$ | resistência do resistor 13 | resistência do resistor chamado $R_{13}$ no circuito | Ω |
+| $C_{15}$ | capacitância do capacitor 15 | capacitância do capacitor chamado $C_{15}$ no circuito | F |
+| $\omega$ | frequência angular | $2\pi f$: a frequência medida em radianos por segundo | rad/s |
+| $f_0$ | frequência de ressonância | frequência em que o circuito responde ao máximo | Hz |
+
 ## Teoria
 
 Seja $\tau = RC = 1\ \text{k}\Omega\cdot 1\ \mu\text{F} = 1\ \text{ms}$ e $x = s\tau$. Os blocos do laço são:

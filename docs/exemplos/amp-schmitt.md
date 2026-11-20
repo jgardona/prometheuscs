@@ -43,6 +43,21 @@ A entrada ligada à entrada inversora é uma senoide lenta de $40\ \text{Hz}$ e 
 | 17 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0; Label =  |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $V_{\text{sat}}$ | tensão de saturação | valor em que a saída do amplificador fica travada ($\pm V_\text{sat}$) | V |
+| $R_a$ | resistência de referência | resistor que liga a entrada não inversora à tensão de referência | Ω |
+| $R_b$ | resistência do divisor de referência | resistor que liga a entrada não inversora à referência negativa | Ω |
+| $R_f$ | resistência de realimentação | resistor que liga a saída à entrada inversora | Ω |
+| $V_+$ | tensão da entrada não inversora | tensão do terminal $+$ do amplificador operacional | V |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+
 ## Teoria
 
 A tensão na entrada não inversora depende do estado da saída, $V_\text{out} = \pm V_\text{sat}$ ($V_\text{sat} = 15\ \text{V}$). Pelo teorema de Millman, com $R_a = 10\ \text{k}\Omega$ (a $10\ \text{V}$), $R_b = 10\ \text{k}\Omega$ (à terra) e $R_f = 100\ \text{k}\Omega$ (à saída):

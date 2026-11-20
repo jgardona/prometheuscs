@@ -37,6 +37,28 @@ A fonte de $5\ \text{V}$ liga-se ao polo do relé; um dos contatos alimenta, por
 | 9 | `OutputElm` | output | Show Voltage = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $R_b$ | resistência de base | resistor externo ligado à base | Ω |
+| $i_b$ | corrente da bobina | corrente que passa pela bobina do relé | A |
+| $\tau_b$ | constante de tempo da bobina | $L/R_b$: tempo com que a corrente da bobina cresce | s |
+| $I_{\text{on}}$ | corrente de operação | corrente da bobina acima da qual o relé opera | A |
+| $I_{\text{off}}$ | corrente de soltura | corrente da bobina abaixo da qual o relé solta | A |
+| $R_{\text{on}}$ | resistência de condução | resistência de uma chave ou de um transistor quando conduz | Ω |
+| $R_{\text{off}}$ | resistência de corte | resistência de uma chave ou de um transistor quando não conduz | Ω |
+| $v_C$ | tensão no capacitor | tensão entre os terminais do capacitor | V |
+| $V_\infty$ | tensão final | valor para o qual a tensão tende depois do transitório | V |
+| $\tau_c$ | constante de tempo de carga | constante de tempo com que o capacitor se carrega | s |
+| $\tau_d$ | constante de tempo de descarga | constante de tempo com que o capacitor se descarrega | s |
+
 ## Teoria
 
 Um relé é uma chave operada por um eletroímã. Seu modelo no simulador tem duas partes:

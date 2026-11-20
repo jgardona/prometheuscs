@@ -39,6 +39,21 @@ Uma fonte senoidal de $20\ \text{V}$ de pico e $40\ \text{Hz}$ alimenta, por um 
 | 7 | `PotElm` | potentiometer | Resistance (ohms) = 1.8k; Slider Text = Trigger Voltage; Show Values = não; Group Number (for linking) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $V_s$ | tensão da fonte | tensão da fonte de alimentação alternada | V |
+| $\alpha$ | fator de amortecimento | $R/(2L)$: taxa com que a oscilação decai, como $e^{-\alpha t}$ | 1/s |
+| $V_D$ | tensão no diodo | tensão entre o ânodo e o cátodo do diodo | V |
+| $I_{\text{trig}}$ | corrente de disparo | corrente de porta que dispara o tiristor | A |
+| $R_{\text{pot}}$ | resistência do potenciômetro | resistência total do potenciômetro | Ω |
+| $R_{\text{gate}}$ | resistência de porta | resistor em série com a porta do tiristor | Ω |
+| $V_{\text{ef}}$ | tensão eficaz | valor eficaz (RMS) da tensão | V |
+| $V_p$ | tensão de pico | valor máximo atingido por uma senoide | V |
+
 ## Teoria
 
 O SCR (retificador controlado de silício, ou tiristor) é um dispositivo de quatro camadas que, polarizado diretamente, só conduz depois de um pulso de corrente no gatilho. No modelo do simulador, o SCR passa a conduzir quando a corrente do gatilho passa da **corrente de disparo**, de $10\ \text{mA}$; uma vez conduzindo, **trava**: continua conduzindo, mesmo sem o gatilho, enquanto a corrente de ânodo for maior que a **corrente de manutenção**, de $8{,}2\ \text{mA}$, e desliga quando cai abaixo dela. A resistência do gatilho é de $50\ \Omega$ e a queda direta na condução, de cerca de $0{,}64\ \text{V}$.

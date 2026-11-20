@@ -43,6 +43,16 @@ Uma fonte de $5\ \text{V}$ alimenta o ânodo do SCR por um resistor de $100\ \Om
 | 7 | `SCRElm` | SCR | Trigger Current (A) = 10m; Holding Current (A) = 8.2m; Gate Resistance (ohms) = 50 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+
 ## Teoria
 
 O SCR (retificador controlado de silício, ou tiristor) é um dispositivo de quatro camadas que, polarizado diretamente, só conduz depois de um pulso de corrente no gatilho. No modelo do simulador, o SCR passa a conduzir quando a corrente do gatilho passa da **corrente de disparo**, de $10\ \text{mA}$; uma vez conduzindo, **trava**: continua conduzindo, mesmo sem o gatilho, enquanto a corrente de ânodo for maior que a **corrente de manutenção**, de $8{,}2\ \text{mA}$, e desliga quando cai abaixo dela. A resistência do gatilho é de $50\ \Omega$ e a queda direta na condução, de cerca de $0{,}64\ \text{V}$.

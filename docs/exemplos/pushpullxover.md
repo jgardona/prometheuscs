@@ -43,6 +43,24 @@ Um NPN ($\beta = 100$) tem o coletor em $+10\ \text{V}$ e um PNP ($\beta = 100$)
 | 12 | `OutputElm` | output | Show Voltage = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $v_o$ | tensão instantânea de saída | tensão da saída em cada instante | V |
+| $v_i$ | tensão instantânea de entrada | tensão da entrada em cada instante | V |
+| $V_{BE}$ | tensão base-emissor | tensão entre a base e o emissor | V |
+| $V_{EB}$ | tensão emissor-base | tensão entre o emissor e a base (referência do PNP) | V |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $I_C$ | corrente de coletor | corrente que entra pelo coletor do transistor bipolar | A |
+| $I_s$ | corrente de saturação | corrente reversa de um diodo ou de uma junção | A |
+| $I_B$ | corrente de base | corrente que entra pela base do transistor bipolar | A |
+| $I_E$ | corrente de emissor | corrente que sai pelo emissor do transistor bipolar | A |
+
 ## Teoria
 
 O transistor segue o modelo de Ebers–Moll de [Transistor NPN](npn.md). Um seguidor de emissor tem ganho de tensão próximo de $1$ e a saída segue a entrada menos a tensão base-emissor:

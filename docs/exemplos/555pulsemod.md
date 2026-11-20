@@ -41,6 +41,22 @@ Um 555 alimentado com $5\ \text{V}$ é um astável com dois resistores de $300\ 
 | 15 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $D$ | ciclo de trabalho | fração do período em que a saída fica em nível alto | — |
+| $R_A$ | resistência R_A | resistor do temporizador que carrega o capacitor | Ω |
+| $R_B$ | resistência de base | resistor externo ligado à base | Ω |
+| $V_c$ | tensão de controle | tensão que ajusta a frequência de um oscilador controlado por tensão | V |
+| $t_h$ | tempo em nível alto | duração do semiciclo em que a saída fica em nível alto | s |
+| $V_{CC}$ | tensão de alimentação do coletor | tensão contínua que alimenta o circuito pelo coletor | V |
+| $t_l$ | tempo em nível baixo | duração do semiciclo em que a saída fica em nível baixo | s |
+
 ## Teoria
 
 O pino de controle fixa o limiar superior em $V_c$ e o inferior em $V_c/2$. O capacitor carrega por $R_A + R_B$ de $V_c/2$ a $V_c$ e descarrega por $R_B$ (mais os $10\ \Omega$ do transistor) de $V_c$ a $V_c/2$:

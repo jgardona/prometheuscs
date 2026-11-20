@@ -46,6 +46,26 @@ Três circuitos iguais: uma fonte de 5 V de pico, um resistor de $100\ \Omega$ e
 | 29 | `ResistorElm` | resistor | Resistance (ohms) = 100 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $f_0$ | frequência de ressonância | frequência em que o circuito responde ao máximo | Hz |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $Y$ | admitância | inverso da impedância | S |
+| $R_p$ | resistência em paralelo | resistência equivalente de resistores ligados em paralelo | Ω |
+| $\omega$ | frequência angular | $2\pi f$: a frequência medida em radianos por segundo | rad/s |
+| $\omega_0$ | frequência angular natural | frequência angular em que o circuito ressoa, $1/\sqrt{LC}$ | rad/s |
+| $R_s$ | resistência em série | resistor em série com a fonte ou com o dispositivo | Ω |
+| $Q$ | fator de qualidade | mede o quão seletivo é um circuito ressonante: $f_0/B$, razão entre a frequência central e a largura de banda | — |
+| $I_{\text{pico}}$ | corrente de pico | maior valor que a corrente atinge no ciclo | A |
+
 ## Teoria
 
 A admitância do bloco paralelo é

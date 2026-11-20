@@ -47,6 +47,16 @@ Doze resistores de $100\ \Omega$ formam as arestas de um cubo. Uma fonte de $5\ 
 | 13 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $R_{\text{eq}}$ | resistência equivalente | resistência de um conjunto de resistores visto como um só | Ω |
+
 ## Teoria
 
 Por simetria, as três arestas que saem do vértice da fonte têm a mesma corrente, e os vértices a que elas chegam têm o mesmo potencial; o mesmo vale para o vértice da terra. Os vértices do cubo se agrupam então em quatro camadas equipotenciais:

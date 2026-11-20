@@ -50,6 +50,32 @@ Uma fonte senoidal de $40\ \text{Hz}$, com $3\ \text{V}$ de amplitude sobre $3\ 
 | 31 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $q$ | carga do elétron | carga elétrica elementar, $1{,}602\cdot 10^{-19}\ \text{C}$ | C |
+| $k$ | constante de Boltzmann | $1{,}381\cdot 10^{-23}\ \text{J/K}$, que liga temperatura e energia | J/K |
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $I_C$ | corrente de coletor | corrente que entra pelo coletor do transistor bipolar | A |
+| $I_S$ | corrente de saturação | corrente reversa de um diodo ou de uma junção | A |
+| $V_{BE}$ | tensão base-emissor | tensão entre a base e o emissor | V |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $I_{\text{in}}$ | corrente de entrada | corrente que entra no circuito pela entrada | A |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+| $I_{\text{ref}}$ | corrente de referência | corrente de entrada que o espelho de corrente copia | A |
+| $V_{BE,\text{ref}}$ | tensão base-emissor de referência | tensão base-emissor do transistor de referência de corrente | V |
+| $V_x$ | tensão do primeiro estágio | tensão na saída do primeiro estágio logarítmico | V |
+| $R_a$ | resistência de ganho do segundo estágio | resistor de realimentação do segundo amplificador, que fixa o ganho $1 + R_a/R_b$ | Ω |
+| $R_b$ | resistência de realimentação do segundo estágio | resistor entre a entrada inversora e a terra no segundo amplificador | Ω |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $K$ | fator de escala logarítmico | constante que multiplica o logaritmo na saída ($16\thinspace V_T$) | V |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+
 ## Teoria
 
 Num transistor bipolar, a corrente de coletor é $I_C = I_S\thinspace e^{V_{BE}/V_T}$, ou seja,

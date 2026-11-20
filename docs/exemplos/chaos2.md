@@ -69,6 +69,19 @@ Três amplificadores operacionais integradores (resistores de $47\ \text{k}\Omeg
 | 63 | `TextElm` | text | Text = 125.2k; Size = 15; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $R_1$ | resistência do resistor 1 | resistência do resistor chamado $R_1$ no circuito | Ω |
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $\delta$ | constante de Feigenbaum | razão limite entre intervalos sucessivos de duplicação de período, cerca de $4{,}669$ | — |
+| $r_n$ | n-ésimo valor de bifurcação | valor do parâmetro de controle em que ocorre a $n$-ésima duplicação de período | V |
+| $r_{n-1}$ | (n−1)-ésimo valor de bifurcação | valor do parâmetro de controle na duplicação anterior | V |
+| $r_{n+1}$ | (n+1)-ésimo valor de bifurcação | valor do parâmetro de controle na duplicação seguinte | V |
+
 ## Teoria
 
 Em um sistema com um parâmetro de controle (aqui $R_1$), o comportamento muda de forma qualitativa em valores críticos, chamados **pontos de bifurcação**. A rota mais comum para o caos é a cascata de dobramentos de período: um ciclo de período $T$ perde a estabilidade e dá lugar a um de período $2T$, depois $4T$, $8T$, ..., com intervalos cada vez menores do parâmetro; as distâncias entre bifurcações sucessivas decrescem com a razão universal de Feigenbaum:

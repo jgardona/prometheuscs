@@ -41,6 +41,23 @@ O mesmo circuito do exemplo anterior (filtro passa-tudo de primeira ordem, com $
 | 10 | `RailElm` | square wave gen | Max Voltage = 5; Waveform = Square Wave; DC Offset (V) = 0; Internal Resistance (ohms) = 0; Show Voltage = não; Specify As = Frequency/Duty Cycle; Frequency (Hz) = 100; Phase Offset (degrees) = 0; Duty Cycle = 50; Rise/Fall Time (s) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $s$ | variável de Laplace | frequência complexa; no regime senoidal, $s = j\omega$ | 1/s |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $H$ | função de transferência | razão entre a saída e a entrada de um filtro, em função da frequência | — |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $V_+$ | tensão da entrada não inversora | tensão do terminal $+$ do amplificador operacional | V |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+
 ## Teoria
 
 A função de transferência é $H(s) = (1 - s\tau)/(1 + s\tau)$, com $\tau = RC = 1\ \text{ms}$. A saída é $V_\text{out} = 2V_+ - V_\text{in}$, onde $V_+$ é a tensão no capacitor, que **não pode variar instantaneamente**. Quando a entrada dá um degrau de $\Delta V$, a saída salta de $-\Delta V$ (porque $V_+$ ainda não mudou) e depois decai exponencialmente para o novo valor com constante de tempo $\tau$.

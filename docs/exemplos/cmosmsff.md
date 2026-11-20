@@ -56,6 +56,16 @@ Dois inversores de saída acionam $\overline{Q}$ (elemento 23) e $Q$ (elemento 2
 | 27 | `TextElm` | text | Text = Q; Size = 24; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $D$ | entrada de dados D | entrada de dados do flip-flop ou do circuito lógico | — |
+| $Q$ | saída Q | saída de um flip-flop ou latch, que guarda o bit armazenado | — |
+
 ## Teoria
 
 As duas fases do relógio alternam o papel dos latches:

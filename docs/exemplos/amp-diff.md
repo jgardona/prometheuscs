@@ -43,6 +43,25 @@ Quatro resistores de $1\ \text{k}\Omega$ montam o amplificador diferencial: duas
 | 13 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $R_1$ | resistência do resistor 1 | resistência do resistor chamado $R_1$ no circuito | Ω |
+| $R_2$ | resistência do resistor 2 | resistência do resistor chamado $R_2$ no circuito | Ω |
+| $R_3$ | resistência do resistor 3 | resistência do resistor chamado $R_3$ no circuito | Ω |
+| $R_4$ | resistência do resistor 4 | resistência do resistor chamado $R_4$ no circuito | Ω |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $R_f$ | resistência de realimentação | resistor que liga a saída à entrada inversora | Ω |
+| $V_2$ | tensão 2 | tensão chamada $V_2$ no circuito | V |
+| $V_1$ | tensão 1 | tensão chamada $V_1$ no circuito | V |
+| $V_c$ | tensão de modo comum | senoide de $60\ \text{Hz}$ presente nas duas entradas, que o amplificador diferencial cancela | V |
+| $v_d$ | tensão diferencial | diferença entre as duas entradas do par diferencial, $v_1 - v_2$ | V |
+
 ## Teoria
 
 Com resistores iguais ($R_1 = R_2 = R_3 = R_4 = R$) e realimentação negativa,

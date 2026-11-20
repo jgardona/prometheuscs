@@ -45,6 +45,24 @@ Um PMOS e um NMOS (modelo padrão, sem diodo de corpo) formam um [inversor CMOS]
 | 24 | `CrystalElm` | crystal | Parallel Capacitance = 28.7p; Series Capacitance (F) = 0.1p; Inductance (H) = 2.5m; Resistance (Ω) = 6.4; Show Frequency = sim |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $A$ | amplitude da oscilação | valor de pico da tensão oscilante, que cresce até o limite do inversor | V |
+| $L$ | indutância do cristal | indutância $L$ do ramo ressonante em série do cristal | H |
+| $f_s$ | frequência de ressonância série | frequência em que o ramo em série $L C_s$ ressoa | Hz |
+| $C_s$ | capacitância em série do cristal | capacitância $C_s$ do ramo ressonante em série do cristal | F |
+| $f_p$ | frequência de ressonância paralela | frequência em que o cristal ressoa em paralelo, um pouco acima de $f_s$ | Hz |
+| $C_0$ | capacitância paralela do cristal | capacitância $C_0$ dos eletrodos, em paralelo com o ramo em série | F |
+| $A_0$ | amplitude inicial | amplitude da oscilação quando ela nasce do ruído | V |
+| $\tau_g$ | constante de tempo de crescimento | tempo em que a amplitude da oscilação cresce por um fator $e$ | s |
+| $C_L$ | capacitância de carga | capacitor ligado à saída, que o circuito precisa carregar | F |
+
 ## Teoria
 
 O cristal tem as duas ressonâncias de [Oscilador a cristal de quartzo](crystalosc2.md):

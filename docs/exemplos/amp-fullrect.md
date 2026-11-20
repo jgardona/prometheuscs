@@ -46,6 +46,18 @@ O sinal é uma senoide de $40\ \text{Hz}$ e $1\ \text{V}$ de pico. O primeiro op
 | 19 | `RailElm` | A/C source | Max Voltage = 1; Waveform = A/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0; Show Voltage = não; Frequency (Hz) = 40; Phase Offset (degrees) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+| $V_1$ | tensão 1 | tensão chamada $V_1$ no circuito | V |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $V_D$ | tensão no diodo | tensão entre o ânodo e o cátodo do diodo | V |
+
 ## Teoria
 
 Seja $V_1$ a saída do primeiro estágio, o retificador de meia onda inversor de ganho $-1$:

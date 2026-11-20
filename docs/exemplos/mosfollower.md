@@ -42,6 +42,27 @@ Um NMOS (modelo padrão, sem diodo de corpo) tem o dreno ligado a $+15\ \text{V}
 | 6 | `CurrentElm` | current source | Current (A) = 5m; Max Voltage (V, 0=unlimited) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $V_{GS}$ | tensão porta-fonte | tensão entre a porta e a fonte | V |
+| $I_D$ | corrente de dreno | corrente que entra pelo dreno do transistor de efeito de campo | A |
+| $\lambda$ | modulação do comprimento do canal | parâmetro que dá à corrente de saturação do MOSFET uma pequena inclinação com $V_{DS}$ ($0$: sem inclinação) | 1/V |
+| $\beta$ | parâmetro de transcondutância | constante da lei quadrática do MOSFET: $I_D = \tfrac12\beta(V_{GS}-V_t)^2$ | A/V² |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $v_{\text{out}}$ | tensão instantânea de saída | sinal que o circuito entrega à saída | V |
+| $v_{\text{in}}$ | tensão instantânea de entrada | sinal aplicado à entrada do circuito | V |
+| $g_m$ | transcondutância | quanto a corrente de saída varia por volt na entrada, $\partial I_D/\partial V_{GS}$ | S |
+| $R_L$ | resistência de carga | resistor ligado à saída, que consome a energia do circuito | Ω |
+| $V_{\text{ov}}$ | tensão de sobrecarga | $V_{GS} - V_t$: quanto a porta passa do limiar | V |
+| $V_{DS}$ | tensão dreno-fonte | tensão entre o dreno e a fonte | V |
+| $r_o$ | resistência de saída | resistência incremental vista pelo dreno (ou coletor) | Ω |
+
 ## Teoria
 
 A fonte de corrente fixa a corrente de dreno em $I_D = 5\ \text{mA}$ qualquer que seja a entrada. Na saturação (modelo de lei quadrática de [n-MOSFET](nmosfet.md), $\lambda = 0$), a tensão porta-fonte que sustenta essa corrente é constante:

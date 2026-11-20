@@ -36,6 +36,24 @@ Uma fonte de onda quadrada de $\pm 5\ \text{V}$ e $40\ \text{Hz}$ alimenta um ca
 | 2 | `ResistorElm` | resistor | Resistance (ohms) = 120 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $v_C$ | tensão no capacitor | tensão entre os terminais do capacitor | V |
+| $v_R$ | tensão no resistor | tensão entre os terminais do resistor | V |
+| $v_{\text{in}}$ | tensão instantânea de entrada | sinal aplicado à entrada do circuito | V |
+| $v_{\text{out}}$ | tensão instantânea de saída | sinal que o circuito entrega à saída | V |
+| $f_c$ | frequência de corte | frequência em que o ganho cai a $1/\sqrt{2}$ do valor da banda passante (−3 dB) | Hz |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+
 ## Teoria
 
 A corrente do capacitor é $i = C\thinspace dv_C/dt$ e a tensão de saída é $v_R = R\thinspace i$. Se $v_C \approx v_{in}$ (a queda no resistor é pequena frente à do capacitor), então

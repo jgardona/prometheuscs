@@ -44,6 +44,27 @@ Duas fontes senoidais, de $2{,}4\ \text{V}$ e $300\ \text{Hz}$ (a do sinal) e de
 | 33 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $n$ | fator de idealidade | expoente do diodo na equação de Shockley, $i = I_s(e^{v/(nV_T)}-1)$ | — |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $c$ | portadora | onda quadrada $c(t)$ de $\pm 1$ que liga e desliga os diodos do anel | — |
+| $s$ | sinal de entrada | sinal $s(t)$ que o modulador em anel multiplica pela portadora | V |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $k$ | índice da banda lateral | inteiro $0, 1, 2, \dots$ que numera as bandas laterais ímpares | — |
+| $I_s$ | corrente de saturação | corrente reversa de um diodo ou de uma junção | A |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $f_c$ | frequência da portadora | frequência da portadora que aciona o anel de diodos | Hz |
+| $f_s$ | frequência do sinal | frequência do sinal de entrada $s(t)$ | Hz |
+| $\omega_c$ | frequência angular da portadora | $2\pi f_c$: frequência da portadora em radianos por segundo | rad/s |
+| $\omega_s$ | frequência angular do sinal | $2\pi f_s$: frequência do sinal de entrada em radianos por segundo | rad/s |
+
 ## Teoria
 
 O diodo do simulador (modelo "default") segue a equação de Shockley,

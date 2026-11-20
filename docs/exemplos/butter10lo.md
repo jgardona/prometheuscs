@@ -50,6 +50,24 @@ Uma escada de cinco indutores em série e cinco capacitores em derivação, com 
 | 19 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $n$ | número inteiro n | quantidade ou índice inteiro definido no texto (ordem do filtro, número de bits, de nós ou de espiras) | — |
+| $H$ | função de transferência | razão entre a saída e a entrada de um filtro, em função da frequência | — |
+| $k$ | índice | número inteiro que numera os termos de um somatório, os bits ou os elementos de um conjunto | — |
+| $f_{\text{min}}$ | frequência mínima | menor frequência da varredura | Hz |
+| $f_{\text{max}}$ | frequência máxima | maior frequência da varredura | Hz |
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $f_c$ | frequência de corte | frequência em que o ganho cai a $1/\sqrt{2}$ do valor da banda passante (−3 dB) | Hz |
+| $g_k$ | coeficiente do componente k | valor normalizado do componente de índice $k$ do filtro | — |
+| $V_{\text{out},\text{pico}}$ | tensão de pico na saída | valor máximo da tensão de saída | V |
+
 ## Teoria
 
 A resposta de módulo de um filtro de Butterworth de ordem $n$ é "maximamente plana":

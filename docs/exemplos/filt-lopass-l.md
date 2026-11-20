@@ -39,6 +39,23 @@ o osciloscópio que mostra a tensão de saída ao longo do tempo mostra, na prá
 | 4 | `SweepElm` | sweep (log) | Min Frequency (Hz) = 20; Max Frequency (Hz) = 1k; Sweep Time (s) = 100m; Logarithmic = sim; Max Voltage = 5; Bidirectional = sim |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $H$ | função de transferência | razão entre a saída e a entrada de um filtro, em função da frequência | — |
+| $f_c$ | frequência de corte | frequência em que o ganho cai a $1/\sqrt{2}$ do valor da banda passante (−3 dB) | Hz |
+| $f_{\text{min}}$ | frequência mínima | menor frequência da varredura | Hz |
+| $f_{\text{max}}$ | frequência máxima | maior frequência da varredura | Hz |
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $\omega$ | frequência angular | $2\pi f$: a frequência medida em radianos por segundo | rad/s |
+
 ## Teoria
 
 A saída é o divisor $R/(R + j\omega L)$:

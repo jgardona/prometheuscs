@@ -42,6 +42,22 @@ O MOSFET é comandado por uma fonte de onda quadrada de $1\ \text{kHz}$ (períod
 | 16 | `DCVoltageElm` | square wave gen | Max Voltage = 5; Waveform = Square Wave; DC Offset (V) = 5; Internal Resistance (ohms) = 0; Show Voltage = não; Specify As = Frequency/Duty Cycle; Frequency (Hz) = 1k; Phase Offset (degrees) = 0; Duty Cycle = 50; Rise/Fall Time (s) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $D$ | ciclo de trabalho | fração do período em que a saída fica em nível alto | — |
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $L_1$ | indutância do indutor 1 | indutância do indutor chamado $L_1$ no circuito | H |
+| $L_2$ | indutância do indutor 2 | indutância do indutor chamado $L_2$ no circuito | H |
+| $C_1$ | capacitância do capacitor 1 | capacitância do capacitor chamado $C_1$ no circuito | F |
+| $C_{\text{out}}$ | vai-um de saída | bit de transporte que sai do somador | — |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+
 ## Teoria
 
 Com a chave ligada, o primeiro indutor $L_1$ é carregado pela entrada, e o segundo, $L_2$, pelo capacitor de acoplamento $C_1$; o diodo está cortado e o capacitor de saída alimenta a carga. Com a chave desligada, ambas as correntes passam pelo diodo para a saída e carregam $C_1$ e $C_\text{out}$. A tensão média em $C_1$ é $V_{in}$ e, em regime permanente,

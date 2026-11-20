@@ -42,6 +42,20 @@ Uma fonte de $169{,}7\ \text{V}$ de pico e $60\ \text{Hz}$ (a tensão da rede de
 | 11 | `SwitchElm` | switch (SPST) | Momentary Switch = não; IEC Symbol = não; Label (for linking) = ; Keyboard Shortcut = ; On Resistance (ohms) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $V_{\text{lanç}}$ | tensão lançada | tensão do pulso que entra na linha | V |
+| $V_p$ | tensão de pico | valor máximo atingido por uma senoide | V |
+| $Z_0$ | impedância característica | razão entre tensão e corrente de uma onda que percorre a linha | Ω |
+| $R_s$ | resistência em série | resistor em série com a fonte ou com o dispositivo | Ω |
+| $V_L$ | tensão no indutor | tensão entre os terminais do indutor | V |
+| $R_L$ | resistência de carga | resistor ligado à saída, que consome a energia do circuito | Ω |
+| $V_{L,\infty}$ | tensão final na carga | valor da tensão na carga depois do transitório | V |
+
 ## Teoria
 
 Para uma variação rápida (a chegada do pico da rede com o interruptor fechado) o sistema se comporta como uma linha de transmissão. A onda lançada na linha é

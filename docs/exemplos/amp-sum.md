@@ -40,6 +40,22 @@ O amplificador operacional está em configuração inversora, com um resistor de
 | 13 | `OutputElm` | output | Show Voltage = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $R_f$ | resistência de realimentação | resistor que liga a saída à entrada inversora | Ω |
+| $V_k$ | tensão da fonte k | tensão da $k$-ésima fonte somada pelo circuito | V |
+| $R_k$ | resistência da entrada k | resistor em série com a $k$-ésima fonte | Ω |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $V_1$ | tensão 1 | tensão chamada $V_1$ no circuito | V |
+| $R_1$ | resistência do resistor 1 | resistência do resistor chamado $R_1$ no circuito | Ω |
+| $V_2$ | tensão 2 | tensão chamada $V_2$ no circuito | V |
+| $R_2$ | resistência do resistor 2 | resistência do resistor chamado $R_2$ no circuito | Ω |
+
 ## Teoria
 
 A entrada inversora é um terra virtual ($\approx 0\ \text{V}$), então cada fonte injeta a corrente $V_k/R_k$ e todas elas somam-se e passam por $R_f$:

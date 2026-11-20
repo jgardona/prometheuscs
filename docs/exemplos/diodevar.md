@@ -33,6 +33,19 @@ Uma fonte de tensão variável, com um *slider* de $-1\ \text{V}$ a $0{,}77\ \te
 | 3 | `DiodeElm` | diode | Model = default |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $n$ | fator de idealidade | expoente do diodo na equação de Shockley, $i = I_s(e^{v/(nV_T)}-1)$ | — |
+| $I_s$ | corrente de saturação | corrente reversa de um diodo ou de uma junção | A |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $r_d$ | resistência dinâmica do diodo | inclinação $dv/di$ da curva do diodo no ponto de operação | Ω |
+
 ## Teoria
 
 O diodo do simulador (modelo "default") segue a equação de Shockley,

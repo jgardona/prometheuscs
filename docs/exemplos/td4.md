@@ -29,10 +29,10 @@ Mostrar uma **CPU completa de 4 bits**, a TD4 do livro de Iku Watanabe, constru�
 ![Esquema do circuito](img/td4.svg)
 <!-- esquema:fim -->
 
-- **Registradores:** quatro contadores de 4 bits usados como registradores com carga paralela: $A$, $B$, a porta de saída *Out* e o contador de programa *PC*. Cada um é carregado na borda do relógio quando o seu sinal $\overline{LOAD}$ está ativo; o *PC* incrementa nos outros casos.
+- **Registradores:** quatro contadores de 4 bits usados como registradores com carga paralela: $A$, $B$, a porta de saída *Out* e o contador de programa *PC*. Cada um é carregado na borda do relógio quando o seu sinal $\overline{\text{LOAD}}$ está ativo; o *PC* incrementa nos outros casos.
 - **Caminho de dados:** um multiplexador de 4 para 1 escolhe a fonte ($A$, $B$, a porta de entrada *In* — quatro chaves, elementos 78 a 81 — ou zero), e um somador de 4 bits soma essa fonte ao dado imediato da instrução. O resultado vai a todos os registradores; o vai-um vai a um flip-flop D, o *carry flag*.
 - **Programa:** uma ROM de 16 palavras de 8 bits (elemento 107), endereçada pelo *PC*. Um decodificador de comandos (subcircuito) transforma os 4 bits altos da instrução nos sinais de seleção e de carga; um mostrador (elemento 104) escreve a instrução atual.
-- **Relógio e saída:** um relógio de $1\ \text{kHz}$, uma entrada de $\overline{RESET}$ (elemento 87) e quatro LEDs com resistores de $1\ \text{k}\Omega$ na porta de saída, da esquerda para a direita os bits 3 a 0 (elementos 46, 56, 58 e 60).
+- **Relógio e saída:** um relógio de $1\ \text{kHz}$, uma entrada de $\overline{\text{RESET}}$ (elemento 87) e quatro LEDs com resistores de $1\ \text{k}\Omega$ na porta de saída, da esquerda para a direita os bits 3 a 0 (elementos 46, 56, 58 e 60).
 
 <!-- componentes:inicio -->
 | N.º | Tipo | Elemento | Valores |
@@ -118,26 +118,35 @@ Mostrar uma **CPU completa de 4 bits**, a TD4 do livro de Iku Watanabe, constru�
 | 108 | `LogicInputElm` | logic input | Momentary Switch = não; High Logic Voltage = 5; Low Voltage = 0; Numeric = não; Ternary = não; Keyboard Shortcut =  |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+
 ## Teoria
 
-Cada instrução tem 8 bits: 4 de código de operação e 4 de dado imediato $Im$. O conjunto de instruções da TD4 é:
+Cada instrução tem 8 bits: 4 de código de operação e 4 de dado imediato $\text{Im}$. O conjunto de instruções da TD4 é:
 
 | Código | Instrução | Efeito |
 |------|------|------|
-| `0x` | `ADD A, Im` | $A \leftarrow A + Im$ |
+| `0x` | `ADD A, Im` | $A \leftarrow A + \text{Im}$ |
 | `1x` | `MOV A, B` | $A \leftarrow B$ |
-| `2x` | `IN A` | $A \leftarrow In$ |
-| `3x` | `MOV A, Im` | $A \leftarrow Im$ |
+| `2x` | `IN A` | $A \leftarrow \text{In}$ |
+| `3x` | `MOV A, Im` | $A \leftarrow \text{Im}$ |
 | `4x` | `MOV B, A` | $B \leftarrow A$ |
-| `5x` | `ADD B, Im` | $B \leftarrow B + Im$ |
-| `6x` | `IN B` | $B \leftarrow In$ |
-| `7x` | `MOV B, Im` | $B \leftarrow Im$ |
-| `9x` | `OUT B` | $Out \leftarrow B$ |
-| `Bx` | `OUT Im` | $Out \leftarrow Im$ |
-| `Ex` | `JNC Im` | se não houve vai-um, $PC \leftarrow Im$ |
-| `Fx` | `JMP Im` | $PC \leftarrow Im$ |
+| `5x` | `ADD B, Im` | $B \leftarrow B + \text{Im}$ |
+| `6x` | `IN B` | $B \leftarrow \text{In}$ |
+| `7x` | `MOV B, Im` | $B \leftarrow \text{Im}$ |
+| `9x` | `OUT B` | $\text{Out} \leftarrow B$ |
+| `Bx` | `OUT Im` | $\text{Out} \leftarrow \text{Im}$ |
+| `Ex` | `JNC Im` | se não houve vai-um, $\text{PC} \leftarrow \text{Im}$ |
+| `Fx` | `JMP Im` | $\text{PC} \leftarrow \text{Im}$ |
 
-Todas as instruções usam o mesmo caminho: **fonte + imediato → destino**. `MOV A, B` é "$B + 0 \to A$", `OUT Im` é "$0 + Im \to Out$", e `JMP` é uma carga do *PC*. O decodificador só precisa escolher a fonte e qual registrador carrega. Cada instrução leva um período do relógio.
+Todas as instruções usam o mesmo caminho: **fonte + imediato → destino**. `MOV A, B` é "$B + 0 \to A$", `OUT Im` é "$0 + \text{Im} \to \text{Out}$", e `JMP` é uma carga do *PC*. O decodificador só precisa escolher a fonte e qual registrador carrega. Cada instrução leva um período do relógio.
 
 O programa deste exemplo é `B1 B2 B4 B8 B4 B2 B1 B2 B4 B8 B4 B2 F0`: doze instruções `OUT` com os valores $1, 2, 4, 8, 4, 2, \dots$ (um só bit aceso, que vai e volta) e um `JMP 0`.
 

@@ -40,6 +40,21 @@ O circuito tem duas metades iguais, cada uma com a sua fonte senoidal de $100\ \
 | 12 | `ResistorElm` | resistor | Resistance (ohms) = 150 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $R_5$ | resistência do resistor 5 | resistência do resistor chamado $R_5$ no circuito | Ω |
+| $R_{11}$ | resistência do resistor 11 | resistência do resistor chamado $R_{11}$ no circuito | Ω |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $R_2$ | resistência do resistor 2 | resistência do resistor chamado $R_2$ no circuito | Ω |
+| $Z_{\text{in}}$ | impedância de entrada | impedância vista pela fonte olhando para a entrada do circuito | Ω |
+
 ## Teoria
 
 Com a realimentação negativa, o operacional trabalha como amplificador não inversor de ganho $1 + R_5/R_{11} = 1 + 100/150 = 5/3$ em relação à tensão $V$ da fonte:

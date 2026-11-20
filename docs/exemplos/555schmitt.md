@@ -40,6 +40,14 @@ Um 555 alimentado com $5\ \text{V}$ tem *tr* e *th* ligados juntos à entrada. A
 | 11 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $V_{CC}$ | tensão de alimentação do coletor | tensão contínua que alimenta o circuito pelo coletor | V |
+
 ## Teoria
 
 Os limiares do 555 são $V_{CC}/3 = 1{,}667\ \text{V}$ (inferior) e $2V_{CC}/3 = 3{,}333\ \text{V}$ (superior), com histerese de $1{,}667\ \text{V}$. A saída é **invertida**: vai a nível baixo quando a entrada sobe acima de $3{,}333\ \text{V}$ e a nível alto quando a entrada cai abaixo de $1{,}667\ \text{V}$, e fica onde está quando a entrada está entre os dois limiares. Como em qualquer disparador de Schmitt, só um ruído de amplitude maior que a histerese consegue provocar comutações extras.

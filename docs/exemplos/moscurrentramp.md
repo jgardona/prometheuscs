@@ -43,6 +43,26 @@ Um NMOS (modelo padrão, sem diodo de corpo) tem a porta em $2{,}5\ \text{V}$ e 
 | 12 | `NMosfetElm` | MOSFET | Model = default-nodiode; Swap D/S = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $V_C$ | tensão no capacitor | tensão entre os terminais do capacitor | V |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $V_{GS}$ | tensão porta-fonte | tensão entre a porta e a fonte | V |
+| $\beta$ | parâmetro de transcondutância | constante da lei quadrática do MOSFET: $I_D = \tfrac12\beta(V_{GS}-V_t)^2$ | A/V² |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $V_{\text{ov}}$ | tensão de sobrecarga | $V_{GS} - V_t$: quanto a porta passa do limiar | V |
+| $V_{DS}$ | tensão dreno-fonte | tensão entre o dreno e a fonte | V |
+| $V_D$ | tensão do terminal dreno | tensão do dreno em relação à terra | V |
+| $V_S$ | tensão do terminal fonte | tensão do terminal fonte (*source*) em relação à terra | V |
+| $\lambda$ | modulação do comprimento do canal | parâmetro que dá à corrente de saturação do MOSFET uma pequena inclinação com $V_{DS}$ ($0$: sem inclinação) | 1/V |
+
 ## Teoria
 
 A degeneração de fonte fixa a corrente: $V_{GS} = 2{,}5 - 10 I$ e, na saturação, $I = \tfrac12\beta (V_{GS} - V_t)^2 = 0{,}01\thinspace(1 - 10 I)^2$ ($\beta = 0{,}02\ \text{A/V}^2$, $V_t = 1{,}5\ \text{V}$), ou seja, $I^2 - 1{,}2 I + 0{,}01 = 0$, de raiz útil

@@ -40,6 +40,17 @@ Uma fonte de $5\ \text{V}$ alimenta, por um botão momentâneo, a bobina do rel�
 | 6 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $R_{\text{contato}}$ | resistência de contato | resistência do contato fechado | Ω |
+
 ## Teoria
 
 A bobina é um indutor com resistência: ao se fechar o botão, a corrente sobe com a constante de tempo $L/R = 200\ \text{mH}/20\ \Omega = 10\ \text{ms}$ até $5\ \text{V}/20\ \Omega = 250\ \text{mA}$. Quando a corrente média passa de $20\ \text{mA}$ por mais de $5\ \text{ms}$, o relé de travamento **inverte** a posição do contato, e a mantém quando o botão é solto: a corrente cai abaixo de $15\ \text{mA}$ e o relé fica pronto para o pulso seguinte, sem voltar ao estado anterior. Cada pulso, portanto, alterna o contato: aberto, fechado, aberto...

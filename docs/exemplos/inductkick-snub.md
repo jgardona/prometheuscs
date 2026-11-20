@@ -37,6 +37,21 @@ Mostrar como um circuito de amortecimento ("snubber"), formado por um resistor e
 | 12 | `CapacitorElm` | capacitor | Capacitance (F) = 10μ; Trapezoidal Approximation = sim; Initial Voltage (on Reset) = 1m; Series Resistance = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $I_0$ | corrente inicial | valor da corrente no instante inicial | A |
+| $R_s$ | resistência em série | resistor em série com a fonte ou com o dispositivo | Ω |
+| $C_s$ | capacitância em série do cristal | capacitância $C_s$ do ramo ressonante em série do cristal | F |
+
 ## Teoria
 
 Com a chave aberta, a corrente $I_0$ do indutor precisa continuar. Sem o amortecedor, ela só tem o capacitor parasita de $500\ \text{pF}$ para carregar, e a tensão sobe até $I_0\sqrt{L/C}$, na ordem de $2\ \text{kV}$. Com o amortecedor, o ramo $R_s C_s$ em paralelo com o indutor oferece um caminho: a corrente passa a carregar o capacitor de $10\ \mu\text{F}$, cuja tensão sobe só $\Delta v = I\thinspace t/C_s$, e o resistor $R_s$ dissipa a energia, de modo que a oscilação é fortemente amortecida.

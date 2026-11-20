@@ -54,6 +54,16 @@ Um mesmo sinal de teste (varredura de 100 Hz a 20 kHz em 0,25 s, 5 V de pico) al
 | 24 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $H$ | função de transferência | razão entre a saída e a entrada de um filtro, em função da frequência | — |
+| $f_c$ | frequência de corte | frequência em que o ganho cai a $1/\sqrt{2}$ do valor da banda passante (−3 dB) | Hz |
+
 ## Teoria
 
 Cada via é uma escada LC de ordem 2 a 4 projetada para a sua faixa. Nas frequências de cruzamento as duas vias vizinhas têm a mesma amplitude, e idealmente a soma de potências é constante. Para um filtro passa-baixas de segunda ordem (Butterworth) $|H| = 1/\sqrt{1+(f/f_c)^4}$, e para o passa-altas $|H| = 1/\sqrt{1+(f_c/f)^4}$; o passa-faixa combina os dois. O cruzamento entre duas vias de mesma ordem em $f_c$ ocorre em $-3\ \text{dB}$ de cada uma.

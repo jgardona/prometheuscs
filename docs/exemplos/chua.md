@@ -50,6 +50,28 @@ O circuito tem três elementos de armazenamento de energia: dois capacitores ($1
 | 66 | `PotElm` | potentiometer | Resistance (ohms) = 2.5k; Slider Text = R10; Show Values = não; Group Number (for linking) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $g$ | característica do resistor de Chua | função $g(v)$ que dá a corrente do resistor não linear em função da tensão | A |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $v_1$ | tensão instantânea 1 | tensão instantânea chamada $v_1$ no circuito | V |
+| $v_2$ | tensão instantânea 2 | tensão instantânea chamada $v_2$ no circuito | V |
+| $i_L$ | corrente no indutor | corrente que passa pelo indutor | A |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $C_1$ | capacitância do capacitor 1 | capacitância do capacitor chamado $C_1$ no circuito | F |
+| $C_2$ | capacitância do capacitor 2 | capacitância do capacitor chamado $C_2$ no circuito | F |
+| $m_0$ | inclinação interna de g | inclinação (negativa) do resistor de Chua perto da origem | S |
+| $m_1$ | inclinação externa de g | inclinação (negativa) do resistor de Chua depois dos pontos de quebra | S |
+| $B_p$ | ponto de quebra | tensão em que a inclinação do resistor de Chua muda | V |
+
 ## Teoria
 
 O circuito de Chua obedece a três equações (variáveis: as tensões $v_1$ e $v_2$ nos capacitores e a corrente $i_L$ no indutor):

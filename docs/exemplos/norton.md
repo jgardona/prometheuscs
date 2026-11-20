@@ -57,6 +57,20 @@ A mesma rede do exemplo de Thévenin (13 resistores e 8 fontes de tensão contí
 | 32 | `VoltageElm` | A/C source | Max Voltage = 5; Waveform = A/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0; Show Voltage = não; Frequency (Hz) = 40; Phase Offset (degrees) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $I_N$ | corrente de Norton | corrente de curto-circuito entre os terminais do circuito | A |
+| $R_N$ | resistência de Norton | resistência vista dos terminais com as fontes desligadas | Ω |
+| $R_{\text{th}}$ | resistência de Thévenin | resistência vista dos terminais com as fontes desligadas | Ω |
+| $V_{\text{th}}$ | tensão de Thévenin | tensão em aberto entre os terminais do circuito | V |
+| $R_L$ | resistência de carga | resistor ligado à saída, que consome a energia do circuito | Ω |
+| $I_L$ | corrente na carga | corrente que passa pela carga | A |
+
 ## Teoria
 
 **Teorema de Norton.** Uma rede linear de dois terminais é equivalente a uma fonte de corrente $I_N$ em paralelo com $R_N$, onde $I_N$ é a corrente de curto-circuito entre os terminais e $R_N = R_{th}$. A relação com o equivalente de Thévenin é

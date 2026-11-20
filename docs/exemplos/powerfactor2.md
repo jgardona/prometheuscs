@@ -36,6 +36,20 @@ Mostrar a correção do fator de potência: um capacitor em paralelo com a carga
 | 6 | `CapacitorElm` | capacitor | Capacitance (F) = 1.4μ; Trapezoidal Approximation = sim; Initial Voltage (on Reset) = 1m; Series Resistance = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $X_L$ | reatância indutiva | oposição de um indutor à corrente alternada, $\omega L$ | Ω |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $\omega$ | frequência angular | $2\pi f$: a frequência medida em radianos por segundo | rad/s |
+| $f_0$ | frequência de ressonância | frequência em que o circuito responde ao máximo | Hz |
+| $\varphi$ | fase | ângulo de defasagem de um sinal em relação a uma referência | rad |
+
 ## Teoria
 
 A corrente do indutor atrasa $90^\circ$ da tensão e a do capacitor adianta $90^\circ$; elas têm sentidos opostos e **se cancelam** no nó onde estão ligadas, de modo que a corrente que a fonte precisa fornecer pela linha cai. Para uma carga com $R + jX_L$ e um capacitor $C$ em paralelo, a corrente reativa se anula (fator de potência unitário na carga) quando

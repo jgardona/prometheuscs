@@ -38,6 +38,21 @@ A entrada é a soma de duas fontes de onda quadrada em série: uma de $40\ \text
 | 9 | `OutputElm` | output | Show Voltage = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $c$ | entrada c da expressão | variável c da expressão que define a saída da fonte controlada (tensão ou corrente de um terminal de controle) | — |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $a$ | entrada a da expressão | variável a da expressão que define a saída da fonte controlada (tensão ou corrente de um terminal de controle) | — |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $b$ | entrada b da expressão | variável b da expressão que define a saída da fonte controlada (tensão ou corrente de um terminal de controle) | — |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+
 ## Teoria
 
 As fontes controladas deste simulador são definidas por uma **expressão** sobre as entradas, que se chamam $a$, $b$, $c$, ... (as tensões ou correntes nos terminais de controle). O resultado é a tensão (VCVS, CCVS) ou a corrente (VCCS, CCCS) que a fonte impõe na saída. Na expressão, $\text{lastoutput}$ é a saída no passo de tempo anterior e $\text{timestep}$ é o passo. Então

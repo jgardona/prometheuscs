@@ -38,6 +38,22 @@ Uma onda triangular de $0$ a $10\ \text{V}$ e $50\ \text{Hz}$ alimenta a associa
 | 3 | `PJfetElm` | JFET | Model = default-jfet; Swap D/S = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $\lambda$ | modulação do comprimento do canal | parâmetro que dá à corrente de saturação do MOSFET uma pequena inclinação com $V_{DS}$ ($0$: sem inclinação) | 1/V |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $I_D$ | corrente de dreno | corrente que entra pelo dreno do transistor de efeito de campo | A |
+| $V_{GS}$ | tensão porta-fonte | tensão entre a porta e a fonte | V |
+| $I_{DSS}$ | corrente de dreno de saturação | corrente de dreno com $V_{GS}=0$ | A |
+| $V_{DS}$ | tensão dreno-fonte | tensão entre o dreno e a fonte | V |
+
 ## Teoria
 
 O JFET de canal N do simulador (modelo *default-jfet*) tem tensão de corte $V_T = -4\ \text{V}$ e $\beta = 1{,}25\ \text{mA/V}^2$, sem modulação de canal ($\lambda = 0$). Em saturação,

@@ -33,6 +33,19 @@ Um amplificador operacional de ganho $A = 100\thinspace000$ e saída limitada a 
 | 3 | `OutputElm` | output | Show Voltage = sim; Scale = Auto |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $A$ | ganho | razão entre a saída e a entrada de um amplificador | — |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $V_+$ | tensão da entrada não inversora | tensão do terminal $+$ do amplificador operacional | V |
+| $V_-$ | tensão da entrada inversora | tensão do terminal $-$ do amplificador operacional | V |
+| $V_{\text{min}}$ | limite inferior da saída | menor tensão que a saída pode atingir | V |
+| $V_{\text{max}}$ | limite superior da saída | maior tensão que a saída pode atingir | V |
+
 ## Teoria
 
 O amplificador operacional é um amplificador diferencial de ganho muito alto. Na região linear,

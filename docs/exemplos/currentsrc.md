@@ -39,6 +39,36 @@ A alimentação é de $10\ \text{V}$. Um divisor de $8\ \text{k}\Omega$ e $2\ \t
 | 12 | `ResistorElm` | resistor | Resistance (ohms) = 8k |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $V_{BE}$ | tensão base-emissor | tensão entre a base e o emissor | V |
+| $V_{BC}$ | tensão base-coletor | tensão entre a base e o coletor | V |
+| $I_C$ | corrente de coletor | corrente que entra pelo coletor do transistor bipolar | A |
+| $I_s$ | corrente de saturação | corrente reversa de um diodo ou de uma junção | A |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $\beta_R$ | ganho de corrente reverso | $\beta$ do transistor ligado ao contrário (coletor e emissor trocados) | — |
+| $I_B$ | corrente de base | corrente que entra pela base do transistor bipolar | A |
+| $g_m$ | transcondutância | quanto a corrente de saída varia por volt na entrada, $\partial I_D/\partial V_{GS}$ | S |
+| $r_e$ | resistência de emissor | resistência dinâmica do emissor, $V_T/I_E$ | Ω |
+| $I_E$ | corrente de emissor | corrente que sai pelo emissor do transistor bipolar | A |
+| $V_E$ | tensão do terminal emissor | tensão do emissor em relação à terra | V |
+| $V_B$ | tensão do terminal base | tensão da base em relação à terra | V |
+| $R_E$ | resistência de emissor | resistor externo ligado ao emissor | Ω |
+| $V_{CE}$ | tensão coletor-emissor | tensão entre o coletor e o emissor | V |
+| $V_C$ | tensão do terminal coletor | tensão do coletor em relação à terra | V |
+| $V_{CE(\text{sat})}$ | tensão de saturação coletor-emissor | valor pequeno de $V_{CE}$ com o transistor saturado | V |
+| $V_{CC}$ | tensão de alimentação do coletor | tensão contínua que alimenta o circuito pelo coletor | V |
+| $R_2$ | resistência do resistor 2 | resistência do resistor chamado $R_2$ no circuito | Ω |
+| $R_1$ | resistência do resistor 1 | resistência do resistor chamado $R_1$ no circuito | Ω |
+| $R_L$ | resistência de carga | resistor ligado à saída, que consome a energia do circuito | Ω |
+| $r_o$ | resistência de saída | resistência incremental vista pelo dreno (ou coletor) | Ω |
+| $V_A$ | tensão de Early | mede a inclinação das curvas $I_C \times V_{CE}$: $r_o = V_A/I_C$ | V |
+
 ## Teoria
 
 O transistor bipolar do simulador (modelo "default") segue o modelo de Ebers–Moll, com $V_{BE}$ e $V_{BC}$ as tensões base-emissor e base-coletor (para um NPN):

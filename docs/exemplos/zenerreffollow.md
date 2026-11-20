@@ -40,6 +40,23 @@ Uma fonte de $8{,}8\ \text{V}$ com oscilação de $\pm 2\ \text{V}$ ($40\ \text{
 | 11 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $V_Z$ | tensão zener | tensão em que o diodo zener regula | V |
+| $V_{\text{saida}}$ | tensão de saída | tensão que o circuito entrega à saída | V |
+| $V_{BE}$ | tensão base-emissor | tensão entre a base e o emissor | V |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $I_E$ | corrente de emissor | corrente que sai pelo emissor do transistor bipolar | A |
+| $I_s$ | corrente de saturação | corrente reversa de um diodo ou de uma junção | A |
+| $r_{\text{sai}}$ | resistência de saída | resistência incremental vista pela carga | Ω |
+| $r_Z$ | resistência dinâmica do zener | inclinação $dv/di$ da curva do zener na região de ruptura | Ω |
+| $R_b$ | resistência de base | resistor externo ligado à base | Ω |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+
 ## Teoria
 
 O Zener fixa a tensão da base em $V_Z$, e o emissor segue a base menos a queda base-emissor:

@@ -38,6 +38,18 @@ Dois flip-flops D disparados pela borda de subida recebem o mesmo relógio, uma 
 | 13 | `NorGateElm` | NOR gate | # of Inputs = 2; High Logic Voltage = 5; Schmitt Inputs = não; Invert Inputs = não; Propagation Delay (s) = 0; DeMorgan's Symbol = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $D$ | entrada de dados D | entrada de dados do flip-flop ou do circuito lógico | — |
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $Q$ | saída Q | saída de um flip-flop ou latch, que guarda o bit armazenado | — |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+| $f_{\text{clk}}$ | frequência do relógio | frequência com que as chaves são acionadas | Hz |
+
 ## Teoria
 
 Sejam $A$ e $B$ as saídas do primeiro e do segundo flip-flop. A cada borda, $A^{+} = B$ e $B^{+} = \overline{A + B}$:

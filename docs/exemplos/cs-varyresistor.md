@@ -36,6 +36,20 @@ Uma fonte de $5\ \text{V}$ alimenta a fonte de corrente controlada, ligada entre
 | 8 | `ProbeElm` | voltmeter | Show Voltage = sim; Value = Voltage; Scale = Auto; Use Circle Symbol = sim; Series Resistance (0 = infinite) = 0; Label = vd |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $r$ | variável r | variável de controle $r$ da expressão que define o resistor controlado | — |
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $v_r$ | variação relativa | variação relativa do resistor controlado | — |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+
 ## Teoria
 
 As fontes controladas de dois terminais (o losango) são definidas por uma **expressão** que lê o resto do circuito **pelo nome**: $v(\text{nome})$ é a tensão de um nó rotulado ou sobre um voltímetro com rótulo, $i(\text{nome})$ a corrente de um amperímetro com rótulo, e $\text{dvdt}$ / $\text{didt}$ as suas taxas de variação. O resultado é a tensão (fonte de tensão controlada, com o $+$ no segundo terminal) ou a corrente (fonte de corrente controlada, no sentido da seta) que a fonte impõe. Com $v(\text{vd})$ a tensão sobre o "resistor" e $v(r) = v_r$ a tensão de controle, a corrente é

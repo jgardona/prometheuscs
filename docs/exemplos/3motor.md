@@ -36,6 +36,25 @@ Três fontes senoidais de $220\ \text{V}$ de pico e $50\ \text{Hz}$, com fases d
 | 3 | `ThreePhaseMotorElm` | 3-Phase Motor | Stator Inductance (H) = 29.4m; Rotor Inductance (H) = 29.7m; Coupling Coefficient = 971.2m; Stator Resistance (ohms) = 67m; Rotor Resistance (ohms) = 32m; Friction coefficient (Nms/rad) = 50m; Moment of inertia (Kg.m^2) = 67m |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $a$ | fase a | fase a do motor trifásico | — |
+| $s$ | variável de Laplace | frequência complexa; no regime senoidal, $s = j\omega$ | 1/s |
+| $k$ | coeficiente de acoplamento | fração do fluxo de uma bobina que atravessa a outra (de $0$ a $1$) | — |
+| $i_a$ | corrente do circuito a | corrente do primeiro circuito | A |
+| $i_b$ | corrente da bobina | corrente que passa pela bobina do relé | A |
+| $i_c$ | corrente de coletor de pequeno sinal | variação da corrente do coletor em torno do ponto de operação | A |
+| $L_\sigma$ | indutância de dispersão | parte da indutância que não se acopla ao outro enrolamento | H |
+| $L_s$ | indutância do estator | indutância do enrolamento do estator | H |
+| $V_p$ | tensão de pico | valor máximo atingido por uma senoide | V |
+| $R_s$ | resistência em série | resistor em série com a fonte ou com o dispositivo | Ω |
+| $R_r$ | resistência do rotor | resistência do enrolamento do rotor | Ω |
+| $\omega$ | frequência angular | $2\pi f$: a frequência medida em radianos por segundo | rad/s |
+
 ## Teoria
 
 Três correntes $i_a, i_b, i_c$ defasadas de $120^\circ$ nos enrolamentos do estator produzem um campo de módulo constante que gira com a frequência da rede. O rotor, parado no início, vê esse campo passar por ele com *escorregamento* $s = 1$ e tem correntes induzidas altas; o torque resultante o acelera, o escorregamento diminui e a corrente cai. Com o rotor bloqueado, o motor se comporta como um transformador em curto no secundário, limitado só pela indutância de dispersão,

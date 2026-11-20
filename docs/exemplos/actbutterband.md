@@ -64,6 +64,20 @@ A entrada é um gerador de ruído branco (valores aleatórios uniformes entre $-
 | 53 | `AudioOutputElm` | audio output | Duration (s) = 1; Sampling Rate = 8000 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $B$ | largura de banda | faixa de frequências em que o filtro responde, $f_0/Q$ | Hz |
+| $f_0$ | frequência de ressonância | frequência em que o circuito responde ao máximo | Hz |
+| $Q$ | fator de qualidade | mede o quão seletivo é um circuito ressonante: $f_0/B$, razão entre a frequência central e a largura de banda | — |
+| $B_{\text{eq}}$ | largura de banda equivalente | largura da banda de ruído que passa o filtro | Hz |
+| $f_N$ | frequência de Nyquist | metade da frequência de amostragem | Hz |
+| $V_{\text{rms},\text{in}}$ | tensão eficaz de entrada | valor eficaz da tensão de entrada | V |
+| $V_{\text{rms},\text{out}}$ | tensão eficaz de saída | valor eficaz da tensão de saída | V |
+
 ## Teoria
 
 Um passa-faixa de segunda ordem tem uma frequência central $f_0$ e uma largura de banda $B = f_0/Q$. Ligar várias seções com $f_0$ ligeiramente diferentes (sintonia escalonada) reproduz uma resposta de Butterworth passa-faixa, de topo plano e bordas íngremes.

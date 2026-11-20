@@ -470,7 +470,9 @@ Menu **Arquivo**:
   exemplo substitui o circuito atual.
   Cada exemplo tem um documento com o objetivo do circuito, a teoria e as equações, os valores que
   o simulador dá e o que observar na janela: veja o índice em
-  [docs/exemplos/README.md](exemplos/README.md), que segue os mesmos grupos do menu. Os valores
+  [docs/exemplos/README.md](exemplos/README.md), que segue os mesmos grupos do menu. Cada documento define os símbolos que usa na seção **Símbolos e parâmetros**, e o
+  [glossário de símbolos e parâmetros](glossario-simbolos.md) reúne todos eles, com a unidade, e
+  explica os campos das tabelas de componentes. Os valores
   dos documentos são conferidos contra o simulador pela ferramenta `exdocs`.
 - **Imagem e impressão** usam o mesmo desenho do canvas, inclusive com **Fundo Branco**
   (seção 10), o que gasta menos tinta.

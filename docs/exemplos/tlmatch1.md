@@ -58,6 +58,23 @@ Os osciloscópios mostram a tensão na carga de cada circuito.
 | 28 | `ResistorElm` | resistor | Resistance (ohms) = 300 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $R_1$ | resistência do resistor 1 | resistência do resistor chamado $R_1$ no circuito | Ω |
+| $R_2$ | resistência do resistor 2 | resistência do resistor chamado $R_2$ no circuito | Ω |
+| $Q$ | fator de qualidade | mede o quão seletivo é um circuito ressonante: $f_0/B$, razão entre a frequência central e a largura de banda | — |
+| $X_L$ | reatância indutiva | oposição de um indutor à corrente alternada, $\omega L$ | Ω |
+| $X_C$ | reatância capacitiva | oposição de um capacitor à corrente alternada, $1/(\omega C)$ | Ω |
+| $V_p$ | tensão de pico | valor máximo atingido por uma senoide | V |
+| $R_s$ | resistência em série | resistor em série com a fonte ou com o dispositivo | Ω |
+| $V_L$ | tensão no indutor | tensão entre os terminais do indutor | V |
+| $P_L$ | potência na carga | potência entregue à carga | W |
+| $R_L$ | resistência de carga | resistor ligado à saída, que consome a energia do circuito | Ω |
+
 ## Teoria
 
 Uma seção L passa-baixas casa a resistência menor $R_1$ com a maior $R_2$ com o fator de qualidade $Q = \sqrt{R_2/R_1 - 1}$ e as reatâncias
@@ -66,7 +83,7 @@ $$X_L = Q R_1,\qquad X_C = \frac{R_2}{Q}.$$
 
 Para $75\to 300\ \Omega$: $Q = \sqrt 3 = 1{,}732$, $X_L = 129{,}9\ \Omega$ e $X_C = 173{,}2\ \Omega$. A $90\ \text{MHz}$, o indutor de $250\ \text{nH}$ tem $X_L = 141{,}4\ \Omega$ e o capacitor de $10{,}6\ \text{pF}$ tem $X_C = 166{,}8\ \Omega$, valores próximos dos ideais: o casamento é muito bom, mas não perfeito.
 
-Sem a seção, a linha de $75\ \Omega$ vê a carga de $300\ \Omega$ com $|\Gamma| = 0{,}6$ e, como a fonte é casada, entrega só a fração $1 - |\Gamma|^2 = 0{,}64$ da potência disponível $V_p^2/(8R_s) = 41{,}7\ \text{mW}$. Resolvendo a cascata das matrizes de transmissão ($ABCD$) das linhas e da seção na frequência de $90\ \text{MHz}$:
+Sem a seção, a linha de $75\ \Omega$ vê a carga de $300\ \Omega$ com $|\Gamma| = 0{,}6$ e, como a fonte é casada, entrega só a fração $1 - |\Gamma|^2 = 0{,}64$ da potência disponível $V_p^2/(8R_s) = 41{,}7\ \text{mW}$. Resolvendo a cascata das matrizes de transmissão ($\text{ABCD}$) das linhas e da seção na frequência de $90\ \text{MHz}$:
 
 | | Impedância de entrada | $\lvert V_L\rvert$ | $P_L = V_L^2/2R_L$ |
 |---|---:|---:|---:|

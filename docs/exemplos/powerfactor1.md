@@ -35,6 +35,27 @@ Uma fonte de $120\ \text{V}$ eficazes ($60\ \text{Hz}$) alimenta, através de um
 | 5 | `ResistorElm` | resistor | Resistance (ohms) = 50 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $P$ | potência | energia transformada por unidade de tempo | W |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $S$ | potência aparente | produto $V I$ da tensão pela corrente, em volt-ampère | VA |
+| $Z$ | impedância | oposição de um elemento à corrente alternada, na frequência considerada | Ω |
+| $X$ | reatância | parte imaginária da impedância | Ω |
+| $\varphi$ | fase | ângulo de defasagem de um sinal em relação a uma referência | rad |
+| $Q$ | potência reativa | potência que vai e volta entre a fonte e o campo do indutor, $V I \sin\varphi$ | var |
+| $R_l$ | resistência da linha | resistência dos fios da linha de transmissão | Ω |
+| $P_l$ | potência perdida na linha | potência dissipada na resistência da linha | W |
+| $X_L$ | reatância indutiva | oposição de um indutor à corrente alternada, $\omega L$ | Ω |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $\omega$ | frequência angular | $2\pi f$: a frequência medida em radianos por segundo | rad/s |
+
 ## Teoria
 
 Numa carga com impedância $Z = R + jX$, a tensão e a corrente eficazes $V$ e $I$ definem:

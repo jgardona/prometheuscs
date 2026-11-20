@@ -64,6 +64,24 @@ Cada lado tem um resistor de $200\ \Omega$ em série com os seus três LEDs.
 | 66 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $R_1$ | resistência do resistor 1 | resistência do resistor chamado $R_1$ no circuito | Ω |
+| $R_2$ | resistência do resistor 2 | resistência do resistor chamado $R_2$ no circuito | Ω |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $Q_0$ | sinal lógico Q0 | sinal lógico $Q_0$ (bit ou elemento de índice 0) do circuito | — |
+| $Q_9$ | sinal lógico Q9 | sinal lógico $Q_9$ (bit ou elemento de índice 9) do circuito | — |
+| $Q_3$ | sinal lógico Q3 | sinal lógico $Q_3$ (bit ou elemento de índice 3) do circuito | — |
+| $Q_4$ | sinal lógico Q4 | sinal lógico $Q_4$ (bit ou elemento de índice 4) do circuito | — |
+| $Q_5$ | sinal lógico Q5 | sinal lógico $Q_5$ (bit ou elemento de índice 5) do circuito | — |
+| $Q_8$ | sinal lógico Q8 | sinal lógico $Q_8$ (bit ou elemento de índice 8) do circuito | — |
+| $t_{\text{alto}}$ | tempo em nível alto | duração do semiciclo em que a saída fica em nível alto | s |
+| $t_{\text{baixo}}$ | tempo em nível baixo | duração do semiciclo em que a saída fica em nível baixo | s |
+
 ## Teoria
 
 O 555 astável oscila com

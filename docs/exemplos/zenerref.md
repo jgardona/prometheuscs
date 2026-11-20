@@ -38,6 +38,22 @@ Uma fonte de $6{,}7\ \text{V}$ com uma oscilação de $\pm 1\ \text{V}$ ($40\ \t
 | 6 | `ResistorElm` | resistor | Resistance (ohms) = 500 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $r_Z$ | resistência dinâmica do zener | inclinação $dv/di$ da curva do zener na região de ruptura | Ω |
+| $R_s$ | resistência em série | resistor em série com a fonte ou com o dispositivo | Ω |
+| $R_L$ | resistência de carga | resistor ligado à saída, que consome a energia do circuito | Ω |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $i_Z$ | corrente instantânea no zener | corrente que passa pelo diodo zener em cada instante | A |
+
 ## Teoria
 
 O Zener, em ruptura, comporta-se como uma fonte de tensão de resistência pequena $r_Z$. O circuito é então um divisor entre $R_s = 500\ \Omega$ e $r_Z\thinspace\|\thinspace R_L$, e uma variação $\Delta V_{in}$ na entrada produz na saída

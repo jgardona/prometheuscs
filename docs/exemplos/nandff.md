@@ -45,6 +45,16 @@ Duas portas NAND ideais de duas entradas: a saída de cada uma vai a uma entrada
 | 15 | `TextElm` | text | Text = Q; Size = 24; Draw Bar On Top = sim; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $S$ | sinal lógico S | entrada de seleção, de ajuste (*set*) ou de soma, conforme o circuito | — |
+| $R$ | entrada R | entrada de limpeza (*reset*) do circuito lógico | — |
+| $Q$ | saída Q | saída de um flip-flop ou latch, que guarda o bit armazenado | — |
+
 ## Teoria
 
 Com os dois botões soltos, cada NAND tem uma entrada em $1$ e funciona como inversor da outra; dois inversores em anel têm dois estados estáveis e ficam no que estiverem. Um $0$ numa entrada força a saída daquela NAND a $1$:

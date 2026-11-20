@@ -44,6 +44,20 @@ A fonte é um gerador de varredura logarítmica (*sweep*) de $5\ \text{V}$ de pi
 | 18 | `SweepElm` | sweep (log) | Min Frequency (Hz) = 10; Max Frequency (Hz) = 400; Sweep Time (s) = 200m; Logarithmic = sim; Max Voltage = 5; Bidirectional = sim |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $f_{\text{clk}}$ | frequência do relógio | frequência com que as chaves são acionadas | Hz |
+| $Q$ | carga elétrica | quantidade de carga acumulada | C |
+| $R_{\text{eq}}$ | resistência equivalente | resistência de um conjunto de resistores visto como um só | Ω |
+| $f_c$ | frequência de corte | frequência em que o ganho cai a $1/\sqrt{2}$ do valor da banda passante (−3 dB) | Hz |
+
 ## Teoria
 
 Um capacitor $C$ que liga alternadamente dois nós, a uma frequência de relógio $f_\text{clk}$, transporta uma carga média por segundo $Q f_\text{clk} = C\thinspace\Delta V\thinspace f_\text{clk}$, ou seja, comporta-se como um resistor de valor

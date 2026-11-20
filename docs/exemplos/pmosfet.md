@@ -35,6 +35,25 @@ A **fonte** do transistor está ligada a $+5\ \text{V}$, e a **tensão de porta*
 | 5 | `RailElm` | voltage source | Voltage = 5; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $V_{SG}$ | tensão fonte-porta | tensão entre a fonte e a porta (referência do PMOS) | V |
+| $V_{SD}$ | tensão fonte-dreno | tensão entre a fonte e o dreno (referência do PMOS) | V |
+| $V_S$ | tensão do terminal fonte | tensão do terminal fonte (*source*) em relação à terra | V |
+| $V_G$ | tensão do terminal porta | tensão da porta em relação à terra | V |
+| $V_D$ | tensão do terminal dreno | tensão do dreno em relação à terra | V |
+| $V_{\text{ov}}$ | tensão de sobrecarga | $V_{GS} - V_t$: quanto a porta passa do limiar | V |
+| $\beta$ | parâmetro de transcondutância | constante da lei quadrática do MOSFET: $I_D = \tfrac12\beta(V_{GS}-V_t)^2$ | A/V² |
+| $\lambda$ | modulação do comprimento do canal | parâmetro que dá à corrente de saturação do MOSFET uma pequena inclinação com $V_{DS}$ ($0$: sem inclinação) | 1/V |
+| $I_D$ | corrente de dreno | corrente que entra pelo dreno do transistor de efeito de campo | A |
+
 ## Teoria
 
 O PMOS segue as mesmas equações do NMOS, com todas as tensões e correntes trocadas de sinal: usam-se $V_{SG} = V_S - V_G$ e $V_{SD} = V_S - V_D$, com o limiar $|V_t| = 1{,}5\ \text{V}$. Com $V_{ov} = V_{SG} - |V_t|$ (modelo de lei quadrática de [n-MOSFET](nmosfet.md), $\beta = 0{,}02\ \text{A/V}^2$, $\lambda = 0$):

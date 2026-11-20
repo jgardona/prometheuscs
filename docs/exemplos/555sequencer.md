@@ -61,6 +61,18 @@ Três 555 alimentados com $5\ \text{V}$ são monoestáveis idênticos, cada um c
 | 62 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $t_0$ | instante de referência | instante em que o evento descrito começa | s |
+| $V_{CC}$ | tensão de alimentação do coletor | tensão contínua que alimenta o circuito pelo coletor | V |
+
 ## Teoria
 
 Cada monoestável produz um pulso de duração $T = 1{,}1\thinspace RC = 1{,}1\cdot 1\ \text{k}\Omega\cdot 2\ \mu\text{F} = 2{,}2\ \text{ms}$. O acoplamento por capacitor transmite só as **transições**: quando a saída do primeiro 555 desce ao fim do pulso, o capacitor leva o pino de disparo do segundo a nível baixo por um instante, e o segundo dispara. O terceiro faz o mesmo com o segundo. Os pulsos ficam, portanto, em sequência, sem sobreposição:

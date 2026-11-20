@@ -41,6 +41,18 @@ Um 555 alimentado com $5\ \text{V}$ tem um resistor de $1\ \text{k}\Omega$ da al
 | 15 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $V_{CC}$ | tensão de alimentação do coletor | tensão contínua que alimenta o circuito pelo coletor | V |
+
 ## Teoria
 
 No estado de repouso o transistor de descarga está ligado e mantém o capacitor em $0\ \text{V}$; a saída está baixa. Quando *tr* cai abaixo de $V_{CC}/3$, o latch interno é ativado: a saída sobe e o transistor de descarga é cortado, de modo que o capacitor carrega pelo resistor $R$ em direção a $V_{CC}$. Quando a tensão do capacitor chega a $2V_{CC}/3$, o comparador de limiar zera o latch: a saída desce e o capacitor é descarregado. O tempo em que a saída fica alta é

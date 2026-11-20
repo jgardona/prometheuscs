@@ -40,6 +40,21 @@ Um 555 alimentado com $10\ \text{V}$ tem o capacitor de $100\ \text{nF}$ ligado 
 | 14 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $D$ | ciclo de trabalho | fração do período em que a saída fica em nível alto | — |
+| $V_{CC}$ | tensão de alimentação do coletor | tensão contínua que alimenta o circuito pelo coletor | V |
+| $t_h$ | tempo em nível alto | duração do semiciclo em que a saída fica em nível alto | s |
+| $R_{\text{carga}}$ | resistência de carga do capacitor | resistor pelo qual o capacitor se carrega | Ω |
+| $t_l$ | tempo em nível baixo | duração do semiciclo em que a saída fica em nível baixo | s |
+| $R_{\text{descarga}}$ | resistência de descarga do capacitor | resistor pelo qual o capacitor se descarrega | Ω |
+
 ## Teoria
 
 Com dois caminhos de resistência diferente para carregar e para descarregar o capacitor entre $V_{CC}/3$ e $2V_{CC}/3$, os tempos em cada nível são

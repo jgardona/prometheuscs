@@ -36,6 +36,24 @@ Uma fonte de onda quadrada de $10\ \text{Hz}$ e $\pm 5\ \text{V}$ alimenta, por 
 | 10 | `ControlledVoltageElm` | Controlled Voltage Source | Output Voltage = didt(a)*i(b)*400 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $a$ | nó a | ponto de ligação identificado como $a$ no circuito | — |
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $b$ | nó b | o outro nó entre os quais se mede a resistência equivalente | — |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $i_b$ | corrente da bobina | corrente que passa pela bobina do relé | A |
+| $i_a$ | corrente do circuito a | corrente do primeiro circuito | A |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+
 ## Teoria
 
 As fontes controladas de dois terminais (o losango) são definidas por uma **expressão** que lê o resto do circuito **pelo nome**: $v(\text{nome})$ é a tensão de um nó rotulado ou sobre um voltímetro com rótulo, $i(\text{nome})$ a corrente de um amperímetro com rótulo, e $\text{dvdt}$ / $\text{didt}$ as suas taxas de variação. O resultado é a tensão (fonte de tensão controlada, com o $+$ no segundo terminal) ou a corrente (fonte de corrente controlada, no sentido da seta) que a fonte impõe. Aqui a tensão é $v = \dfrac{di_a}{dt}\cdot i_b\cdot 400$ (com $i_a$ a corrente do circuito e $i_b$ a de controle, em amperes), o que é a lei de um indutor com

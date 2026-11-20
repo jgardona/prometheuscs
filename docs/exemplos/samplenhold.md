@@ -47,6 +47,26 @@ Uma porta de transmissão CMOS (um PMOS e um NMOS, com diodo de corpo) liga uma 
 | 26 | `RailElm` | voltage source | Voltage = 5; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $A$ | amplitude do sinal | valor de pico da senoide de entrada | V |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $R_{\text{on}}$ | resistência de condução | resistência de uma chave ou de um transistor quando conduz | Ω |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $\varepsilon$ | erro de amostragem | diferença entre a entrada e o valor guardado, $\tau\thinspace dv_{in}/dt$ | V |
+| $v_{\text{in}}$ | tensão instantânea de entrada | sinal aplicado à entrada do circuito | V |
+| $\varepsilon_{\text{max}}$ | erro máximo de amostragem | maior valor do erro de amostragem, na maior inclinação da entrada | V |
+| $V_C$ | tensão no capacitor | tensão entre os terminais do capacitor | V |
+| $I_{\text{fuga}}$ | corrente de fuga | corrente que escoa do capacitor de retenção pela chave aberta | A |
+| $g_{\text{fuga}}$ | condutância de fuga | condutância da chave aberta, que deixa o capacitor descarregar | S |
+
 ## Teoria
 
 **Amostragem.** Com o botão apertado, a porta de transmissão fica ligada com resistência $R_{on} \approx 15$ a $25\ \Omega$ (veja [Porta de transmissão CMOS](cmostransgate.md)) e o capacitor segue a entrada com a constante de tempo $\tau = R_{on}C \approx 2{,}5\ \mu\text{s}$. O erro de acompanhamento de um sinal que varia é

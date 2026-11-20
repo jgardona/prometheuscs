@@ -43,11 +43,25 @@ O [SR Flip-Flop](nandff.md) de duas NANDs (saídas $Q$, elemento 8, e $\overline
 | 17 | `RailElm` | square wave gen | Max Voltage = 2.5; Waveform = Square Wave; DC Offset (V) = 2.5; Internal Resistance (ohms) = 0; Show Voltage = não; Specify As = Frequency/Duty Cycle; Frequency (Hz) = 100; Phase Offset (degrees) = 0; Duty Cycle = 50; Rise/Fall Time (s) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $C$ | entrada lógica C | terceira entrada ou sinal de relógio do circuito lógico | — |
+| $S$ | sinal lógico S | entrada de seleção, de ajuste (*set*) ou de soma, conforme o circuito | — |
+| $R$ | entrada R | entrada de limpeza (*reset*) do circuito lógico | — |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $Q$ | saída Q | saída de um flip-flop ou latch, que guarda o bit armazenado | — |
+| $K$ | entrada K | entrada de limpeza do flip-flop JK | — |
+
 ## Teoria
 
 As NANDs de controle dão $\overline{S \cdot CLK}$ e $\overline{R \cdot CLK}$: com o relógio baixo, as duas saem em $1$ e o latch guarda o estado; com o relógio alto, elas passam $\overline{S}$ e $\overline{R}$ ao latch, que funciona como o latch SR comum, agora com entradas ativas em nível alto:
 
-| $CLK$ | $S$ | $R$ | $Q$ |
+| $\text{CLK}$ | $S$ | $R$ | $Q$ |
 |----:|----:|----:|------|
 | 0 | – | – | guarda |
 | 1 | 0 | 0 | guarda |

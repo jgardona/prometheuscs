@@ -26,6 +26,10 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 EXEMPLOS = ROOT / "docs" / "exemplos"
 SAIDA = ROOT / "docs" / "livro-circuitos-de-exemplo.pdf"
+GLOSSARIO = ROOT / "docs" / "glossario-simbolos.md"
+
+# Verdadeiro quando o glossário entra no livro (apêndice); só então as ligações a ele viram referências.
+COM_GLOSSARIO = False
 
 # Nome de cada categoria do menu em português (o nome original do menu vai entre parênteses).
 CATEGORIAS = {
@@ -149,7 +153,11 @@ def inline(s: str) -> str:
         corpo = inline(texto)
         if re.match(r"https?://", alvo):
             return guarda(r"\href{" + alvo.replace("%", r"\%").replace("#", r"\#") + "}{" + corpo + "}")
-        stem = alvo.split("#")[0].removesuffix(".md")
+        stem = alvo.split("#")[0].removesuffix(".md").removeprefix("exemplos/")
+        if stem.endswith("glossario-simbolos"):
+            if COM_GLOSSARIO:
+                return guarda(r"\hyperref[glossario]{" + corpo + r"} (apêndice~\ref{glossario}, p.~\pageref{glossario})")
+            return guarda(corpo)
         if stem in LABEL_INTERNO:
             return guarda(r"\hyperref[ex:" + stem + "]{" + corpo + "}")
         return guarda(corpo)  # índice ou arquivo fora do livro: só o texto
@@ -216,7 +224,8 @@ def tabela(linhas: list[str], componentes: bool) -> str:
         largas = {max(range(n), key=lambda j: maximo[j])}
     if largas:
         # colunas p{}: a largura de cada uma é proporcional ao texto que ela leva (limitado)
-        pesos = [min(max(maximo[j], 4), 70) if j not in largas else min(max(media[j], 12), 70) for j in range(n)]
+        minimo = [int(largura_visivel(cab[j]) * 1.9) + 3 for j in range(n)]  # o cabeçalho em negrito precisa caber
+        pesos = [min(max(maximo[j], 4, minimo[j]), 70) if j not in largas else min(max(media[j], 12, minimo[j]), 70) for j in range(n)]
         soma = sum(pesos)
         espec = ""
         for j in range(n):
@@ -336,8 +345,12 @@ def lista(linhas: list[str], i: int) -> tuple[str, int]:
     return tex, i
 
 
-def converter(stem: str, rotulo: bool = True) -> str:
-    meta, linhas = ler_documento(stem)
+def converter(stem: str, rotulo: bool = True, glossario: bool = False) -> str:
+    """Converte um documento; com `glossario`, o glossário de símbolos (apêndice, sem título de seção)."""
+    if glossario:
+        meta, linhas = {}, GLOSSARIO.read_text(encoding="utf-8").split("\n")
+    else:
+        meta, linhas = ler_documento(stem)
     out: list[str] = []
     i, n = 0, len(linhas)
     componentes = False
@@ -361,7 +374,13 @@ def converter(stem: str, rotulo: bool = True) -> str:
         m = re.match(r"^(#{1,6})\s+(.*)$", s)
         if m:
             nivel, texto = len(m.group(1)), m.group(2)
-            if nivel == 1:
+            if glossario:
+                # o título do arquivo é o do capítulo; "##" vira seção e "###" subseção
+                if nivel == 2:
+                    out.append(r"\section*{" + titulo_tex(texto) + "}")
+                elif nivel >= 3:
+                    out.append(r"\subsection*{" + titulo_tex(texto) + "}")
+            elif nivel == 1:
                 out.append(r"\Needspace{12\baselineskip}")
                 out.append(r"\section{" + titulo_tex(texto) + "}" + (r"\label{ex:" + stem + "}" if rotulo else ""))
                 cat = meta.get("categoria", "").replace(" > ", " \u203a ")
@@ -538,6 +557,9 @@ equações, os resultados esperados e o que observar no simulador.
   ligam e a tabela de componentes. Na tabela, \emph{N.º} é a posição do elemento no arquivo do
   exemplo, \emph{Tipo} é o nome interno do elemento no simulador e \emph{Valores} traz os parâmetros
   dele. No esquema, a cor dos fios mostra a tensão e os pontos amarelos mostram a corrente.
+\item \textbf{Símbolos e parâmetros}: o nome, o significado e a unidade de cada símbolo que o
+  documento usa; o apêndice \ref{glossario} reúne todos os símbolos e explica os campos das tabelas de
+  componentes.
 \item \textbf{Teoria}: as equações que explicam o comportamento.
 \item \textbf{Resultados esperados}: os valores e as formas de onda que o simulador deve dar. Em
   %(com)d dos %(n)d exemplos esses valores são conferidos automaticamente contra o simulador pela
@@ -606,6 +628,8 @@ def main() -> int:
         shutil.copy(thumb, work / "capa.png")
         capa = r"\includegraphics[width=0.92\textwidth]{capa.png}"
 
+    global COM_GLOSSARIO
+    COM_GLOSSARIO = not args.only or "glossario" in args.only.split(",")
     corpo = []
     ja_incluidos: set[str] = set()
     titulos = ler_titulos()
@@ -627,6 +651,12 @@ def main() -> int:
             partes.append(converter(s))
         (work / arq).write_text("\n".join(partes), encoding="utf-8")
         corpo.append(r"\input{" + arq + "}")
+
+    if COM_GLOSSARIO:
+        (work / "glossario.tex").write_text(
+            r"\appendix" + "\n" + r"\chapter{Glossário de símbolos e parâmetros}\label{glossario}" + "\n" +
+            converter("glossario", rotulo=False, glossario=True), encoding="utf-8")
+        corpo.append(r"\input{glossario.tex}")
 
     try:
         h = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "--short", "HEAD"], capture_output=True,

@@ -55,6 +55,18 @@ O exemplo abre com $A = 2$ (elemento 29) e $B = 1$ (elemento 30).
 | 46 | `PMosfetElm` | MOSFET | Model = old-mosfet-2; Swap D/S = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $x$ | entrada ternária x | valor lógico de entrada ($0$, $1$ ou $2$) de uma função ternária | — |
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+| $Y$ | saída lógica Y | saída do circuito lógico | — |
+
 ## Teoria
 
 Com o OU ternário definido como máximo e a negação como $2 - x$:

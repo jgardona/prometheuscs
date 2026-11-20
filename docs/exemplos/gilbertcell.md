@@ -74,6 +74,35 @@ As duas entradas são uma senoide de $2\ \text{V}$ de pico e $80\ \text{Hz}$ (**
 | 96 | `OutputElm` | output | Show Voltage = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $x$ | entrada X | tensão aplicada à entrada X do multiplicador (a senoide) | V |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $k$ | ganho do multiplicador | constante em $v_\text{out} = k\thinspace v_x v_y$ | 1/V |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $y$ | entrada Y | tensão aplicada à entrada Y do multiplicador (a onda triangular) | V |
+| $I_{EE}$ | corrente da cauda | corrente da fonte comum aos emissores do par diferencial | A |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $I_{\text{out}}$ | corrente de saída | corrente que o circuito entrega à saída ou à carga | A |
+| $v_x$ | tensão de entrada X | tensão aplicada ao conversor tensão-corrente do canal X | V |
+| $v_y$ | tensão de entrada Y | tensão aplicada ao conversor tensão-corrente do canal Y | V |
+| $I_x$ | corrente diferencial do canal X | diferença entre as correntes de coletor do par diferencial do canal X | A |
+| $I_y$ | corrente diferencial do canal Y | diferença entre as correntes de coletor do par diferencial do canal Y | A |
+| $I_{\text{ref}}$ | corrente de referência | corrente de entrada que o espelho de corrente copia | A |
+| $R_x$ | resistência de degeneração do canal X | resistor entre os emissores do par do canal X, que converte tensão em corrente | Ω |
+| $R_y$ | resistência de degeneração do canal Y | resistor entre os emissores do par do canal Y, que converte tensão em corrente | Ω |
+| $v_{\text{out}}$ | tensão instantânea de saída | sinal que o circuito entrega à saída | V |
+| $R_f$ | resistência de realimentação | resistor que liga a saída à entrada inversora | Ω |
+| $V_{BE}$ | tensão base-emissor | tensão entre a base e o emissor | V |
+
 ## Teoria
 
 **A célula básica.** Um par diferencial dividindo a corrente $I_{EE}$ de uma cauda tem a corrente diferencial de coletor

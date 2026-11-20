@@ -45,6 +45,20 @@ Uma fonte de corrente de $10\ \text{mA}$ alimenta duas redes de resistores em s�
 | 21 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $R_{\text{eq}}$ | resistência equivalente | resistência de um conjunto de resistores visto como um só | Ω |
+| $R_{\text{cima}}$ | resistência de cima | resistência da parte de cima da associação | Ω |
+| $R_{\text{baixo}}$ | resistência de baixo | resistência da parte de baixo da associação | Ω |
+| $R_{\text{rede}}$ | resistência da rede | resistência equivalente de uma rede de resistores em paralelo | Ω |
+| $R_k$ | resistência do resistor k | resistência do resistor de índice $k$ | Ω |
+
 ## Teoria
 
 Uma fonte de corrente ideal mantém $I = 10\ \text{mA}$ qualquer que seja a carga; pela lei de Ohm a tensão em seus terminais é

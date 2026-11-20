@@ -40,6 +40,26 @@ O MOSFET é comandado por uma fonte de onda quadrada de $1\ \text{kHz}$ (períod
 | 14 | `PolarCapacitorElm` | capacitor (polarized) | Capacitance (F) = 10μ; Trapezoidal Approximation = sim; Initial Voltage (on Reset) = 1m; Series Resistance = 0; Max Reverse Voltage = 1 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $D$ | ciclo de trabalho | fração do período em que a saída fica em nível alto | — |
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+| $i_L$ | corrente no indutor | corrente que passa pelo indutor | A |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $I_{\text{saída}}$ | corrente de saída | corrente que o conversor entrega à saída | A |
+| $V_D$ | tensão no diodo | tensão entre o ânodo e o cátodo do diodo | V |
+| $P_{\text{saída}}$ | potência de saída | potência que chega à carga | W |
+| $P_{\text{entrada}}$ | potência de entrada | potência que a fonte entrega ao circuito | W |
+
 ## Teoria
 
 **Chave ligada** ($t < DT$): o MOSFET aterra o nó, o indutor fica sob $V_{in}$ e $i_L$ sobe com inclinação $V_{in}/L$, enquanto o capacitor sustenta a carga (o diodo está cortado). **Chave desligada**: a corrente do indutor passa pelo diodo para a saída; a tensão sobre o indutor é $V_{in} - V_{out}$ (negativa, porque $V_{out} > V_{in}$) e $i_L$ desce.

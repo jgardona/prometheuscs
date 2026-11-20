@@ -39,6 +39,24 @@ Mostrar como um diodo em antiparalelo com o indutor ("diodo de roda livre") elim
 | 11 | `DiodeElm` | diode | Model = default |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $n$ | fator de idealidade | expoente do diodo na equação de Shockley, $i = I_s(e^{v/(nV_T)}-1)$ | — |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $I_s$ | corrente de saturação | corrente reversa de um diodo ou de uma junção | A |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $t_0$ | instante de referência | instante em que o evento descrito começa | s |
+| $I_0$ | corrente inicial | valor da corrente no instante inicial | A |
+| $v_D$ | tensão instantânea no diodo | tensão entre o ânodo e o cátodo do diodo em cada instante | V |
+
 ## Teoria
 
 O diodo do simulador (modelo "default") segue a equação de Shockley,

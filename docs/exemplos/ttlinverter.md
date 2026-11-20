@@ -40,6 +40,16 @@ O transistor de entrada tem a base ligada a $5\ \text{V}$ por $4{,}7\ \text{k}\O
 | 8 | `RailElm` | voltage source | Voltage = 5; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $Y$ | saída lógica Y | saída do circuito lógico | — |
+
 ## Teoria
 
 O transistor de entrada faz o papel dos dois diodos da [DTL](dtlinverter.md): a junção base-emissor é o diodo de entrada, e a junção base-coletor é o diodo que leva a corrente à base do transistor de saída.

@@ -43,6 +43,23 @@ Como no gerador triangular, um comparador com histerese (operacional com resisto
 | 19 | `AudioOutputElm` | audio output | Duration (s) = 1; Sampling Rate = 8000 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $V_{\text{sat}}$ | tensão de saturação | valor em que a saída do amplificador fica travada ($\pm V_\text{sat}$) | V |
+| $R_{\text{lento}}$ | resistência da subida lenta | resistor que carrega o capacitor durante a rampa lenta | Ω |
+| $R_{\text{rápido}}$ | resistência da descida rápida | resistor que descarrega o capacitor durante a rampa rápida | Ω |
+| $t_{\text{lento}}$ | tempo da rampa lenta | duração da rampa lenta do dente de serra | s |
+| $t_{\text{rápido}}$ | tempo da rampa rápida | duração da rampa rápida do dente de serra | s |
+
 ## Teoria
 
 A tensão na entrada não inversora do comparador é a média ponderada da saída quadrada ($\pm V_\text{sat}$) e da saída do integrador, e o comparador muda de estado quando ela passa por zero, ou seja, quando o integrador chega a

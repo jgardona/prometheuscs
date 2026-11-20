@@ -54,6 +54,20 @@ Quatro flip-flops D disparados pela borda de subida, com um multiplexador de 2 p
 | 32 | `MultiplexerElm` | Multiplexer | High Logic Voltage = 5; # of Select Bits = 1; Inverted Output = não; Strobe Pin = não; Input Mode = Individual Inputs; Bus Select = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $D$ | entrada de dados D | entrada de dados do flip-flop ou do circuito lógico | — |
+| $Q$ | saída Q | saída de um flip-flop ou latch, que guarda o bit armazenado | — |
+| $Q_k$ | fator de qualidade da seção k | fator de qualidade da seção de índice $k$ do filtro | — |
+| $k$ | índice | número inteiro que numera os termos de um somatório, os bits ou os elementos de um conjunto | — |
+| $P_k$ | entrada paralela k | bit de índice $k$ que é carregado em paralelo | — |
+| $Q_0$ | sinal lógico Q0 | sinal lógico $Q_0$ (bit ou elemento de índice 0) do circuito | — |
+| $Q_{k-1}$ | saída do flip-flop k−1 | saída $Q$ do flip-flop anterior, que é carregada no flip-flop $k$ | — |
+
 ## Teoria
 
 - **Carga** (*load/shift* $= 0$): na borda de subida, $Q_k \leftarrow P_k$ para todos os $k$.

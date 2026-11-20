@@ -42,6 +42,22 @@ A rede ($169{,}7\ \text{V}$ de pico, $60\ \text{Hz}$, em série com um resistor 
 | 19 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $k$ | coeficiente de acoplamento | fração do fluxo de uma bobina que atravessa a outra (de $0$ a $1$) | — |
+| $f_1$ | frequência 1 | frequência chamada $f_1$ no circuito | Hz |
+| $L_1$ | indutância do indutor 1 | indutância do indutor chamado $L_1$ no circuito | H |
+| $C_1$ | capacitância do capacitor 1 | capacitância do capacitor chamado $C_1$ no circuito | F |
+| $f_2$ | frequência 2 | frequência chamada $f_2$ no circuito | Hz |
+| $L_2$ | indutância do indutor 2 | indutância do indutor chamado $L_2$ no circuito | H |
+| $C_2$ | capacitância do capacitor 2 | capacitância do capacitor chamado $C_2$ no circuito | F |
+| $V_1$ | tensão 1 | tensão chamada $V_1$ no circuito | V |
+| $V_2$ | tensão 2 | tensão chamada $V_2$ no circuito | V |
+
 ## Teoria
 
 O centelhador (*spark gap*) do simulador é uma chave controlada pela tensão: com resistência de **abertura** muito alta ($1\ \text{G}\Omega$) até que a tensão entre os terminais atinja a **tensão de ruptura**; a partir daí ele passa a ter a resistência de **condução**, e só volta a abrir quando a corrente cai abaixo da **corrente de manutenção**.

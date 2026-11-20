@@ -43,6 +43,22 @@ Uma fonte de $10\ \text{V}$ carrega um capacitor de $10\ \text{nF}$ por um resis
 | 10 | `ResistorElm` | resistor | Resistance (ohms) = 10 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $V_P$ | tensão de pico do dispositivo | tensão em que o dispositivo passa a conduzir (pico da curva) | V |
+| $\eta$ | rendimento | razão entre a potência de saída e a de entrada | — |
+| $V_{BB}$ | tensão entre as bases | tensão aplicada entre as duas bases do transistor unijunção | V |
+| $V_V$ | tensão de vale | tensão do vale da curva do dispositivo | V |
+| $V_{CC}$ | tensão de alimentação do coletor | tensão contínua que alimenta o circuito pelo coletor | V |
+
 ## Teoria
 
 O UJT é um dispositivo de resistência negativa: enquanto a tensão do emissor está abaixo da de pico $V_P \approx \eta V_{BB}$ ele não conduz e o capacitor carrega pelo resistor; ao atingir $V_P$ o emissor passa a conduzir, o capacitor descarrega depressa até a tensão de vale $V_V$ e o ciclo recomeça. O tempo de carga de $V_V$ a $V_P$ na constante $RC = 100\ \text{k}\Omega\cdot 10\ \text{nF} = 1\ \text{ms}$ é

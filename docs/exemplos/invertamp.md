@@ -42,6 +42,29 @@ Um PMOS e um NMOS (modelo padrão, sem diodo de corpo) formam um inversor. Um re
 | 14 | `OutputElm` | output | Show Voltage = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $A$ | ganho | razão entre a saída e a entrada de um amplificador | — |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $\omega$ | frequência angular | $2\pi f$: a frequência medida em radianos por segundo | rad/s |
+| $R_f$ | resistência de realimentação | resistor que liga a saída à entrada inversora | Ω |
+| $H$ | função de transferência | razão entre a saída e a entrada de um filtro, em função da frequência | — |
+| $V_M$ | limiar de comutação | tensão de entrada em que a saída do inversor muda de estado (as duas correntes de saturação se igualam) | V |
+| $Z_{\text{in}}$ | impedância de entrada | impedância vista pela fonte olhando para a entrada do circuito | Ω |
+| $Z_f$ | impedância de realimentação | impedância que liga a saída à entrada inversora | Ω |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+| $v_{\text{out}}$ | tensão instantânea de saída | sinal que o circuito entrega à saída | V |
+| $v_{\text{in}}$ | tensão instantânea de entrada | sinal aplicado à entrada do circuito | V |
+| $\beta$ | parâmetro de transcondutância | constante da lei quadrática do MOSFET: $I_D = \tfrac12\beta(V_{GS}-V_t)^2$ | A/V² |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+
 ## Teoria
 
 A realimentação por $R_f$ força, em corrente contínua, a entrada e a saída ao mesmo valor, o limiar do inversor $V_M = 2{,}5\ \text{V}$, onde os dois transistores conduzem e o ganho é alto. Para pequenos sinais, o inversor tem ganho de tensão $-A$ com $A \gg 1$ e entrada praticamente em um *terra virtual* (em $V_M$). Com um capacitor $C$ na entrada e $R_f$ na realimentação (a configuração do amplificador inversor com $Z_{in} = 1/(j\omega C)$ e $Z_f = R_f$):

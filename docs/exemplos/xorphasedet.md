@@ -35,6 +35,21 @@ Duas fontes de onda quadrada de $0$ a $5\ \text{V}$ e ciclo de trabalho de $50\%
 | 3 | `OutputElm` | output | Show Voltage = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $\varphi$ | fase | ângulo de defasagem de um sinal em relação a uma referência | rad |
+| $v_{\text{out}}$ | tensão instantânea de saída | sinal que o circuito entrega à saída | V |
+| $V_{DD}$ | tensão de alimentação | tensão contínua que alimenta o circuito (a ligada aos drenos dos transistores) | V |
+| $f_2$ | sinal lógico f2 | sinal lógico $f_2$ (bit ou elemento de índice 2) do circuito | — |
+| $f_1$ | sinal lógico f1 | sinal lógico $f_1$ (bit ou elemento de índice 1) do circuito | — |
+
 ## Teoria
 
 A saída de uma XOR é alta quando as duas entradas diferem. Para duas quadradas de ciclo de trabalho de $50\%$ e defasagem $\varphi$ (de $0$ a $\pi$), a saída é alta durante a fração $\varphi/\pi$ do período, e o valor médio é

@@ -57,6 +57,20 @@ Dois circuitos iguais, alimentados por fontes senoidais de $5\ \text{V}$ e $100\
 | 35 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $B$ | susceptância | parte imaginária da admitância | S |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $Z_0$ | impedância característica | razão entre tensão e corrente de uma onda que percorre a linha | Ω |
+| $Y_{\text{in}}$ | admitância de entrada | inverso da impedância de entrada, $I/V$ | S |
+| $V_L$ | tensão no indutor | tensão entre os terminais do indutor | V |
+| $P_L$ | potência na carga | potência entregue à carga | W |
+| $R_L$ | resistência de carga | resistor ligado à saída, que consome a energia do circuito | Ω |
+
 ## Teoria
 
 A impedância de uma linha em aberto é puramente reativa, com susceptância $B = \tan(\beta\ell)/Z_0$, e ela pode cancelar a parte imaginária da admitância vista. A $100\ \text{MHz}$, o trecho de $1{,}76\ \text{ns}$ ($63{,}4^\circ$) de linha de $75\ \Omega$ transforma a carga de $300\ \Omega$ em

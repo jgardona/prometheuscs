@@ -41,6 +41,25 @@ Uma fonte senoidal de $5\ \text{V}$ de pico e $40\ \text{Hz}$ alimenta uma ponte
 | 13 | `TextElm` | text | Text = load; Size = 20; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $n$ | fator de idealidade | expoente do diodo na equação de Shockley, $i = I_s(e^{v/(nV_T)}-1)$ | — |
+| $I_s$ | corrente de saturação | corrente reversa de um diodo ou de uma junção | A |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $v_R$ | tensão no resistor | tensão entre os terminais do resistor | V |
+| $v_s$ | tensão instantânea da fonte | tensão do sinal da fonte de entrada em cada instante | V |
+| $v_D$ | tensão instantânea no diodo | tensão entre o ânodo e o cátodo do diodo em cada instante | V |
+| $V_{\text{med}}$ | tensão média | valor médio da tensão ao longo de um ciclo | V |
+| $V_p$ | tensão de pico | valor máximo atingido por uma senoide | V |
+| $V_{\text{ef}}$ | tensão eficaz | valor eficaz (RMS) da tensão | V |
+
 ## Teoria
 
 O diodo do simulador (modelo "default") segue a equação de Shockley,

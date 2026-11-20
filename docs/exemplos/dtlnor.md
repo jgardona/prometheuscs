@@ -49,6 +49,16 @@ Há duas células do [Inversor DTL](dtlinverter.md), cada uma com o seu diodo de
 | 26 | `LogicInputElm` | logic input | Momentary Switch = não; High Logic Voltage = 5; Low Voltage = 0; Numeric = não; Ternary = não; Keyboard Shortcut =  |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+| $Y$ | saída lógica Y | saída do circuito lógico | — |
+
 ## Teoria
 
 Cada transistor sozinho faria $\overline{A}$ ou $\overline{B}$. Ligados em **paralelo** entre a saída e a terra, basta um saturado para a saída descer; a saída só sobe com os dois cortados, isto é, com as duas entradas baixas:

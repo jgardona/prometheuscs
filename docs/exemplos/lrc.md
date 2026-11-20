@@ -36,6 +36,28 @@ Um resistor de $10\ \Omega$, um indutor de $1\ \text{H}$ e um capacitor de $15\ 
 | 6 | `ResistorElm` | resistor | Resistance (ohms) = 100 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $q$ | carga do elétron | carga elétrica elementar, $1{,}602\cdot 10^{-19}\ \text{C}$ | C |
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $v_C$ | tensão no capacitor | tensão entre os terminais do capacitor | V |
+| $\alpha$ | fator de amortecimento | $R/(2L)$: taxa com que a oscilação decai, como $e^{-\alpha t}$ | 1/s |
+| $\omega_0$ | frequência angular natural | frequência angular em que o circuito ressoa, $1/\sqrt{LC}$ | rad/s |
+| $\omega_d$ | frequência angular amortecida | $\sqrt{\omega_0^2-\alpha^2}$: frequência da oscilação subamortecida | rad/s |
+| $v_0$ | tensão inicial | valor da tensão no instante inicial | V |
+| $Q$ | fator de qualidade | mede o quão seletivo é um circuito ressonante: $f_0/B$, razão entre a frequência central e a largura de banda | — |
+| $f_d$ | frequência amortecida | $\omega_d/(2\pi)$: frequência da oscilação subamortecida | Hz |
+
 ## Teoria
 
 Sem fonte, a lei das tensões de Kirchhoff dá $L\thinspace\ddot q + R\thinspace\dot q + q/C = 0$, ou, para a tensão do capacitor,

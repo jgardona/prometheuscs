@@ -38,6 +38,20 @@ Uma fonte senoidal de $40\ \text{Hz}$ e $5\ \text{V}$ de pico alimenta, por um r
 | 10 | `OutputElm` | output | Show Voltage = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $A$ | ganho | razão entre a saída e a entrada de um amplificador | — |
+| $R_f$ | resistência de realimentação | resistor que liga a saída à entrada inversora | Ω |
+| $R_1$ | resistência do resistor 1 | resistência do resistor chamado $R_1$ no circuito | Ω |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+
 ## Teoria
 
 Como o ganho de malha aberta $A$ é enorme, a realimentação negativa força a diferença entre as entradas a ser quase zero. A entrada não inversora está no terra, então a inversora fica em $0\ \text{V}$ (terra virtual), embora não esteja ligada ao terra. A corrente de entrada, $i = V_\text{in}/R_1$, não pode entrar no operacional (impedância de entrada ideal) e passa toda por $R_f$:

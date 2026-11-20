@@ -43,6 +43,27 @@ Uma fonte de $1{,}5\ \text{V}$ (a pilha) alimenta um transformador de dois enrol
 | 21 | `LEDElm` | LED | Color = #ff0000;  = 0;  = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $N_1$ | espiras do primário | número de espiras do enrolamento primário do transformador | — |
+| $N_2$ | espiras do secundário | número de espiras do enrolamento secundário do transformador | — |
+| $L_2$ | indutância do indutor 2 | indutância do indutor chamado $L_2$ no circuito | H |
+| $L_1$ | indutância do indutor 1 | indutância do indutor chamado $L_1$ no circuito | H |
+| $I_C$ | corrente de coletor | corrente que entra pelo coletor do transistor bipolar | A |
+| $I_B$ | corrente de base | corrente que entra pela base do transistor bipolar | A |
+| $\eta$ | rendimento | razão entre a potência de saída e a de entrada | — |
+| $P_{\text{saida}}$ | potência de saída | potência que chega à carga | W |
+| $P_{\text{entrada}}$ | potência de entrada | potência que a fonte entrega ao circuito | W |
+| $V_{LED}$ | tensão no LED | tensão entre os terminais do LED aceso | V |
+| $I_{LED}$ | corrente no LED | corrente que passa pelo LED | A |
+| $V_{\text{bat}}$ | tensão da bateria | tensão da bateria que alimenta o circuito | V |
+| $I_{\text{bat}}$ | corrente da bateria | corrente que a bateria entrega ao circuito | A |
+
 ## Teoria
 
 **Oscilador de bloqueio.** Ao ligar, o resistor de $1\ \text{k}\Omega$ polariza a base e o transistor começa a conduzir. A corrente do coletor atravessa o enrolamento do coletor; a variação dessa corrente induz no enrolamento da base, pelo acoplamento magnético e com a polaridade invertida, uma tensão que **aumenta** a corrente de base: é uma realimentação positiva, que leva o transistor à condução forte. Ela se mantém enquanto a corrente de base sustenta a de coletor ($I_C \le \beta I_B$); quando o transistor deixa de acompanhá-la, a tensão induzida cai, a corrente de base diminui e o transistor corta. O enrolamento, cuja corrente não pode se anular de forma abrupta, passa a impor uma tensão de polaridade oposta no coletor.

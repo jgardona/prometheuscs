@@ -46,6 +46,18 @@ Três NPN ($\beta = 100$) estão empilhados: o coletor do de cima é a saída, l
 | 16 | `LogicOutputElm` | logic output | Threshold = 2.5; Current Required = não; Numeric = não; Ternary = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $C$ | entrada lógica C | terceira entrada ou sinal de relógio do circuito lógico | — |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+| $Y$ | saída lógica Y | saída do circuito lógico | — |
+
 ## Teoria
 
 Um caminho em série só conduz se **todas** as chaves estiverem fechadas. Basta uma entrada baixa para cortar o seu transistor, interromper o caminho e deixar o resistor puxar a saída para $3{,}6\ \text{V}$:

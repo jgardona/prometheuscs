@@ -40,6 +40,25 @@ Dois resistores de $100\ \Omega$ em série (de um lado) e dois capacitores de $2
 | 13 | `SweepElm` | sweep (log) | Min Frequency (Hz) = 40; Max Frequency (Hz) = 80; Sweep Time (s) = 500m; Logarithmic = sim; Max Voltage = 5; Bidirectional = sim |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $H$ | função de transferência | razão entre a saída e a entrada de um filtro, em função da frequência | — |
+| $f_{\text{min}}$ | frequência mínima | menor frequência da varredura | Hz |
+| $f_{\text{max}}$ | frequência máxima | maior frequência da varredura | Hz |
+| $f_0$ | frequência de ressonância | frequência em que o circuito responde ao máximo | Hz |
+| $\omega_0$ | frequência angular natural | frequência angular em que o circuito ressoa, $1/\sqrt{LC}$ | rad/s |
+| $V_{\text{out},\text{pico}}$ | tensão de pico na saída | valor máximo da tensão de saída | V |
+| $C_3$ | capacitância do capacitor 3 | capacitância do capacitor chamado $C_3$ no circuito | F |
+| $R_3$ | resistência do resistor 3 | resistência do resistor chamado $R_3$ no circuito | Ω |
+
 ## Teoria
 
 O T duplo é a ligação em paralelo de dois filtros em T: um passa-baixas ($R$–$R$ com $2C$ para a terra) e um passa-altas ($C$–$C$ com $R/2$ para a terra). Para os valores $R$, $C$ e os centrais $2C$ e $R/2$, as duas respostas têm a mesma amplitude e fases opostas em

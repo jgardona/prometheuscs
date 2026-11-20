@@ -37,6 +37,22 @@ Duas fontes de corrente ($15\ \text{mA}$ e $5\ \text{mA}$, ajustáveis por *slid
 | 12 | `ControlledCurrentElm` | Controlled Current Source | Output Current = i(a)+i(b) |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $a$ | nó a | ponto de ligação identificado como $a$ no circuito | — |
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $b$ | nó b | o outro nó entre os quais se mede a resistência equivalente | — |
+| $I_1$ | corrente 1 | corrente chamada $I_1$ no circuito | A |
+| $I_2$ | corrente 2 | corrente chamada $I_2$ no circuito | A |
+| $I_{\text{out}}$ | corrente de saída | corrente que o circuito entrega à saída ou à carga | A |
+
 ## Teoria
 
 As fontes controladas de dois terminais (o losango) são definidas por uma **expressão** que lê o resto do circuito **pelo nome**: $v(\text{nome})$ é a tensão de um nó rotulado ou sobre um voltímetro com rótulo, $i(\text{nome})$ a corrente de um amperímetro com rótulo, e $\text{dvdt}$ / $\text{didt}$ as suas taxas de variação. O resultado é a tensão (fonte de tensão controlada, com o $+$ no segundo terminal) ou a corrente (fonte de corrente controlada, no sentido da seta) que a fonte impõe. Aqui $i(a) = I_1$ e $i(b) = I_2$ são as correntes dos dois ramos, lidas pelos amperímetros, e a fonte produz

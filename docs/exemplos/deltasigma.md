@@ -61,6 +61,20 @@ Mostrar o princípio do conversor **delta-sigma**: um integrador e um comparador
 | 33 | `NorGateElm` | NOR gate | # of Inputs = 2; High Logic Voltage = 5; Schmitt Inputs = não; Invert Inputs = não; Propagation Delay (s) = 0; DeMorgan's Symbol = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $D$ | entrada de dados D | entrada de dados do flip-flop ou do circuito lógico | — |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $Q$ | saída Q | saída de um flip-flop ou latch, que guarda o bit armazenado | — |
+| $I_{\text{ref}}$ | corrente de referência | corrente de entrada que o espelho de corrente copia | A |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+| $V_{\text{ofs}}$ | tensão de deslocamento | tensão que desloca o ponto de operação | V |
+
 ## Teoria
 
 O integrador soma o erro entre a corrente da entrada e a corrente de referência que a chave injeta. O laço de realimentação ajusta a fração $d$ de ciclos do relógio em que a referência entra, de modo que, **em média**, as duas correntes se equilibram e o integrador não sai do lugar:

@@ -41,6 +41,20 @@ Um amp-op ($\text{Av} = 10^5$, saturação em $\pm 15\ \text{V}$) tem uma rede R
 | 14 | `CapacitorElm` | capacitor | Capacitance (F) = 1μ; Trapezoidal Approximation = sim; Initial Voltage (on Reset) = 1m; Series Resistance = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $P$ | potência | energia transformada por unidade de tempo | W |
+| $f_0$ | frequência de ressonância | frequência em que o circuito responde ao máximo | Hz |
+| $A_v$ | ganho de tensão | razão entre a tensão de saída e a de entrada | — |
+| $R_f$ | resistência de realimentação | resistor que liga a saída à entrada inversora | Ω |
+| $R_{\text{lamp}}$ | resistência da lâmpada | resistência do filamento da lâmpada | Ω |
+
 ## Teoria
 
 A rede de Wien tem, na frequência $f_0 = 1/(2\pi RC)$, defasagem nula e atenuação $1/3$. A oscilação precisa de ganho de malha $1$, isto é, ganho do amplificador igual a $3$:

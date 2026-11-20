@@ -49,6 +49,26 @@ Mostrar como dois diodos eliminam a distorção de cruzamento do seguidor *push-
 | 18 | `OutputElm` | output | Show Voltage = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $I_{\text{pol}}$ | corrente de polarização | corrente contínua que mantém os transistores levemente ligados | A |
+| $V_D$ | tensão no diodo | tensão entre o ânodo e o cátodo do diodo | V |
+| $v_i$ | tensão instantânea de entrada | tensão da entrada em cada instante | V |
+| $V_{BE}$ | tensão base-emissor | tensão entre a base e o emissor | V |
+| $v_o$ | tensão instantânea de saída | tensão da saída em cada instante | V |
+| $V_{EB}$ | tensão emissor-base | tensão entre o emissor e a base (referência do PNP) | V |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $I_s$ | corrente de saturação | corrente reversa de um diodo ou de uma junção | A |
+
 ## Teoria
 
 Os resistores de $220\ \Omega$ e os dois diodes formam uma cadeia entre as fontes de $\pm 10\ \text{V}$ que mantém uma corrente de polarização, mesmo sem sinal:

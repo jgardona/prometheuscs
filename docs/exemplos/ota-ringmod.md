@@ -48,6 +48,27 @@ Um sinal dente de serra de $1\ \text{V}$ e $40\ \text{Hz}$ entra no OTA por um c
 | 20 | `RailElm` | voltage source | Voltage = 9; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $m$ | índice do modo | número que identifica o modo de oscilação | — |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $M$ | amplitude da modulante | valor de pico do sinal modulante $m(t)$ | V |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $I_{ABC}$ | corrente de controle | corrente que controla o ganho do amplificador de transcondutância | A |
+| $I_{\text{out}}$ | corrente de saída | corrente que o circuito entrega à saída ou à carga | A |
+| $g_m$ | transcondutância | quanto a corrente de saída varia por volt na entrada, $\partial I_D/\partial V_{GS}$ | S |
+| $V_+$ | tensão da entrada não inversora | tensão do terminal $+$ do amplificador operacional | V |
+| $V_-$ | tensão da entrada inversora | tensão do terminal $-$ do amplificador operacional | V |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $v_{\text{out}}$ | tensão instantânea de saída | sinal que o circuito entrega à saída | V |
+| $v_{\text{in}}$ | tensão instantânea de entrada | sinal aplicado à entrada do circuito | V |
+| $\omega_m$ | frequência angular da modulante | $2\pi f_m$: frequência angular do sinal modulante | rad/s |
+| $\omega_s$ | frequência angular de ressonância série | $2\pi f_s$ | rad/s |
+
 ## Teoria
 
 O **amplificador operacional de transcondutância** (OTA, aqui no estilo do LM13700) é uma fonte de corrente controlada por tensão: a corrente de saída é proporcional à tensão diferencial de entrada,

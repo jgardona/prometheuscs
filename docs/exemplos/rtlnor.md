@@ -47,6 +47,22 @@ Três entradas lógicas ($0$ ou $3{,}6\ \text{V}$) alimentam, cada uma por um re
 | 22 | `LogicOutputElm` | logic output | Threshold = 2.5; Current Required = não; Numeric = não; Ternary = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+| $C$ | entrada lógica C | terceira entrada ou sinal de relógio do circuito lógico | — |
+| $V_{CE(\text{sat})}$ | tensão de saturação coletor-emissor | valor pequeno de $V_{CE}$ com o transistor saturado | V |
+| $Y$ | saída lógica Y | saída do circuito lógico | — |
+| $V_{CC}$ | tensão de alimentação do coletor | tensão contínua que alimenta o circuito pelo coletor | V |
+| $R_C$ | resistência de coletor | resistor externo ligado ao coletor | Ω |
+| $V_{BE}$ | tensão base-emissor | tensão entre a base e o emissor | V |
+
 ## Teoria
 
 Cada transistor é o mesmo da célula do [Inversor RTL](rtlinverter.md): com a entrada alta ele satura, com a entrada baixa ele corta. Como os transistores estão em **paralelo** entre a saída e a terra, basta um saturado para a saída ficar em $V_{CE(sat)}$:

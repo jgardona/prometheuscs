@@ -41,6 +41,23 @@ O primeiro amplificador operacional é um disparador de Schmitt: sua entrada inv
 | 15 | `AudioOutputElm` | audio output | Duration (s) = 1; Sampling Rate = 8000 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $V_{\text{sat}}$ | tensão de saturação | valor em que a saída do amplificador fica travada ($\pm V_\text{sat}$) | V |
+| $v_t$ | tensão instantânea da triangular | onda triangular de alta frequência em cada instante | V |
+| $v_+$ | tensão instantânea da entrada não inversora | tensão do terminal $+$ do amplificador operacional em cada instante | V |
+| $R_5$ | resistência do resistor 5 | resistência do resistor chamado $R_5$ no circuito | Ω |
+| $v_q$ | tensão instantânea da onda quadrada | saída do comparador em cada instante | V |
+| $R_3$ | resistência do resistor 3 | resistência do resistor chamado $R_3$ no circuito | Ω |
+
 ## Teoria
 
 O comparador troca de estado quando a tensão em sua entrada não inversora passa por $0\ \text{V}$. Essa tensão é a média ponderada entre a saída quadrada $\pm V_\text{sat}$ e a triangular $v_t$:

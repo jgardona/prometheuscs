@@ -54,6 +54,23 @@ Um contador em anel de 10 saídas ($Q_0$ a $Q_9$) recebe um relógio de $1\ \tex
 | 25 | `DiodeElm` | diode | Model = default |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $Q_0$ | sinal lógico Q0 | sinal lógico $Q_0$ (bit ou elemento de índice 0) do circuito | — |
+| $Q_9$ | sinal lógico Q9 | sinal lógico $Q_9$ (bit ou elemento de índice 9) do circuito | — |
+| $Q_5$ | sinal lógico Q5 | sinal lógico $Q_5$ (bit ou elemento de índice 5) do circuito | — |
+| $Q_1$ | sinal lógico Q1 | sinal lógico $Q_1$ (bit ou elemento de índice 1) do circuito | — |
+| $Q_2$ | sinal lógico Q2 | sinal lógico $Q_2$ (bit ou elemento de índice 2) do circuito | — |
+| $Q_8$ | sinal lógico Q8 | sinal lógico $Q_8$ (bit ou elemento de índice 8) do circuito | — |
+| $Q_3$ | sinal lógico Q3 | sinal lógico $Q_3$ (bit ou elemento de índice 3) do circuito | — |
+| $Q_7$ | sinal lógico Q7 | sinal lógico $Q_7$ (bit ou elemento de índice 7) do circuito | — |
+| $Q_4$ | sinal lógico Q4 | sinal lógico $Q_4$ (bit ou elemento de índice 4) do circuito | — |
+| $Q_6$ | sinal lógico Q6 | sinal lógico $Q_6$ (bit ou elemento de índice 6) do circuito | — |
+
 ## Teoria
 
 O contador em anel avança uma saída por período do relógio: $Q_0, Q_1, \dots, Q_9, Q_0, \dots$. Com o mapeamento acima, a luz acende as posições

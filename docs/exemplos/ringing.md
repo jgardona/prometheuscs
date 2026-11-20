@@ -35,6 +35,26 @@ Um resistor de $100\ \Omega$ em série com a entrada e, em paralelo para a terra
 | 11 | `RailElm` | square wave gen | Max Voltage = 5; Waveform = Square Wave; DC Offset (V) = 0; Internal Resistance (ohms) = 0; Show Voltage = não; Specify As = Frequency/Duty Cycle; Frequency (Hz) = 100; Phase Offset (degrees) = 0; Duty Cycle = 50; Rise/Fall Time (s) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $u$ | tensão de entrada | sinal $u(t)$ aplicado à entrada do circuito | V |
+| $B$ | largura de banda | faixa de frequências em que o filtro responde, $f_0/Q$ | Hz |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $Q$ | fator de qualidade | mede o quão seletivo é um circuito ressonante: $f_0/B$, razão entre a frequência central e a largura de banda | — |
+| $\alpha$ | fator de amortecimento | $R/(2L)$: taxa com que a oscilação decai, como $e^{-\alpha t}$ | 1/s |
+| $\omega_0$ | frequência angular natural | frequência angular em que o circuito ressoa, $1/\sqrt{LC}$ | rad/s |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $\omega_d$ | frequência angular amortecida | $\sqrt{\omega_0^2-\alpha^2}$: frequência da oscilação subamortecida | rad/s |
+| $f_0$ | frequência de ressonância | frequência em que o circuito responde ao máximo | Hz |
+| $f_d$ | frequência amortecida | $\omega_d/(2\pi)$: frequência da oscilação subamortecida | Hz |
+
 ## Teoria
 
 O tanque ligado a uma fonte por um resistor $R$ tem a equação

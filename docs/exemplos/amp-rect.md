@@ -40,6 +40,18 @@ Uma fonte senoidal de $40\ \text{Hz}$ e apenas $0{,}5\ \text{V}$ de pico liga-se
 | 11 | `OutputElm` | output | Show Voltage = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $R_f$ | resistência de realimentação | resistor que liga a saída à entrada inversora | Ω |
+| $R_1$ | resistência do resistor 1 | resistência do resistor chamado $R_1$ no circuito | Ω |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+
 ## Teoria
 
 Quando a entrada é **positiva**, a saída do operacional vai para baixo e conduz o diodo que a liga à entrada inversora: ele fecha a malha e mantém o nó inversor em $0\ \text{V}$ (terra virtual). O outro diodo fica reverso, e a tensão de saída do circuito, ligada ao terra virtual por um resistor, é praticamente $0\ \text{V}$.

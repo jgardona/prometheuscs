@@ -47,6 +47,24 @@ Duas linhas de $75\ \Omega$ e $5\ \text{ns}$ são alimentadas, cada uma por um r
 | 15 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $\theta$ | ângulo | ângulo de fase ou de condução | rad |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $Z_{\text{aberta}}$ | impedância em aberto | impedância de entrada da linha terminada em aberto | Ω |
+| $Z_0$ | impedância característica | razão entre tensão e corrente de uma onda que percorre a linha | Ω |
+| $Z_{\text{curto}}$ | impedância em curto | impedância de entrada da linha terminada em curto-circuito | Ω |
+| $Z_{\text{in}}$ | impedância de entrada | impedância vista pela fonte olhando para a entrada do circuito | Ω |
+| $V_p$ | tensão de pico | valor máximo atingido por uma senoide | V |
+| $R_s$ | resistência em série | resistor em série com a fonte ou com o dispositivo | Ω |
+
 ## Teoria
 
 Uma linha sem perdas de comprimento elétrico $\theta = 2\pi f\tau$ tem impedância de entrada

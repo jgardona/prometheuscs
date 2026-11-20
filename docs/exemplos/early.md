@@ -47,6 +47,29 @@ Há dois circuitos iguais. Em cada um, um transistor NPN ($\beta = 100$) tem o e
 | 13 | `NTransistorElm` | transistor | Beta/hFE = 100; Swap E/C = não; Draw Circle = não; Model = early |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $V_{BE}$ | tensão base-emissor | tensão entre a base e o emissor | V |
+| $I_C$ | corrente de coletor | corrente que entra pelo coletor do transistor bipolar | A |
+| $I_s$ | corrente de saturação | corrente reversa de um diodo ou de uma junção | A |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $V_{AF}$ | tensão de Early direta | tensão de Early do transistor na operação normal (direta) | V |
+| $I_{C0}$ | corrente de coletor sem efeito Early | valor de $I_C$ que se teria sem a inclinação causada pelo efeito Early | A |
+| $V_{CB}$ | tensão coletor-base | tensão entre o coletor e a base | V |
+| $V_{BC}$ | tensão base-coletor | tensão entre a base e o coletor | V |
+| $V_{CE}$ | tensão coletor-emissor | tensão entre o coletor e o emissor | V |
+| $g_o$ | condutância de saída | inclinação $\partial I_C/\partial V_{CE}$ das curvas de saída do transistor bipolar | S |
+| $r_o$ | resistência de saída | resistência incremental vista pelo dreno (ou coletor) | Ω |
+| $V_{AR}$ | tensão de Early reversa | tensão de Early do transistor ligado ao contrário | V |
+| $I_B$ | corrente de base | corrente que entra pela base do transistor bipolar | A |
+| $g_m$ | transcondutância | quanto a corrente de saída varia por volt na entrada, $\partial I_D/\partial V_{GS}$ | S |
+
 ## Teoria
 
 Na região ativa, o modelo de Ebers–Moll sem efeito Early dá uma corrente de coletor que só depende de $V_{BE}$:

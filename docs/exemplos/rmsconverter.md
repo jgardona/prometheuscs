@@ -78,6 +78,23 @@ O circuito reúne, em linhas gerais, amplificadores operacionais ideais (ganho d
 | 90 | `RailElm` | A/C source | Max Voltage = 5; Waveform = A/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0; Show Voltage = não; Frequency (Hz) = 80; Phase Offset (degrees) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $V_{\text{rms}}$ | tensão eficaz | valor eficaz (RMS): a raiz da média do quadrado da tensão em um período | V |
+| $V_p$ | tensão de pico | valor máximo atingido por uma senoide | V |
+| $V_o$ | tensão de saída | tensão da saída do circuito | V |
+
 ## Teoria
 
 O valor eficaz de um sinal periódico $v(t)$ de período $T$ é

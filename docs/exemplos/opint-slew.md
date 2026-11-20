@@ -73,6 +73,20 @@ O circuito é o amplificador operacional clássico de $20$ transistores ($13$ NP
 | 106 | `TextElm` | text | Text = -; Size = 24; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $V_{BE}$ | tensão base-emissor | tensão entre a base e o emissor | V |
+| $R_1$ | resistência do resistor 1 | resistência do resistor chamado $R_1$ no circuito | Ω |
+| $R_f$ | resistência de realimentação | resistor que liga a saída à entrada inversora | Ω |
+| $C_c$ | capacitor de compensação | capacitor interno que estabiliza o amplificador e limita a sua velocidade | F |
+| $I_{\text{max}}$ | corrente máxima | maior corrente que o estágio consegue fornecer | A |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+
 ## Teoria
 
 Um operacional ideal produziria uma onda quadrada de $\pm 10\ \text{V}$, com bordas instantâneas. Num operacional real, a saída do estágio de ganho só pode variar tão rápido quanto o estágio de entrada consegue carregar ou descarregar o capacitor de compensação $C_c$ com a sua corrente máxima $I_\text{max}$:

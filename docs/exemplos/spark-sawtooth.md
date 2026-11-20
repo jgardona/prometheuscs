@@ -37,6 +37,25 @@ Uma fonte de $2\ \text{kV}$ carrega um capacitor de $10\ \text{nF}$ por um resis
 | 4 | `CapacitorElm` | capacitor | Capacitance (F) = 10n; Trapezoidal Approximation = sim; Initial Voltage (on Reset) = 1m; Series Resistance = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $V_V$ | tensão de vale | tensão do vale da curva do dispositivo | V |
+| $V_B$ | tensão do terminal base | tensão da base em relação à terra | V |
+| $t_c$ | tempo crítico | tempo em que a resistência chega ao limite | s |
+| $V_s$ | tensão da fonte | tensão da fonte de alimentação alternada | V |
+| $R_{\text{on}}$ | resistência de condução | resistência de uma chave ou de um transistor quando conduz | Ω |
+| $I_{\text{hold}}$ | corrente de manutenção | corrente abaixo da qual o dispositivo deixa de conduzir | A |
+| $t_d$ | tempo de descarga | tempo que o capacitor leva para descarregar até a tensão de vale | s |
+
 ## Teoria
 
 O centelhador (*spark gap*) do simulador é uma chave controlada pela tensão: com resistência de **abertura** muito alta ($1\ \text{G}\Omega$) até que a tensão entre os terminais atinja a **tensão de ruptura**; a partir daí ele passa a ter a resistência de **condução**, e só volta a abrir quando a corrente cai abaixo da **corrente de manutenção**.

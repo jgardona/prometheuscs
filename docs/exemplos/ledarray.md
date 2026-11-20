@@ -84,6 +84,15 @@ O gerador guarda oito palavras de 8 bits, uma para cada valor do contador:
 | 59 | `ResistorElm` | resistor | Resistance (ohms) = 300 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $N$ | número de LEDs acesos | quantidade de LEDs da matriz que estão acesos | — |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+
 ## Teoria
 
 A **multiplexação por varredura** liga as $N$ linhas de uma matriz uma de cada vez, em ciclo, e só o ponto onde a linha e a coluna ligadas se cruzam acende. Se o ciclo completo se repete mais depressa que cerca de $50\ \text{Hz}$, o olho funde os quadros e vê a imagem inteira, com brilho médio igual a $1/N$ do brilho instantâneo.

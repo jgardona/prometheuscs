@@ -46,6 +46,17 @@ Mostrar a porta **NAND** em DTL: diodos de entrada em paralelo formam uma porta 
 | 17 | `LogicInputElm` | logic input | Momentary Switch = não; High Logic Voltage = 5; Low Voltage = 0; Numeric = não; Ternary = não; Keyboard Shortcut =  |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $C$ | entrada lógica C | terceira entrada ou sinal de relógio do circuito lógico | — |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+| $Y$ | saída lógica Y | saída do circuito lógico | — |
+
 ## Teoria
 
 Os diodos de entrada e o resistor formam uma **porta E de diodos**: o nó interno fica alto só se nenhuma entrada o puxar para baixo. Se uma entrada qualquer estiver em $0$, o seu diodo conduz, prende o nó a uma queda de diodo e o transistor corta. Com todas as entradas altas, os diodos ficam reversamente polarizados e a corrente do resistor satura o transistor. O transistor inverte o E:

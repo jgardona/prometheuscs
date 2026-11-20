@@ -4,13 +4,43 @@
 //! The documentation of the example circuits (`docs/exemplos`): complete, up to date, and honest.
 
 use prometheuscs::app::examples::{ExampleItem, parse_setup_list};
-use prometheuscs::exdocs::{check_all, sync_all};
+use prometheuscs::exdocs::{check_all, check_symbols, sync_all};
 use std::path::{Path, PathBuf};
 
 #[test]
 fn the_documents_are_complete_and_up_to_date() {
     let problems = check_all(Path::new("."));
     assert!(problems.is_empty(), "{} problem(s):\n{}", problems.len(), problems.join("\n"));
+}
+
+#[test]
+fn the_symbols_and_the_glossary_agree() {
+    // fast: only the symbols sections and `docs/glossario-simbolos.md`, no simulation
+    let problems = check_symbols(Path::new("."), None);
+    assert!(problems.is_empty(), "{} problem(s):\n{}", problems.len(), problems.join("\n"));
+}
+
+#[test]
+fn the_readme_links_the_glossary() {
+    let readme = std::fs::read_to_string("README.md").unwrap();
+    assert!(
+        readme.contains("docs/glossario-simbolos.md"),
+        "README.md must link docs/glossario-simbolos.md"
+    );
+}
+
+#[test]
+fn every_document_has_the_symbols_section() {
+    // the final switch of spec 008: no document is without its symbols section
+    for entry in std::fs::read_dir("docs/exemplos").unwrap().flatten() {
+        let path = entry.path();
+        let name = path.file_name().unwrap().to_string_lossy().into_owned();
+        if !name.ends_with(".md") || name == "README.md" {
+            continue;
+        }
+        let text = std::fs::read_to_string(&path).unwrap();
+        assert!(text.contains("\n## Símbolos e parâmetros\n"), "{name} has no symbols section");
+    }
 }
 
 #[test]
@@ -146,11 +176,14 @@ mod tamper {
 
     const RC: &str = "$ 1 0.000005 10 50 5 50 5e-11\nv 0 128 0 0 0 0 40 5 0 0 0.5\nr 0 0 64 0 0 1000\nr 64 0 64 128 0 3000\nw 64 128 0 128 0\n";
 
+    /// A glossary with the fields of the components of the examples below.
+    const GLOSSARY: &str = "# Glossário\n\n| Campo | Componentes | Unidade | Efeito | Exemplo |\n|---|---|---|---|---|\n| Circle Symbol | `X` | — | efeito | [a](exemplos/a.md), [b](exemplos/b.md) |\n| DC Offset (V) | `X` | — | efeito | [a](exemplos/a.md), [b](exemplos/b.md) |\n| Internal Resistance (ohms) | `X` | — | efeito | [a](exemplos/a.md), [b](exemplos/b.md) |\n| Resistance (ohms) | `X` | — | efeito | [a](exemplos/a.md), [b](exemplos/b.md) |\n| Show Voltage | `X` | — | efeito | [a](exemplos/a.md), [b](exemplos/b.md) |\n| Voltage | `X` | — | efeito | [a](exemplos/a.md), [b](exemplos/b.md) |\n| Waveform | `X` | — | efeito | [a](exemplos/a.md), [b](exemplos/b.md) |\n";
+
     fn doc(example: &str, title: &str, category: &str, expected: &str) -> String {
         format!(
             "---\nexemplo: {example}\ntitulo: {title}\ncategoria: {category}\nverificacoes:\n  - t=0.001 elemento=1:ResistorElm grandeza=v1 esperado={expected}\n---\n\n# {title}\n\n\
 <!-- navegacao:inicio -->\n<!-- navegacao:fim -->\n\n## Objetivo\n\nMostrar o divisor.\n\n## O circuito\n\n<!-- componentes:inicio -->\n<!-- componentes:fim -->\n\n\
-## Teoria\n\nPelo divisor, $V = 5 \\frac{{3}}{{4}}$.\n\n## Resultados esperados\n\n3,75 V.\n\n## O que observar\n\nA tensão.\n\n## Limites do modelo\n\nIdeal.\n\n## Referências\n\nLivro.\n"
+## Símbolos e parâmetros\n\nEste documento não usa símbolos em fórmulas; veja o [glossário](../glossario-simbolos.md).\n\n## Teoria\n\nPelo divisor, $5 \\cdot \\frac{{3}}{{4}}$.\n\n## Resultados esperados\n\n3,75 V.\n\n## O que observar\n\nA tensão.\n\n## Limites do modelo\n\nIdeal.\n\n## Referências\n\nLivro.\n"
         )
     }
 
@@ -159,6 +192,7 @@ mod tamper {
         let root = scratch(name);
         std::fs::create_dir_all(root.join("assets/circuits")).unwrap();
         std::fs::create_dir_all(root.join("docs/exemplos")).unwrap();
+        std::fs::write(root.join("docs/glossario-simbolos.md"), GLOSSARY).unwrap();
         std::fs::write(
             root.join("assets/setuplist.txt"),
             "# c\n+Divisores\na.txt Divisor A\nb.txt Divisor B\n-\n",

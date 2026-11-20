@@ -44,6 +44,18 @@ Um 555 alimentado com $5\ \text{V}$ tem um resistor de $1\ \text{k}\Omega$ da al
 | 22 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $V_{CC}$ | tensão de alimentação do coletor | tensão contínua que alimenta o circuito pelo coletor | V |
+
 ## Teoria
 
 Enquanto o trem de $60\ \text{Hz}$ chega, a saída da porta OR fica em nível baixo durante metade de cada ciclo ($8{,}33\ \text{ms}$): o transistor descarrega o capacitor, o pino *tr* dispara o 555 e a saída fica **alta**. Na outra metade do ciclo o capacitor carrega pelo resistor, com constante de tempo $RC = 1\ \text{k}\Omega\cdot 10\ \mu\text{F} = 10\ \text{ms}$, mas em $8{,}33\ \text{ms}$ só chega a $5\thinspace(1 - e^{-0{,}833}) = 2{,}83\ \text{V}$, abaixo do limiar de $2V_{CC}/3 = 3{,}33\ \text{V}$. Se o trem é interrompido (aqui, a entrada manual fixa a saída da porta OR em nível alto), o capacitor carrega sem ser descarregado, e em

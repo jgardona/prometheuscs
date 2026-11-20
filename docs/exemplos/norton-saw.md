@@ -43,6 +43,20 @@ Dois amplificadores de Norton, um capacitor de $100\ \text{nF}$, resistores de $
 | 23 | `NortonAmpElm` | norton amp |  |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $R_f$ | resistência de realimentação | resistor que liga a saída à entrada inversora | Ω |
+| $R_{\text{in}}$ | resistência de entrada | resistência vista pela fonte olhando para a entrada do circuito | Ω |
+| $t_{\text{subida}}$ | tempo de subida | duração da rampa de subida | s |
+
 ## Teoria
 
 O amplificador de Norton (como o LM3900) é um **amplificador de diferença de corrente**: a saída responde à diferença entre as correntes que entram nas duas entradas, uma das quais é um espelho de corrente. Com um resistor de realimentação $R_f$ e um de entrada $R_{in}$, o ganho de tensão ideal é $\mp R_f/R_{in}$. A polarização usa uma corrente de referência no espelho (aqui, por um resistor de $500\ \text{k}\Omega$ ligado a $6\ \text{V}$).

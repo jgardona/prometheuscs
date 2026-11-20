@@ -39,6 +39,25 @@ A fonte é um gerador de varredura logarítmica de $5\ \text{V}$ de pico, de $10
 | 10 | `OutputElm` | output | Show Voltage = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $s$ | variável de Laplace | frequência complexa; no regime senoidal, $s = j\omega$ | 1/s |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $V_+$ | tensão da entrada não inversora | tensão do terminal $+$ do amplificador operacional | V |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+| $R_f$ | resistência de realimentação | resistor que liga a saída à entrada inversora | Ω |
+| $R_1$ | resistência do resistor 1 | resistência do resistor chamado $R_1$ no circuito | Ω |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $\varphi$ | fase | ângulo de defasagem de um sinal em relação a uma referência | rad |
+| $f_0$ | frequência de ressonância | frequência em que o circuito responde ao máximo | Hz |
+| $\tau_g$ | atraso de grupo | $-d\varphi/d\omega$: atraso que o filtro impõe ao envelope do sinal | s |
+
 ## Teoria
 
 A entrada não inversora recebe a entrada filtrada por um passa-baixas $RC$: $V_+ = V_\text{in}/(1 + sRC)$. Com $R_f = R_1$, o amplificador é a combinação de um não inversor (ganho $2$) para $V_+$ e de um inversor (ganho $-1$) para $V_\text{in}$:

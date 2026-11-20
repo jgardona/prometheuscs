@@ -55,6 +55,18 @@ Oito flip-flops JK disparados pela borda de descida, com $J = K = 1$, em cascata
 | 79 | `DecimalDisplayElm` | decimal display | High Logic Voltage = 5; Bit Order = MSB First; # of Bits = 8; Display Mode = Decimal |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $J$ | entrada J | entrada de ajuste do flip-flop JK | — |
+| $K$ | entrada K | entrada de limpeza do flip-flop JK | — |
+| $Q$ | saída Q | saída de um flip-flop ou latch, que guarda o bit armazenado | — |
+| $Q_k$ | fator de qualidade da seção k | fator de qualidade da seção de índice $k$ do filtro | — |
+| $f_{\text{clk}}$ | frequência do relógio | frequência com que as chaves são acionadas | Hz |
+
 ## Teoria
 
 Cada estágio divide por $2$, e o bit $Q_k$ tem frequência $f_{clk}/2^{k+1}$: de $500\ \text{Hz}$ no bit $0$ a $f_{clk}/256 \approx 3{,}9\ \text{Hz}$ no bit $7$. A contagem completa dura $256$ períodos do relógio, $256\ \text{ms}$. O atraso de cascata cresce com o número de estágios, o que limita a frequência máxima de um contador assíncrono longo; em contrapartida, o circuito é o mais simples possível e só o primeiro estágio trabalha na frequência do relógio, o que economiza energia.

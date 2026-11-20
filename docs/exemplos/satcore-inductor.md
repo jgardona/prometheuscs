@@ -38,6 +38,24 @@ Dois ramos idênticos, cada um com um resistor de $10\ \Omega$ em série com um 
 | 6 | `InductorElm` | inductor | Inductance (H) = 100m; Trapezoidal Approximation = sim; Initial Current (on Reset) (A) = 0; Saturation Current (A) (0=none) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $H$ | função de transferência | razão entre a saída e a entrada de um filtro, em função da frequência | — |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $I_{\text{sat}}$ | corrente de saturação do núcleo | corrente em que o núcleo do indutor satura | A |
+| $L_0$ | indutância sem saturação | indutância do indutor com corrente pequena | H |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $B$ | densidade de fluxo magnético | campo magnético $B$ no núcleo, que satura com a corrente | T |
+
 ## Teoria
 
 Num indutor com núcleo ferromagnético, o fluxo satura quando a corrente é alta, e a indutância efetiva cai. O simulador usa

@@ -47,6 +47,20 @@ Quatro entradas lógicas, de cima para baixo $I_3$ (elemento 10), $I_2$ (element
 | 23 | `LogicOutputElm` | logic output | Threshold = 2.5; Current Required = não; Numeric = sim; Ternary = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $I_3$ | corrente 3 | corrente chamada $I_3$ no circuito | A |
+| $I_2$ | corrente 2 | corrente chamada $I_2$ no circuito | A |
+| $I_1$ | corrente 1 | corrente chamada $I_1$ no circuito | A |
+| $I_0$ | corrente inicial | valor da corrente no instante inicial | A |
+| $Y_1$ | sinal lógico Y1 | sinal lógico $Y_1$ (bit ou elemento de índice 1) do circuito | — |
+| $Y_0$ | sinal lógico Y0 | sinal lógico $Y_0$ (bit ou elemento de índice 0) do circuito | — |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+
 ## Teoria
 
 A entrada de maior índice tem prioridade, e as de menor índice são ignoradas quando uma de maior índice está ativa. As equações são

@@ -46,6 +46,24 @@ O triodo ($\mu = 93$, $K_{g1} = 1{,}36\ \text{k}$) tem a placa ligada a $+160\ \
 | 15 | `CapacitorElm` | capacitor | Capacitance (F) = 5μ; Trapezoidal Approximation = sim; Initial Voltage (on Reset) = 1m; Series Resistance = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $\mu$ | mobilidade | mobilidade dos íons no memristor | m²/(s·V) |
+| $K_{g1}$ | parâmetro de corrente do triodo | constante do modelo de corrente de placa | — |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $I_P$ | corrente de pico | corrente no pico da curva do dispositivo | A |
+| $V_{GK}$ | tensão grade-cátodo | tensão entre a grade e o cátodo do triodo | V |
+| $V_{PK}$ | tensão placa-cátodo | tensão entre a placa e o cátodo do triodo | V |
+| $V_K$ | tensão do cátodo | tensão do cátodo em relação à terra | V |
+| $g_m$ | transcondutância | quanto a corrente de saída varia por volt na entrada, $\partial I_D/\partial V_{GS}$ | S |
+| $r_p$ | resistência de placa | resistência incremental da placa do triodo | Ω |
+| $A_v$ | ganho de tensão | razão entre a tensão de saída e a de entrada | — |
+| $R_L$ | resistência de carga | resistor ligado à saída, que consome a energia do circuito | Ω |
+
 ## Teoria
 
 A lei de Child–Langmuir, que o simulador usa para o triodo, dá a corrente de placa

@@ -40,9 +40,23 @@ Um 555 alimentado com $10\ \text{V}$ tem os pinos *tr* e *th* ligados ao mesmo n
 | 17 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $T$ | período | duração de um ciclo completo de um sinal periódico | s |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $V_{CC}$ | tensão de alimentação do coletor | tensão contínua que alimenta o circuito pelo coletor | V |
+| $t_h$ | tempo em nível alto | duração do semiciclo em que a saída fica em nível alto | s |
+| $t_l$ | tempo em nível baixo | duração do semiciclo em que a saída fica em nível baixo | s |
+
 ## Teoria
 
-Os pinos do 555 neste documento são referidos pelo nome: *dis* (descarga), *tr* (disparo, sensível ao nível baixo), *th* (limiar), *ctl* (controle), *out* (saída), *rst* (reinício). Com $tr$ e $th$ no mesmo nó, o 555 é um disparador de Schmitt inversor: a saída vai a nível baixo quando a tensão passa de $2V_{CC}/3$ e a nível alto quando cai abaixo de $V_{CC}/3$. Realimentando a saída pelo resistor $R$ ao capacitor $C$, o capacitor carrega quando a saída está alta e descarrega quando está baixa, oscilando entre os dois limiares.
+Os pinos do 555 neste documento são referidos pelo nome: *dis* (descarga), *tr* (disparo, sensível ao nível baixo), *th* (limiar), *ctl* (controle), *out* (saída), *rst* (reinício). Com $\text{tr}$ e $\text{th}$ no mesmo nó, o 555 é um disparador de Schmitt inversor: a saída vai a nível baixo quando a tensão passa de $2V_{CC}/3$ e a nível alto quando cai abaixo de $V_{CC}/3$. Realimentando a saída pelo resistor $R$ ao capacitor $C$, o capacitor carrega quando a saída está alta e descarrega quando está baixa, oscilando entre os dois limiares.
 
 Com a saída variando entre $0$ e $V_{CC}$, a carga vai de $V_{CC}/3$ a $2V_{CC}/3$ em direção a $V_{CC}$:
 

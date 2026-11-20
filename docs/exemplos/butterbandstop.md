@@ -56,6 +56,24 @@ Uma escada LC de oito indutores e oito capacitores (quatro seções ressonantes 
 | 29 | `InductorElm` | inductor | Inductance (H) = 21.8m; Trapezoidal Approximation = sim; Initial Current (on Reset) (A) = 0; Saturation Current (A) (0=none) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $s$ | variável de Laplace | frequência complexa; no regime senoidal, $s = j\omega$ | 1/s |
+| $B$ | largura de banda | faixa de frequências em que o filtro responde, $f_0/Q$ | Hz |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $H$ | função de transferência | razão entre a saída e a entrada de um filtro, em função da frequência | — |
+| $\omega_0$ | frequência angular natural | frequência angular em que o circuito ressoa, $1/\sqrt{LC}$ | rad/s |
+| $\omega_1$ | frequência angular inferior | frequência angular de corte inferior da faixa | rad/s |
+| $\omega_2$ | frequência angular superior | frequência angular de corte superior da faixa | rad/s |
+| $f_1$ | frequência 1 | frequência chamada $f_1$ no circuito | Hz |
+| $f_2$ | frequência 2 | frequência chamada $f_2$ no circuito | Hz |
+| $f_0$ | frequência de ressonância | frequência em que o circuito responde ao máximo | Hz |
+| $V_{\text{out},\text{pico}}$ | tensão de pico na saída | valor máximo da tensão de saída | V |
+
 ## Teoria
 
 Um rejeita-faixa de Butterworth pode ser obtido de um passa-baixas protótipo pela transformação

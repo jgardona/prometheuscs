@@ -37,6 +37,24 @@ Uma fonte senoidal de $5\ \text{V}$ de pico e $40\ \text{MHz}$ alimenta diretame
 | 6 | `VoltageElm` | A/C source | Max Voltage = 5; Waveform = A/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0; Show Voltage = não; Frequency (Hz) = 40M; Phase Offset (degrees) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $Z_0$ | impedância característica | razão entre tensão e corrente de uma onda que percorre a linha | Ω |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $R_L$ | resistência de carga | resistor ligado à saída, que consome a energia do circuito | Ω |
+| $v_L$ | tensão no indutor | tensão entre os terminais do indutor | V |
+| $V_p$ | tensão de pico | valor máximo atingido por uma senoide | V |
+| $\varphi$ | fase | ângulo de defasagem de um sinal em relação a uma referência | rad |
+
 ## Teoria
 
 Numa linha sem perdas, uma onda de tensão viaja com velocidade $v = \ell/\tau$ e leva consigo uma corrente $I = V/Z_0$. Ao chegar a uma carga $R_L$, parte da onda é refletida com o coeficiente

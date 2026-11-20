@@ -46,6 +46,18 @@ As saídas do inversor e da porta de transmissão estão ligadas à saída lógi
 | 26 | `TextElm` | text | Text = output; Size = 20; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $\beta$ | parâmetro de transcondutância | constante da lei quadrática do MOSFET: $I_D = \tfrac12\beta(V_{GS}-V_t)^2$ | A/V² |
+| $Y$ | saída lógica Y | saída do circuito lógico | — |
+
 ## Teoria
 
 - **$A = 1$:** o inversor tem $5\ \text{V}$ na fonte do PMOS e $0$ na do NMOS, e funciona como um inversor normal: a saída é $\overline{B}$. A porta de transmissão está desligada (PMOS com porta alta, NMOS com porta baixa).

@@ -36,6 +36,22 @@ Uma fonte de tensão variável (de 0 a 5 V, com um *slider* chamado "Voltage") a
 | 6 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $P$ | potência | energia transformada por unidade de tempo | W |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $G$ | condutância | inverso da resistência, $1/R$ | S |
+| $I_1$ | corrente 1 | corrente chamada $I_1$ no circuito | A |
+| $I_2$ | corrente 2 | corrente chamada $I_2$ no circuito | A |
+| $R_2$ | resistência do resistor 2 | resistência do resistor chamado $R_2$ no circuito | Ω |
+| $R_1$ | resistência do resistor 1 | resistência do resistor chamado $R_1$ no circuito | Ω |
+
 ## Teoria
 
 A lei de Ohm relaciona a tensão $V$ entre os terminais de um resistor, a corrente $I$ que o atravessa e a resistência $R$:

@@ -56,6 +56,18 @@ Quatro flip-flops JK com o mesmo relógio (onda quadrada de $200\ \text{Hz}$), c
 | 63 | `DecimalDisplayElm` | decimal display | High Logic Voltage = 5; Bit Order = MSB First; # of Bits = 4; Display Mode = Decimal |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $U$ | sentido da contagem | entrada que escolhe contar para cima ($U=1$) ou para baixo ($U=0$) | — |
+| $Q$ | saída Q | saída de um flip-flop ou latch, que guarda o bit armazenado | — |
+| $k$ | índice | número inteiro que numera os termos de um somatório, os bits ou os elementos de um conjunto | — |
+| $T_k$ | entrada T do bit k | entrada de inversão do flip-flop de índice $k$ | — |
+| $Q_j$ | saída do bit j | saída $Q$ do flip-flop de índice $j$ | — |
+
 ## Teoria
 
 Contando para cima, o bit $k$ inverte quando todos os bits abaixo dele valem $1$; contando para baixo, quando todos valem $0$. Com $U$ a entrada de direção:

@@ -41,6 +41,22 @@ Uma fonte de $15\ \text{V}$ de pico e $40\ \text{Hz}$ alimenta um capacitor de $
 | 9 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $n$ | fator de idealidade | expoente do diodo na equação de Shockley, $i = I_s(e^{v/(nV_T)}-1)$ | — |
+| $N$ | número de estágios | quantidade de estágios iguais ligados em cascata | — |
+| $I_s$ | corrente de saturação | corrente reversa de um diodo ou de uma junção | A |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $V_p$ | tensão de pico | valor máximo atingido por uma senoide | V |
+| $V_D$ | tensão no diodo | tensão entre o ânodo e o cátodo do diodo | V |
+| $V_{\text{saida}}$ | tensão de saída | tensão que o circuito entrega à saída | V |
+
 ## Teoria
 
 O diodo do simulador (modelo "default") segue a equação de Shockley,

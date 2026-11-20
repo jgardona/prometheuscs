@@ -50,6 +50,17 @@ Um *slider* de $0$ a $5\ \text{V}$ ("frequency", em $1\ \text{V}$ ao abrir) é a
 | 38 | `OpAmpElm` | op-amp | Max Output (V) = 5; Min Output (V) = -5; Gain = 100k |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $V_c$ | tensão de controle | tensão que ajusta a frequência de um oscilador controlado por tensão | V |
+| $V_{\text{lim}}$ | tensão limite | valor em que a tensão de um nó é limitada pelo circuito | V |
+
 ## Teoria
 
 A análise é a do VCO do exemplo anterior: a corrente que o integrador recebe vale $\pm V_c/(200\ \text{k}\Omega)$, e a rampa tem módulo $500\ \text{V/s}$ por volt de $V_c$. A diferença está nos limiares do comparador, que agora são simétricos: o divisor de três resistores de $100\ \text{k}\Omega$ (a $+5\ \text{V}$, a $-5\ \text{V}$ e à saída) dá

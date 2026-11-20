@@ -36,6 +36,25 @@ Uma carga de $300\ \Omega$ liga $+5\ \text{V}$ ao dreno de um NMOS (modelo padr�
 | 7 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $V_{GS}$ | tensão porta-fonte | tensão entre a porta e a fonte | V |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $I_D$ | corrente de dreno | corrente que entra pelo dreno do transistor de efeito de campo | A |
+| $V_{DS}$ | tensão dreno-fonte | tensão entre o dreno e a fonte | V |
+| $V_{\text{ov}}$ | tensão de sobrecarga | $V_{GS} - V_t$: quanto a porta passa do limiar | V |
+| $\beta$ | parâmetro de transcondutância | constante da lei quadrática do MOSFET: $I_D = \tfrac12\beta(V_{GS}-V_t)^2$ | A/V² |
+| $R_{\text{on}}$ | resistência de condução | resistência de uma chave ou de um transistor quando conduz | Ω |
+| $C_{\text{gs}}$ | capacitância porta-fonte | capacitância parasita entre a porta e a fonte | F |
+| $C_{\text{gd}}$ | capacitância porta-dreno | capacitância parasita entre a porta e o dreno | F |
+
 ## Teoria
 
 Com a porta em $0\ \text{V}$, $V_{GS} = 0 < V_t = 1{,}5\ \text{V}$: o transistor está cortado e a corrente é a de fuga, $I_D = 10^{-8}\ \text{S} \cdot V_{DS} \approx 50\ \text{nA}$. Com a chave fechada, $V_{GS} = 5\ \text{V}$ e $V_{ov} = 3{,}5\ \text{V}$; a corrente é limitada pela carga e não pelo transistor, de modo que $V_{DS}$ fica pequeno e a região é a de **triodo**, onde

@@ -72,6 +72,23 @@ Duas fontes senoidais de $5\ \text{V}$ de pico e $40\ \text{Hz}$, ligadas em sé
 | 64 | `VoltageElm` | A/C source | Max Voltage = 5; Waveform = A/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0; Show Voltage = não; Frequency (Hz) = 40; Phase Offset (degrees) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $k$ | índice | número inteiro que numera os termos de um somatório, os bits ou os elementos de um conjunto | — |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $A$ | amplitude da senoide | valor de pico de uma senoide | — |
+| $v_k$ | tensão da fase k | tensão da fase de índice $k$ | V |
+| $\omega$ | frequência angular | $2\pi f$: a frequência medida em radianos por segundo | rad/s |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $f_k$ | frequência do estágio k | frequência característica do estágio de índice $k$ | Hz |
+| $C_k$ | capacitância do estágio k | capacitor de índice $k$ do conjunto | F |
+
 ## Teoria
 
 Um sistema de quatro fases com defasagem de $90^\circ$ entre elas, $v_k = A\sin(\omega t - k\thinspace90^\circ)$, é a soma de uma componente de "sequência positiva" e outra de "sequência negativa". Uma **rede de sequência de fase** (ou filtro polifásico) é uma rede RC cuja resposta à sequência desejada é bem maior que à indesejada, o que é usado para gerar sinais em quadratura a partir de um par de sinais em oposição de fase em receptores de rádio.

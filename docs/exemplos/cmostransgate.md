@@ -44,6 +44,27 @@ Um NMOS e um PMOS (modelo padrão com diodo de corpo) têm os dreno e fonte liga
 | 19 | `NMosfetElm` | MOSFET | Model = default-body; Swap D/S = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $W$ | largura do canal | largura do canal do MOSFET; com $L$, define a razão $W/L$ | m |
+| $L$ | comprimento do canal | comprimento do canal do MOSFET; com $W$, define a razão $W/L$ | m |
+| $V_{DD}$ | tensão de alimentação | tensão contínua que alimenta o circuito (a ligada aos drenos dos transistores) | V |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $V_{DS}$ | tensão dreno-fonte | tensão entre o dreno e a fonte | V |
+| $R_n$ | resistência do canal do NMOS | resistência do NMOS da porta de transmissão quando conduz | Ω |
+| $\beta$ | parâmetro de transcondutância | constante da lei quadrática do MOSFET: $I_D = \tfrac12\beta(V_{GS}-V_t)^2$ | A/V² |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+| $R_p$ | resistência do canal do PMOS | resistência do PMOS da porta de transmissão quando conduz | Ω |
+| $R_{\text{on}}$ | resistência de condução | resistência de uma chave ou de um transistor quando conduz | Ω |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $R_L$ | resistência de carga | resistor ligado à saída, que consome a energia do circuito | Ω |
+
 ## Teoria
 
 Um NMOS passa bem o nível baixo, mas não passa tensões acima de $V_{DD} - V_t = 3{,}5\ \text{V}$ (corta); um PMOS faz o inverso, só conduzindo acima de $|V_t| = 1{,}5\ \text{V}$. Em paralelo, um deles sempre conduz. Com a porta ligada ($V_{DD}$ no NMOS, $0$ no PMOS), a resistência de cada um no triodo para $V_{DS}$ pequeno é

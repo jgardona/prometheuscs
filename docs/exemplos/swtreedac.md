@@ -53,6 +53,18 @@ Sete resistores iguais de $100\ \Omega$ em série, de $7\ \text{V}$ à terra, ge
 | 49 | `LogicInputElm` | logic input | Momentary Switch = não; High Logic Voltage = 5; Low Voltage = 0; Numeric = não; Ternary = não; Keyboard Shortcut =  |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $N$ | valor digital N | número inteiro representado pelos bits de entrada do conversor | — |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $b_2$ | bit 2 | bit de peso $2^2$ do número | — |
+| $b_1$ | bit 1 | bit de peso $2^1$ do número | — |
+| $b_0$ | bit 0 | bit menos significativo do número | — |
+
 ## Teoria
 
 Cada nível da árvore divide o conjunto de tensões ao meio, como uma busca binária: o bit mais significativo escolhe a metade de cima ou de baixo, o seguinte escolhe metade dessa metade, e o bit 0 escolhe entre os dois níveis vizinhos. A saída é

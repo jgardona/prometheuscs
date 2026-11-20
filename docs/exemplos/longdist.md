@@ -53,6 +53,41 @@ Os dois osciloscópios mostram a tensão em cada carga.
 | 29 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $n$ | razão de espiras | $N_1/N_2$: relação entre o número de espiras do primário e do secundário | — |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $P$ | potência | energia transformada por unidade de tempo | W |
+| $M$ | indutância mútua | acoplamento entre duas bobinas: o fluxo de uma induz tensão na outra | H |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $k$ | coeficiente de acoplamento | fração do fluxo de uma bobina que atravessa a outra (de $0$ a $1$) | — |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $L_1$ | indutância do indutor 1 | indutância do indutor chamado $L_1$ no circuito | H |
+| $L_2$ | indutância do indutor 2 | indutância do indutor chamado $L_2$ no circuito | H |
+| $v_1$ | tensão instantânea 1 | tensão instantânea chamada $v_1$ no circuito | V |
+| $i_1$ | corrente instantânea 1 | corrente instantânea chamada $i_1$ no circuito | A |
+| $i_2$ | corrente instantânea 2 | corrente instantânea chamada $i_2$ no circuito | A |
+| $v_2$ | tensão instantânea 2 | tensão instantânea chamada $v_2$ no circuito | V |
+| $N_1$ | espiras do primário | número de espiras do enrolamento primário | — |
+| $N_2$ | espiras do secundário | número de espiras do enrolamento secundário | — |
+| $V_2$ | tensão 2 | tensão chamada $V_2$ no circuito | V |
+| $V_1$ | tensão 1 | tensão chamada $V_1$ no circuito | V |
+| $I_2$ | corrente 2 | corrente chamada $I_2$ no circuito | A |
+| $I_1$ | corrente 1 | corrente chamada $I_1$ no circuito | A |
+| $Z_{\text{refletida}}$ | impedância refletida | impedância da carga vista do primário, $n^2 R_L$ | Ω |
+| $R_L$ | resistência de carga | resistor ligado à saída, que consome a energia do circuito | Ω |
+| $R_s$ | resistência em série | resistor em série com a fonte ou com o dispositivo | Ω |
+| $Z_1$ | impedância 1 | impedância chamada $Z_1$ no circuito | Ω |
+| $\omega$ | frequência angular | $2\pi f$: a frequência medida em radianos por segundo | rad/s |
+| $Z_2$ | impedância 2 | impedância chamada $Z_2$ no circuito | Ω |
+| $V_L$ | tensão no indutor | tensão entre os terminais do indutor | V |
+| $R_{\text{linha}}$ | resistência da linha | resistência dos fios da linha de transmissão | Ω |
+| $P_{\text{perda}}$ | potência perdida | potência dissipada como calor na linha | W |
+
 ## Teoria
 
 Dois enrolamentos que compartilham fluxo magnético formam um transformador. Com indutâncias próprias $L_1$ e $L_2$ e indutância mútua $M = k\sqrt{L_1 L_2}$ (o coeficiente de acoplamento $k$ vale $0{,}999$ nestes exemplos),

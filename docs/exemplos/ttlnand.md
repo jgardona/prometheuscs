@@ -43,6 +43,17 @@ Dois transistores de entrada têm as bases ligadas entre si e a $5\ \text{V}$ po
 | 15 | `LogicOutputElm` | logic output | Threshold = 2.5; Current Required = não; Numeric = não; Ternary = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+| $Y$ | saída lógica Y | saída do circuito lógico | — |
+
 ## Teoria
 
 É o [Inversor TTL](ttlinverter.md) com dois emissores de entrada. Basta **um** emissor baixo para a corrente do resistor de base sair por ele: o transistor de entrada satura, retira a carga da base do transistor de saída, e a saída sobe. Só com **todos** os emissores altos a corrente passa pela junção base-coletor para a base do transistor de saída, que satura:

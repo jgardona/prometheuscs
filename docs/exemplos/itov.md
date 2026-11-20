@@ -36,6 +36,16 @@ Uma fonte de corrente de $2\ \text{mA}$, ajustável por um *slider* chamado "Cur
 | 7 | `RailElm` | voltage source | Voltage = -5; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $R_f$ | resistência de realimentação | resistor que liga a saída à entrada inversora | Ω |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+
 ## Teoria
 
 A entrada inversora é um terra virtual e o operacional não absorve corrente, de modo que toda a corrente $I$ da fonte passa pelo resistor de realimentação $R_f$:

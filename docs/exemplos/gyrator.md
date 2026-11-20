@@ -42,6 +42,25 @@ Duas montagens recebem a mesma onda quadrada de $20\ \text{Hz}$ e $\pm 5\ \text{
 | 14 | `ResistorElm` | resistor | Resistance (ohms) = 1k |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $s$ | variável de Laplace | frequência complexa; no regime senoidal, $s = j\omega$ | 1/s |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $V_M$ | tensão no ponto M | tensão no nó entre o resistor e o capacitor, copiada pelo seguidor | V |
+| $R_g$ | resistência do girador | resistor ligado em série com a fonte, no circuito que simula um indutor | Ω |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $Z_{\text{in}}$ | impedância de entrada | impedância vista pela fonte olhando para a entrada do circuito | Ω |
+| $I_0$ | corrente inicial | valor da corrente no instante inicial | A |
+
 ## Teoria
 
 A entrada do seguidor é a tensão da fonte filtrada por um passa-altas $RC$ ($R = 20\ \text{k}\Omega$, $C = 250\ \text{nF}$):

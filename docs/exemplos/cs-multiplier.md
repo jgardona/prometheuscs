@@ -35,6 +35,19 @@ Duas fontes senoidais de $5\ \text{V}$ de pico ($40\ \text{Hz}$ e $88\ \text{Hz}
 | 5 | `OutputElm` | output | Show Voltage = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $c$ | entrada c da expressão | variável c da expressão que define a saída da fonte controlada (tensão ou corrente de um terminal de controle) | — |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $a$ | entrada a da expressão | variável a da expressão que define a saída da fonte controlada (tensão ou corrente de um terminal de controle) | — |
+| $b$ | entrada b da expressão | variável b da expressão que define a saída da fonte controlada (tensão ou corrente de um terminal de controle) | — |
+| $f_1$ | frequência 1 | frequência chamada $f_1$ no circuito | Hz |
+| $f_2$ | frequência 2 | frequência chamada $f_2$ no circuito | Hz |
+
 ## Teoria
 
 As fontes controladas deste simulador são definidas por uma **expressão** sobre as entradas, que se chamam $a$, $b$, $c$, ... (as tensões ou correntes nos terminais de controle). O resultado é a tensão (VCVS, CCVS) ou a corrente (VCCS, CCCS) que a fonte impõe na saída. Com $a = 5\sin(2\pi f_1 t)$ e $b = 5\sin(2\pi f_2 t)$,

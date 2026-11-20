@@ -66,6 +66,27 @@ Um gerador de onda quadrada de $10\ \text{Hz}$ ($0$ a $5\ \text{V}$, ciclo de $5
 | 94 | `RailElm` | square wave gen | Max Voltage = 2.5; Waveform = Square Wave; DC Offset (V) = 2.5; Internal Resistance (ohms) = 0; Show Voltage = não; Specify As = Frequency/Duty Cycle; Frequency (Hz) = 10; Phase Offset (degrees) = 0; Duty Cycle = 50; Rise/Fall Time (s) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $R_b$ | resistência de base | resistor externo ligado à base | Ω |
+| $i_b$ | corrente da bobina | corrente que passa pela bobina do relé | A |
+| $\tau_b$ | constante de tempo da bobina | $L/R_b$: tempo com que a corrente da bobina cresce | s |
+| $I_{\text{on}}$ | corrente de operação | corrente da bobina acima da qual o relé opera | A |
+| $I_{\text{off}}$ | corrente de soltura | corrente da bobina abaixo da qual o relé solta | A |
+| $R_{\text{on}}$ | resistência de condução | resistência de uma chave ou de um transistor quando conduz | Ω |
+| $R_{\text{off}}$ | resistência de corte | resistência de uma chave ou de um transistor quando não conduz | Ω |
+| $f_k$ | frequência do estágio k | frequência característica do estágio de índice $k$ | Hz |
+| $k$ | índice | número inteiro que numera os termos de um somatório, os bits ou os elementos de um conjunto | — |
+| $f_{\text{rel}}$ | frequência do relógio | frequência do sinal de relógio | Hz |
+
 ## Teoria
 
 Um relé é uma chave operada por um eletroímã. Seu modelo no simulador tem duas partes:

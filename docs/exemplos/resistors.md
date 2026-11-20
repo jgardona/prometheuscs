@@ -44,6 +44,30 @@ Uma fonte de 5 V alimenta dois blocos em série. O bloco de cima tem três ramos
 | 19 | `SwitchElm` | switch (SPST) | Momentary Switch = não; IEC Symbol = não; Label (for linking) = ; Keyboard Shortcut = ; On Resistance (ohms) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $R_s$ | resistência em série | resistor em série com a fonte ou com o dispositivo | Ω |
+| $R_k$ | resistência do resistor k | resistência do resistor de índice $k$ | Ω |
+| $R_p$ | resistência em paralelo | resistência equivalente de resistores ligados em paralelo | Ω |
+| $R_1$ | resistência do resistor 1 | resistência do resistor chamado $R_1$ no circuito | Ω |
+| $R_2$ | resistência do resistor 2 | resistência do resistor chamado $R_2$ no circuito | Ω |
+| $R_t$ | resistência do bloco superior | resistência do bloco de cima de um divisor de tensão | Ω |
+| $R_b$ | resistência de base | resistor externo ligado à base | Ω |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $V_b$ | tensão no bloco inferior | tensão sobre o bloco de baixo de um divisor de tensão | V |
+| $I_k$ | corrente do ramo k | corrente no ramo de índice $k$ | A |
+| $G_k$ | condutância do ramo k | condutância do ramo de índice $k$ de um divisor de corrente | S |
+| $G_j$ | condutância do ramo j | condutância do ramo de índice $j$ de um divisor de corrente | S |
+| $R_{\text{eq}}$ | resistência equivalente | resistência de um conjunto de resistores visto como um só | Ω |
+| $I_{100}$ | corrente 100 | corrente chamada $I_{100}$ no circuito | A |
+| $I_{800}$ | corrente 800 | corrente chamada $I_{800}$ no circuito | A |
+
 ## Teoria
 
 **Resistores em série** conduzem a mesma corrente e suas resistências se somam; **em paralelo** têm a mesma tensão e suas condutâncias se somam:

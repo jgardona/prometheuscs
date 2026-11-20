@@ -62,6 +62,20 @@ Uma referência de $16\ \text{V}$ alimenta uma escada de resistores de $50\ \tex
 | 41 | `RailElm` | voltage source | Voltage = 16; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $N$ | valor digital N | número inteiro representado pelos bits de entrada do conversor | — |
+| $I_k$ | corrente do ramo k | corrente no ramo de índice $k$ | A |
+| $V_{\text{ref}}$ | tensão de referência | tensão fixa com que a entrada é comparada | V |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $R_f$ | resistência de realimentação | resistor que liga a saída à entrada inversora | Ω |
+| $b_k$ | bit k | bit de índice $k$ do número | — |
+
 ## Teoria
 
 Os dois lados de cada ramo $2R$ estão sempre em $0\ \text{V}$ (a terra ou a terra virtual), então a escada não depende das chaves. Olhando para a direita de cada nó, vê-se $2R$ em paralelo com $2R$, isto é, $R$: cada nó tem a metade da tensão do anterior, $16$, $8$, $4$ e $2\ \text{V}$, e cada ramo conduz metade da corrente do anterior:

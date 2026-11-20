@@ -41,6 +41,22 @@ A saída vai a $5\ \text{V}$ por um resistor de $5\ \text{k}\Omega$. Dois NMOS (
 | 13 | `ResistorElm` | resistor | Resistance (ohms) = 5k |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $n$ | número inteiro n | quantidade ou índice inteiro definido no texto (ordem do filtro, número de bits, de nós ou de espiras) | — |
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $\beta$ | parâmetro de transcondutância | constante da lei quadrática do MOSFET: $I_D = \tfrac12\beta(V_{GS}-V_t)^2$ | A/V² |
+| $Y$ | saída lógica Y | saída do circuito lógico | — |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+| $R_{\text{on}}$ | resistência de condução | resistência de uma chave ou de um transistor quando conduz | Ω |
+| $V_{GS}$ | tensão porta-fonte | tensão entre a porta e a fonte | V |
+| $V_{OL}$ | tensão de saída em nível baixo | tensão da saída no nível lógico baixo | V |
+
 ## Teoria
 
 O caminho para a terra só existe com os **dois** transistores ligados; basta uma entrada baixa para abri-lo e o resistor puxar a saída para cima:

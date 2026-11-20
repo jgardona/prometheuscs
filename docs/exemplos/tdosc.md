@@ -46,6 +46,24 @@ Uma fonte de $1{,}5\ \text{V}$ alimenta um divisor de $80\ \Omega$ e $24\ \Omega
 | 13 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $I_P$ | corrente de pico | corrente no pico da curva do dispositivo | A |
+| $V_P$ | tensão de pico do dispositivo | tensão em que o dispositivo passa a conduzir (pico da curva) | V |
+| $V_{PP}$ | tensão de pico do diodo | tensão do pico da curva do diodo túnel | V |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $I_V$ | corrente de vale | corrente no vale da curva do dispositivo | A |
+| $V_V$ | tensão de vale | tensão do vale da curva do dispositivo | V |
+| $f_0$ | frequência de ressonância | frequência em que o circuito responde ao máximo | Hz |
+
 ## Teoria
 
 O diodo túnel do simulador tem a corrente

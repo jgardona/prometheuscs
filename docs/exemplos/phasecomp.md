@@ -39,6 +39,19 @@ Duas fontes de onda quadrada de $0$ a $5\ \text{V}$, uma de $105\ \text{Hz}$ (en
 | 9 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $O$ | saída O | saída de dados do registrador | — |
+| $I_1$ | corrente 1 | corrente chamada $I_1$ no circuito | A |
+| $I_2$ | corrente 2 | corrente chamada $I_2$ no circuito | A |
+| $f_1$ | sinal lógico f1 | sinal lógico $f_1$ (bit ou elemento de índice 1) do circuito | — |
+| $f_2$ | sinal lógico f2 | sinal lógico $f_2$ (bit ou elemento de índice 2) do circuito | — |
+
 ## Teoria
 
 O comparador de fase tipo II é feito de dois *flip-flops* sensíveis à borda de subida. Uma borda em $I_1$ ativa o primeiro ($\text{UP}$) e uma borda em $I_2$ ativa o segundo ($\text{DOWN}$); quando os dois estão ativos, ambos são zerados. A saída é:

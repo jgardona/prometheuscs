@@ -46,6 +46,22 @@ Duas entradas lógicas numéricas, $A_1$ (elemento 19, em cima) e $A_0$ (element
 | 27 | `LogicOutputElm` | logic output | Threshold = 2.5; Current Required = não; Numeric = não; Ternary = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $n$ | número inteiro n | quantidade ou índice inteiro definido no texto (ordem do filtro, número de bits, de nós ou de espiras) | — |
+| $A_1$ | sinal lógico A1 | sinal lógico $A_1$ (bit ou elemento de índice 1) do circuito | — |
+| $A_0$ | sinal lógico A0 | sinal lógico $A_0$ (bit ou elemento de índice 0) do circuito | — |
+| $Y_3$ | sinal lógico Y3 | sinal lógico $Y_3$ (bit ou elemento de índice 3) do circuito | — |
+| $Y_1$ | sinal lógico Y1 | sinal lógico $Y_1$ (bit ou elemento de índice 1) do circuito | — |
+| $Y_2$ | sinal lógico Y2 | sinal lógico $Y_2$ (bit ou elemento de índice 2) do circuito | — |
+| $Y_0$ | sinal lógico Y0 | sinal lógico $Y_0$ (bit ou elemento de índice 0) do circuito | — |
+| $k$ | índice | número inteiro que numera os termos de um somatório, os bits ou os elementos de um conjunto | — |
+| $Y_k$ | saída k | saída de índice $k$ do decodificador | — |
+
 ## Teoria
 
 Cada saída é um **mintermo** das entradas, o produto que só vale $1$ numa combinação:

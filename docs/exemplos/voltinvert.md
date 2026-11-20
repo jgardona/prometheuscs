@@ -49,6 +49,21 @@ Quatro chaves analógicas (resistência de ligado de $20\ \Omega$, de desligado 
 | 19 | `OutputElm` | output | Show Voltage = sim; Scale = Auto |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $V$ | tensão | diferença de potencial elétrico entre dois pontos do circuito | V |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $C_1$ | capacitância do capacitor 1 | capacitância do capacitor chamado $C_1$ no circuito | F |
+| $C_2$ | capacitância do capacitor 2 | capacitância do capacitor chamado $C_2$ no circuito | F |
+| $V_{\text{in}}$ | tensão de entrada | sinal aplicado à entrada do circuito | V |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $R_{\text{out}}$ | resistência de saída | resistência vista pela carga olhando para a saída do circuito | Ω |
+
 ## Teoria
 
 O conversor tem duas fases por ciclo:

@@ -2,33 +2,35 @@
 
 Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o objetivo, o circuito, a teoria com as equações, os resultados esperados e o que observar no simulador. Os documentos são escritos por categoria; uma categoria só aparece como *documentado* quando todos os seus exemplos têm documento.
 
+Cada documento tem a seção **Símbolos e parâmetros**, que define os símbolos que usa; o [glossário de símbolos e parâmetros](../glossario-simbolos.md) reúne todos eles e explica os campos das tabelas de componentes.
+
 > Este índice é gerado por `cargo run --release --bin exdocs -- sync`; não o edite à mão.
 
 **Situação:** 366 de 366 entradas do menu documentadas (365 documentos).
 
-| Categoria | Situação |
-|-----------|----------|
-| Basics | documentado |
-| A/C Circuits | documentado |
-| Passive Filters | documentado |
-| Other Passive Circuits | documentado |
-| Diodes | documentado |
-| Op-Amps | documentado |
-| Transistors | documentado |
-| MOSFETs | documentado |
-| 555 Timer Chip | documentado |
-| Active Filters | documentado |
-| Logic Families | documentado |
-| Combinational Logic | documentado |
-| Sequential Logic | documentado |
-| Analog/Digital | documentado |
-| Power Converters | documentado |
-| Phase-Locked Loops | documentado |
-| Transmission Lines | documentado |
-| Controlled Sources | documentado |
-| Subcircuits | documentado |
-| Misc Devices | documentado |
-| 2-D Scope | documentado |
+| Categoria | Situação | Símbolos |
+|-----------|----------|----------|
+| Basics | documentado | documentado |
+| A/C Circuits | documentado | documentado |
+| Passive Filters | documentado | documentado |
+| Other Passive Circuits | documentado | documentado |
+| Diodes | documentado | documentado |
+| Op-Amps | documentado | documentado |
+| Transistors | documentado | documentado |
+| MOSFETs | documentado | documentado |
+| 555 Timer Chip | documentado | documentado |
+| Active Filters | documentado | documentado |
+| Logic Families | documentado | documentado |
+| Combinational Logic | documentado | documentado |
+| Sequential Logic | documentado | documentado |
+| Analog/Digital | documentado | documentado |
+| Power Converters | documentado | documentado |
+| Phase-Locked Loops | documentado | documentado |
+| Transmission Lines | documentado | documentado |
+| Controlled Sources | documentado | documentado |
+| Subcircuits | documentado | documentado |
+| Misc Devices | documentado | documentado |
+| 2-D Scope | documentado | documentado |
 
 ## Basics — documentado
 

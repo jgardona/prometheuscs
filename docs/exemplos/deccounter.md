@@ -50,6 +50,16 @@ Quatro flip-flops JK com o mesmo relógio (onda quadrada de $200\ \text{Hz}$) e 
 | 68 | `DecimalDisplayElm` | decimal display | High Logic Voltage = 5; Bit Order = MSB First; # of Bits = 4; Display Mode = Decimal |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $J$ | entrada J | entrada de ajuste do flip-flop JK | — |
+| $K$ | entrada K | entrada de limpeza do flip-flop JK | — |
+| $Q_3$ | sinal lógico Q3 | sinal lógico $Q_3$ (bit ou elemento de índice 3) do circuito | — |
+
 ## Teoria
 
 Um contador binário de 4 bits tem $16$ estados; o contador de década usa só os dez primeiros. Na passagem de $9$ para o próximo valor, o binário iria a $10$ ($1010$); aqui a lógica de $J$ e $K$ impede que o bit $1$ suba enquanto $Q_3 = 1$ e faz o bit $3$ voltar a $0$, de modo que o estado seguinte é $0000$. Os estados $10$ a $15$ nunca são alcançados a partir da contagem normal.

@@ -30,7 +30,7 @@ Mostrar um **multiplexador** que escolhe entre duas entradas ligando à mesma sa
 Há duas entradas de dados, *in 1* (elemento 8) e *in 2* (elemento 29), e uma entrada de seleção, *select* (elemento 35). Cada buffer tri-state é um par PMOS/NMOS (modelo padrão digital) entre a sua alimentação de $5\ \text{V}$ e a terra, com a saída no meio, acionado por uma porta NAND (para o PMOS) e uma porta AND (para o NMOS):
 
 - a NAND recebe o dado e o sinal de habilitação; a AND recebe o dado invertido e a habilitação;
-- o buffer de *in 1* é habilitado por $\overline{select}$ (um inversor), e o de *in 2* por $select$.
+- o buffer de *in 1* é habilitado por $\overline{\text{select}}$ (um inversor), e o de *in 2* por $\text{select}$.
 
 As saídas dos dois buffers estão ligadas entre si e à saída lógica (elemento 27). O exemplo abre com as três entradas em $0$.
 
@@ -62,6 +62,19 @@ As saídas dos dois buffers estão ligadas entre si e à saída lógica (element
 | 36 | `InverterElm` | inverter | Slew Rate (V/ns) = 500m; High Logic Voltage = 5; DeMorgan's Symbol = não |
 | 37 | `InverterElm` | inverter | Slew Rate (V/ns) = 500m; High Logic Voltage = 5; DeMorgan's Symbol = não |
 <!-- componentes:fim -->
+
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $E$ | entrada de habilitação | entrada que liga ou desliga o circuito | — |
+| $D$ | entrada de dados D | entrada de dados do flip-flop ou do circuito lógico | — |
+| $S$ | sinal lógico S | entrada de seleção, de ajuste (*set*) ou de soma, conforme o circuito | — |
+| $Y$ | saída lógica Y | saída do circuito lógico | — |
+| $D_1$ | entrada de dados 1 | primeira entrada de dados do multiplexador | — |
+| $D_2$ | entrada de dados 2 | segunda entrada de dados do multiplexador | — |
 
 ## Teoria
 

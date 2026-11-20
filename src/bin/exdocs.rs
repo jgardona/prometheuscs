@@ -5,6 +5,8 @@
 //!
 //! - `exdocs sync`: writes the index and the generated parts of every document.
 //! - `exdocs check`: runs every check; prints one line per problem; exit status 1 when there are some.
+//! - `exdocs symbols [example]`: the symbols and glossary checks only (fast); with an example, what
+//!   its symbols section needs.
 //! - `exdocs facts <example.txt>`: prints what an example contains.
 //! - `exdocs skeleton <example.txt>`: starts the document of an example.
 
@@ -14,7 +16,7 @@ use prometheuscs::exdocs::{self, DOCS_DIR, index, region};
 use std::path::Path;
 use std::process::ExitCode;
 
-const USAGE: &str = "uso: exdocs sync | check | facts <exemplo.txt> | skeleton <exemplo.txt> | probe <exemplo.txt> <t> [alterna=N[@t],M] | posts <exemplo.txt> | series <exemplo.txt> <linha-de-verificação> | figure <exemplo.txt> <saida.svg>";
+const USAGE: &str = "uso: exdocs sync | check | symbols [exemplo] | facts <exemplo.txt> | skeleton <exemplo.txt> | probe <exemplo.txt> <t> [alterna=N[@t],M] | posts <exemplo.txt> | series <exemplo.txt> <linha-de-verificação> | figure <exemplo.txt> <saida.svg>";
 
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -22,6 +24,8 @@ fn main() -> ExitCode {
     let result = match args.iter().map(String::as_str).collect::<Vec<_>>().as_slice() {
         ["sync"] => sync(root),
         ["check"] => check(root),
+        ["symbols"] => symbols(root, None),
+        ["symbols", stem] => symbols(root, Some(stem)),
         ["facts", file] => facts(root, file),
         ["skeleton", file] => skeleton(root, file),
         ["posts", file] => posts(root, file),
@@ -52,6 +56,21 @@ fn sync(root: &Path) -> Result<ExitCode, String> {
         println!("escrito: {f}");
     }
     Ok(ExitCode::SUCCESS)
+}
+
+fn symbols(root: &Path, stem: Option<&str>) -> Result<ExitCode, String> {
+    if let Some(stem) = stem {
+        print!("{}", exdocs::symbols_report(root, stem.trim_end_matches(".txt"))?);
+        return Ok(ExitCode::SUCCESS);
+    }
+    let problems = exdocs::check_symbols(root, None);
+    for p in &problems {
+        println!("{p}");
+    }
+    if problems.is_empty() {
+        println!("tudo certo");
+    }
+    Ok(if problems.is_empty() { ExitCode::SUCCESS } else { ExitCode::FAILURE })
 }
 
 fn check(root: &Path) -> Result<ExitCode, String> {

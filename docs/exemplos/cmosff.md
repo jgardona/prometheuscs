@@ -55,6 +55,16 @@ Há duas [CMOS NAND](cmosnand.md) de quatro transistores (modelo padrão digital
 | 49 | `TextElm` | text | Text = Q; Size = 24; Draw Bar On Top = sim; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $S$ | sinal lógico S | entrada de seleção, de ajuste (*set*) ou de soma, conforme o circuito | — |
+| $R$ | entrada R | entrada de limpeza (*reset*) do circuito lógico | — |
+| $Q$ | saída Q | saída de um flip-flop ou latch, que guarda o bit armazenado | — |
+
 ## Teoria
 
 Com as duas entradas em $1$ (botões soltos), cada NAND funciona como um inversor da saída da outra: dois inversores em anel têm **dois estados estáveis**, $Q = 1, \overline{Q} = 0$ ou $Q = 0, \overline{Q} = 1$, e ficam no que estiverem. As entradas são ativas em nível baixo:

@@ -42,6 +42,18 @@ A alimentação de $5\ \text{V}$ alimenta, por $4{,}7\ \text{k}\Omega$, um nó i
 | 11 | `RailElm` | voltage source | Voltage = 5; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $I_B$ | corrente de base | corrente que entra pela base do transistor bipolar | A |
+| $I_C$ | corrente de coletor | corrente que entra pelo coletor do transistor bipolar | A |
+| $Y$ | saída lógica Y | saída do circuito lógico | — |
+
 ## Teoria
 
 A corrente que desce pelo resistor de $4{,}7\ \text{k}\Omega$ tem dois caminhos, e quem decide é a entrada:

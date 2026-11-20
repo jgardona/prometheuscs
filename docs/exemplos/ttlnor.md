@@ -47,6 +47,16 @@ Há duas células do [Inversor TTL](ttlinverter.md): cada uma tem um transistor 
 | 22 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+| $Y$ | saída lógica Y | saída do circuito lógico | — |
+
 ## Teoria
 
 Cada transistor de saída, sozinho, faria $\overline{A}$ ou $\overline{B}$. Em **paralelo** entre a saída e a terra, basta um saturado para a saída descer; a saída só sobe com as duas entradas baixas:

@@ -89,6 +89,27 @@ Uma grade retangular de $5\times 7$ nós, com resistores de $5\ \Omega$ em cada 
 | 59 | `ResistorElm` | resistor | Resistance (ohms) = 5 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $G$ | matriz de condutâncias | matriz $G$ do sistema nodal de uma rede de resistores | S |
+| $a$ | nó a | ponto de ligação identificado como $a$ no circuito | — |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $n$ | número inteiro n | quantidade ou índice inteiro definido no texto (ordem do filtro, número de bits, de nós ou de espiras) | — |
+| $b$ | nó b | o outro nó entre os quais se mede a resistência equivalente | — |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $G_{\text{ij}}$ | condutância entre os nós i e j | condutância $1/R_{ij}$ do ramo que liga os nós $i$ e $j$ | S |
+| $R_{\text{ij}}$ | resistência entre os nós i e j | resistência do ramo que liga os nós $i$ e $j$ | Ω |
+| $G_{\text{ii}}$ | condutância própria do nó i | soma das condutâncias que chegam ao nó $i$ | S |
+| $R_{\text{ab}}$ | resistência entre os nós a e b | resistência equivalente vista entre os nós $a$ e $b$ | Ω |
+| $v_a$ | tensão instantânea do áudio | sinal de áudio a amplificar, em cada instante | V |
+| $v_b$ | tensão de base de pequeno sinal | variação da tensão da base em torno do ponto de operação | V |
+| $R_{\text{eq}}$ | resistência equivalente | resistência de um conjunto de resistores visto como um só | Ω |
+
 ## Teoria
 
 Para uma rede de $n$ nós e condutâncias $G_{ij} = 1/R_{ij}$, a lei de Kirchhoff das correntes em cada nó dá o sistema linear

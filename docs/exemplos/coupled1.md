@@ -50,6 +50,31 @@ Há duas cópias do mesmo circuito, uma sobre a outra. Cada uma é uma cadeia de
 | 15 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $k$ | índice | número inteiro que numera os termos de um somatório, os bits ou os elementos de um conjunto | — |
+| $N$ | número de malhas | quantidade de malhas LC acopladas | — |
+| $i_1$ | corrente instantânea 1 | corrente instantânea chamada $i_1$ no circuito | A |
+| $i_2$ | corrente instantânea 2 | corrente instantânea chamada $i_2$ no circuito | A |
+| $q_1$ | carga da malha 1 | carga que passou pela malha 1 | C |
+| $q_2$ | carga da malha 2 | carga que passou pela malha 2 | C |
+| $q_k$ | carga da malha k | carga que passou pela malha de índice $k$ | C |
+| $\omega$ | frequência angular | $2\pi f$: a frequência medida em radianos por segundo | rad/s |
+| $\lambda$ | modulação do comprimento do canal | parâmetro que dá à corrente de saturação do MOSFET uma pequena inclinação com $V_{DS}$ ($0$: sem inclinação) | 1/V |
+| $\omega_k$ | frequência angular do modo k | frequência angular natural do modo de índice $k$ | rad/s |
+| $\omega_0$ | frequência angular natural | frequência angular em que o circuito ressoa, $1/\sqrt{LC}$ | rad/s |
+| $\lambda_k$ | autovalor k | autovalor de índice $k$ da matriz do circuito acoplado | — |
+| $\alpha$ | fator de amortecimento | $R/(2L)$: taxa com que a oscilação decai, como $e^{-\alpha t}$ | 1/s |
+
 ## Teoria
 
 Se cada malha tem indutância $L$ e os capacitores são todos iguais a $C$, as correntes de malha $i_1$ e $i_2$ obedecem a

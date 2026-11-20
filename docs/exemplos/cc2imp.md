@@ -52,6 +52,25 @@ Um amp-op ($\text{Av} = 10^5$, saturação em $\pm 15\ \text{V}$) mantém o term
 | 37 | `TextElm` | text | Text = Z; Size = 24; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $X$ | terminal X | entrada de corrente do conversor de corrente, que copia a tensão de $Y$ | — |
+| $Y$ | terminal Y | entrada de tensão do conversor de corrente (corrente nula no ideal) | — |
+| $Z$ | impedância | oposição de um elemento à corrente alternada, na frequência considerada | Ω |
+| $V_X$ | tensão em X | tensão do terminal $X$, que segue $V_Y$ | V |
+| $V_Y$ | tensão em Y | tensão do terminal $Y$ do conversor de corrente | V |
+| $I_Y$ | corrente em Y | corrente que entra no terminal $Y$ (nula no conversor ideal) | A |
+| $I_Z$ | corrente em Z | corrente que sai do terminal $Z$, igual a $\pm I_X$ | A |
+| $I_X$ | corrente em X | corrente que entra no terminal $X$ do conversor de corrente | A |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $A_v$ | ganho de tensão | razão entre a tensão de saída e a de entrada | — |
+| $V_{GS}$ | tensão porta-fonte | tensão entre a porta e a fonte | V |
+| $V_Z$ | tensão zener | tensão em que o diodo zener regula | V |
+
 ## Teoria
 
 O **transportador de corrente** de segunda geração (CCII, *second-generation current conveyor*) tem três terminais: $X$, $Y$ e $Z$. Idealmente,

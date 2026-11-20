@@ -43,6 +43,23 @@ O circuito principal tem uma fonte senoidal de $5\ \text{V}$ de pico e $40\ \tex
 | 8 | `TextElm` | text | Text = double-click subcircuit to view; Size = 12; Draw Bar On Top = não; Color = #c0c0c0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $n$ | fator de idealidade | expoente do diodo na equação de Shockley, $i = I_s(e^{v/(nV_T)}-1)$ | — |
+| $v_R$ | tensão no resistor | tensão entre os terminais do resistor | V |
+| $v_s$ | tensão instantânea da fonte | tensão do sinal da fonte de entrada em cada instante | V |
+| $v_D$ | tensão instantânea no diodo | tensão entre o ânodo e o cátodo do diodo em cada instante | V |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $I_s$ | corrente de saturação | corrente reversa de um diodo ou de uma junção | A |
+| $i_{\text{pico}}$ | corrente de pico | maior valor atingido pela corrente | A |
+| $v_{R,\text{pico}}$ | tensão de pico no resistor | maior valor atingido pela tensão no resistor | V |
+
 ## Teoria
 
 Um subcircuito é um modelo (um sub-circuito com terminais externos) instanciado por referência: o simulador monta, para cada instância, uma cópia dos elementos do modelo com os nós internos próprios e liga os terminais externos aos nós do circuito. O resultado elétrico é idêntico ao de desenhar os quatro diodos diretamente, como no exemplo *Full-Wave Rectifier*; o ganho é de organização (reuso, hierarquia, leitura).

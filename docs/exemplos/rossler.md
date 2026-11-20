@@ -62,6 +62,19 @@ O circuito é um computador analógico: cinco amplificadores operacionais, três
 | 65 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $x$ | variável de estado x | uma das três variáveis do sistema de Rössler, representada por uma tensão do circuito | V |
+| $c$ | parâmetro c do sistema de Rössler | constante do sistema de equações de Rössler que define o regime caótico | — |
+| $a$ | parâmetro a do sistema de Rössler | constante do sistema de equações de Rössler que define o regime caótico | — |
+| $b$ | parâmetro b do sistema de Rössler | constante do sistema de equações de Rössler que define o regime caótico | — |
+| $z$ | variável de estado z | uma das três variáveis do sistema de Rössler, representada por uma tensão do circuito | V |
+| $y$ | variável de estado y | uma das três variáveis do sistema de Rössler, representada por uma tensão do circuito | V |
+
 ## Teoria
 
 O sistema de Rössler (1976) é

@@ -47,6 +47,19 @@ Duas fontes de onda quadrada de $0$ a $5\ \text{V}$, de $120\ \text{Hz}$ e $115\
 | 28 | `AndGateElm` | AND gate | # of Inputs = 2; High Logic Voltage = 5; Schmitt Inputs = não; Invert Inputs = não; Propagation Delay (s) = 0; DeMorgan's Symbol = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $D$ | entrada de dados D | entrada de dados do flip-flop ou do circuito lógico | — |
+| $Q$ | saída Q | saída de um flip-flop ou latch, que guarda o bit armazenado | — |
+| $Q_1$ | sinal lógico Q1 | sinal lógico $Q_1$ (bit ou elemento de índice 1) do circuito | — |
+| $Q_2$ | sinal lógico Q2 | sinal lógico $Q_2$ (bit ou elemento de índice 2) do circuito | — |
+| $f_1$ | sinal lógico f1 | sinal lógico $f_1$ (bit ou elemento de índice 1) do circuito | — |
+| $f_2$ | sinal lógico f2 | sinal lógico $f_2$ (bit ou elemento de índice 2) do circuito | — |
+
 ## Teoria
 
 A borda de subida da entrada de relógio do primeiro *flip-flop* faz $Q_1 = 1$ (pois $D = 1$) e a do segundo faz $Q_2 = 1$. Quando $Q_1 = Q_2 = 1$, a porta AND zera os dois. O estado ($Q_1, Q_2$) é, portanto, $(1,0)$, $(0,1)$ ou $(0,0)$: alta, baixa ou alta impedância, que é a lógica do comparador do exemplo anterior.

@@ -186,6 +186,20 @@ Uma grade de $11\times 8$ nós, com resistores de $10\ \Omega$ nas arestas, em q
 | 156 | `ResistorElm` | resistor | Resistance (ohms) = 10 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $G$ | matriz de condutâncias | matriz $G$ do sistema nodal de uma rede de resistores | S |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $R_{\text{resto}}$ | resistência do resto da rede | resistência equivalente do restante da rede | Ω |
+| $R_{\text{eq}}$ | resistência equivalente | resistência de um conjunto de resistores visto como um só | Ω |
+
 ## Teoria
 
 Numa grade quadrada infinita de resistores $R$, a resistência equivalente entre dois nós vizinhos (incluindo o resistor que os liga) vale exatamente $R/2$, por simetria: a corrente injetada num nó se divide igualmente pelas quatro arestas, de modo que metade do efeito vem do resistor direto e metade do resto da grade. Se o resistor direto é retirado, as condutâncias se subtraem:

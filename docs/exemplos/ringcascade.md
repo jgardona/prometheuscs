@@ -58,6 +58,14 @@ Dois contadores em anel de 10 saídas (elementos 0 e 1) e um relógio de $100\ \
 | 45 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $n$ | número inteiro n | quantidade ou índice inteiro definido no texto (ordem do filtro, número de bits, de nós ou de espiras) | — |
+
 ## Teoria
 
 Num contador em anel, um único $1$ circula pelas saídas, uma posição por borda do relógio: com $n$ saídas, há $n$ estados, e cada estado já está "decodificado" (uma saída por estado). Para fazer um anel mais longo sem um contador maior, os dois anéis passam o "bastão" um ao outro: as portas AND só deixam o relógio chegar a um contador enquanto o outro está parado no seu estado de espera, e o *reset* devolve os dois ao estado inicial no fim da volta. As posições de espera não acionam saídas, e o resultado é um anel de $16$ posições visíveis, $8$ de cada contador.

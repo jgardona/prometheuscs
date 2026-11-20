@@ -54,6 +54,30 @@ Os dois NPN do par ($\beta = 100$) têm os emissores ligados diretamente ao cole
 | 26 | `VoltageElm` | pulse gen | Max Voltage = 400m; Waveform = Pulse; DC Offset (V) = 0; Internal Resistance (ohms) = 0; Show Voltage = não; Specify As = Frequency/Duty Cycle; Frequency (Hz) = 300; Phase Offset (degrees) = 0; Duty Cycle = 15.9; Rise/Fall Time (s) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $\beta$ | ganho de corrente | razão $I_C/I_B$ do transistor bipolar | — |
+| $V_B$ | tensão do terminal base | tensão da base em relação à terra | V |
+| $V_{BE}$ | tensão base-emissor | tensão entre a base e o emissor | V |
+| $I_{E3}$ | corrente de emissor 3 | corrente que sai pelo emissor do transistor bipolar (do elemento de número 3) | A |
+| $I_E$ | corrente de emissor | corrente que sai pelo emissor do transistor bipolar | A |
+| $I_T$ | corrente da cauda | corrente total que o par diferencial tira da cauda | A |
+| $r_o$ | resistência de saída | resistência incremental vista pelo dreno (ou coletor) | Ω |
+| $V_A$ | tensão de Early | mede a inclinação das curvas $I_C \times V_{CE}$: $r_o = V_A/I_C$ | V |
+| $I_C$ | corrente de coletor | corrente que entra pelo coletor do transistor bipolar | A |
+| $A_{\text{cm}}$ | ganho de modo comum | razão entre a saída e a tensão de modo comum de entrada | — |
+| $R_C$ | resistência de coletor | resistor externo ligado ao coletor | Ω |
+| $A_d$ | ganho diferencial | razão entre a saída e a tensão diferencial de entrada | — |
+| $r_e$ | resistência de emissor | resistência dinâmica do emissor, $V_T/I_E$ | Ω |
+| $V_T$ | tensão térmica | $kT/q$: cerca de $25{,}85\ \text{mV}$ a $300\ \text{K}$ | V |
+| $v_d$ | tensão diferencial | diferença entre as duas entradas do par diferencial, $v_1 - v_2$ | V |
+
 ## Teoria
 
 **A fonte de corrente.** O divisor fixa a tensão da base de Q3 em $V_B \approx -15 + 15 \cdot 2{,}7/15{,}7 \approx -12{,}42\ \text{V}$ (o simulador dá $-12{,}46\ \text{V}$, já com a carga da corrente de base). O emissor fica $V_{BE}$ abaixo, em cerca de $-13{,}08\ \text{V}$, e o resistor de $1\ \text{k}\Omega$ fixa a corrente:

@@ -44,6 +44,15 @@ Seis NANDs (cinco de duas entradas e uma de três) formam três latches SR inter
 | 33 | `LogicOutputElm` | logic output | Threshold = 2.5; Current Required = não; Numeric = não; Ternary = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $D$ | entrada de dados D | entrada de dados do flip-flop ou do circuito lógico | — |
+| $Q$ | saída Q | saída de um flip-flop ou latch, que guarda o bit armazenado | — |
+
 ## Teoria
 
 Com o relógio baixo, os dois latches de entrada mantêm as duas linhas que vão ao latch de saída em $1$, e a saída guarda o estado; ao mesmo tempo, eles acompanham $D$. Na borda de subida, um dos dois desce, conforme o valor de $D$ naquele instante, e grava esse valor no latch de saída. Enquanto o relógio continua alto, a realimentação interna "trava" os latches de entrada: novas mudanças em $D$ são ignoradas até a próxima borda de subida.

@@ -32,6 +32,17 @@ O mesmo amplificador operacional do exemplo anterior ($A = 100\thinspace000$, sa
 | 2 | `OutputElm` | output | Show Voltage = sim; Scale = Auto |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $A$ | ganho | razão entre a saída e a entrada de um amplificador | — |
+| $V_-$ | tensão da entrada inversora | tensão do terminal $-$ do amplificador operacional | V |
+| $V_{\text{out}}$ | tensão de saída | sinal que o circuito entrega à saída | V |
+| $V_+$ | tensão da entrada não inversora | tensão do terminal $+$ do amplificador operacional | V |
+
 ## Teoria
 
 Com a saída ligada à entrada inversora, $V_- = V_\text{out}$ e a equação do amplificador fica

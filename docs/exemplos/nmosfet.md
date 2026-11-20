@@ -35,6 +35,24 @@ Duas fontes de tensão com *sliders* ligam-se diretamente ao transistor, com a f
 | 5 | `GroundElm` | ground | Symbol = Earth |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $v$ | tensão instantânea | valor da tensão em cada instante, que pode variar no tempo | V |
+| $V_{GS}$ | tensão porta-fonte | tensão entre a porta e a fonte | V |
+| $I_D$ | corrente de dreno | corrente que entra pelo dreno do transistor de efeito de campo | A |
+| $V_{DS}$ | tensão dreno-fonte | tensão entre o dreno e a fonte | V |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $\beta$ | parâmetro de transcondutância | constante da lei quadrática do MOSFET: $I_D = \tfrac12\beta(V_{GS}-V_t)^2$ | A/V² |
+| $\lambda$ | modulação do comprimento do canal | parâmetro que dá à corrente de saturação do MOSFET uma pequena inclinação com $V_{DS}$ ($0$: sem inclinação) | 1/V |
+| $V_{\text{ov}}$ | tensão de sobrecarga | $V_{GS} - V_t$: quanto a porta passa do limiar | V |
+| $g_m$ | transcondutância | quanto a corrente de saída varia por volt na entrada, $\partial I_D/\partial V_{GS}$ | S |
+| $g_{\text{ds}}$ | condutância de saída | inverso da resistência de saída do dispositivo | S |
+
 ## Teoria
 
 O MOSFET do simulador segue o **modelo de lei quadrática** (nível 1), com tensão de limiar $V_t$ (padrão: $1{,}5\ \text{V}$), parâmetro de transcondutância $\beta$ (padrão: $0{,}02\ \text{A/V}^2$) e modulação do comprimento do canal $\lambda$ (padrão: $0$). Com $V_{ov} = V_{GS} - V_t$:

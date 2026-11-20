@@ -41,6 +41,26 @@ Mostrar a **corrente de curto-circuito** do inversor CMOS: quando a entrada demo
 | 13 | `LogicInputElm` | logic input | Momentary Switch = não; High Logic Voltage = 5; Low Voltage = 0; Numeric = não; Ternary = não; Keyboard Shortcut =  |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $I$ | corrente | intensidade da corrente elétrica que passa por um ramo | A |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $v_G$ | tensão instantânea da porta | tensão da porta em relação à terra em cada instante | V |
+| $V_t$ | tensão de limiar | $V_{GS}$ a partir da qual o canal do MOSFET começa a conduzir | V |
+| $V_{DD}$ | tensão de alimentação | tensão contínua que alimenta o circuito (a ligada aos drenos dos transistores) | V |
+| $\beta$ | parâmetro de transcondutância | constante da lei quadrática do MOSFET: $I_D = \tfrac12\beta(V_{GS}-V_t)^2$ | A/V² |
+| $I_{\text{pico}}$ | corrente de pico de curto-circuito | maior corrente da alimentação durante a transição, quando o NMOS e o PMOS conduzem ao mesmo tempo | A |
+| $Q$ | carga elétrica | quantidade de carga acumulada | C |
+| $\lambda$ | modulação do comprimento do canal | parâmetro que dá à corrente de saturação do MOSFET uma pequena inclinação com $V_{DS}$ ($0$: sem inclinação) | 1/V |
+| $\beta_n$ | parâmetro de transcondutância do NMOS | constante $\beta$ da lei quadrática do transistor NMOS | A/V² |
+| $\beta_p$ | parâmetro de transcondutância do PMOS | constante $\beta$ da lei quadrática do transistor PMOS | A/V² |
+| $C_L$ | capacitância de carga | capacitor ligado à saída, que o circuito precisa carregar | F |
+
 ## Teoria
 
 A tensão de porta ao descer é $v_G(t) = 5\thinspace e^{-t/\tau}$ e cruza a região de transição $|v_G - 2{,}5\ \text{V}| \lesssim 0{,}5\ \text{V}$ em um tempo da ordem de $\tau$. Enquanto $|V_t| < v_G < V_{DD} - |V_t|$, isto é, de $1{,}5\ \text{V}$ a $3{,}5\ \text{V}$, os dois transistores conduzem e há um caminho direto da alimentação à terra. Pela característica de [Inversor CMOS](cmosinverter.md), a corrente vale $\tfrac12\beta(v_G - V_t)^2$ do NMOS (enquanto ele está saturado) e chega ao máximo de

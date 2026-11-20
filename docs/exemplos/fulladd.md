@@ -45,6 +45,21 @@ Três entradas lógicas numéricas, $A$ (elemento 15), $B$ (elemento 16) e o vai
 | 28 | `OrGateElm` | OR gate | # of Inputs = 2; High Logic Voltage = 5; Schmitt Inputs = não; Invert Inputs = não; Propagation Delay (s) = 0; DeMorgan's Symbol = não |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $n$ | número inteiro n | quantidade ou índice inteiro definido no texto (ordem do filtro, número de bits, de nós ou de espiras) | — |
+| $S$ | sinal lógico S | entrada de seleção, de ajuste (*set*) ou de soma, conforme o circuito | — |
+| $P$ | propagação | $A \oplus B$: o bit propaga o vai-um recebido | — |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+| $C_{\text{in}}$ | vai-um de entrada | bit de transporte que entra no somador | — |
+| $C_{\text{out}}$ | vai-um de saída | bit de transporte que sai do somador | — |
+| $G$ | geração | $A B$: o bit gera um vai-um sozinho | — |
+
 ## Teoria
 
 O primeiro meio-somador dá $P = A \oplus B$ e $G = AB$; o segundo soma $P$ com $C_{in}$. Resulta

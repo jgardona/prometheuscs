@@ -36,6 +36,20 @@ Uma fonte de $120\ \text{V}$ eficazes ($169{,}7\ \text{V}$ de pico, $60\ \text{H
 | 7 | `Switch2Elm` | switch (SPDT) | Momentary Switch = não; Group Number (for linking) = 0; # of Throws = 2; Keyboard Shortcut = ; On Resistance (ohms) = 0 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $P$ | potência | energia transformada por unidade de tempo | W |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $A$ | entrada lógica A | primeira entrada da porta ou do circuito lógico | — |
+| $B$ | entrada lógica B | segunda entrada da porta ou do circuito lógico | — |
+| $V_{\text{ef}}$ | tensão eficaz | valor eficaz (RMS) da tensão | V |
+| $I_p$ | corrente de pico | valor máximo da corrente | A |
+
 ## Teoria
 
 Com um viajante superior e um inferior, existem dois caminhos entre as chaves; a corrente passa se e só se as duas chaves estiverem na mesma posição (as duas em cima ou as duas embaixo), o que é a função lógica

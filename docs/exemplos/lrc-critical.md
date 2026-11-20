@@ -39,6 +39,27 @@ Um indutor de $1\ \text{H}$, um resistor de $516{,}4\ \Omega$ e um capacitor de 
 | 6 | `ResistorElm` | resistor | Resistance (ohms) = 100 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $i$ | corrente instantânea | valor da corrente em cada instante, que pode variar no tempo | A |
+| $t$ | tempo | instante, contado a partir do início da simulação | s |
+| $C$ | capacitância | quanta carga um capacitor guarda por volt aplicado | F |
+| $L$ | indutância | quanto fluxo magnético uma bobina cria por ampère | H |
+| $R$ | resistência | oposição de um resistor à passagem da corrente ($V = R I$) | Ω |
+| $q$ | carga do elétron | carga elétrica elementar, $1{,}602\cdot 10^{-19}\ \text{C}$ | C |
+| $v_C$ | tensão no capacitor | tensão entre os terminais do capacitor | V |
+| $\alpha$ | fator de amortecimento | $R/(2L)$: taxa com que a oscilação decai, como $e^{-\alpha t}$ | 1/s |
+| $\omega_0$ | frequência angular natural | frequência angular em que o circuito ressoa, $1/\sqrt{LC}$ | rad/s |
+| $\zeta$ | fator de amortecimento relativo | $\alpha/\omega_0$: com $\zeta<1$ o circuito oscila, com $\zeta=1$ é crítico e com $\zeta>1$ não oscila | — |
+| $\omega_d$ | frequência angular amortecida | $\sqrt{\omega_0^2-\alpha^2}$: frequência da oscilação subamortecida | rad/s |
+| $\varphi$ | fase | ângulo de defasagem de um sinal em relação a uma referência | rad |
+| $R_c$ | resistência crítica | valor de $R$ que separa o regime oscilatório do não oscilatório | Ω |
+| $v_0$ | tensão inicial | valor da tensão no instante inicial | V |
+
 ## Teoria
 
 A malha RLC livre obedece a $L\thinspace\ddot q + R\thinspace\dot q + q/C = 0$, ou, para a tensão do capacitor,

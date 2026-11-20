@@ -56,11 +56,25 @@ O osciloscópio mostra a tensão na carga.
 | 31 | `ResistorElm` | resistor | Resistance (ohms) = 50 |
 <!-- componentes:fim -->
 
+## Símbolos e parâmetros
+
+Os símbolos usados neste documento (definições completas no [glossário](../glossario-simbolos.md)):
+
+| Símbolo | Nome | Significado | Unidade |
+|---------|------|-------------|---------|
+| $f$ | frequência | número de ciclos por segundo de um sinal periódico | Hz |
+| $B$ | susceptância | parte imaginária da admitância | S |
+| $\theta$ | ângulo | ângulo de fase ou de condução | rad |
+| $\tau$ | constante de tempo | tempo característico de carga ou descarga de um circuito (por exemplo, $RC$ ou $L/R$) | s |
+| $X$ | reatância | parte imaginária da impedância | Ω |
+| $Z_0$ | impedância característica | razão entre tensão e corrente de uma onda que percorre a linha | Ω |
+| $V_L$ | tensão no indutor | tensão entre os terminais do indutor | V |
+
 ## Teoria
 
 Pela transformação de Richards, um pedaço de linha de comprimento elétrico $\theta = 2\pi f\tau$ se comporta como um indutor (em série, linha curta de alta impedância, $X \approx Z_0\tan\theta$) ou como um capacitor (em paralelo, toco aberto de baixa impedância, $B \approx \tan\theta/Z_0$). Os valores de $Z_0$ de cada seção são os de um filtro passa-baixas de ladder com cinco elementos: alternando indutores e capacitores, o filtro passa as baixas frequências e rejeita as altas.
 
-Em $8\ \text{GHz}$, $\theta = 2\pi\cdot 8\ \text{GHz}\cdot 31{,}3\ \text{ps} = 90^\circ$: os tocos têm um quarto de onda, a impedância deles em aberto é nula e eles curto-circuitam a carga. A resposta em regime permanente, calculada com as matrizes $ABCD$ de cada seção, é:
+Em $8\ \text{GHz}$, $\theta = 2\pi\cdot 8\ \text{GHz}\cdot 31{,}3\ \text{ps} = 90^\circ$: os tocos têm um quarto de onda, a impedância deles em aberto é nula e eles curto-circuitam a carga. A resposta em regime permanente, calculada com as matrizes $\text{ABCD}$ de cada seção, é:
 
 | $f$ | $2{,}2$ | $3{,}0$ | $3{,}4$ | $4{,}0$ | $4{,}4$ | $5{,}0$ | $5{,}9\ \text{GHz}$ |
 |---|---:|---:|---:|---:|---:|---:|---:|
