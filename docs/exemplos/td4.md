@@ -60,7 +60,7 @@ Mostrar uma **CPU completa de 4 bits**, a TD4 do livro de Iku Watanabe, constru�
 | 43 | `ResistorElm` | resistor | Resistance (ohms) = 1k |
 | 44 | `ResistorElm` | resistor | Resistance (ohms) = 1k |
 | 45 | `ResistorElm` | resistor | Resistance (ohms) = 1k |
-| 46 | `LEDElm` | LED | Red Value (0-1) = 1; Green Value (0-1) = 0; Blue Value (0-1) = 0; Max Brightness Current (A) = 10m; Model = default-led |
+| 46 | `LEDElm` | LED | Color = #ff0000;  = 0;  = 0; Max Brightness Current (A) = 10m; Model = default-led |
 | 47 | `GroundElm` | ground | Symbol = Signal |
 | 48 | `GroundElm` | ground | Symbol = Signal |
 | 49 | `GroundElm` | ground | Symbol = Signal |
@@ -70,11 +70,11 @@ Mostrar uma **CPU completa de 4 bits**, a TD4 do livro de Iku Watanabe, constru�
 | 53 | `GroundElm` | ground | Symbol = Signal |
 | 54 | `GroundElm` | ground | Symbol = Signal |
 | 55 | `GroundElm` | ground | Symbol = Signal |
-| 56 | `LEDElm` | LED | Red Value (0-1) = 1; Green Value (0-1) = 0; Blue Value (0-1) = 0; Max Brightness Current (A) = 10m; Model = default-led |
+| 56 | `LEDElm` | LED | Color = #ff0000;  = 0;  = 0; Max Brightness Current (A) = 10m; Model = default-led |
 | 57 | `GroundElm` | ground | Symbol = Signal |
-| 58 | `LEDElm` | LED | Red Value (0-1) = 1; Green Value (0-1) = 0; Blue Value (0-1) = 0; Max Brightness Current (A) = 10m; Model = default-led |
+| 58 | `LEDElm` | LED | Color = #ff0000;  = 0;  = 0; Max Brightness Current (A) = 10m; Model = default-led |
 | 59 | `GroundElm` | ground | Symbol = Signal |
-| 60 | `LEDElm` | LED | Red Value (0-1) = 1; Green Value (0-1) = 0; Blue Value (0-1) = 0; Max Brightness Current (A) = 10m; Model = default-led |
+| 60 | `LEDElm` | LED | Color = #ff0000;  = 0;  = 0; Max Brightness Current (A) = 10m; Model = default-led |
 | 61 | `RoutedWireElm` | wire | Show Current = n찾o; Show Voltage = n찾o; Show Bus Value = n찾o; Show Bus Value (Hex) = n찾o |
 | 62 | `RoutedWireElm` | wire | Show Current = n찾o; Show Voltage = n찾o; Show Bus Value = n찾o; Show Bus Value (Hex) = n찾o |
 | 63 | `RoutedWireElm` | wire | Show Current = n찾o; Show Voltage = n찾o; Show Bus Value = n찾o; Show Bus Value (Hex) = n찾o |

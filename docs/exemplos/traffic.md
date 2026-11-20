@@ -43,12 +43,12 @@ Cada lado tem um resistor de $200\ \Omega$ em série com os seus três LEDs.
 | 1 | `RailElm` | voltage source | Voltage = 5; Waveform = D/C; DC Offset (V) = 0; Internal Resistance (ohms) = 0 |
 | 2 | `OrGateElm` | OR gate | # of Inputs = 4; High Logic Voltage = 5; Schmitt Inputs = não; Invert Inputs = não; Propagation Delay (s) = 0; DeMorgan's Symbol = não |
 | 15 | `OrGateElm` | OR gate | # of Inputs = 4; High Logic Voltage = 5; Schmitt Inputs = não; Invert Inputs = não; Propagation Delay (s) = 0; DeMorgan's Symbol = não |
-| 16 | `LEDElm` | LED | Red Value (0-1) = 1; Green Value (0-1) = 0; Blue Value (0-1) = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
-| 17 | `LEDElm` | LED | Red Value (0-1) = 1; Green Value (0-1) = 1; Blue Value (0-1) = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
-| 18 | `LEDElm` | LED | Red Value (0-1) = 0; Green Value (0-1) = 1; Blue Value (0-1) = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
-| 20 | `LEDElm` | LED | Red Value (0-1) = 1; Green Value (0-1) = 0; Blue Value (0-1) = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
-| 21 | `LEDElm` | LED | Red Value (0-1) = 1; Green Value (0-1) = 1; Blue Value (0-1) = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
-| 22 | `LEDElm` | LED | Red Value (0-1) = 0; Green Value (0-1) = 1; Blue Value (0-1) = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
+| 16 | `LEDElm` | LED | Color = #ff0000;  = 0;  = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
+| 17 | `LEDElm` | LED | Color = #ffff00;  = 0;  = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
+| 18 | `LEDElm` | LED | Color = #00ff00;  = 0;  = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
+| 20 | `LEDElm` | LED | Color = #ff0000;  = 0;  = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
+| 21 | `LEDElm` | LED | Color = #ffff00;  = 0;  = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
+| 22 | `LEDElm` | LED | Color = #00ff00;  = 0;  = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
 | 39 | `OrGateElm` | OR gate | # of Inputs = 2; High Logic Voltage = 5; Schmitt Inputs = não; Invert Inputs = não; Propagation Delay (s) = 0; DeMorgan's Symbol = não |
 | 46 | `ResistorElm` | resistor | Resistance (ohms) = 200 |
 | 47 | `ResistorElm` | resistor | Resistance (ohms) = 200 |

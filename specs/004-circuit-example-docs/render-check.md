@@ -1,6 +1,13 @@
 # Render check (T052)
 
-**Status: not done as written.** The task asks to open the index and five documents on the
+**Status: done by hand on 2026-11-12 (user, VS Code Markdown preview), five documents.** One
+problem found and fixed: `jerk.md` used `\dddot`, which the preview does not know (it showed in
+red); both equations now use `\overset{\cdots}{x}`. No other document in `docs/` uses `\dddot`.
+The other four documents opened showed nothing raw. Not confirmed by the user: which documents
+those were, the index, the two Mermaid diagrams and phone width. The text below is the
+original note from before this check.
+
+**Original note: not done as written.** The task asks to open the index and five documents on the
 GitHub preview (or a Markdown preview with math and Mermaid) and look at them. That was not
 possible in the session that wrote waves 9 and 10: there was no rendered preview to look at, and
 nothing below was seen on a screen. What was and was not checked:

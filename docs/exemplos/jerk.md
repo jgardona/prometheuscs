@@ -53,11 +53,11 @@ Três amplificadores operacionais integradores (resistores de $100\ \Omega$ e ca
 
 Um sistema de terceira ordem pode ser escrito como
 
-$$\dddot x = J(x,\dot x,\ddot x),$$
+$$\overset{\cdots}{x} = J(x,\dot x,\ddot x),$$
 
 em que $J$ é o *jerk*. Sprott mostrou que funções $J$ muito simples, com uma só não linearidade, bastam para o caos, por exemplo
 
-$$\dddot x = -A\thinspace\ddot x - \dot x + G(x),$$
+$$\overset{\cdots}{x} = -A\thinspace\ddot x - \dot x + G(x),$$
 
 com $G$ linear por partes. Em um circuito, as três variáveis $x$, $\dot x$ e $\ddot x$ são as saídas dos três integradores, e a realimentação é o somador com o diodo, que só conduz quando o seu sinal passa de um limiar e produz $G$. O ganho de cada integrador é $1/RC = 1000\ \text{s}^{-1}$, então a dinâmica tem escala de milissegundos.
 

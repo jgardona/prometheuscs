@@ -73,7 +73,7 @@ description: "Task list for the scope glow"
 - [X] T018 [P] Run `cargo fmt`, `cargo clippy --all-targets -- -D warnings` and the same with `--features gui`; fix warnings
 - [X] T019 Run `cargo test --release` (all green) and `cargo test --test scope_glow` in debug (overflow checks)
 - [X] T020 Mutation check: remove the fill in T004 and the `hover` part of T008 in turn; the matching tests must fail; restore both
-- [ ] T021 (NOT DONE: needs the real window; the release build is ready) Build with `cargo build --release --features gui`, open *Circuito RLC*, follow quickstart steps 4–6, and compare the tint with the reference image; adjust the constants of T002 if needed (record what was and was not seen in the window)
+- [X] T021 Build with `cargo build --release --features gui`, open *Circuito RLC*, follow quickstart steps 4–6, and compare the tint with the reference image; adjust the constants of T002 if needed (record what was and was not seen in the window). **Seen (2026-11-12, user screenshots, dark and light background):** with the 10 Ω resistor selected, its scope panel is tinted soft blue and the other scope is not; the traces stay legible on both backgrounds; no constants changed. **Also seen afterwards (user, 2026-11-12):** deselect, hover on the capacitor, and a scope placed in the circuit all behave as expected; nothing left unseen.
 
 ## Dependencies & Execution Order
 

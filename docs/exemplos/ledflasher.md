@@ -36,18 +36,18 @@ Um contador em anel de 10 saídas ($Q_0$ a $Q_9$) recebe um relógio de $1\ \tex
 | 0 | `RingCounterElm` | ring counter | High Logic Voltage = 5; Invert reset pin = sim; # of Bits = 10 |
 | 1 | `LogicInputElm` | logic input | Momentary Switch = não; High Logic Voltage = 5; Low Voltage = 0; Numeric = não; Ternary = não; Keyboard Shortcut =  |
 | 2 | `RailElm` | square wave gen | Max Voltage = 2.5; Waveform = Square Wave; DC Offset (V) = 2.5; Internal Resistance (ohms) = 0; Show Voltage = não; Specify As = Frequency/Duty Cycle; Frequency (Hz) = 1k; Phase Offset (degrees) = 0; Duty Cycle = 50; Rise/Fall Time (s) = 0 |
-| 4 | `LEDElm` | LED | Red Value (0-1) = 1; Green Value (0-1) = 0; Blue Value (0-1) = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
+| 4 | `LEDElm` | LED | Color = #ff0000;  = 0;  = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
 | 5 | `ResistorElm` | resistor | Resistance (ohms) = 250 |
 | 6 | `GroundElm` | ground | Symbol = Earth |
-| 7 | `LEDElm` | LED | Red Value (0-1) = 1; Green Value (0-1) = 0; Blue Value (0-1) = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
-| 8 | `LEDElm` | LED | Red Value (0-1) = 1; Green Value (0-1) = 0; Blue Value (0-1) = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
-| 9 | `LEDElm` | LED | Red Value (0-1) = 1; Green Value (0-1) = 0; Blue Value (0-1) = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
-| 10 | `LEDElm` | LED | Red Value (0-1) = 1; Green Value (0-1) = 0; Blue Value (0-1) = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
+| 7 | `LEDElm` | LED | Color = #ff0000;  = 0;  = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
+| 8 | `LEDElm` | LED | Color = #ff0000;  = 0;  = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
+| 9 | `LEDElm` | LED | Color = #ff0000;  = 0;  = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
+| 10 | `LEDElm` | LED | Color = #ff0000;  = 0;  = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
 | 16 | `DiodeElm` | diode | Model = default |
 | 17 | `DiodeElm` | diode | Model = default |
 | 18 | `DiodeElm` | diode | Model = default |
 | 19 | `DiodeElm` | diode | Model = default |
-| 20 | `LEDElm` | LED | Red Value (0-1) = 1; Green Value (0-1) = 0; Blue Value (0-1) = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
+| 20 | `LEDElm` | LED | Color = #ff0000;  = 0;  = 0; Max Brightness Current (A) = 10m; Model = 1N4004 (general purpose) |
 | 22 | `DiodeElm` | diode | Model = default |
 | 23 | `DiodeElm` | diode | Model = default |
 | 24 | `DiodeElm` | diode | Model = default |

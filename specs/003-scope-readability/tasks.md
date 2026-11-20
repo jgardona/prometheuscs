@@ -72,7 +72,7 @@ description: "Task list for the readable scope labels"
 - [X] T019 Plates for the measurement labels (`Δt`, `Δ`) too, asked by the user after T017: test in `tests/scope_labels.rs` (`the_labels_of_a_measurement_are_on_plates_inside_the_scope`), then `draw_measure` in `src/render/scopes.rs` uses `draw_label`; done
 - [X] T020 Plates for the scale labels (corner values, `Max=` and the other measurements, time per division), asked by the user after T019: test `every_scale_label_is_on_a_plate`, then `draw_label` takes its height from the font size and `draw_scope_inside` uses it for those labels; done
 - [X] T017 Mutation check: replace `draw_label`'s plate with nothing (only the text), and restore the removed readouts block, in turn; the matching tests must fail; restore both
-- [ ] T018 (NOT DONE in the window: only an SVG render of both themes was looked at; the release `--features gui` binary is built) Build with `cargo build --release --features gui`, open *Circuito RLC*, follow quickstart steps 4-5 (dark and light background, a placed scope), and compare with the screenshot of the report; adjust the plate margin or opacity constants if needed (record what was and was not seen in the window)
+- [X] T018 Build with `cargo build --release --features gui`, open *Circuito RLC*, follow quickstart steps 4-5 (dark and light background, a placed scope), and compare with the screenshot of the report; adjust the plate margin or opacity constants if needed (record what was and was not seen in the window) **Seen in the window (user, 2026-11-12):** dark and light background with a placed scope; readability as intended, no constants changed.
 
 ## Dependencies & Execution Order
 

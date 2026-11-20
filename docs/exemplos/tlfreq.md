@@ -38,7 +38,7 @@ Duas linhas de $75\ \Omega$ e $5\ \text{ns}$ são alimentadas, cada uma por um r
 | 3 | `GroundElm` | ground | Symbol = Earth |
 | 4 | `ResistorElm` | resistor | Resistance (ohms) = 75 |
 | 5 | `GroundElm` | ground | Symbol = Earth |
-| 6 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0 |
+| 6 | `ProbeElm` | voltmeter | Show Voltage = não; Value = Voltage; Scale = Auto; Use Circle Symbol = não; Series Resistance (0 = infinite) = 0; Label =  |
 | 7 | `SweepElm` | sweep (linear) | Min Frequency (Hz) = 100M; Max Frequency (Hz) = 500M; Sweep Time (s) = 400n; Logarithmic = não; Max Voltage = 5; Bidirectional = sim |
 | 8 | `ResistorElm` | resistor | Resistance (ohms) = 75 |
 | 12 | `TransLineElm` | transmission line | Delay (s) = 5n; Impedance (ohms) = 75 |

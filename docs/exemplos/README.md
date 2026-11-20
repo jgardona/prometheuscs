@@ -4,7 +4,7 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 
 > Este índice é gerado por `cargo run --release --bin exdocs -- sync`; não o edite à mão.
 
-**Situação:** 367 de 367 entradas do menu documentadas (366 documentos).
+**Situação:** 366 de 366 entradas do menu documentadas (365 documentos).
 
 | Categoria | Situação |
 |-----------|----------|
@@ -29,10 +29,6 @@ Documentação científica de cada circuito do menu **Exemplos de Circuitos**: o
 | Subcircuits | documentado |
 | Misc Devices | documentado |
 | 2-D Scope | documentado |
-
-## Sem categoria — documentado
-
-- [Blank Circuit](blank.md)
 
 ## Basics — documentado
 

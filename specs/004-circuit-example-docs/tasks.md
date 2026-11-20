@@ -130,7 +130,7 @@ other variants; chaotic circuits are described qualitatively.
 - [X] T049 [US2] Write a failing test in `tests/example_docs.rs` (`the_readme_links_the_index`): `README.md` contains a link to `docs/exemplos/README.md`; and (`every_document_is_one_click_from_the_index`): every document that exists is linked from the index
 - [X] T050 [US2] Add the row `[docs/exemplos/](docs/exemplos/README.md) | Documentação científica de cada circuito de exemplo (teoria, equações, resultados esperados)` to the documentation table of `README.md` (Portuguese), and one paragraph about the examples' documents to `docs/guia-do-usuario.md` (in the section about the examples menu)
 - [X] T051 [US2] Write a test (`the_index_follows_the_order_and_the_categories_of_the_menu`) that compares the category headings and entries of the index with `parse_setup_list` of the real `assets/setuplist.txt`
-- [ ] T052 [US2] Check on the rendered GitHub preview (or a Markdown preview with math and Mermaid) the index and five documents from different waves: links work, nothing shows raw (record in `specs/004-circuit-example-docs/render-check.md` what was and was not seen) (left open: no rendered preview was available, so nothing was looked at; `render-check.md` lists what the machine checks cover and what nobody has seen)
+- [X] T052 [US2] Check on the rendered GitHub preview (or a Markdown preview with math and Mermaid) the index and five documents from different waves: links work, nothing shows raw (record in `specs/004-circuit-example-docs/render-check.md` what was and was not seen) (left open: no rendered preview was available, so nothing was looked at; `render-check.md` lists what the machine checks cover and what nobody has seen)
 
 ## Phase 5: User Story 3 — trust the numbers (P3)
 
